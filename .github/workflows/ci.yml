@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: gitlab-registry.cern.ch/atlas-sit/docker/alma9-atlasos:latest
 
     steps:
     - uses: actions/checkout@v4
