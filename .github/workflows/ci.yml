@@ -10,8 +10,19 @@ on:
     - main
 
 jobs:
+
+  dependencies:
+    runs-on: ubuntu-22.04
+    
+    steps: 
+    
+    - name: Install root
+      run: sudo snap install root-framework
+        && snap run root-framework
+
   lint:
-    runs-on: gitlab-registry.cern.ch/atlas-sit/docker/alma9-atlasos:latest
+    needs: [dependencies]
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v4
@@ -98,7 +109,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-12, ubuntu-22.04, windows-2022]
+        os: [ubuntu-22.04]
 
         type: [shared, static]
 
