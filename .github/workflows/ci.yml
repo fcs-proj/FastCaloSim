@@ -21,7 +21,6 @@ jobs:
         && snap run root-framework
 
   lint:
-    needs: [dependencies]
     runs-on: ubuntu-22.04
 
     steps:
@@ -105,7 +104,7 @@ jobs:
       run: ctest --output-on-failure --no-tests=error -j 2
 
   test:
-    needs: [lint]
+    needs: [lint, dependencies]
 
     strategy:
       matrix:
