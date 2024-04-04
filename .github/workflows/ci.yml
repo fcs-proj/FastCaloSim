@@ -140,8 +140,7 @@ jobs:
           /usr/bin/clang-tidy-14 140
 
       - name: Configure
-        shell: pwsh
-        run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])"
+        run: cmake "--preset=ci-ubuntu"
           -D BUILD_SHARED_LIBS=${{ matrix.shared }}
 
       - name: Build
