@@ -99,57 +99,57 @@ jobs:
         UBSAN_OPTIONS: print_stacktrace=1
       run: ctest --output-on-failure --no-tests=error -j 2
 
-  # test:
-  #   needs: [lint]
-  #   runs-on: ubuntu-22.04
+  test:
+    needs: [lint]
+    runs-on: ubuntu-22.04
 
-  #   strategy:
-  #     matrix:
-  #       os: [alma9, ubuntu22]
+    strategy:
+      matrix:
+        os: [alma9, ubuntu22]
 
-  #       type: [shared, static]
+        type: [shared, static]
 
-  #       include:
-  #       - { type: shared, shared: YES }
-  #       - { type: static, shared: NO }
+        include:
+        - { type: shared, shared: YES }
+        - { type: static, shared: NO }
 
-  #   container:
-  #     image: docker://jbeirer/${{ matrix.os }}-fastcalosim:latest
+    # container:
+    #   image: docker://jbeirer/${{ matrix.os }}-fastcalosim:latest
     
-  #   steps:
-  #   - uses: actions/checkout@v4
+    steps:
+    - uses: actions/checkout@v4
 
-  #   - name: Install static analyzers
-  #     if: matrix.os == 'ubuntu22'
-  #     run: >-
-  #       apt-get install clang-tidy-14 cppcheck -y -q
+    - name: Install static analyzers
+      if: matrix.os == 'ubuntu22'
+      run: >-
+        apt-get install clang-tidy-14 cppcheck -y -q
 
-  #       update-alternatives --install
-  #       /usr/bin/clang-tidy clang-tidy
-  #       /usr/bin/clang-tidy-14 140
+        update-alternatives --install
+        /usr/bin/clang-tidy clang-tidy
+        /usr/bin/clang-tidy-14 140
 
-  #     if: matrix.os == 'alma9'
-  #     run: >-
-  #       dnf install clang-tidy-14 cppcheck -y -q
+      if: matrix.os == 'alma9'
+      run: >-
+        dnf install clang-tidy-14 cppcheck -y -q
 
-  #       update-alternatives --install
-  #       /usr/bin/clang-tidy clang-tidy
-  #       /usr/bin/clang-tidy-14 140
+        update-alternatives --install
+        /usr/bin/clang-tidy clang-tidy
+        /usr/bin/clang-tidy-14 140
 
-  #   - name: Configure
-  #     shell: pwsh
-  #     run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])"
-  #       -D BUILD_SHARED_LIBS=${{ matrix.shared }}
+    - name: Configure
+      shell: pwsh
+      run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])"
+        -D BUILD_SHARED_LIBS=${{ matrix.shared }}
 
-  #   - name: Build
-  #     run: cmake --build build --config Release -j 2
+    - name: Build
+      run: cmake --build build --config Release -j 2
 
-  #   - name: Install
-  #     run: cmake --install build --config Release --prefix prefix
+    - name: Install
+      run: cmake --install build --config Release --prefix prefix
 
-  #   - name: Test
-  #     working-directory: build
-  #     run: ctest --output-on-failure --no-tests=error -C Release -j 2
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure --no-tests=error -C Release -j 2
 
   # docs:
   #   # Deploy docs only when builds succeed
