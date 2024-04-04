@@ -119,7 +119,7 @@ jobs:
       steps:
       - uses: actions/checkout@v4
 
-      - name: Install static analyzers
+      - name: Install static analyzers for Ubuntu 22.04 
         if: matrix.os == 'ubuntu22'
         run: >-
           apt-get install clang-tidy-14 cppcheck -y -q
@@ -128,6 +128,7 @@ jobs:
           /usr/bin/clang-tidy clang-tidy
           /usr/bin/clang-tidy-14 140
 
+      - name: Install static analyzers for AlmaLinux 9
         if: matrix.os == 'alma9'
         run: >-
           dnf install clang-tidy-14 cppcheck -y -q
