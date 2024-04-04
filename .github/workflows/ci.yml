@@ -34,6 +34,9 @@ jobs:
 
     runs-on: ubuntu-22.04
 
+    container:
+      image: docker://jbeirer/ubuntu22-fastcalosim:latest
+
     if: github.repository_owner == 'jbeirer'
 
     steps:
@@ -72,7 +75,12 @@ jobs:
     env: { CXX: clang++-14 }
 
     steps:
+
     - uses: actions/checkout@v4
+
+    - name: Install sanitizers
+      run: sudo apt-get update -q
+        && sudo apt-get install clang-14 -q -y
 
     - name: Configure
       run: cmake --preset=ci-sanitize
