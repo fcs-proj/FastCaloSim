@@ -12,10 +12,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-22.04
-
-    container:
-      image: docker://jbeirer/ubuntu22-fastcalosim:latest
-
+    
     steps:
     - uses: actions/checkout@v4
 
@@ -23,12 +20,10 @@ jobs:
       with: { python-version: "3.8" }
 
     - name: Install codespell
-      run: apt-get update -q 
-        && apt-get -y install python3-pip
-        && pip3 install codespell
+      run: pip3 install codespell
 
     - name: Lint
-      run: echo $PWD && ls && ls /__w/FastCaloSim/FastCaloSim/example/ && cmake -D FORMAT_COMMAND=clang-format-14 -P cmake/lint.cmake
+      run: cmake -D FORMAT_COMMAND=clang-format-14 -P cmake/lint.cmake
 
     - name: Spell check
       if: always()
