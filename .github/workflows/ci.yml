@@ -125,6 +125,10 @@ jobs:
           apt-get update -q
           && apt-get install clang-tidy-14 cppcheck -y -q
 
+          update-alternatives --install
+          /usr/bin/clang-tidy clang-tidy
+          /usr/bin/clang-tidy-14 140
+
       - name: Install static analyzers for AlmaLinux 9
         if: matrix.os == 'alma9'
         # Note alma9 does not have clang-tidy-14, so we use clang-tools-extra, which comes with clang-tidy 16
