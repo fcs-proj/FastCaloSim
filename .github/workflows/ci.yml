@@ -122,6 +122,7 @@ jobs:
       - name: Install static analyzers for Ubuntu 22.04 
         if: matrix.os == 'ubuntu22'
         run: >-
+          apt-get update -q
           apt-get install clang-tidy-14 cppcheck -y -q
 
           update-alternatives --install
@@ -131,6 +132,7 @@ jobs:
       - name: Install static analyzers for AlmaLinux 9
         if: matrix.os == 'alma9'
         run: >-
+          dnf update -y 
           dnf install clang-tidy-14 cppcheck -y -q
 
           update-alternatives --install
@@ -152,47 +154,47 @@ jobs:
         working-directory: build
         run: ctest --output-on-failure --no-tests=error -C Release -j 2
 
-  # docs:
-  #   # Deploy docs only when builds succeed
-  #   needs: [sanitize, test]
+  docs:
+    # Deploy docs only when builds succeed
+    needs: [sanitize, test]
 
-  #   runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04
 
-  #   # To enable, first you have to create an orphaned gh-pages branch:
-  #   #
-  #   #    git switch --orphan gh-pages
-  #   #    git commit --allow-empty -m "Initial commit"
-  #   #    git push -u origin gh-pages
-  #   #
-  #   # Edit the <name> placeholder below to your GitHub name, so this action
-  #   # runs only in your repository and no one else's fork. After these, delete
-  #   # this comment and the last line in the conditional below.
-  #   # If you do not wish to use GitHub Pages for deploying documentation, then
-  #   # simply delete this job similarly to the coverage one.
-  #   if: github.ref == 'refs/heads/main'
-  #     && github.event_name == 'push'
-  #     && github.repository_owner == '<name>'
-  #     && false
+    # To enable, first you have to create an orphaned gh-pages branch:
+    #
+    #    git switch --orphan gh-pages
+    #    git commit --allow-empty -m "Initial commit"
+    #    git push -u origin gh-pages
+    #
+    # Edit the <name> placeholder below to your GitHub name, so this action
+    # runs only in your repository and no one else's fork. After these, delete
+    # this comment and the last line in the conditional below.
+    # If you do not wish to use GitHub Pages for deploying documentation, then
+    # simply delete this job similarly to the coverage one.
+    if: github.ref == 'refs/heads/main'
+      && github.event_name == 'push'
+      && github.repository_owner == '<name>'
+      && false
 
-  #   steps:
-  #   - uses: actions/checkout@v4
+    steps:
+    - uses: actions/checkout@v4
 
-  #   - uses: actions/setup-python@v5
-  #     with: { python-version: "3.8" }
+    - uses: actions/setup-python@v5
+      with: { python-version: "3.8" }
 
-  #   - name: Install m.css dependencies
-  #     run: pip3 install jinja2 Pygments
+    - name: Install m.css dependencies
+      run: pip3 install jinja2 Pygments
 
-  #   - name: Install Doxygen
-  #     run: apt-get update -q
-  #       && apt-get install doxygen -q -y
+    - name: Install Doxygen
+      run: apt-get update -q
+        && apt-get install doxygen -q -y
 
-  #   - name: Build docs
-  #     run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build"
-  #       -P cmake/docs-ci.cmake
+    - name: Build docs
+      run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build"
+        -P cmake/docs-ci.cmake
 
-  #   - name: Deploy docs
-  #     uses: peaceiris/actions-gh-pages@v3
-  #     with:
-  #       github_token: ${{ secrets.GITHUB_TOKEN }}
-  #       publish_dir: build/docs/html
+    - name: Deploy docs
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: build/docs/html
