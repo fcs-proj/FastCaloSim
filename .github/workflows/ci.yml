@@ -23,7 +23,7 @@ jobs:
       run: pip3 install codespell
 
     - name: Lint
-      run: cmake -D FORMAT_COMMAND=clang-format-14 -P cmake/lint.cmake
+      run: cmake -D FORMAT_COMMAND=clang-format-16 -P cmake/lint.cmake
 
     - name: Spell check
       if: always()
@@ -72,7 +72,7 @@ jobs:
     container:
       image: docker://jbeirer/ubuntu22-fastcalosim:latest
 
-    env: { CXX: clang++-14 }
+    env: { CXX: clang++-16 }
 
     steps:
 
@@ -80,7 +80,7 @@ jobs:
 
     - name: Install sanitizers
       run: apt-get update -q
-        && apt-get install clang-14 -q -y
+        && apt-get install clang-16 -q -y
 
     - name: Configure
       run: cmake --preset=ci-sanitize
@@ -123,21 +123,13 @@ jobs:
         if: matrix.os == 'ubuntu22'
         run: >-
           apt-get update -q
-          && apt-get install clang-tidy-14 cppcheck -y -q
-
-          update-alternatives --install
-          /usr/bin/clang-tidy clang-tidy
-          /usr/bin/clang-tidy-14 140
+          && apt-get install clang-tidy-16 cppcheck -y -q
 
       - name: Install static analyzers for AlmaLinux 9
         if: matrix.os == 'alma9'
         run: >-
           dnf update -y 
-          && dnf install clang-tidy-14 cppcheck -y -q
-
-          update-alternatives --install
-          /usr/bin/clang-tidy clang-tidy
-          /usr/bin/clang-tidy-14 140
+          && dnf install clang-tools-extra cppcheck -y -q
 
       - name: Configure
         run: cmake "--preset=ci-ubuntu"
