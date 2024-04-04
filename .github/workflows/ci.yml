@@ -99,13 +99,12 @@ jobs:
         UBSAN_OPTIONS: print_stacktrace=1
       run: ctest --output-on-failure --no-tests=error -j 2
 
-  test:
+test:
     needs: [lint]
-    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
-        os: [alma9, ubuntu22]
+        os: [macos-12, ubuntu-22.04, windows-2022]
 
         type: [shared, static]
 
@@ -113,33 +112,34 @@ jobs:
         - { type: shared, shared: YES }
         - { type: static, shared: NO }
 
-    # container:
-    #   image: docker://jbeirer/${{ matrix.os }}-fastcalosim:latest
-    
+    runs-on: ${{ matrix.os }}
+
     steps:
     - uses: actions/checkout@v4
 
     - name: Install static analyzers
-      if: matrix.os == 'ubuntu22'
+      if: matrix.os == 'ubuntu-22.04'
       run: >-
-        apt-get install clang-tidy-14 cppcheck -y -q
+        sudo apt-get install clang-tidy-14 cppcheck -y -q
 
-        update-alternatives --install
+        sudo update-alternatives --install
         /usr/bin/clang-tidy clang-tidy
         /usr/bin/clang-tidy-14 140
 
-      if: matrix.os == 'alma9'
-      run: >-
-        dnf install clang-tidy-14 cppcheck -y -q
-
-        update-alternatives --install
-        /usr/bin/clang-tidy clang-tidy
-        /usr/bin/clang-tidy-14 140
+    - name: Setup MultiToolTask
+      if: matrix.os == 'windows-2022'
+      run: |
+        Add-Content "$env:GITHUB_ENV" 'UseMultiToolTask=true'
+        Add-Content "$env:GITHUB_ENV" 'EnforceProcessCountAcrossBuilds=true'
 
     - name: Configure
       shell: pwsh
       run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])"
         -D BUILD_SHARED_LIBS=${{ matrix.shared }}
+
+    - name: Setup PATH
+      if: matrix.os == 'windows-2022' && matrix.type == 'shared'
+      run: Add-Content "$env:GITHUB_PATH" "$(Get-Location)\build\Release"
 
     - name: Build
       run: cmake --build build --config Release -j 2
