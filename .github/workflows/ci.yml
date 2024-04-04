@@ -123,7 +123,7 @@ jobs:
         if: matrix.os == 'ubuntu22'
         run: >-
           apt-get update -q
-          apt-get install clang-tidy-14 cppcheck -y -q
+          && apt-get install clang-tidy-14 cppcheck -y -q
 
           update-alternatives --install
           /usr/bin/clang-tidy clang-tidy
@@ -133,7 +133,7 @@ jobs:
         if: matrix.os == 'alma9'
         run: >-
           dnf update -y 
-          dnf install clang-tidy-14 cppcheck -y -q
+          && dnf install clang-tidy-14 cppcheck -y -q
 
           update-alternatives --install
           /usr/bin/clang-tidy clang-tidy
