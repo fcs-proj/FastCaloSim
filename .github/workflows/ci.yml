@@ -34,19 +34,17 @@ jobs:
 
     runs-on: ubuntu-22.04
 
-    # To enable coverage, delete the last line from the conditional below and
-    # edit the "<name>" placeholder to your GitHub name.
-    # If you do not wish to use codecov, then simply delete this job from the
-    # workflow.
-    if: github.repository_owner == '<name>'
-      && false
+    container:
+      image: docker://jbeirer/ubuntu22-fastcalosim:latest
+
+    if: github.repository_owner == 'jbeirer'
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Install LCov
-      run: sudo apt-get update -q
-        && sudo apt-get install lcov -q -y
+      run: apt-get update -q
+        && apt-get install lcov -q -y
 
     - name: Configure
       run: cmake --preset=ci-coverage
@@ -71,10 +69,18 @@ jobs:
 
     runs-on: ubuntu-22.04
 
+    container:
+      image: docker://jbeirer/ubuntu22-fastcalosim:latest
+
     env: { CXX: clang++-14 }
 
     steps:
+
     - uses: actions/checkout@v4
+
+    - name: Install sanitizers
+      run: apt-get update -q
+        && apt-get install clang-14 -q -y
 
     - name: Configure
       run: cmake --preset=ci-sanitize
@@ -94,56 +100,55 @@ jobs:
       run: ctest --output-on-failure --no-tests=error -j 2
 
   test:
-    needs: [lint]
+      needs: [lint]
+      runs-on: ubuntu-22.04
 
-    strategy:
-      matrix:
-        os: [macos-12, ubuntu-22.04, windows-2022]
+      strategy:
+        matrix:
+          os: [alma9, ubuntu22]
 
-        type: [shared, static]
+          type: [shared, static]
 
-        include:
-        - { type: shared, shared: YES }
-        - { type: static, shared: NO }
+          include:
+          - { type: shared, shared: YES }
+          - { type: static, shared: NO }
 
-    runs-on: ${{ matrix.os }}
+      container:
+        image: docker://jbeirer/${{ matrix.os }}-fastcalosim:latest
 
-    steps:
-    - uses: actions/checkout@v4
+      steps:
+      - uses: actions/checkout@v4
 
-    - name: Install static analyzers
-      if: matrix.os == 'ubuntu-22.04'
-      run: >-
-        sudo apt-get install clang-tidy-14 cppcheck -y -q
+      - name: Install static analyzers for Ubuntu 22.04 
+        if: matrix.os == 'ubuntu22'
+        run: >-
+          apt-get update -q
+          && apt-get install clang-tidy-14 cppcheck -y -q
 
-        sudo update-alternatives --install
-        /usr/bin/clang-tidy clang-tidy
-        /usr/bin/clang-tidy-14 140
+          update-alternatives --install
+          /usr/bin/clang-tidy clang-tidy
+          /usr/bin/clang-tidy-14 140
 
-    - name: Setup MultiToolTask
-      if: matrix.os == 'windows-2022'
-      run: |
-        Add-Content "$env:GITHUB_ENV" 'UseMultiToolTask=true'
-        Add-Content "$env:GITHUB_ENV" 'EnforceProcessCountAcrossBuilds=true'
+      - name: Install static analyzers for AlmaLinux 9
+        if: matrix.os == 'alma9'
+        # Note alma9 does not have clang-tidy-14, so we use clang-tools-extra, which comes with clang-tidy 16
+        run: >-
+          dnf update -y 
+          && dnf install clang-tools-extra cppcheck -y -q
 
-    - name: Configure
-      shell: pwsh
-      run: cmake "--preset=ci-$("${{ matrix.os }}".split("-")[0])"
-        -D BUILD_SHARED_LIBS=${{ matrix.shared }}
+      - name: Configure
+        run: cmake "--preset=ci-ubuntu"
+          -D BUILD_SHARED_LIBS=${{ matrix.shared }}
 
-    - name: Setup PATH
-      if: matrix.os == 'windows-2022' && matrix.type == 'shared'
-      run: Add-Content "$env:GITHUB_PATH" "$(Get-Location)\build\Release"
+      - name: Build
+        run: cmake --build build --config Release -j 2
 
-    - name: Build
-      run: cmake --build build --config Release -j 2
+      - name: Install
+        run: cmake --install build --config Release --prefix prefix
 
-    - name: Install
-      run: cmake --install build --config Release --prefix prefix
-
-    - name: Test
-      working-directory: build
-      run: ctest --output-on-failure --no-tests=error -C Release -j 2
+      - name: Test
+        working-directory: build
+        run: ctest --output-on-failure --no-tests=error -C Release -j 2
 
   docs:
     # Deploy docs only when builds succeed
@@ -177,8 +182,8 @@ jobs:
       run: pip3 install jinja2 Pygments
 
     - name: Install Doxygen
-      run: sudo apt-get update -q
-        && sudo apt-get install doxygen -q -y
+      run: apt-get update -q
+        && apt-get install doxygen -q -y
 
     - name: Build docs
       run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build"

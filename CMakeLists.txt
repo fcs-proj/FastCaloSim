@@ -13,6 +13,9 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
+# ---- Project dependencies ----
+find_package(ROOT 6.30 CONFIG REQUIRED)
+
 # ---- Declare library ----
 
 add_library(
