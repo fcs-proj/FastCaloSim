@@ -31,7 +31,7 @@ include(GenerateExportHeader)
 generate_export_header(
     FastCaloSim_FastCaloSim
     BASE_NAME FastCaloSim
-    EXPORT_FILE_NAME export/FastCaloSim/FastCaloSim_export.hpp
+    EXPORT_FILE_NAME export/FastCaloSim/FastCaloSim_export.h
     CUSTOM_CONTENT_FROM_VARIABLE pragma_suppress_c4251
 )
 
