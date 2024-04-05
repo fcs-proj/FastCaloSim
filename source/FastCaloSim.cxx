@@ -1,6 +1,6 @@
 #include <string>
 
-#include "FastCaloSim/FastCaloSim.hpp"
+#include "FastCaloSim/FastCaloSim.h"
 
 exported_class::exported_class()
     : m_name {"FastCaloSim"}

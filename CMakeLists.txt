@@ -18,9 +18,12 @@ find_package(ROOT 6.30 CONFIG REQUIRED)
 
 # ---- Declare library ----
 
+# Globbing all .cxx files in the FastCaloSim directory
+file(GLOB FastCaloSim_SOURCES "source/*.cxx")
+
 add_library(
     FastCaloSim_FastCaloSim
-    source/FastCaloSim.cpp
+    ${FastCaloSim_SOURCES}
 )
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 

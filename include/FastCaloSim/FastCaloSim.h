@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "FastCaloSim/FastCaloSim_export.hpp"
+#include "FastCaloSim/FastCaloSim_export.h"
 
 /**
  * A note about the MSVC warning C4251:
