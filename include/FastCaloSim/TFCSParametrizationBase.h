@@ -153,7 +153,7 @@ enum FCSReturnCode
 
 // #ifdef USE_GPU
 //   // will not compile by default
-//   void Copy2GPU(); // copy all the paramterization files to GPU
+//   void Copy2GPU(); // copy all the parameterization files to GPU
 // #endif
 
 // protected:

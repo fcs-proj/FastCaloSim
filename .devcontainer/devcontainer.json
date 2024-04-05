@@ -13,5 +13,5 @@
     },
     
     // Install dev packages such as static analyzers and debuggers that are not direct project dependencies
-    "postCreateCommand": "dnf update -y && dnf install -y clang-tools-extra cppcheck gdb"
+    "postCreateCommand": "dnf update -y && dnf install -y clang-tools-extra cppcheck gdb python3-pip && pip3 install codespell"
 }

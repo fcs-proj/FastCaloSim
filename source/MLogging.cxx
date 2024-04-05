@@ -27,7 +27,7 @@ MsgStream& MLogging::msg(const MSG::Level lvl) const
 
 /// Open a stream for sending log messages
 // check the lvl of logging is active, otherwise provide dummy stream.
-// if the proposed streamer dosen't match the current one
+// if the proposed streamer doesn't match the current one
 // end any running lines and start a new decorated line
 // provide the stream at the end
 MsgStream& MLogging::stream(MSG::Level lvl, std::string file, int line) const
