@@ -1,0 +1,17 @@
+{
+    // AlmaLinux9 container that already contains all project dependencies
+    "image": "jbeirer/alma9-fastcalosim:latest",
+
+    // Activate vs code extensions and set cmake path
+    "customizations": {
+        "vscode": {
+          "extensions": ["ms-vscode.cpptools", "llvm-vs-code-extensions.vscode-clangd", "ms-vscode.cmake-tools"],
+          "settings": {
+            "cmake.cmakePath": "/usr/bin/cmake"
+          }
+        }
+    },
+    
+    // Install dev packages such as static analyzers and debuggers that are not direct project dependencies
+    "postCreateCommand": "dnf update -y && dnf install -y clang-tools-extra cppcheck gdb"
+}
