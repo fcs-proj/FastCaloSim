@@ -5,9 +5,9 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
 
-#include <set>
 #include <map>
 #include <mutex>
+#include <set>
 
 #include "FastCaloSim/MLogging.h"
 
@@ -37,10 +37,14 @@ chain TFCSLateralShapeParametrizationHitChain.
 */
 
 /// Return codes for the simulate function
-enum FCSReturnCode { FCSFatal = 0, FCSSuccess = 1, FCSRetry = 2 };
+enum FCSReturnCode
+{
+  FCSFatal = 0,
+  FCSSuccess = 1,
+  FCSRetry = 2
+};
 
 #define FCS_RETRY_COUNT 3
-
 
 // class TFCSParametrizationBase : public TNamed, public ISF_FCS::MLogging {
 // public:
@@ -60,13 +64,14 @@ enum FCSReturnCode { FCSFatal = 0, FCSSuccess = 1, FCSRetry = 2 };
 //   virtual bool is_match_eta(float /*eta*/) const { return false; };
 
 //   virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const { return false; };
-//   virtual bool is_match_calosample(int /*calosample*/) const { return false; };
+//   virtual bool is_match_calosample(int /*calosample*/) const { return false;
+//   };
 
-//   virtual bool is_match_all_pdgid() const { return TestBit(kMatchAllPDGID); };
-//   virtual bool is_match_all_Ekin() const { return false; };
-//   virtual bool is_match_all_eta() const { return false; };
-//   virtual bool is_match_all_Ekin_bin() const { return false; };
-//   virtual bool is_match_all_calosample() const { return false; };
+//   virtual bool is_match_all_pdgid() const { return TestBit(kMatchAllPDGID);
+//   }; virtual bool is_match_all_Ekin() const { return false; }; virtual bool
+//   is_match_all_eta() const { return false; }; virtual bool
+//   is_match_all_Ekin_bin() const { return false; }; virtual bool
+//   is_match_all_calosample() const { return false; };
 
 //   virtual const std::set<int> &pdgid() const {
 //     static const std::set<int> empty;
@@ -82,7 +87,8 @@ enum FCSReturnCode { FCSFatal = 0, FCSSuccess = 1, FCSRetry = 2 };
 //   virtual void set_match_all_pdgid() { SetBit(kMatchAllPDGID); };
 //   virtual void reset_match_all_pdgid() { ResetBit(kMatchAllPDGID); };
 
-//   /// Method to set the geometry access pointer. Loops over daughter objects if
+//   /// Method to set the geometry access pointer. Loops over daughter objects
+//   if
 //   /// present
 //   virtual void set_geometry(ICaloGeometry *geo);
 
@@ -107,7 +113,8 @@ enum FCSReturnCode { FCSFatal = 0, FCSSuccess = 1, FCSRetry = 2 };
 //   };
 
 //   /// Some derived classes have daughter instances of TFCSParametrizationBase
-//   /// objects The set_daughter method allows to change these daughters - expert
+//   /// objects The set_daughter method allows to change these daughters -
+//   expert
 //   /// use only! The original element at this position is not deleted
 //   virtual void set_daughter(unsigned int /*ind*/,
 //                             TFCSParametrizationBase * /*param*/){};
@@ -122,15 +129,16 @@ enum FCSReturnCode { FCSFatal = 0, FCSSuccess = 1, FCSRetry = 2 };
 //   /// Method in all derived classes to do some simulation
 //   virtual FCSReturnCode simulate(TFCSSimulationState &simulstate,
 //                                  const TFCSTruthState *truth,
-//                                  const TFCSExtrapolationState *extrapol) const;
+//                                  const TFCSExtrapolationState *extrapol)
+//                                  const;
 
-//   /// Method in all derived classes to delete objects stored in the simulstate
+//   /// Method in all derived classes to delete objects stored in the
+//   simulstate
 //   /// AuxInfo
 //   virtual void CleanAuxInfo(TFCSSimulationState & /*simulstate*/) const {};
 
 //   /// Print object information.
 //   void Print(Option_t *option = "") const;
-
 
 //   struct Duplicate_t {
 //     TFCSParametrizationBase *replace = nullptr;
@@ -156,7 +164,6 @@ enum FCSReturnCode { FCSFatal = 0, FCSSuccess = 1, FCSRetry = 2 };
 //   static constexpr double init_eta_min = -100;      //! Do not persistify!
 //   static constexpr double init_eta_max = 100;       //! Do not persistify!
 
-
 //   bool compare(const TFCSParametrizationBase &ref) const;
 
 // public:
@@ -175,4 +182,4 @@ enum FCSReturnCode { FCSFatal = 0, FCSSuccess = 1, FCSRetry = 2 };
 //   ClassDef(TFCSParametrizationBase, 3) // TFCSParametrizationBase
 // };
 
-#endif // End header guards
+#endif  // End header guards

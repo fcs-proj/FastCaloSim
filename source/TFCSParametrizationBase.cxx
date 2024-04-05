@@ -3,8 +3,8 @@
 */
 
 #include "FastCaloSim/TFCSParametrizationBase.h"
-#include "TClass.h"
 
+#include "TClass.h"
 
 //=============================================
 //======= TFCSParametrizationBase =========
@@ -27,7 +27,8 @@
 //     const TFCSExtrapolationState * /*extrapol*/) const {
 //   ATH_MSG_ERROR("now in TFCSParametrizationBase::simulate(). This should "
 //                 "normally not happen");
-//   // Force one retry to issue a printout from the chain causing the call to this
+//   // Force one retry to issue a printout from the chain causing the call to
+//   this
 //   // method
 //   return (FCSReturnCode)(FCSRetry + 1);
 // }
@@ -35,8 +36,8 @@
 // bool TFCSParametrizationBase::compare(
 //     const TFCSParametrizationBase &ref) const {
 //   if (this == &ref) {
-//     ATH_MSG_DEBUG("compare(): identical instances " << this << " == " << &ref);
-//     return true;
+//     ATH_MSG_DEBUG("compare(): identical instances " << this << " == " <<
+//     &ref); return true;
 //   }
 //   return false;
 // }
@@ -71,7 +72,8 @@
 //     if (is_match_all_eta()) {
 //       ATH_MSG(INFO) << " ; eta=all";
 //     } else {
-//       ATH_MSG(INFO) << " ; eta=" << eta_nominal() << " [" << eta_min() << " , "
+//       ATH_MSG(INFO) << " ; eta=" << eta_nominal() << " [" << eta_min() << " ,
+//       "
 //                     << eta_max() << ")";
 //     }
 //     ATH_MSG(INFO) << END_MSG(INFO);
@@ -95,7 +97,8 @@
 //           TFCSParametrizationBase *refparam = checkexist->second.replace;
 //           ATH_MSG_DEBUG("Found duplicate pointer: "
 //                         << refparam << "=" << refparam->GetName()
-//                         << ", duplicate is " << param << "=" << param->GetName()
+//                         << ", duplicate is " << param << "=" <<
+//                         param->GetName()
 //                         << " index " << i << " of " << this);
 //           dup[refparam].mother.push_back(this);
 //           dup[refparam].index.push_back(i);
@@ -119,7 +122,8 @@
 //         if (*param == *refparam) {
 //           ATH_MSG_DEBUG("Found duplicate: "
 //                         << refparam << "=" << refparam->GetName()
-//                         << ", duplicate is " << param << "=" << param->GetName()
+//                         << ", duplicate is " << param << "=" <<
+//                         param->GetName()
 //                         << " index " << i << " of " << this);
 //           dup[param].replace = refparam;
 //           dup[refparam].mother.push_back(this);
@@ -151,15 +155,18 @@
 //         unsigned int delcount = dup[delparam].mother.size();
 //         if (delcount == 0) {
 //           ATH_MSG_DEBUG("  - Delete object "
-//                         << delparam << "=" << delparam->GetName() << " index "
+//                         << delparam << "=" << delparam->GetName() << " index
+//                         "
 //                         << index << " of " << mother << ", has " << delcount
 //                         << " other replacements attached. Deleting");
 //           mother->set_daughter(index, ref);
 //           dellist.insert(delparam);
 //         } else {
 //           ATH_MSG_WARNING("  - Delete object "
-//                           << delparam << "=" << delparam->GetName() << " index "
-//                           << index << " of " << mother << ", has " << delcount
+//                           << delparam << "=" << delparam->GetName() << "
+//                           index "
+//                           << index << " of " << mother << ", has " <<
+//                           delcount
 //                           << " other replacements attached. Skipping");
 //         }
 //       }

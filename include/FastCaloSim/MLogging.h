@@ -5,12 +5,15 @@
 #ifndef ISF_FASTCALOSIMEVENT_MLogging_h
 #define ISF_FASTCALOSIMEVENT_MLogging_h
 
-#include <TNamed.h> //for ClassDef
 #include <iomanip>
 #include <iostream>
 
-namespace MSG {
-enum Level {
+#include <TNamed.h>  //for ClassDef
+
+namespace MSG
+{
+enum Level
+{
   NIL = 0,
   VERBOSE,
   DEBUG,
@@ -20,17 +23,16 @@ enum Level {
   FATAL,
   ALWAYS,
   NUM_LEVELS
-}; // enum Level
-} // end namespace MSG
+};  // enum Level
+}  // end namespace MSG
 
 // Macro for use outside classes.
 // Use this in standalone functions or static methods.
-#define ATH_MSG_NOCLASS(logger_name, x)                                        \
-  do {                                                                         \
+#define ATH_MSG_NOCLASS(logger_name, x) \
+  do { \
     logger_name.msg() << logger_name.startMsg(MSG::ALWAYS, __FILE__, __LINE__) \
-                      << x << std::endl;                                       \
+                      << x << std::endl; \
   } while (0)
-
 
 // Declare the class accessories in a namespace
 // namespace ISF_FCS {
@@ -39,24 +41,24 @@ enum Level {
 //} // end namespace ISF_FCS
 
 // Declare the class in a namespace
-namespace ISF_FCS {
-
+namespace ISF_FCS
+{
 
 // We can define a number of macros here to replace standard ATH_MSG
 // macros. This can only be done outside Athena or the compiler complains.
 typedef std::ostream MsgStream;
 
-#define ATH_MSG_LVL(enum_lvl, x)                                               \
-  do {                                                                         \
-    if (this->msgLvl(enum_lvl))                                                \
-      this->msg() << this->startMsg(enum_lvl, __FILE__, __LINE__) << x         \
-                  << std::endl;                                                \
+#define ATH_MSG_LVL(enum_lvl, x) \
+  do { \
+    if (this->msgLvl(enum_lvl)) \
+      this->msg() << this->startMsg(enum_lvl, __FILE__, __LINE__) << x \
+                  << std::endl; \
   } while (0)
 
-#define ATH_MSG_LVL_NOCHK(enum_lvl, x)                                         \
-  do {                                                                         \
-    this->msg() << this->startMsg(enum_lvl, __FILE__, __LINE__) << x           \
-                << std::endl;                                                  \
+#define ATH_MSG_LVL_NOCHK(enum_lvl, x) \
+  do { \
+    this->msg() << this->startMsg(enum_lvl, __FILE__, __LINE__) << x \
+                << std::endl; \
   } while (0)
 
 #define ATH_MSG_VERBOSE(x) ATH_MSG_LVL(MSG::VERBOSE, x)
@@ -77,21 +79,23 @@ typedef std::ostream MsgStream;
 // Force a new line, and end any stream
 #define endmsg this->streamerEndLine(MSG::INFO)
 
-class MLogging {
-
+class MLogging
+{
 public:
   /// Constructor
-  MLogging(){};
+  MLogging() {};
   /// Copy constructor
-  MLogging(const MLogging &other) : m_level(other.m_level){};
+  MLogging(const MLogging& other)
+      : m_level(other.m_level) {};
   /// Assignment operator
-  MLogging &operator=(MLogging other) {
+  MLogging& operator=(MLogging other)
+  {
     m_level = other.m_level;
     return *this;
   };
 
   /// Destructor
-  virtual ~MLogging(){};
+  virtual ~MLogging() {};
 
   /// Retrieve output level
   MSG::Level level() const { return m_level; }
@@ -102,16 +106,18 @@ public:
   static std::string startMsg(MSG::Level lvl, std::string file, int line);
 
   /// Return a stream for sending messages directly (no decoration)
-  MsgStream &msg() const { return *m_msg; }
+  MsgStream& msg() const { return *m_msg; }
   /// Return a stream for sending messages (incomplete decoration)
-  MsgStream &msg(const MSG::Level lvl) const;
+  MsgStream& msg(const MSG::Level lvl) const;
   /// Return a decorated starting stream for sending messages
-  MsgStream &stream(MSG::Level lvl, std::string file, int line) const;
+  MsgStream& stream(MSG::Level lvl, std::string file, int line) const;
   /// Check whether the logging system is active at the provided verbosity level
   bool msgLvl(const MSG::Level lvl) const;
 
   /// Print a whole decorated log message and then end the line.
-  void print(MSG::Level lvl, std::string file, int line,
+  void print(MSG::Level lvl,
+             std::string file,
+             int line,
              std::string message) const;
 
   /// Update and end the line if we print this level
@@ -125,21 +131,20 @@ private:
   /// Check if a new start should be done (changed file or level)
   bool streamerNeedStart(MSG::Level lvl, std::string file) const;
 
-  MSG::Level m_level = MSG::INFO; //! Do not persistify!
+  MSG::Level m_level = MSG::INFO;  //! Do not persistify!
 
-  MsgStream *m_msg = &std::cout;             //! Do not persistify!
-  MsgStream m_null_msg = MsgStream(nullptr); //! Do not persistify!
-  MsgStream *m_null_msg_ptr = &m_null_msg;   //! Do not persistify!
+  MsgStream* m_msg = &std::cout;  //! Do not persistify!
+  MsgStream m_null_msg = MsgStream(nullptr);  //! Do not persistify!
+  MsgStream* m_null_msg_ptr = &m_null_msg;  //! Do not persistify!
 
-  mutable bool m_streamer_in_line = false;          //! Do not persistify!
-  mutable MSG::Level m_streamer_has_lvl = MSG::NIL; //! Do not persistify!
-  mutable std::string m_streamer_from_file = "";    //! Do not persistify!
+  mutable bool m_streamer_in_line = false;  //! Do not persistify!
+  mutable MSG::Level m_streamer_has_lvl = MSG::NIL;  //! Do not persistify!
+  mutable std::string m_streamer_from_file = "";  //! Do not persistify!
 
   // Version number 0 to tell ROOT not to store this.
   ClassDef(MLogging, 0)
 };
 
+}  // namespace ISF_FCS
 
-} // namespace ISF_FCS
-
-#endif // End header guard
+#endif  // End header guard
