@@ -27,6 +27,9 @@ add_library(
 )
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
+# Link against ROOT libraries
+target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core)
+
 include(GenerateExportHeader)
 generate_export_header(
     FastCaloSim_FastCaloSim
