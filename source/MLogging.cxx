@@ -95,4 +95,31 @@ bool MLogging::streamerNeedStart(MSG::Level lvl, std::string file) const
   return true;
 }
 
+// This is the same either way.
+/// Print a message for the start of logging
+std::string MLogging::startMsg(MSG::Level lvl,
+                               const std::string& file,
+                               int line)
+{
+  int col1_len = 20;
+  int col2_len = 5;
+  int col3_len = 10;
+  auto last_slash = file.find_last_of('/');
+  int path_len = last_slash == std::string::npos ? 0 : last_slash;
+  int trim_point = path_len;
+  int total_len = file.length();
+  if (total_len - path_len > col1_len)
+    trim_point = total_len - col1_len;
+  std::string trimmed_name = file.substr(trim_point);
+  const char* LevelNames[MSG::NUM_LEVELS] = {
+      "NIL", "VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "ALWAYS"};
+  std::string level = LevelNames[lvl];
+  std::string level_string = std::string("(") + level + ") ";
+  std::stringstream output;
+  output << std::setw(col1_len) << std::right << trimmed_name << ":"
+         << std::setw(col2_len) << std::left << line << std::setw(col3_len)
+         << std::right << level_string;
+  return output.str();
+}
+
 }  // namespace ISF_FCS

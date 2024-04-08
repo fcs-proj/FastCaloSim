@@ -29,6 +29,11 @@ add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against ROOT libraries
 target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core)
+# Generate ROOT dictionary for custom classes when building a shared library
+if (BUILD_SHARED_LIBS)
+  target_include_directories(FastCaloSim_FastCaloSim PRIVATE  ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
+  ROOT_GENERATE_DICTIONARY(FastCaloSim_dict FastCaloSim.h MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
+endif()
 
 include(GenerateExportHeader)
 generate_export_header(
