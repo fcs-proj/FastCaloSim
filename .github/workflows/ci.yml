@@ -12,7 +12,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-22.04
-
+    
     steps:
     - uses: actions/checkout@v4
 
@@ -22,8 +22,15 @@ jobs:
     - name: Install codespell
       run: pip3 install codespell
 
+    - name: Install clang-format
+      run: apt-get update -q
+        && apt-get install lsb-release wget software-properties-common gnupg -q -y
+        && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
+        && ./llvm.sh 16
+        && apt-get install clang-format-16 -q -y
+
     - name: Lint
-      run: cmake -D FORMAT_COMMAND=clang-format -P cmake/lint.cmake
+      run: cmake -D FORMAT_COMMAND=clang-format-16 -P cmake/lint.cmake
 
     - name: Spell check
       if: always()
@@ -72,7 +79,7 @@ jobs:
     container:
       image: docker://jbeirer/ubuntu22-fastcalosim:latest
 
-    env: { CXX: clang++-14 }
+    env: { CXX: clang++-16 }
 
     steps:
 
@@ -80,7 +87,9 @@ jobs:
 
     - name: Install sanitizers
       run: apt-get update -q
-        && apt-get install clang-14 -q -y
+        && apt-get install lsb-release wget software-properties-common gnupg -q -y
+        && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
+        && ./llvm.sh 16
 
     - name: Configure
       run: cmake --preset=ci-sanitize
@@ -123,15 +132,17 @@ jobs:
         if: matrix.os == 'ubuntu22'
         run: >-
           apt-get update -q
-          && apt-get install clang-tidy-14 cppcheck -y -q
+          && apt-get install lsb-release wget software-properties-common gnupg -q -y
+          && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
+          && ./llvm.sh 16
+          && apt-get install clang-tidy-16 cppcheck -y -q
 
           update-alternatives --install
           /usr/bin/clang-tidy clang-tidy
-          /usr/bin/clang-tidy-14 140
+          /usr/bin/clang-tidy-16 160
 
       - name: Install static analyzers for AlmaLinux 9
         if: matrix.os == 'alma9'
-        # Note alma9 does not have clang-tidy-14, so we use clang-tools-extra, which comes with clang-tidy 16
         run: >-
           dnf update -y 
           && dnf install clang-tools-extra cppcheck -y -q
