@@ -25,6 +25,7 @@ jobs:
     - name: Install codespell
       run: dnf update -y 
         && dnf install -y pip clang-tools-extra
+        && python -m ensurepip --upgrade
         && pip install codespell
       
     - name: Lint
