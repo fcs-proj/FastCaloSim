@@ -14,7 +14,7 @@ endif()
 
 # ---- Tests ----
 
-add_executable(FastCaloSim_test source/FastCaloSim_test.cpp)
+add_executable(FastCaloSim_test source/FastCaloSim_test.cxx)
 target_link_libraries(FastCaloSim_test PRIVATE FastCaloSim::FastCaloSim)
 target_compile_features(FastCaloSim_test PRIVATE cxx_std_17)
 

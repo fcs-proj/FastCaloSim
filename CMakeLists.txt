@@ -18,17 +18,28 @@ find_package(ROOT 6.30 CONFIG REQUIRED)
 
 # ---- Declare library ----
 
+# Globbing all .cxx files in the FastCaloSim directory
+file(GLOB FastCaloSim_SOURCES "source/*.cxx")
+
 add_library(
     FastCaloSim_FastCaloSim
-    source/FastCaloSim.cpp
+    ${FastCaloSim_SOURCES}
 )
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
+
+# Link against ROOT libraries
+target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core)
+# Generate ROOT dictionary for custom classes when building a shared library
+if (BUILD_SHARED_LIBS)
+  target_include_directories(FastCaloSim_FastCaloSim PRIVATE  ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
+  ROOT_GENERATE_DICTIONARY(FastCaloSim_dict FastCaloSim.h MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
+endif()
 
 include(GenerateExportHeader)
 generate_export_header(
     FastCaloSim_FastCaloSim
     BASE_NAME FastCaloSim
-    EXPORT_FILE_NAME export/FastCaloSim/FastCaloSim_export.hpp
+    EXPORT_FILE_NAME export/FastCaloSim/FastCaloSim_export.h
     CUSTOM_CONTENT_FROM_VARIABLE pragma_suppress_c4251
 )
 
