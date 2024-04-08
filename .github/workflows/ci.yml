@@ -77,8 +77,6 @@ jobs:
     container:
       image: docker://jbeirer/alma9-fastcalosim:latest
 
-    env: { CXX: clang++-14 }
-
     steps:
 
     - uses: actions/checkout@v4
