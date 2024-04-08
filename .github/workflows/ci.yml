@@ -24,8 +24,8 @@ jobs:
 
     - name: Install codespell
       run: dnf update -y 
-        && dnf install -y clang-tools-extra cppcheck gdb python3-pip 
-        && pip3 install codespell
+        && dnf install -y pip clang-tools-extra
+        && pip install codespell
       
     - name: Lint
       run: cmake -D FORMAT_COMMAND=clang-format-16 -P cmake/lint.cmake
@@ -85,7 +85,7 @@ jobs:
 
     - name: Install sanitizers
       run: dnf update -y 
-        && dnf install -y clang-tools-extra cppcheck gdb python3-pip 
+        && dnf install -y pip clang-tools-extra 
 
     - name: Configure
       run: cmake --preset=ci-sanitize
