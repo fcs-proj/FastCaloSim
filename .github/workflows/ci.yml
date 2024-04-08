@@ -28,7 +28,7 @@ jobs:
         && dnf install -y pip clang-tools-extra
       
     - name: Lint
-      run: cmake -D FORMAT_COMMAND=clang-format-16 -P cmake/lint.cmake
+      run: cmake -D FORMAT_COMMAND=clang-format -P cmake/lint.cmake
 
     - name: Spell check
       if: always()
