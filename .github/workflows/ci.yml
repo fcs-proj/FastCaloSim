@@ -83,7 +83,7 @@ jobs:
 
     - name: Install sanitizers
       run: dnf update -y 
-        && dnf install -y clang-tools-extra libasan
+        && dnf install -y clang-tools-extra libasan libubsan
 
     - name: Configure
       run: cmake --preset=ci-sanitize
