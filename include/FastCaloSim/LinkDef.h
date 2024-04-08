@@ -1,4 +1,5 @@
 #include "FastCaloSim/MLogging.h"
+#include "FastCaloSim/TFCSParametrizationBase.h"
 
 #ifdef __CLING__
 // Standard preamble: turn off creation of dictionaries for "everything":
@@ -11,5 +12,6 @@
 
 // Custom classes
 #  pragma link C++ class ISF_FCS::MLogging + ;
+#  pragma link C++ class TFCSParametrizationBase + ;
 
 #endif  // __CLING__
