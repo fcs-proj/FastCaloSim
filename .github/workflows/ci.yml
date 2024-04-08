@@ -12,6 +12,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-22.04
+
+    container:
+      image: docker://jbeirer/alma9-fastcalosim:latest
     
     steps:
     - uses: actions/checkout@v4
@@ -20,15 +23,10 @@ jobs:
       with: { python-version: "3.8" }
 
     - name: Install codespell
-      run: pip3 install codespell
-
-    - name: Install clang-format
-      run: apt-get update -q
-        && apt-get install lsb-release wget software-properties-common gnupg -q -y
-        && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
-        && ./llvm.sh 16
-        && apt-get install clang-format-16 -q -y
-
+      run: dnf update -y 
+        && dnf install -y clang-tools-extra cppcheck gdb python3-pip 
+        && pip3 install codespell
+      
     - name: Lint
       run: cmake -D FORMAT_COMMAND=clang-format-16 -P cmake/lint.cmake
 
@@ -42,7 +40,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     container:
-      image: docker://jbeirer/ubuntu22-fastcalosim:latest
+      image: docker://jbeirer/alma9-fastcalosim:latest
 
     if: github.repository_owner == 'jbeirer'
 
@@ -50,8 +48,8 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install LCov
-      run: apt-get update -q
-        && apt-get install lcov -q -y
+      run: dnf update -y 
+        && dnf install -y lcov
 
     - name: Configure
       run: cmake --preset=ci-coverage
@@ -77,7 +75,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     container:
-      image: docker://jbeirer/ubuntu22-fastcalosim:latest
+      image: docker://jbeirer/alma9-fastcalosim:latest
 
     env: { CXX: clang++-16 }
 
@@ -86,10 +84,8 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install sanitizers
-      run: apt-get update -q
-        && apt-get install lsb-release wget software-properties-common gnupg -q -y
-        && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
-        && ./llvm.sh 16
+      run: dnf update -y 
+        && dnf install -y clang-tools-extra cppcheck gdb python3-pip 
 
     - name: Configure
       run: cmake --preset=ci-sanitize
@@ -128,24 +124,24 @@ jobs:
       steps:
       - uses: actions/checkout@v4
 
-      - name: Install static analyzers for Ubuntu 22.04 
-        if: matrix.os == 'ubuntu22'
-        run: >-
-          apt-get update -q
-          && apt-get install lsb-release wget software-properties-common gnupg -q -y
-          && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
-          && ./llvm.sh 16
-          && apt-get install clang-tidy-16 cppcheck -y -q
+      # - name: Install static analyzers for Ubuntu 22.04 
+      #   if: matrix.os == 'ubuntu22'
+      #   run: >-
+      #     apt-get update -q
+      #     && apt-get install lsb-release wget software-properties-common gnupg -q -y
+      #     && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
+      #     && ./llvm.sh 16
+      #     && apt-get install clang-tidy-16 cppcheck -y -q
 
-          update-alternatives --install
-          /usr/bin/clang-tidy clang-tidy
-          /usr/bin/clang-tidy-16 160
+      #     update-alternatives --install
+      #     /usr/bin/clang-tidy clang-tidy
+      #     /usr/bin/clang-tidy-16 160
 
-      - name: Install static analyzers for AlmaLinux 9
-        if: matrix.os == 'alma9'
-        run: >-
-          dnf update -y 
-          && dnf install clang-tools-extra cppcheck -y -q
+      # - name: Install static analyzers for AlmaLinux 9
+      #   if: matrix.os == 'alma9'
+      #   run: >-
+      #     dnf update -y 
+      #     && dnf install clang-tools-extra cppcheck -y -q
 
       - name: Configure
         run: cmake "--preset=ci-ubuntu"
