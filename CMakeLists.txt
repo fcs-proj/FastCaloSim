@@ -34,6 +34,8 @@ if (BUILD_SHARED_LIBS)
   target_include_directories(FastCaloSim_FastCaloSim PRIVATE  ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
   ROOT_GENERATE_DICTIONARY(FastCaloSim_dict FastCaloSim.h MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
 endif()
+# Disable compiler and clang-tidy warnings from ROOT
+set_target_properties(FastCaloSim_dict PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
 
 include(GenerateExportHeader)
 generate_export_header(
