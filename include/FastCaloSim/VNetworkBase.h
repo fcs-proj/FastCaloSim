@@ -211,7 +211,7 @@ public:
   /**
    * @brief Check if a string is the path of a file on disk.
    *
-   * Determines if a string corresponds to tha path of a file
+   * Determines if a string corresponds to the path of a file
    * that can be read on the disk.
    *
    * @param inputFile  name of the pottential file
@@ -223,7 +223,7 @@ public:
    * @brief Check if the argument inputFile is the path of a file on disk.
    *
    * Determines if the string that was passed to the constructor as
-   * inputFile corresponds to tha path of a file
+   * inputFile corresponds to the path of a file
    * that can be read on the disk.
    *
    * @return           is it a readable file on disk

@@ -20,7 +20,7 @@ class TFCSPCAEnergyParametrization : public TFCSEnergyParametrization
 public:
   enum FCSReturnCodePCA
   {
-    // Assuming an extrem h_totalE_ratio histogram that would cause a retry in
+    // Assuming an extreme h_totalE_ratio histogram that would cause a retry in
     // 50% of the cases,
     // returning FCSRetry+20 will cause an accidental WARNING for every
     // 2^10=1024 simulated particles and

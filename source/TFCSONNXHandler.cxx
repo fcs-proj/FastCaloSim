@@ -438,7 +438,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
                                        m_outputNodeNames.size());
 
   ATH_MSG_DEBUG("Sorting outputs from computation on ONNX network.");
-  // Finaly, the output must be rearanged in the expected format.
+  // Finally, the output must be rearanged in the expected format.
   TFCSONNXHandler::NetworkOutputs outputs;
   // as the output format is just a string to double map
   // the outputs will be keyed like "<node_name>_<part_n>"

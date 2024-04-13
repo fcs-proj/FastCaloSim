@@ -20,7 +20,7 @@ VNetworkLWTNN::VNetworkLWTNN(const VNetworkLWTNN& copy_from)
   if (m_json.length() == 0) {
     throw std::invalid_argument(
         "Trying to copy a VNetworkLWTNN with length 0 m_json, probably "
-        "deleteAllButNet was called on the object being coppied from.");
+        "deleteAllButNet was called on the object being copied from.");
   };
 };
 

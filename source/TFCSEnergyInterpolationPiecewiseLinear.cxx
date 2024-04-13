@@ -95,7 +95,7 @@ double TFCSEnergyInterpolationPiecewiseLinear::evaluate(
   // returns simple evaluation of the interpolation
   // if the lookup is below the minimum interpolation value, will return minimum
   // evaluation if the lookup is above the maximum interpolation value, will
-  // return maximum evalution this means no extrapolation beyond the
+  // return maximum evaluation this means no extrapolation beyond the
   // interpolation will be performed
 
   // catch very small values of Ekin (use 1 keV here) and fix the interpolation

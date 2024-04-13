@@ -65,7 +65,7 @@ public:
    * @param bytes    byte content of a .onnx file, (which are a subset
    *                 if proto files). Allows TFCSONNXHandler objects to be
    *                 created from data in memory, retrieved rom any source.
-   *                 The bytes are not copied interally, and must remain
+   *                 The bytes are not copied internally, and must remain
    *                 in memory while the net is in use.
    *                 (TODO check that assertion)
    *

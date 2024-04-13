@@ -182,7 +182,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                       << layer
                       << " has only one bin in r, this means is it not used, "
                          "skipping (this is needed to keep correct "
-                         "synchronisation of voxel and layers)");
+                         "synchronization of voxel and layers)");
       // delete h;
       continue;
     }
@@ -235,7 +235,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                       << layer
                       << " has only one bin in r, this means is it not used, "
                          "skipping (this is needed to keep correct "
-                         "synchronisation of voxel and layers)");
+                         "synchronization of voxel and layers)");
       // delete h;
       continue;
     }

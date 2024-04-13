@@ -2,7 +2,7 @@
  * Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
  *
  * Class to perform runtime selection from the derived
- * classes of VNetworkBase given inout for a network.
+ * classes of VNetworkBase given input for a network.
  *
  * Has only static functions because no statelike
  * information is needed to make this decision.

@@ -26,7 +26,7 @@ public:
                   ///< written as separate keys into the root file instead of
                   ///< directly writing the objects. This is needed if the sum
                   ///< of all objects in the chain use >1GB of memory, which
-                  ///< can't be handeled by TBuffer. Drawback is that identical
+                  ///< can't be handled by TBuffer. Drawback is that identical
                   ///< objects will get stored as multiple instances
     kRetryChainFromStart = BIT(17)
   };

@@ -158,7 +158,7 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
       m_allFitResults[layer].push_back(result);
     }
   }
-  ATH_MSG_DEBUG("Done initialising fits");
+  ATH_MSG_DEBUG("Done initializing fits");
 }
 
 void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
