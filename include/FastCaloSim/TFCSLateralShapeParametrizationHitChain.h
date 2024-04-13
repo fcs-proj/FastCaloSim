@@ -14,19 +14,10 @@ class ICaloGeometry;
 class TFCSLateralShapeParametrizationHitChain
     : public TFCSLateralShapeParametrization {
 public:
-#ifdef USE_GPU
-  // modify the construction function in order to get the geometry for FCS-GPU
-  TFCSLateralShapeParametrizationHitChain(const char *name = nullptr,
-                                          const char *title = nullptr,
-                                          ICaloGeometry *geo = nullptr);
-  // override the set_geometry function for FCS-GPU
-  // the geometry is needed to assign the deposit energy to cell
-  // will not compile by default
-  virtual void set_geometry(ICaloGeometry *geo) override;
-#else
+
   TFCSLateralShapeParametrizationHitChain(const char *name = nullptr,
                                           const char *title = nullptr);
-#endif
+
 
   TFCSLateralShapeParametrizationHitChain(
       TFCSLateralShapeParametrizationHitBase *hitsim);
@@ -94,11 +85,6 @@ protected:
   Chain_t m_chain;
 
 private:
-#ifdef USE_GPU
-  // the FCS-GPU will use this geometry to get the correct cell
-  // will not compile by default
-  ICaloGeometry *m_geo;
-#endif
 
   TFCSLateralShapeParametrizationHitBase *m_number_of_hits_simul;
   unsigned int m_ninit = 0;

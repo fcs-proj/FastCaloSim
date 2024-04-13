@@ -6,10 +6,6 @@
 #define TFCSHistoLateralShapeGausLogWeight_h
 
 #include "FastCaloSim/TFCSHistoLateralShapeWeight.h"
-#ifdef USE_GPU
-#include "ISF_FastCaloGpu/LoadGpuHist.h"
-#include "ISF_FastCaloGpu/FH_structs.h"
-#endif
 
 class TH1;
 
@@ -25,24 +21,12 @@ public:
                const TFCSTruthState *truth,
                const TFCSExtrapolationState *extrapol) override;
 
-#ifdef USE_GPU
-  // will not compile by default
-  void set_d_Hist(FH1D *hf_ptr) { m_d_Hist = hf_ptr; };
-  const FH1D *d_Hist() { return m_d_Hist; };
-  void LoadHist();
-  LoadGpuHist *LdFH() { return m_LdFH; };
-#endif
-
 protected:
   ClassDefOverride(TFCSHistoLateralShapeGausLogWeight,
                    1) // TFCSHistoLateralShapeGausLogWeight
 
       private :
 
-#ifdef USE_GPU
-      FH1D *m_d_Hist = nullptr;
-  LoadGpuHist *m_LdFH = nullptr;
-#endif
 };
 
 #endif

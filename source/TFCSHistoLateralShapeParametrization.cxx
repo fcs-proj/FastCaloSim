@@ -31,9 +31,7 @@ TFCSHistoLateralShapeParametrization::TFCSHistoLateralShapeParametrization(
 }
 
 TFCSHistoLateralShapeParametrization::~TFCSHistoLateralShapeParametrization() {
-#ifdef USE_GPU
-  delete m_LdFH;
-#endif
+
 }
 
 void TFCSHistoLateralShapeParametrization::set_geometry(ICaloGeometry *geo) {
@@ -241,24 +239,3 @@ void TFCSHistoLateralShapeParametrization::Print(Option_t *option) const {
   }
 }
 
-#ifdef USE_GPU
-void TFCSHistoLateralShapeParametrization::LoadHistFuncs() {
-
-  if (m_LdFH)
-    return;
-
-  m_LdFH = new LoadGpuFuncHist();
-  FH2D fh = {0, 0, 0, 0, 0};
-
-  fh.nbinsx = m_hist.get_HistoBordersx().size() - 1;
-  fh.nbinsy = m_hist.get_HistoBordersy().size() - 1;
-
-  fh.h_bordersx = &(m_hist.get_HistoBordersx()[0]);
-  fh.h_bordersy = &(m_hist.get_HistoBordersy()[0]);
-
-  fh.h_contents = &(m_hist.get_HistoContents()[0]);
-
-  m_LdFH->set_hf2d(&fh);
-  m_LdFH->LD2D();
-}
-#endif

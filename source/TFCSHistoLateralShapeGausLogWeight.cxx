@@ -21,9 +21,7 @@ TFCSHistoLateralShapeGausLogWeight::TFCSHistoLateralShapeGausLogWeight(
     : TFCSHistoLateralShapeWeight(name, title) {}
 
 TFCSHistoLateralShapeGausLogWeight::~TFCSHistoLateralShapeGausLogWeight() {
-#ifdef USE_GPU
-  delete m_LdFH;
-#endif
+
 }
 
 FCSReturnCode TFCSHistoLateralShapeGausLogWeight::simulate_hit(
@@ -70,32 +68,4 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeight::simulate_hit(
   return FCSSuccess;
 }
 
-#ifdef USE_GPU
-// for FCS-GPU
-// make the histograms with GPU EDM
-void TFCSHistoLateralShapeGausLogWeight::LoadHist() {
-
-  if (m_LdFH) {
-    return;
-  }
-  m_LdFH = new LoadGpuHist();
-  FH1D fh1d;
-
-  fh1d.nbins = m_hist->GetNbinsX();
-  fh1d.h_contents = (float *)malloc(fh1d.nbins * sizeof(float));
-  fh1d.h_errors = (float *)malloc(fh1d.nbins * sizeof(float));
-  fh1d.h_borders = (float *)malloc((fh1d.nbins + 1) * sizeof(float));
-
-  for (int ibin = 0; ibin < fh1d.nbins; ++ibin) {
-    fh1d.h_contents[ibin] = m_hist->GetBinContent(ibin + 1);
-    fh1d.h_errors[ibin] = m_hist->GetBinError(ibin + 1);
-    fh1d.h_borders[ibin] = m_hist->GetXaxis()->GetBinLowEdge(ibin + 1);
-  }
-  fh1d.h_borders[fh1d.nbins] = m_hist->GetXaxis()->GetBinUpEdge(fh1d.nbins);
-
-  m_LdFH->set_hf1d(&fh1d);
-  m_LdFH->LD1D();
-
-  return;
-}
 #endif

@@ -30,9 +30,6 @@ TFCSHitCellMappingWiggle::TFCSHitCellMappingWiggle(const char *name,
 TFCSHitCellMappingWiggle::~TFCSHitCellMappingWiggle() {
   for (const auto *function : m_functions)
     delete function;
-#ifdef USE_GPU
-  delete m_LdFH;
-#endif
 }
 
 void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction *func) {
