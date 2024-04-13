@@ -3,38 +3,45 @@
 */
 
 #include "FastCaloSim/TFCSCenterPositionCalculation.h"
-#include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
 
-#include "FastCaloSim/TFCSSimulationState.h"
+#include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/TFCSExtrapolationState.h"
+#include "FastCaloSim/TFCSSimulationState.h"
 
 //=============================================
 //======= TFCSCenterPositionCalculation =========
 //=============================================
 
-TFCSCenterPositionCalculation::TFCSCenterPositionCalculation(const char *name,
-                                                             const char *title)
-    : TFCSLateralShapeParametrizationHitBase(name, title), m_extrapWeight(0.5) {
+TFCSCenterPositionCalculation::TFCSCenterPositionCalculation(const char* name,
+                                                             const char* title)
+    : TFCSLateralShapeParametrizationHitBase(name, title)
+    , m_extrapWeight(0.5)
+{
 }
 
 FCSReturnCode TFCSCenterPositionCalculation::simulate_hit(
-    Hit &hit, TFCSSimulationState & /*simulstate*/,
-    const TFCSTruthState * /*truth*/, const TFCSExtrapolationState *extrapol) {
+    Hit& hit,
+    TFCSSimulationState& /*simulstate*/,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* extrapol)
+{
   const int cs = calosample();
 
-  double r = (1. - m_extrapWeight) * extrapol->r(cs, SUBPOS_ENT) +
-             m_extrapWeight * extrapol->r(cs, SUBPOS_EXT);
-  double z = (1. - m_extrapWeight) * extrapol->z(cs, SUBPOS_ENT) +
-             m_extrapWeight * extrapol->z(cs, SUBPOS_EXT);
-  double eta = (1. - m_extrapWeight) * extrapol->eta(cs, SUBPOS_ENT) +
-               m_extrapWeight * extrapol->eta(cs, SUBPOS_EXT);
-  double phi = (1. - m_extrapWeight) * extrapol->phi(cs, SUBPOS_ENT) +
-               m_extrapWeight * extrapol->phi(cs, SUBPOS_EXT);
+  double r = (1. - m_extrapWeight) * extrapol->r(cs, SUBPOS_ENT)
+      + m_extrapWeight * extrapol->r(cs, SUBPOS_EXT);
+  double z = (1. - m_extrapWeight) * extrapol->z(cs, SUBPOS_ENT)
+      + m_extrapWeight * extrapol->z(cs, SUBPOS_EXT);
+  double eta = (1. - m_extrapWeight) * extrapol->eta(cs, SUBPOS_ENT)
+      + m_extrapWeight * extrapol->eta(cs, SUBPOS_EXT);
+  double phi = (1. - m_extrapWeight) * extrapol->phi(cs, SUBPOS_ENT)
+      + m_extrapWeight * extrapol->phi(cs, SUBPOS_EXT);
 
-  if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta) ||
-      !std::isfinite(phi)) {
-    ATH_MSG_WARNING("Extrapolator contains NaN or infinite number.\nSetting "
-                    "center position to calo boundary.");
+  if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
+      || !std::isfinite(phi))
+  {
+    ATH_MSG_WARNING(
+        "Extrapolator contains NaN or infinite number.\nSetting "
+        "center position to calo boundary.");
     ATH_MSG_WARNING("Before fix: center_r: "
                     << r << " center_z: " << z << " center_phi: " << phi
                     << " center_eta: " << eta << " weight: " << m_extrapWeight
@@ -65,7 +72,8 @@ FCSReturnCode TFCSCenterPositionCalculation::simulate_hit(
   return FCSSuccess;
 }
 
-void TFCSCenterPositionCalculation::Print(Option_t *option) const {
+void TFCSCenterPositionCalculation::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);

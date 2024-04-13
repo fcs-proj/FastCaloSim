@@ -8,28 +8,30 @@
 #include "FastCaloSim/TFCSParametrizationEtaSelectChain.h"
 
 class TFCSParametrizationAbsEtaSelectChain
-    : public TFCSParametrizationEtaSelectChain {
+    : public TFCSParametrizationEtaSelectChain
+{
 public:
-  TFCSParametrizationAbsEtaSelectChain(const char *name = nullptr,
-                                       const char *title = nullptr)
-      : TFCSParametrizationEtaSelectChain(name, title){};
+  TFCSParametrizationAbsEtaSelectChain(const char* name = nullptr,
+                                       const char* title = nullptr)
+      : TFCSParametrizationEtaSelectChain(name, title) {};
   TFCSParametrizationAbsEtaSelectChain(
-      const TFCSParametrizationAbsEtaSelectChain &ref)
-      : TFCSParametrizationEtaSelectChain(ref){};
+      const TFCSParametrizationAbsEtaSelectChain& ref)
+      : TFCSParametrizationEtaSelectChain(ref) {};
 
   // selects on |extrapol->IDCaloBoundary_eta()|
   // return -1 if outside range
-  virtual int get_bin(TFCSSimulationState &, const TFCSTruthState *truth,
-                      const TFCSExtrapolationState *extrapol) const override;
+  virtual int get_bin(TFCSSimulationState&,
+                      const TFCSTruthState* truth,
+                      const TFCSExtrapolationState* extrapol) const override;
   virtual const std::string get_bin_text(int bin) const override;
 
-  static void unit_test(TFCSSimulationState *simulstate = nullptr,
-                        TFCSTruthState *truth = nullptr,
-                        TFCSExtrapolationState *extrapol = nullptr);
+  static void unit_test(TFCSSimulationState* simulstate = nullptr,
+                        TFCSTruthState* truth = nullptr,
+                        TFCSExtrapolationState* extrapol = nullptr);
 
 private:
   ClassDefOverride(TFCSParametrizationAbsEtaSelectChain,
-                   1) // TFCSParametrizationAbsEtaSelectChain
+                   1)  // TFCSParametrizationAbsEtaSelectChain
 };
 
 #endif

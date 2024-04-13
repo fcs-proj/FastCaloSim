@@ -2,16 +2,21 @@
   Copyright (C) 2002-2017 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "FastCaloSim/TFCSExtrapolationState.h"
 #include <iostream>
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
 
 //=============================================
 //======= TFCSExtrapolationState =========
 //=============================================
 
-TFCSExtrapolationState::TFCSExtrapolationState() { clear(); }
+TFCSExtrapolationState::TFCSExtrapolationState()
+{
+  clear();
+}
 
-void TFCSExtrapolationState::Print(Option_t *) const {
+void TFCSExtrapolationState::Print(Option_t*) const
+{
   ATH_MSG_INFO("IDCalo: eta="
                << m_IDCaloBoundary_eta << " phi=" << m_IDCaloBoundary_phi
                << " r=" << m_IDCaloBoundary_r << " z=" << m_IDCaloBoundary_z);
@@ -25,7 +30,8 @@ void TFCSExtrapolationState::Print(Option_t *) const {
   }
 }
 
-void TFCSExtrapolationState::clear() {
+void TFCSExtrapolationState::clear()
+{
   for (int i = 0; i < CaloCell_ID_FCS::MaxSample; ++i) {
     for (int j = 0; j < 3; ++j) {
       m_CaloOK[i][j] = false;

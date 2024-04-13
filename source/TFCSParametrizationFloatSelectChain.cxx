@@ -1,20 +1,22 @@
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 /*
   Copyright (C) 2002-2018 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "FastCaloSim/TFCSParametrizationFloatSelectChain.h"
 #include <algorithm>
-#include <iterator>
 #include <iostream>
+#include <iterator>
+
+#include "FastCaloSim/TFCSParametrizationFloatSelectChain.h"
 
 //=============================================
 //======= TFCSParametrizationFloatSelectChain =========
 //=============================================
 
 int TFCSParametrizationFloatSelectChain::push_back_in_bin(
-    TFCSParametrizationBase *param, float low, float up) {
+    TFCSParametrizationBase* param, float low, float up)
+{
   if (up < low) {
     // can't handle wrong order of bounds
     ATH_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
@@ -48,8 +50,9 @@ int TFCSParametrizationFloatSelectChain::push_back_in_bin(
     return -1;
   }
 
-  if (iup >= 0 && ilow >= 0 && iup - ilow == 1 && m_bin_low_edge[ilow] == low &&
-      m_bin_low_edge[iup] == up) {
+  if (iup >= 0 && ilow >= 0 && iup - ilow == 1 && m_bin_low_edge[ilow] == low
+      && m_bin_low_edge[iup] == up)
+  {
     // Case of adding to an existing bin
     push_back_in_bin(param, ilow);
     return ilow;
@@ -83,7 +86,8 @@ int TFCSParametrizationFloatSelectChain::push_back_in_bin(
 }
 
 void TFCSParametrizationFloatSelectChain::push_back_in_bin(
-    TFCSParametrizationBase *param, unsigned int bin) {
+    TFCSParametrizationBase* param, unsigned int bin)
+{
   TFCSParametrizationBinnedChain::push_back_in_bin(param, bin);
   if (m_bin_low_edge.size() < m_bin_start.size()) {
     m_bin_low_edge.resize(m_bin_start.size(), m_bin_low_edge.back());
@@ -91,7 +95,8 @@ void TFCSParametrizationFloatSelectChain::push_back_in_bin(
   }
 }
 
-int TFCSParametrizationFloatSelectChain::val_to_bin(float val) const {
+int TFCSParametrizationFloatSelectChain::val_to_bin(float val) const
+{
   if (val < m_bin_low_edge[0]) {
     ATH_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " < "
                                   << m_bin_low_edge[0]);
@@ -110,7 +115,8 @@ int TFCSParametrizationFloatSelectChain::val_to_bin(float val) const {
 }
 
 void TFCSParametrizationFloatSelectChain::unit_test(
-    TFCSSimulationState *, TFCSTruthState *, const TFCSExtrapolationState *) {
+    TFCSSimulationState*, TFCSTruthState*, const TFCSExtrapolationState*)
+{
   ISF_FCS::MLogging logger;
   ATH_MSG_NOCLASS(
       logger,

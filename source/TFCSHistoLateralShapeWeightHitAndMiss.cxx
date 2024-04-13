@@ -2,30 +2,35 @@
   Copyright (C) 2002-2019 CERN for the benefit of the ATLAS collaboration
 */
 
+#include "FastCaloSim/TFCSHistoLateralShapeWeightHitAndMiss.h"
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
-
-#include "FastCaloSim/TFCSHistoLateralShapeWeightHitAndMiss.h"
 #include "FastCaloSim/TFCSSimulationState.h"
-
 #include "TH1.h"
-#include "TVector2.h"
 #include "TMath.h"
+#include "TVector2.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeWeightHitAndMiss =========
 //=============================================
 
 TFCSHistoLateralShapeWeightHitAndMiss::TFCSHistoLateralShapeWeightHitAndMiss(
-    const char *name, const char *title)
-    : TFCSHistoLateralShapeWeight(name, title) {}
+    const char* name, const char* title)
+    : TFCSHistoLateralShapeWeight(name, title)
+{
+}
 
-TFCSHistoLateralShapeWeightHitAndMiss::
-    ~TFCSHistoLateralShapeWeightHitAndMiss() {}
+TFCSHistoLateralShapeWeightHitAndMiss::~TFCSHistoLateralShapeWeightHitAndMiss()
+{
+}
 
 FCSReturnCode TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/)
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -36,8 +41,8 @@ FCSReturnCode TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
   const double center_z = hit.center_z();
 
   const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta) /
-                                      (1.0 + TMath::Exp(-2 * center_eta)));
+  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
+                                      / (1.0 + TMath::Exp(-2 * center_eta)));
 
   const float delta_eta = hit.eta() - center_eta;
   const float delta_phi = hit.phi() - center_phi;
@@ -57,15 +62,15 @@ FCSReturnCode TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
   float weight = meanweight;
   float RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
-    weight = CLHEP::RandGaussZiggurat::shoot(simulstate.randomEngine(),
-                                             meanweight, RMS);
+    weight = CLHEP::RandGaussZiggurat::shoot(
+        simulstate.randomEngine(), meanweight, RMS);
   }
 
   /* -------------------------------------------------------------------
    * Weight is used to scale hit energy.
    *
    * if (meanweight > m_minWeight and meanweight < m_maxWeight)
-   * 	Hit is accecpted with probability of m_minWeight/meanweight.
+   * 	Hit is accepted with probability of m_minWeight/meanweight.
    * 	If not accepted, weight is set to zero (this is
    *    equivalent to not accept the hit).
    *

@@ -2,26 +2,32 @@
   Copyright (C) 2002-2018 CERN for the benefit of the ATLAS collaboration
 */
 
+#include <iostream>
+
 #include "FastCaloSim/TFCSParametrizationEbinChain.h"
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
 #include "FastCaloSim/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
-#include <iostream>
 
 //=============================================
 //======= TFCSParametrizationEbinChain =========
 //=============================================
 
 const std::string TFCSParametrizationEbinChain::get_variable_text(
-    TFCSSimulationState &simulstate, const TFCSTruthState *,
-    const TFCSExtrapolationState *) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState*,
+    const TFCSExtrapolationState*) const
+{
   return std::string(Form("Ebin=%d", simulstate.Ebin()));
 }
 
 void TFCSParametrizationEbinChain::unit_test(
-    TFCSSimulationState *simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) {
+    TFCSSimulationState* simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol)
+{
   ISF_FCS::MLogging logger;
   if (!simulstate)
     simulstate = new TFCSSimulationState();
@@ -33,7 +39,7 @@ void TFCSParametrizationEbinChain::unit_test(
   TFCSParametrizationEbinChain chain("chain", "chain");
   chain.setLevel(MSG::DEBUG);
 
-  TFCSParametrizationBase *param;
+  TFCSParametrizationBase* param;
   param = new TFCSParametrization("A begin all", "A begin all");
   param->setLevel(MSG::DEBUG);
   chain.push_before_first_bin(param);
@@ -42,7 +48,7 @@ void TFCSParametrizationEbinChain::unit_test(
   chain.push_back(param);
 
   for (int i = 0; i < 3; ++i) {
-    TFCSLateralShapeParametrization *param =
+    TFCSLateralShapeParametrization* param =
         new TFCSLateralShapeParametrization(Form("A%d", i), Form("A %d", i));
     param->setLevel(MSG::DEBUG);
     param->set_Ekin_bin(i);
@@ -50,7 +56,7 @@ void TFCSParametrizationEbinChain::unit_test(
   }
 
   for (int i = 3; i > 0; --i) {
-    TFCSLateralShapeParametrization *param =
+    TFCSLateralShapeParametrization* param =
         new TFCSLateralShapeParametrization(Form("B%d", i), Form("B %d", i));
     param->setLevel(MSG::DEBUG);
     param->set_Ekin_bin(i);

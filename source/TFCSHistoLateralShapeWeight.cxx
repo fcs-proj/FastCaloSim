@@ -4,36 +4,47 @@
 
 #include <utility>
 
+#include "FastCaloSim/TFCSHistoLateralShapeWeight.h"
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
-
-#include "FastCaloSim/TFCSHistoLateralShapeWeight.h"
 #include "FastCaloSim/TFCSSimulationState.h"
-
 #include "TH1.h"
-#include "TVector2.h"
 #include "TMath.h"
+#include "TVector2.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeWeight =========
 //=============================================
 
-TFCSHistoLateralShapeWeight::TFCSHistoLateralShapeWeight(const char *name,
-                                                         const char *title)
-    : TFCSLateralShapeParametrizationHitBase(name, title) {}
+TFCSHistoLateralShapeWeight::TFCSHistoLateralShapeWeight(const char* name,
+                                                         const char* title)
+    : TFCSLateralShapeParametrizationHitBase(name, title)
+{
+}
 
-TFCSHistoLateralShapeWeight::~TFCSHistoLateralShapeWeight() {
+TFCSHistoLateralShapeWeight::~TFCSHistoLateralShapeWeight()
+{
   if (m_hist)
     delete m_hist;
 }
 
-float TFCSHistoLateralShapeWeight::getMinWeight() const { return m_minWeight; }
+float TFCSHistoLateralShapeWeight::getMinWeight() const
+{
+  return m_minWeight;
+}
 
-float TFCSHistoLateralShapeWeight::getMaxWeight() const { return m_maxWeight; }
+float TFCSHistoLateralShapeWeight::getMaxWeight() const
+{
+  return m_maxWeight;
+}
 
 FCSReturnCode TFCSHistoLateralShapeWeight::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/)
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -44,8 +55,8 @@ FCSReturnCode TFCSHistoLateralShapeWeight::simulate_hit(
   const double center_z = hit.center_z();
 
   const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta) /
-                                      (1.0 + TMath::Exp(-2 * center_eta)));
+  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
+                                      / (1.0 + TMath::Exp(-2 * center_eta)));
 
   const float delta_eta = hit.eta() - center_eta;
   const float delta_phi = hit.phi() - center_phi;
@@ -74,19 +85,21 @@ FCSReturnCode TFCSHistoLateralShapeWeight::simulate_hit(
   return FCSSuccess;
 }
 
-bool TFCSHistoLateralShapeWeight::Initialize(TH1 *hist) {
+bool TFCSHistoLateralShapeWeight::Initialize(TH1* hist)
+{
   if (!hist)
     return false;
   if (m_hist)
     delete m_hist;
-  m_hist = (TH1 *)hist->Clone(TString("TFCSHistoLateralShapeWeight_") +
-                              hist->GetName());
+  m_hist = (TH1*)hist->Clone(TString("TFCSHistoLateralShapeWeight_")
+                             + hist->GetName());
   m_hist->SetDirectory(nullptr);
 
   return true;
 }
 
-void TFCSHistoLateralShapeWeight::Print(Option_t *option) const {
+void TFCSHistoLateralShapeWeight::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);

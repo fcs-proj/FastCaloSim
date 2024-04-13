@@ -5,18 +5,20 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyBinParametrization_h
 #define ISF_FASTCALOSIMEVENT_TFCSEnergyBinParametrization_h
 
-#include "FastCaloSim/TFCSEnergyParametrization.h"
-#include "TFile.h"
 #include <map>
 #include <vector>
 
-class TFCSEnergyBinParametrization : public TFCSEnergyParametrization {
+#include "FastCaloSim/TFCSEnergyParametrization.h"
+#include "TFile.h"
+
+class TFCSEnergyBinParametrization : public TFCSEnergyParametrization
+{
 public:
-  TFCSEnergyBinParametrization(const char *name = nullptr,
-                               const char *title = nullptr);
+  TFCSEnergyBinParametrization(const char* name = nullptr,
+                               const char* title = nullptr);
 
   virtual void set_pdgid(int id) override;
-  virtual void set_pdgid(const std::set<int> &ids) override;
+  virtual void set_pdgid(const std::set<int>& ids) override;
   virtual void add_pdgid(int id) override;
   virtual void clear_pdgid() override;
 
@@ -24,7 +26,8 @@ public:
 
   /// current convention is to start Ekin_bin counting at 1, to be updated to
   /// start counting with 0
-  void set_number_of_Ekin_bins(int n_Ekin_bin) {
+  void set_number_of_Ekin_bins(int n_Ekin_bin)
+  {
     m_number_of_Ekin_bins = n_Ekin_bin;
     resize();
   };
@@ -37,17 +40,17 @@ public:
   /// the sum of values is not 1 current convention is to start Ekin_bin
   /// counting at 1, to be updated to start counting with 0
   virtual void set_pdgid_Ekin_bin_probability(int id, std::vector<float> prob);
-  virtual bool
-  load_pdgid_Ekin_bin_probability_from_file(int id, TFile *file,
-                                            std::string prob_object_name);
+  virtual bool load_pdgid_Ekin_bin_probability_from_file(
+      int id, TFile* file, std::string prob_object_name);
 
-  virtual FCSReturnCode
-  simulate(TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-           const TFCSExtrapolationState *extrapol) const override;
+  virtual FCSReturnCode simulate(
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol) const override;
 
   virtual bool is_match_Ekin_bin(int Ekin_bin) const override;
 
-  void Print(Option_t *option = "") const override;
+  void Print(Option_t* option = "") const override;
 
 private:
   int m_number_of_Ekin_bins;
@@ -56,7 +59,7 @@ private:
   void resize();
 
   ClassDefOverride(TFCSEnergyBinParametrization,
-                   1) // TFCSEnergyBinParametrization
+                   1)  // TFCSEnergyBinParametrization
 };
 
 #endif

@@ -2,36 +2,46 @@
   Copyright (C) 2002-2018 CERN for the benefit of the ATLAS collaboration
 */
 
+#include <iostream>
+
 #include "FastCaloSim/TFCSParametrizationAbsEtaSelectChain.h"
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
-#include <iostream>
 
 //=============================================
 //======= TFCSParametrizationAbsEtaSelectChain =========
 //=============================================
 
 int TFCSParametrizationAbsEtaSelectChain::get_bin(
-    TFCSSimulationState &, const TFCSTruthState *,
-    const TFCSExtrapolationState *extrapol) const {
+    TFCSSimulationState&,
+    const TFCSTruthState*,
+    const TFCSExtrapolationState* extrapol) const
+{
   return val_to_bin(TMath::Abs(extrapol->IDCaloBoundary_eta()));
 }
 
-const std::string
-TFCSParametrizationAbsEtaSelectChain::get_bin_text(int bin) const {
+const std::string TFCSParametrizationAbsEtaSelectChain::get_bin_text(
+    int bin) const
+{
   if (bin == -1 || bin >= (int)get_number_of_bins()) {
-    return std::string(Form("bin=%d not in [%2.2f<=|eta|<%2.2f)", bin,
+    return std::string(Form("bin=%d not in [%2.2f<=|eta|<%2.2f)",
+                            bin,
                             m_bin_low_edge[0],
                             m_bin_low_edge[get_number_of_bins()]));
   }
-  return std::string(Form("bin=%d, %2.2f<=|eta|<%2.2f", bin,
-                          m_bin_low_edge[bin], m_bin_low_edge[bin + 1]));
+  return std::string(Form("bin=%d, %2.2f<=|eta|<%2.2f",
+                          bin,
+                          m_bin_low_edge[bin],
+                          m_bin_low_edge[bin + 1]));
 }
 
 void TFCSParametrizationAbsEtaSelectChain::unit_test(
-    TFCSSimulationState *simulstate, TFCSTruthState *truth,
-    TFCSExtrapolationState *extrapol) {
+    TFCSSimulationState* simulstate,
+    TFCSTruthState* truth,
+    TFCSExtrapolationState* extrapol)
+{
   ISF_FCS::MLogging logger;
   if (!simulstate)
     simulstate = new TFCSSimulationState();
@@ -43,7 +53,7 @@ void TFCSParametrizationAbsEtaSelectChain::unit_test(
   TFCSParametrizationAbsEtaSelectChain chain("chain", "chain");
   chain.setLevel(MSG::DEBUG);
 
-  TFCSParametrization *param;
+  TFCSParametrization* param;
   param = new TFCSParametrization("A begin all", "A begin all");
   param->setLevel(MSG::DEBUG);
   param->set_eta_nominal(2);

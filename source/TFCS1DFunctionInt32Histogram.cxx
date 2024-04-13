@@ -2,15 +2,17 @@
   Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "FastCaloSim/TFCS1DFunctionInt32Histogram.h"
 #include <algorithm>
 #include <iostream>
-#include "TMath.h"
+
+#include "FastCaloSim/TFCS1DFunctionInt32Histogram.h"
+
 #include "TCanvas.h"
-#include "TH2F.h"
-#include "TRandom.h"
-#include "TFile.h"
 #include "TClass.h"
+#include "TFile.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TRandom.h"
 
 //=============================================
 //======= TFCS1DFunctionInt32Histogram =========
@@ -19,7 +21,8 @@
 const TFCS1DFunctionInt32Histogram::HistoContent_t
     TFCS1DFunctionInt32Histogram::s_MaxValue = UINT32_MAX;
 
-void TFCS1DFunctionInt32Histogram::Initialize(const TH1 *hist) {
+void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
+{
   Int_t nbinsx = hist->GetNbinsX();
   Int_t nbins = nbinsx;
 
@@ -63,7 +66,8 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1 *hist) {
   }
 }
 
-double TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const {
+double TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const
+{
   if (m_HistoContents.empty()) {
     return 0;
   }
@@ -81,21 +85,22 @@ double TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const {
 
   HistoContent_t dcont = m_HistoContents[ibin] - basecont;
   if (dcont > 0) {
-    return m_HistoBorders[binx] +
-           ((m_HistoBorders[binx + 1] - m_HistoBorders[binx]) *
-            (int_rnd - basecont)) /
-               dcont;
+    return m_HistoBorders[binx]
+        + ((m_HistoBorders[binx + 1] - m_HistoBorders[binx])
+           * (int_rnd - basecont))
+        / dcont;
   } else {
-    return m_HistoBorders[binx] +
-           (m_HistoBorders[binx + 1] - m_HistoBorders[binx]) / 2;
+    return m_HistoBorders[binx]
+        + (m_HistoBorders[binx + 1] - m_HistoBorders[binx]) / 2;
   }
 }
 
-bool TFCS1DFunctionInt32Histogram::operator==(const TFCS1DFunction &ref) const {
+bool TFCS1DFunctionInt32Histogram::operator==(const TFCS1DFunction& ref) const
+{
   if (IsA() != ref.IsA())
     return false;
-  const TFCS1DFunctionInt32Histogram &ref_typed =
-      static_cast<const TFCS1DFunctionInt32Histogram &>(ref);
+  const TFCS1DFunctionInt32Histogram& ref_typed =
+      static_cast<const TFCS1DFunctionInt32Histogram&>(ref);
 
   if (m_HistoBorders != ref_typed.m_HistoBorders)
     return false;
@@ -104,7 +109,8 @@ bool TFCS1DFunctionInt32Histogram::operator==(const TFCS1DFunction &ref) const {
   return true;
 }
 
-void TFCS1DFunctionInt32Histogram::unit_test(TH1 *hist) {
+void TFCS1DFunctionInt32Histogram::unit_test(TH1* hist)
+{
   ISF_FCS::MLogging logger;
   int nbinsx;
   if (hist == nullptr) {
@@ -124,13 +130,13 @@ void TFCS1DFunctionInt32Histogram::unit_test(TH1 *hist) {
 
   float value[2];
   float rnd[2];
-  //cppcheck-suppress uninitvar
+  // cppcheck-suppress uninitvar
   for (rnd[0] = 0; rnd[0] < 0.9999; rnd[0] += 0.25) {
     rtof.rnd_to_fct(value, rnd);
     ATH_MSG_NOCLASS(logger, "rnd0=" << rnd[0] << " -> x=" << value[0]);
   }
 
-  TH1 *hist_val = (TH1 *)hist->Clone("hist_val");
+  TH1* hist_val = (TH1*)hist->Clone("hist_val");
   hist_val->SetTitle("difference");
   hist_val->Reset();
   int nrnd = 10000000;
@@ -143,7 +149,7 @@ void TFCS1DFunctionInt32Histogram::unit_test(TH1 *hist) {
   }
   hist_val->Add(hist, -1);
 
-  TH1F *hist_pull = new TH1F("pull", "pull", 200, -10, 10);
+  TH1F* hist_pull = new TH1F("pull", "pull", 200, -10, 10);
   for (int ix = 1; ix <= nbinsx; ++ix) {
     float val = hist_val->GetBinContent(ix);
     float err = hist_val->GetBinError(ix);
@@ -151,7 +157,6 @@ void TFCS1DFunctionInt32Histogram::unit_test(TH1 *hist) {
       hist_pull->Fill(val / err);
     ATH_MSG_NOCLASS(logger, "val=" << val << " err=" << err);
   }
-
 
   new TCanvas("input", "Input");
   hist->Draw();
@@ -161,6 +166,4 @@ void TFCS1DFunctionInt32Histogram::unit_test(TH1 *hist) {
 
   new TCanvas("pull", "Pull");
   hist_pull->Draw();
-
-
 }

@@ -8,8 +8,10 @@
 #include "TArrayD.h"
 #include "TObject.h"
 
-class DoubleArray : public TObject, public TArrayD {
-
+class DoubleArray
+    : public TObject
+    , public TArrayD
+{
 public:
   DoubleArray();
   DoubleArray(int);

@@ -9,7 +9,7 @@ file(GLOB CLHEP_SOURCES "*.cxx")
 # Declare the library
 add_library(CLHEP SHARED ${CLHEP_SOURCES})
 
-# Set the target propertise
+# Set the target properties
 set_target_properties(
     CLHEP PROPERTIES
     EXPORT_NAME CLHEP

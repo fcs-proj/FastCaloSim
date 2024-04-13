@@ -10,7 +10,10 @@
 //======= IntArray =========
 //==========================
 
-IntArray::IntArray(int n) : TArrayI(n) {}
+IntArray::IntArray(int n)
+    : TArrayI(n)
+{
+}
 
 IntArray::IntArray() {}
 

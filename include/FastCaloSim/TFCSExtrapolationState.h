@@ -6,42 +6,53 @@
 #define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
 
 #include <TObject.h>
+
 #include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/MLogging.h"
 
-
-class TFCSExtrapolationState : public TObject, public ISF_FCS::MLogging {
+class TFCSExtrapolationState
+    : public TObject
+    , public ISF_FCS::MLogging
+{
 public:
   TFCSExtrapolationState();
 
   void clear();
 
-  enum SUBPOS {
+  enum SUBPOS
+  {
     SUBPOS_MID = 0,
     SUBPOS_ENT = 1,
     SUBPOS_EXT = 2
-  }; // MID=middle, ENT=entrance, EXT=exit of cal layer
+  };  // MID=middle, ENT=entrance, EXT=exit of cal layer
 
-  void set_OK(int layer, int subpos, bool val = true) {
+  void set_OK(int layer, int subpos, bool val = true)
+  {
     m_CaloOK[layer][subpos] = val;
   };
 
-  void set_eta(int layer, int subpos, double val) {
+  void set_eta(int layer, int subpos, double val)
+  {
     m_etaCalo[layer][subpos] = val;
   };
-  void set_phi(int layer, int subpos, double val) {
+  void set_phi(int layer, int subpos, double val)
+  {
     m_phiCalo[layer][subpos] = val;
   };
-  void set_r(int layer, int subpos, double val) {
+  void set_r(int layer, int subpos, double val)
+  {
     m_rCalo[layer][subpos] = val;
   };
-  void set_z(int layer, int subpos, double val) {
+  void set_z(int layer, int subpos, double val)
+  {
     m_zCalo[layer][subpos] = val;
   };
-  void set_d(int layer, int subpos, double val) {
+  void set_d(int layer, int subpos, double val)
+  {
     m_dCalo[layer][subpos] = val;
   };
-  void set_detaBorder(int layer, int subpos, double val) {
+  void set_detaBorder(int layer, int subpos, double val)
+  {
     m_distetaCaloBorder[layer][subpos] = val;
   };
 
@@ -56,7 +67,8 @@ public:
   double r(int layer, int subpos) const { return m_rCalo[layer][subpos]; };
   double z(int layer, int subpos) const { return m_zCalo[layer][subpos]; };
   double d(int layer, int subpos) const { return m_dCalo[layer][subpos]; };
-  double detaBorder(int layer, int subpos) const {
+  double detaBorder(int layer, int subpos) const
+  {
     return m_distetaCaloBorder[layer][subpos];
   };
 
@@ -68,14 +80,16 @@ public:
   double IDCaloBoundary_AngleEta() const { return m_IDCaloBoundary_AngleEta; };
   double IDCaloBoundary_Angle3D() const { return m_IDCaloBoundary_Angle3D; };
 
-  void set_IDCaloBoundary_AngleEta(double val) {
+  void set_IDCaloBoundary_AngleEta(double val)
+  {
     m_IDCaloBoundary_AngleEta = val;
   };
-  void set_IDCaloBoundary_Angle3D(double val) {
+  void set_IDCaloBoundary_Angle3D(double val)
+  {
     m_IDCaloBoundary_Angle3D = val;
   };
 
-  void Print(Option_t *option = "") const;
+  void Print(Option_t* option = "") const;
 
 private:
   bool m_CaloOK[CaloCell_ID_FCS::MaxSample][3];
@@ -94,7 +108,7 @@ private:
   double m_IDCaloBoundary_AngleEta;
   double m_IDCaloBoundary_Angle3D;
 
-  ClassDef(TFCSExtrapolationState, 2) // TFCSExtrapolationState
+  ClassDef(TFCSExtrapolationState, 2)  // TFCSExtrapolationState
 };
 
 #endif

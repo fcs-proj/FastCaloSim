@@ -4,22 +4,20 @@
 
 #include <string>
 
+#include "FastCaloSim/TFCSVoxelHistoLateralCovarianceFluctuations.h"
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
-
-#include "FastCaloSim/TFCSVoxelHistoLateralCovarianceFluctuations.h"
 #include "FastCaloSim/ICaloGeometry.h"
-#include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCS1DFunction.h"
 #include "FastCaloSim/TFCS1DFunctionTemplateHistogram.h"
-#include "FastCaloSim/ICaloGeometry.h"
-
-#include "TVector2.h"
-#include "TMath.h"
+#include "FastCaloSim/TFCSSimulationState.h"
 #include "TFile.h"
+#include "TH2.h"
+#include "TMath.h"
 #include "TMatrixDSym.h"
 #include "TMatrixDSymEigen.h"
-#include "TH2.h"
+#include "TVector2.h"
 
 //=============================================
 //======= TFCSVoxelHistoLateralCovarianceFluctuations =========
@@ -52,15 +50,20 @@ const std::uint32_t TFCSVoxelHistoLateralCovarianceFluctuations::
         "FCAL1_geo"_FCShash,       "FCAL2_geo"_FCShash};
 
 TFCSVoxelHistoLateralCovarianceFluctuations::
-    TFCSVoxelHistoLateralCovarianceFluctuations(const char *name,
-                                                const char *title)
-    : TFCSLateralShapeParametrizationHitBase(name, title) {}
+    TFCSVoxelHistoLateralCovarianceFluctuations(const char* name,
+                                                const char* title)
+    : TFCSLateralShapeParametrizationHitBase(name, title)
+{
+}
 
 TFCSVoxelHistoLateralCovarianceFluctuations::
-    ~TFCSVoxelHistoLateralCovarianceFluctuations() {}
+    ~TFCSVoxelHistoLateralCovarianceFluctuations()
+{
+}
 
 bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
-    TFile *inputfile, const std::string &folder) {
+    TFile* inputfile, const std::string& folder)
+{
   // load m_eigenvariances and m_parMeans from input file
   // load histograms for each cell from input file
   // m_transform[i][j]=new TFCS1DFunctionInt16Int16Histogram(hist)
@@ -72,7 +75,7 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   int cs = calosample();
   int bin = 1;
 
-  TH2 *temp = dynamic_cast<TH2 *>(
+  TH2* temp = dynamic_cast<TH2*>(
       inputfile->Get(Form("voxel_template_cs%d_pca%d", cs, bin)));
   if (!temp) {
     ATH_MSG_ERROR("Template hist not found for cs " + std::to_string(cs));
@@ -86,11 +89,11 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
     TVectorD parMeans;
     TMatrixD EigenVectors;
     TVectorD EigenValues;
-    std::vector<std::vector<TFCS1DFunction *>> transform;
+    std::vector<std::vector<TFCS1DFunction*>> transform;
 
     std::string label = Form("_cs%d_pca%d", cs, bin);
 
-    TObject *obj = inputfile->Get(("parMeans" + label).c_str());
+    TObject* obj = inputfile->Get(("parMeans" + label).c_str());
     if (!obj) {
       ATH_MSG_ERROR("parMeans" + label + " not found");
       return false;
@@ -100,7 +103,7 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       obj->Print();
     }
     parMeans.ResizeTo(m_nDim_x * m_nDim_y);
-    parMeans = *dynamic_cast<TVectorT<double> *>(obj);
+    parMeans = *dynamic_cast<TVectorT<double>*>(obj);
     m_parMeans.push_back(parMeans);
 
     obj = inputfile->Get(("covMatrix" + label).c_str());
@@ -108,7 +111,7 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       ATH_MSG_ERROR("covMatrix" + label + " not found");
       return false;
     }
-    TMatrixTSym<double> covMatrix = *dynamic_cast<TMatrixTSym<double> *>(obj);
+    TMatrixTSym<double> covMatrix = *dynamic_cast<TMatrixTSym<double>*>(obj);
     TMatrixDSymEigen eigenvariances = TMatrixDSymEigen(covMatrix);
     EigenVectors.ResizeTo(eigenvariances.GetEigenVectors());
     EigenVectors = eigenvariances.GetEigenVectors();
@@ -136,12 +139,12 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       for (int y = 0; y < m_nDim_y; ++y) {
         // Naming of hists is hist_xy where x, y are indices of cells
         std::string histname = Form("hist_%d_%d%s", x, y, label.c_str());
-        TH1 *hist = (TH1 *)inputfile->Get(histname.c_str());
+        TH1* hist = (TH1*)inputfile->Get(histname.c_str());
         if (!hist) {
           ATH_MSG_ERROR("Histogram " << histname << " not found");
           return false;
         }
-        TFCS1DFunctionInt32Int32Histogram *func =
+        TFCS1DFunctionInt32Int32Histogram* func =
             new TFCS1DFunctionInt32Int32Histogram();
         func->Initialize(hist, false);
         transform[x][y] = func;
@@ -157,7 +160,8 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
 // Implementation of multivariate Gaussian with ROOT classes (from ROOT forum,
 // but validated)
 void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
-    TFCSSimulationState &simulstate, TVectorD &genPars) const {
+    TFCSSimulationState& simulstate, TVectorD& genPars) const
+{
   int Ebin = simulstate.Ebin();
 
   int nPars = m_parMeans[Ebin - 1].GetNrows();
@@ -172,8 +176,8 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
                                                      << ") on iPar = " << iPar);
       variance = 0;
     }
-    genPars[iPar] = CLHEP::RandGauss::shoot(simulstate.randomEngine(),
-                                            rotParMeans[iPar], sqrt(variance));
+    genPars[iPar] = CLHEP::RandGauss::shoot(
+        simulstate.randomEngine(), rotParMeans[iPar], sqrt(variance));
     ATH_MSG_DEBUG("genPars[" << iPar << "]=" << genPars[iPar]
                              << " rotParMeans[iPar]=" << rotParMeans[iPar]
                              << " sqrt(variance)=" << sqrt(variance));
@@ -182,8 +186,10 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
 }
 
 FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
-    TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/) const
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -193,26 +199,26 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     simulstate.Print();
   }
 
-  weight_t *weightvec;
-  TH2 *voxel_temp;
+  weight_t* weightvec;
+  TH2* voxel_temp;
 
   int Ebin = simulstate.Ebin();
 
   for (int ilayer = 0; ilayer < CaloCell_ID_FCS::MaxSample; ++ilayer) {
     if (simulstate.hasAuxInfo(s_layer_hash[ilayer])) {
-      weightvec = static_cast<weight_t *>(
-          simulstate.getAuxInfo<void *>(s_layer_hash[ilayer]));
+      weightvec = static_cast<weight_t*>(
+          simulstate.getAuxInfo<void*>(s_layer_hash[ilayer]));
       if (weightvec) {
         delete weightvec;
-        simulstate.setAuxInfo<void *>(s_layer_hash[ilayer], nullptr);
+        simulstate.setAuxInfo<void*>(s_layer_hash[ilayer], nullptr);
       }
     }
     if (simulstate.hasAuxInfo(s_layer_hash_geo[ilayer])) {
-      voxel_temp = static_cast<TH2 *>(
-          simulstate.getAuxInfo<void *>(s_layer_hash_geo[ilayer]));
+      voxel_temp = static_cast<TH2*>(
+          simulstate.getAuxInfo<void*>(s_layer_hash_geo[ilayer]));
       if (voxel_temp) {
         delete voxel_temp;
-        simulstate.setAuxInfo<void *>(s_layer_hash_geo[ilayer], nullptr);
+        simulstate.setAuxInfo<void*>(s_layer_hash_geo[ilayer], nullptr);
       }
     }
   }
@@ -260,11 +266,11 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     }
   }
 
-  voxel_temp = static_cast<TH2 *>(m_voxel_template[0]->Clone());
+  voxel_temp = static_cast<TH2*>(m_voxel_template[0]->Clone());
 
   // For now simulating only the layer calosample()
-  simulstate.setAuxInfo<void *>(s_layer_hash[calosample()], weightvec);
-  simulstate.setAuxInfo<void *>(s_layer_hash_geo[calosample()], voxel_temp);
+  simulstate.setAuxInfo<void*>(s_layer_hash[calosample()], weightvec);
+  simulstate.setAuxInfo<void*>(s_layer_hash_geo[calosample()], voxel_temp);
 
   if (msgLvl(MSG::DEBUG)) {
     ATH_MSG_DEBUG("simulstate after storing weight " << weightvec
@@ -276,28 +282,31 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
 }
 
 FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/)
+{
   const double center_eta = hit.center_eta();
   const double center_phi = hit.center_phi();
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
   int cs = calosample();
-  weight_t *weightvec = nullptr;
+  weight_t* weightvec = nullptr;
   if (simulstate.hasAuxInfo(s_layer_hash[cs]))
-    weightvec = static_cast<weight_t *>(
-        simulstate.getAuxInfo<void *>(s_layer_hash[cs]));
+    weightvec =
+        static_cast<weight_t*>(simulstate.getAuxInfo<void*>(s_layer_hash[cs]));
 
   if (!weightvec) {
     ATH_MSG_ERROR("Weights not stored in simulstate for calosample=" << cs);
     return FCSFatal;
   }
 
-  TH2 *voxel_template = nullptr;
+  TH2* voxel_template = nullptr;
   if (simulstate.hasAuxInfo(s_layer_hash_geo[cs]))
     voxel_template =
-        static_cast<TH2 *>(simulstate.getAuxInfo<void *>(s_layer_hash_geo[cs]));
+        static_cast<TH2*>(simulstate.getAuxInfo<void*>(s_layer_hash_geo[cs]));
   if (!voxel_template) {
     ATH_MSG_ERROR(
         "Voxel geometry not stored in simulstate for calosample=" << cs);
@@ -343,8 +352,8 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
 
   float phi_dist2r = 1.0;
   float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-hit.eta()) /
-                                (1.0 + TMath::Exp(-2 * hit.eta())));
+  float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-hit.eta())
+                                / (1.0 + TMath::Exp(-2 * hit.eta())));
 
   float deta_hit_minus_extrapol_mm =
       deta_hit_minus_extrapol * eta_jakobi * dist000;
@@ -354,8 +363,8 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
   float alpha_mm =
       TMath::ATan2(dphi_hit_minus_extrapol_mm, deta_hit_minus_extrapol_mm);
   float radius_mm =
-      TMath::Sqrt(dphi_hit_minus_extrapol_mm * dphi_hit_minus_extrapol_mm +
-                  deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
+      TMath::Sqrt(dphi_hit_minus_extrapol_mm * dphi_hit_minus_extrapol_mm
+                  + deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
 
   int ix;
   int iy = voxel_template->GetYaxis()->FindBin(radius_mm) - 1;
@@ -365,9 +374,8 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     ix = 0;
   } else {
     if (alpha_mm < 0)
-      ix = voxel_template->GetXaxis()->FindBin(2 * TMath::Pi() -
-                                               fabs(alpha_mm)) -
-           1;
+      ix = voxel_template->GetXaxis()->FindBin(2 * TMath::Pi() - fabs(alpha_mm))
+          - 1;
     else
       ix = voxel_template->GetXaxis()->FindBin(alpha_mm) - 1;
   }

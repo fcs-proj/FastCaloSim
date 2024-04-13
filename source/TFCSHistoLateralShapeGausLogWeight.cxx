@@ -67,5 +67,3 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeight::simulate_hit(
                           << " weight=" << weight);
   return FCSSuccess;
 }
-
-#endif

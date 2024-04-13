@@ -7,15 +7,18 @@
 
 #include "FastCaloSim/TFCSParametrization.h"
 
-class TFCSEnergyParametrization : public TFCSParametrization {
+class TFCSEnergyParametrization : public TFCSParametrization
+{
 public:
-  TFCSEnergyParametrization(const char *name = nullptr,
-                            const char *title = nullptr);
+  TFCSEnergyParametrization(const char* name = nullptr,
+                            const char* title = nullptr);
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override {
+  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
+  {
     return true;
   };
-  virtual bool is_match_calosample(int /*calosample*/) const override {
+  virtual bool is_match_calosample(int /*calosample*/) const override
+  {
     return true;
   };
 
@@ -23,7 +26,7 @@ public:
   virtual int n_bins() const { return 0; };
 
 private:
-  ClassDefOverride(TFCSEnergyParametrization, 1) // TFCSEnergyParametrization
+  ClassDefOverride(TFCSEnergyParametrization, 1)  // TFCSEnergyParametrization
 };
 
 #endif

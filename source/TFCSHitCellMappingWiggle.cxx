@@ -1,41 +1,45 @@
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
 /*
   Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "CLHEP/Random/RandFlat.h"
-
 #include "FastCaloSim/TFCSHitCellMappingWiggle.h"
+
+#include <TClass.h>
+
+#include "CLHEP/Random/RandFlat.h"
+#include "FastCaloSim/TFCS1DFunctionInt32Histogram.h"
+#include "FastCaloSim/TFCSExtrapolationState.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
-#include "FastCaloSim/TFCS1DFunctionInt32Histogram.h"
-
 #include "TH1.h"
-#include "TVector2.h"
 #include "TMath.h"
-#include <TClass.h>
+#include "TVector2.h"
 
 //=============================================
 //======= TFCSHitCellMappingWiggle =========
 //=============================================
 
-TFCSHitCellMappingWiggle::TFCSHitCellMappingWiggle(const char *name,
-                                                   const char *title,
-                                                   ICaloGeometry *geo)
-    : TFCSHitCellMapping(name, title, geo) {}
+TFCSHitCellMappingWiggle::TFCSHitCellMappingWiggle(const char* name,
+                                                   const char* title,
+                                                   ICaloGeometry* geo)
+    : TFCSHitCellMapping(name, title, geo)
+{
+}
 
-TFCSHitCellMappingWiggle::~TFCSHitCellMappingWiggle() {
-  for (const auto *function : m_functions)
+TFCSHitCellMappingWiggle::~TFCSHitCellMappingWiggle()
+{
+  for (const auto* function : m_functions)
     delete function;
 }
 
-void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction *func) {
+void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction* func)
+{
   if (!func)
     return;
-  for (const auto *function : m_functions)
+  for (const auto* function : m_functions)
     if (function)
       delete function;
 
@@ -48,49 +52,53 @@ void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction *func) {
 }
 
 void TFCSHitCellMappingWiggle::initialize(
-    const std::vector<const TFCS1DFunction *> &functions,
-    const std::vector<float> &bin_low_edges) {
+    const std::vector<const TFCS1DFunction*>& functions,
+    const std::vector<float>& bin_low_edges)
+{
   if (functions.size() + 1 != bin_low_edges.size()) {
     ATH_MSG_ERROR("Using " << functions.size() << " functions needs "
                            << functions.size() + 1 << " bin low edges, but got "
                            << bin_low_edges.size() << "bins");
     return;
   }
-  for (const auto *function : m_functions)
+  for (const auto* function : m_functions)
     if (function)
       delete function;
   m_functions = functions;
   m_bin_low_edge = bin_low_edges;
 }
 
-void TFCSHitCellMappingWiggle::initialize(TH1 *histogram, float xscale) {
+void TFCSHitCellMappingWiggle::initialize(TH1* histogram, float xscale)
+{
   if (!histogram)
     return;
-  TFCS1DFunctionInt32Histogram *func =
+  TFCS1DFunctionInt32Histogram* func =
       new TFCS1DFunctionInt32Histogram(histogram);
   if (xscale != 1) {
-    for (auto &ele : func->get_HistoBordersx())
+    for (auto& ele : func->get_HistoBordersx())
       ele *= xscale;
   }
   initialize(func);
 }
 
 void TFCSHitCellMappingWiggle::initialize(
-    const std::vector<const TH1 *> &histograms,
-    const std::vector<float> &bin_low_edges, float xscale) {
+    const std::vector<const TH1*>& histograms,
+    const std::vector<float>& bin_low_edges,
+    float xscale)
+{
   if (histograms.size() + 1 != bin_low_edges.size()) {
     ATH_MSG_ERROR("Using " << histograms.size() << " histograms needs "
                            << histograms.size() + 1 << " bins, but got "
                            << bin_low_edges.size() << "bins");
     return;
   }
-  std::vector<const TFCS1DFunction *> functions(histograms.size());
+  std::vector<const TFCS1DFunction*> functions(histograms.size());
   for (unsigned int i = 0; i < histograms.size(); ++i) {
     if (histograms[i]) {
-      TFCS1DFunctionInt32Histogram *func =
+      TFCS1DFunctionInt32Histogram* func =
           new TFCS1DFunctionInt32Histogram(histograms[i]);
       if (xscale != 1) {
-        for (auto &ele : func->get_HistoBordersx())
+        for (auto& ele : func->get_HistoBordersx())
           ele *= xscale;
       }
       functions[i] = func;
@@ -103,8 +111,11 @@ void TFCSHitCellMappingWiggle::initialize(
 }
 
 FCSReturnCode TFCSHitCellMappingWiggle::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol)
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -117,7 +128,7 @@ FCSReturnCode TFCSHitCellMappingWiggle::simulate_hit(
   auto it = std::upper_bound(m_bin_low_edge.begin(), m_bin_low_edge.end(), eta);
   int bin = std::distance(m_bin_low_edge.begin(), it) - 1;
 
-  const TFCS1DFunction *func = get_function(bin);
+  const TFCS1DFunction* func = get_function(bin);
   if (func) {
     double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
@@ -137,7 +148,8 @@ FCSReturnCode TFCSHitCellMappingWiggle::simulate_hit(
 }
 
 bool TFCSHitCellMappingWiggle::operator==(
-    const TFCSParametrizationBase &ref) const {
+    const TFCSParametrizationBase& ref) const
+{
   if (TFCSParametrizationBase::compare(ref))
     return true;
   if (!TFCSParametrization::compare(ref))
@@ -150,7 +162,8 @@ bool TFCSHitCellMappingWiggle::operator==(
   return true;
 }
 
-void TFCSHitCellMappingWiggle::Print(Option_t *option) const {
+void TFCSHitCellMappingWiggle::Print(Option_t* option) const
+{
   TFCSHitCellMapping::Print(option);
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
@@ -168,15 +181,15 @@ void TFCSHitCellMappingWiggle::Print(Option_t *option) const {
   }
 }
 
-bool TFCSHitCellMappingWiggle::compare(
-    const TFCSParametrizationBase &ref) const {
+bool TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
+{
   if (IsA() != ref.IsA()) {
     ATH_MSG_DEBUG("compare(): different class types "
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSHitCellMappingWiggle &ref_typed =
-      static_cast<const TFCSHitCellMappingWiggle &>(ref);
+  const TFCSHitCellMappingWiggle& ref_typed =
+      static_cast<const TFCSHitCellMappingWiggle&>(ref);
 
   if (m_bin_low_edge != ref_typed.m_bin_low_edge) {
     ATH_MSG_DEBUG("operator==(): different bin edges");
@@ -184,8 +197,8 @@ bool TFCSHitCellMappingWiggle::compare(
   }
 
   for (unsigned int i = 0; i < get_number_of_bins(); ++i) {
-    const TFCS1DFunction *f1 = get_function(i);
-    const TFCS1DFunction *f2 = ref_typed.get_function(i);
+    const TFCS1DFunction* f1 = get_function(i);
+    const TFCS1DFunction* f2 = ref_typed.get_function(i);
     if (!f1 && !f2)
       continue;
     if ((f1 && !f2) || (!f1 && f2)) {
@@ -208,8 +221,10 @@ bool TFCSHitCellMappingWiggle::compare(
   return true;
 }
 
-void TFCSHitCellMappingWiggle::unit_test(TFCSSimulationState *simulstate, TFCSTruthState *truth,
-                      TFCSExtrapolationState *extrapol) {
+void TFCSHitCellMappingWiggle::unit_test(TFCSSimulationState* simulstate,
+                                         TFCSTruthState* truth,
+                                         TFCSExtrapolationState* extrapol)
+{
   if (!simulstate)
     simulstate = new TFCSSimulationState();
   if (!truth)
@@ -219,13 +234,13 @@ void TFCSHitCellMappingWiggle::unit_test(TFCSSimulationState *simulstate, TFCSTr
 
   int nbin = 10;
   float maxeta = 5.0;
-  std::vector<const TFCS1DFunction *> functions;
+  std::vector<const TFCS1DFunction*> functions;
   std::vector<float> bin_low_edges;
 
   TFCSHitCellMappingWiggle wiggle_test("WiggleTest", "WiggleTest");
 
   for (float eta = 0; eta < maxeta; eta += maxeta / nbin) {
-    TH1 *hist = TFCS1DFunction::generate_histogram_random_gauss(
+    TH1* hist = TFCS1DFunction::generate_histogram_random_gauss(
         16, 100000, -0.0125, 0.0125, 0, 0.005);
     bin_low_edges.push_back(eta);
     functions.push_back(new TFCS1DFunctionInt32Histogram(hist));
@@ -237,7 +252,7 @@ void TFCSHitCellMappingWiggle::unit_test(TFCSSimulationState *simulstate, TFCSTr
   wiggle_test.setLevel(MSG::DEBUG);
   wiggle_test.Print();
 
-#if 0 // defined(__FastCaloSimStandAlone__)
+#if 0  // defined(__FastCaloSimStandAlone__)
   CaloGeometryFromFile* geo = new CaloGeometryFromFile();
 
 // * load geometry files

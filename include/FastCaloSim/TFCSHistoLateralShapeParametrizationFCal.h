@@ -5,27 +5,29 @@
 #ifndef TFCSHistoLateralShapeParametrizationFCal_h
 #define TFCSHistoLateralShapeParametrizationFCal_h
 
-#include "FastCaloSim/TFCSHistoLateralShapeParametrization.h"
 #include "FastCaloSim/TFCS2DFunctionHistogram.h"
+#include "FastCaloSim/TFCSHistoLateralShapeParametrization.h"
 #include "FastCaloSim/TFCSTruthState.h"
 
 class TH2;
 
 class TFCSHistoLateralShapeParametrizationFCal
-    : public TFCSHistoLateralShapeParametrization {
+    : public TFCSHistoLateralShapeParametrization
+{
 public:
-  TFCSHistoLateralShapeParametrizationFCal(const char *name = nullptr,
-                                           const char *title = nullptr);
+  TFCSHistoLateralShapeParametrizationFCal(const char* name = nullptr,
+                                           const char* title = nullptr);
   ~TFCSHistoLateralShapeParametrizationFCal();
 
-  virtual FCSReturnCode
-  simulate_hit(Hit &hit, TFCSSimulationState &simulstate,
-               const TFCSTruthState *truth,
-               const TFCSExtrapolationState *extrapol) override;
+  virtual FCSReturnCode simulate_hit(
+      Hit& hit,
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol) override;
 
 private:
   ClassDefOverride(TFCSHistoLateralShapeParametrizationFCal,
-                   1) // TFCSHistoLateralShapeParametrizationFCal
+                   1)  // TFCSHistoLateralShapeParametrizationFCal
 };
 
 #endif

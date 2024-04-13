@@ -2,49 +2,54 @@
   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
 */
 
+#include "FastCaloSim/TFCS2DFunctionLateralShapeParametrization.h"
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandPoisson.h"
-
-#include "FastCaloSim/TFCS2DFunctionLateralShapeParametrization.h"
 #include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
-#include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSExtrapolationState.h"
-
-#include "TFile.h"
-#include "TMath.h"
-#include "TH2.h"
-
+#include "FastCaloSim/TFCSSimulationState.h"
 #include "HepPDT/ParticleData.hh"
 #include "HepPDT/ParticleDataTable.hh"
+#include "TFile.h"
+#include "TH2.h"
+#include "TMath.h"
 
 //=============================================
 //======= TFCS2DFunctionLateralShapeParametrization =========
 //=============================================
 
 TFCS2DFunctionLateralShapeParametrization::
-    TFCS2DFunctionLateralShapeParametrization(const char *name,
-                                              const char *title)
-    : TFCSLateralShapeParametrizationHitBase(name, title), m_function(nullptr),
-      m_nhits(0) {
+    TFCS2DFunctionLateralShapeParametrization(const char* name,
+                                              const char* title)
+    : TFCSLateralShapeParametrizationHitBase(name, title)
+    , m_function(nullptr)
+    , m_nhits(0)
+{
   TFCS2DFunctionLateralShapeParametrization::reset_phi_symmetric();
 }
 
 TFCS2DFunctionLateralShapeParametrization::
-    ~TFCS2DFunctionLateralShapeParametrization() {
+    ~TFCS2DFunctionLateralShapeParametrization()
+{
   if (m_function)
     delete m_function;
   m_function = nullptr;
 }
 
 double TFCS2DFunctionLateralShapeParametrization::get_sigma2_fluctuation(
-    TFCSSimulationState & /*simulstate*/, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) const {
+    TFCSSimulationState& /*simulstate*/,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/) const
+{
   return 1.0 / m_nhits;
 }
 
 int TFCS2DFunctionLateralShapeParametrization::get_number_of_hits(
-    TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/) const
+{
   if (!simulstate.randomEngine()) {
     return -1;
   }
@@ -52,14 +57,17 @@ int TFCS2DFunctionLateralShapeParametrization::get_number_of_hits(
   return CLHEP::RandPoisson::shoot(simulstate.randomEngine(), m_nhits);
 }
 
-void TFCS2DFunctionLateralShapeParametrization::set_number_of_hits(
-    float nhits) {
+void TFCS2DFunctionLateralShapeParametrization::set_number_of_hits(float nhits)
+{
   m_nhits = nhits;
 }
 
 FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState * /*extrapol*/) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* /*extrapol*/)
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -76,9 +84,9 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  if (TMath::IsNaN(center_r) or TMath::IsNaN(center_z) or
-      TMath::IsNaN(center_eta) or
-      TMath::IsNaN(center_phi)) { // Check if extrapolation fails
+  if (TMath::IsNaN(center_r) or TMath::IsNaN(center_z)
+      or TMath::IsNaN(center_eta) or TMath::IsNaN(center_phi))
+  {  // Check if extrapolation fails
     return FCSFatal;
   }
 
@@ -86,12 +94,12 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
-    if (rnd2 >= 0.5) { // Fill negative phi half of shape
+    if (rnd2 >= 0.5) {  // Fill negative phi half of shape
       rnd2 -= 0.5;
       rnd2 *= 2;
       m_function->rnd_to_fct(alpha, r, rnd1, rnd2);
       alpha = -alpha;
-    } else { // Fill positive phi half of shape
+    } else {  // Fill positive phi half of shape
       rnd2 *= 2;
       m_function->rnd_to_fct(alpha, r, rnd1, rnd2);
     }
@@ -117,20 +125,20 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   if (center_eta < 0.)
     delta_eta_mm = -delta_eta_mm;
   // We derive the shower shapes for electrons and positively charged hadrons.
-  // Particle with the opposite charge are expected to have the same shower shape
-  // after the transformation: delta_phi --> -delta_phi
-  if ((charge < 0. && pdgId!=11) || pdgId==-11)
+  // Particle with the opposite charge are expected to have the same shower
+  // shape after the transformation: delta_phi --> -delta_phi
+  if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi_mm = -delta_phi_mm;
 
   const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta) /
-                                      (1.0 + TMath::Exp(-2 * center_eta)));
+  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
+                                      / (1.0 + TMath::Exp(-2 * center_eta)));
 
   const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
   const float delta_phi = delta_phi_mm / center_r;
 
-  hit.setEtaPhiZE(center_eta + delta_eta, center_phi + delta_phi, center_z,
-                  hit.E());
+  hit.setEtaPhiZE(
+      center_eta + delta_eta, center_phi + delta_phi, center_z, hit.E());
 
   ATH_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
                           << " phi=" << hit.phi() << " z=" << hit.z()
@@ -139,8 +147,9 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   return FCSSuccess;
 }
 
-bool TFCS2DFunctionLateralShapeParametrization::Initialize(TFCS2DFunction *func,
-                                                           float nhits) {
+bool TFCS2DFunctionLateralShapeParametrization::Initialize(TFCS2DFunction* func,
+                                                           float nhits)
+{
   if (!func)
     return false;
   if (m_function)
@@ -153,7 +162,8 @@ bool TFCS2DFunctionLateralShapeParametrization::Initialize(TFCS2DFunction *func,
   return true;
 }
 
-void TFCS2DFunctionLateralShapeParametrization::Print(Option_t *option) const {
+void TFCS2DFunctionLateralShapeParametrization::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);

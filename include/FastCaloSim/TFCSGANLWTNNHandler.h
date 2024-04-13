@@ -3,7 +3,7 @@
  *
  * Class for a neural network read in the LWTNN format.
  * Derived from the abstract base class VNetworkBase
- * such that it can be used interchangably with it's
+ * such that it can be used interchangeably with it's
  * sibling class, TFCSONNXHandler, TFCSGANLWTNNHandler,
  * TFCSSimpleLWTNNHandler.
  *
@@ -26,15 +26,16 @@
 
 #include "FastCaloSim/VNetworkLWTNN.h"
 
-// Becuase we have a field of type LightweightGraph
+// Because we have a field of type LightweightGraph
 #include "lwtnn/LightweightGraph.hh"
 
 // For writing to a tree
-#include <vector>
 #include <memory>
 #include <string>
+#include <vector>
 
-class TFCSGANLWTNNHandler : public VNetworkLWTNN {
+class TFCSGANLWTNNHandler : public VNetworkLWTNN
+{
 public:
   // Don't lose default constructors
   using VNetworkLWTNN::VNetworkLWTNN;
@@ -49,7 +50,7 @@ public:
    *                  of the network to be constructed, or the json
    *                  itself as a string.
    **/
-  explicit TFCSGANLWTNNHandler(const std::string &inputFile);
+  explicit TFCSGANLWTNNHandler(const std::string& inputFile);
 
   /**
    * @brief TFCSGANLWTNNHandler copy constructor.
@@ -59,12 +60,12 @@ public:
    *
    * @param copy_from existing network that we are copying
    **/
-  TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler &copy_from);
+  TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler& copy_from);
 
   /**
    * @brief Function to pass values to the network.
    *
-   * This function hides variations in the formated needed
+   * This function hides variations in the formatted needed
    * by different network libraries, providing a uniform input
    * and output type.
    *
@@ -73,7 +74,7 @@ public:
    * @see VNetworkBase::NetworkInputs
    * @see VNetworkBase::NetworkOutputs
    **/
-  NetworkOutputs compute(NetworkInputs const &inputs) const override;
+  NetworkOutputs compute(NetworkInputs const& inputs) const override;
 
   /**
    * @brief List the names of the outputs.
@@ -102,20 +103,20 @@ private:
   /**
    * @brief The network that we are wrapping here.
    **/
-  std::unique_ptr<lwt::LightweightGraph> m_lwtnn_graph; //! Do not persistify
+  std::unique_ptr<lwt::LightweightGraph> m_lwtnn_graph;  //! Do not persistify
 
   /**
    * @brief List of names that index the output layer.
    **/
-  std::vector<std::string> m_outputLayers; //! Do not persistify
+  std::vector<std::string> m_outputLayers;  //! Do not persistify
 
   /**
    * @brief Just for backcompatability.
    **/
-  std::string *m_input = nullptr;
+  std::string* m_input = nullptr;
 
-  // Suppling a ClassDef for writing to file.
+  // Supplying a ClassDef for writing to file.
   ClassDefOverride(TFCSGANLWTNNHandler, 6);
 };
 
-#endif // TFCSGANLWTNNHANDLER_H
+#endif  // TFCSGANLWTNNHANDLER_H

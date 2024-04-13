@@ -2,18 +2,21 @@
   Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
 */
 
+#include <iostream>
+
 #include "FastCaloSim/TFCSParametrizationPDGIDSelectChain.h"
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
 #include "FastCaloSim/TFCSInvisibleParametrization.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
-#include <iostream>
 
 //=============================================
 //======= TFCSParametrizationPDGIDSelectChain =========
 //=============================================
 
-void TFCSParametrizationPDGIDSelectChain::recalc() {
+void TFCSParametrizationPDGIDSelectChain::recalc()
+{
   clear();
   if (size() == 0)
     return;
@@ -25,20 +28,23 @@ void TFCSParametrizationPDGIDSelectChain::recalc() {
 }
 
 FCSReturnCode TFCSParametrizationPDGIDSelectChain::simulate(
-    TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol) const
+{
   Int_t retry = 0;
   Int_t retry_warning = 1;
 
   FCSReturnCode status = FCSSuccess;
   for (int i = 0; i <= retry; i++) {
     if (i >= retry_warning)
-      ATH_MSG_WARNING("TFCSParametrizationPDGIDSelectChain::simulate(): Retry "
-                      "simulate call "
-                      << i << "/" << retry);
+      ATH_MSG_WARNING(
+          "TFCSParametrizationPDGIDSelectChain::simulate(): Retry "
+          "simulate call "
+          << i << "/" << retry);
 
     ATH_MSG_DEBUG("Running for pdgid=" << truth->pdgid());
-    for (const auto &param : chain()) {
+    for (const auto& param : chain()) {
       ATH_MSG_DEBUG("Now testing: "
                     << param->GetName()
                     << ((SimulateOnlyOnePDGID() == true)
@@ -81,8 +87,10 @@ FCSReturnCode TFCSParametrizationPDGIDSelectChain::simulate(
 }
 
 void TFCSParametrizationPDGIDSelectChain::unit_test(
-    TFCSSimulationState *simulstate, TFCSTruthState *truth,
-    TFCSExtrapolationState *extrapol) {
+    TFCSSimulationState* simulstate,
+    TFCSTruthState* truth,
+    TFCSExtrapolationState* extrapol)
+{
   ISF_FCS::MLogging logger;
   if (!simulstate)
     simulstate = new TFCSSimulationState();
@@ -94,7 +102,7 @@ void TFCSParametrizationPDGIDSelectChain::unit_test(
   TFCSParametrizationPDGIDSelectChain chain("chain", "chain");
   chain.setLevel(MSG::DEBUG);
 
-  TFCSParametrization *param;
+  TFCSParametrization* param;
   param = new TFCSInvisibleParametrization("A begin all", "A begin all");
   param->setLevel(MSG::VERBOSE);
   param->set_pdgid(0);

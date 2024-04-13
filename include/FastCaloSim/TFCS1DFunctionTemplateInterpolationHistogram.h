@@ -7,12 +7,13 @@
 
 #include "FastCaloSim/TFCS1DFunctionTemplateHistogram.h"
 
-template <typename Txvec, typename Ty, typename Trandom = float>
+template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateInterpolationHistogram
-    : public TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom> {
+    : public TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>
+{
 public:
-  TFCS1DFunctionTemplateInterpolationHistogram(TH1 *hist = nullptr)
-      : TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>(hist){};
+  TFCS1DFunctionTemplateInterpolationHistogram(TH1* hist = nullptr)
+      : TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>(hist) {};
 
   using TFCS1DFunction::rnd_to_fct;
   using TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>::get_nbins;
@@ -22,7 +23,8 @@ public:
   /// Function gets random number rnd in the range [0,1) as argument
   /// and returns function value according to a histogram distribution.
   /// A linear interpolation is done within each bin
-  virtual double rnd_to_fct(double rnd) const {
+  virtual double rnd_to_fct(double rnd) const
+  {
     size_t nbins = get_nbins();
     if (nbins == 0)
       return 0;
@@ -90,79 +92,95 @@ public:
   }
 
   ClassDef(TFCS1DFunctionTemplateInterpolationHistogram,
-           1) // TFCS1DFunctionTemplateInterpolationHistogram
+           1)  // TFCS1DFunctionTemplateInterpolationHistogram
 };
 
 class TFCS1DFunctionInt8Int8InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> {
+          TFCS1DFunction_HistogramInt8BinEdges,
+          uint8_t,
+          float>
+{
 public:
-  TFCS1DFunctionInt8Int8InterpolationHistogram(TH1 *h = nullptr)
+  TFCS1DFunctionInt8Int8InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float>(h){};
+          TFCS1DFunction_HistogramInt8BinEdges,
+          uint8_t,
+          float>(h) {};
 
   ClassDef(TFCS1DFunctionInt8Int8InterpolationHistogram,
-           1) // TFCS1DFunctionInt8Int8InterpolationHistogram
+           1)  // TFCS1DFunctionInt8Int8InterpolationHistogram
 };
 
 class TFCS1DFunctionInt8Int16InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> {
+          TFCS1DFunction_HistogramInt8BinEdges,
+          uint16_t,
+          float>
+{
 public:
-  TFCS1DFunctionInt8Int16InterpolationHistogram(TH1 *h = nullptr)
+  TFCS1DFunctionInt8Int16InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float>(h){};
+          TFCS1DFunction_HistogramInt8BinEdges,
+          uint16_t,
+          float>(h) {};
 
   ClassDef(TFCS1DFunctionInt8Int16InterpolationHistogram,
-           1) // TFCS1DFunctionInt8Int16InterpolationHistogram
+           1)  // TFCS1DFunctionInt8Int16InterpolationHistogram
 };
 
 class TFCS1DFunctionInt16Int16InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> {
+          TFCS1DFunction_HistogramInt16BinEdges,
+          uint16_t,
+          float>
+{
 public:
-  TFCS1DFunctionInt16Int16InterpolationHistogram(TH1 *h = nullptr)
+  TFCS1DFunctionInt16Int16InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float>(h){};
+          TFCS1DFunction_HistogramInt16BinEdges,
+          uint16_t,
+          float>(h) {};
 
   ClassDef(TFCS1DFunctionInt16Int16InterpolationHistogram,
-           1) // TFCS1DFunctionInt16Int16InterpolationHistogram
+           1)  // TFCS1DFunctionInt16Int16InterpolationHistogram
 };
 
 class TFCS1DFunctionInt16Int32InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> {
+          TFCS1DFunction_HistogramInt16BinEdges,
+          uint32_t,
+          float>
+{
 public:
-  TFCS1DFunctionInt16Int32InterpolationHistogram(TH1 *h = nullptr)
+  TFCS1DFunctionInt16Int32InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float>(h){};
+          TFCS1DFunction_HistogramInt16BinEdges,
+          uint32_t,
+          float>(h) {};
 
   ClassDef(TFCS1DFunctionInt16Int32InterpolationHistogram,
-           1) // TFCS1DFunctionInt16Int32InterpolationHistogram
+           1)  // TFCS1DFunctionInt16Int32InterpolationHistogram
 };
 
 #if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram <          \
-    TFCS1DFunction_HistogramInt8BinEdges,                                      \
-    uint8_t, float> +                                                          \
-    ;
-#pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram <          \
-    TFCS1DFunction_HistogramInt8BinEdges,                                      \
-    uint16_t, float> +                                                         \
-    ;
-#pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram <          \
-    TFCS1DFunction_HistogramInt16BinEdges,                                     \
-    uint16_t, float> +                                                         \
-    ;
-#pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram <          \
-    TFCS1DFunction_HistogramInt16BinEdges,                                     \
-    uint32_t, float> +                                                         \
-    ;
+#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
+          < TFCS1DFunction_HistogramInt8BinEdges, \
+      uint8_t, float> + ;
+#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
+          < TFCS1DFunction_HistogramInt8BinEdges, \
+      uint16_t, float> + ;
+#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
+          < TFCS1DFunction_HistogramInt16BinEdges, \
+      uint16_t, float> + ;
+#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
+          < TFCS1DFunction_HistogramInt16BinEdges, \
+      uint32_t, float> + ;
 
-#pragma link C++ class TFCS1DFunctionInt8Int8InterpolationHistogram + ;
-#pragma link C++ class TFCS1DFunctionInt8Int16InterpolationHistogram + ;
-#pragma link C++ class TFCS1DFunctionInt16Int16InterpolationHistogram + ;
-#pragma link C++ class TFCS1DFunctionInt16Int32InterpolationHistogram + ;
+#  pragma link C++ class TFCS1DFunctionInt8Int8InterpolationHistogram + ;
+#  pragma link C++ class TFCS1DFunctionInt8Int16InterpolationHistogram + ;
+#  pragma link C++ class TFCS1DFunctionInt16Int16InterpolationHistogram + ;
+#  pragma link C++ class TFCS1DFunctionInt16Int32InterpolationHistogram + ;
 
 #endif
 

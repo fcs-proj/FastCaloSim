@@ -12,10 +12,11 @@
 
 class TH1;
 
-class TFCS1DFunction : public TFCSFunction {
+class TFCS1DFunction : public TFCSFunction
+{
 public:
-  TFCS1DFunction(){};
-  ~TFCS1DFunction(){};
+  TFCS1DFunction() {};
+  ~TFCS1DFunction() {};
 
   virtual int ndim() const { return 1; };
 
@@ -31,27 +32,35 @@ public:
   /// The == operator compares the content of instances.
   /// The implementation in the base class only returns true for a comparison
   /// with itself
-  virtual bool operator==(const TFCS1DFunction &ref) const {
+  virtual bool operator==(const TFCS1DFunction& ref) const
+  {
     return this == &ref;
   };
 
-  static double get_maxdev(TH1 *, TH1 *);
+  static double get_maxdev(TH1*, TH1*);
 
-  static double CheckAndIntegrate1DHistogram(const TH1 *hist,
-                                             std::vector<double> &integral_vec,
-                                             int &first, int &last);
+  static double CheckAndIntegrate1DHistogram(const TH1* hist,
+                                             std::vector<double>& integral_vec,
+                                             int& first,
+                                             int& last);
 
-  static TH1 *generate_histogram_random_slope(int nbinsx = 50, double xmin = 0, double xmax = 1,
-                        double zerothreshold = 0.1);
-  static TH1 *generate_histogram_random_gauss(
-      int nbinsx = 50, int ntoy = 100000, double xmin = 1, double xmax = 5,
-      double xpeak = 1.5, double sigma = 0.6);
-  static void unit_test(TH1 *hist, TFCS1DFunction *rtof,
-                                              int nrnd = 1000000,
-                                              TH1 *histfine = nullptr);
+  static TH1* generate_histogram_random_slope(int nbinsx = 50,
+                                              double xmin = 0,
+                                              double xmax = 1,
+                                              double zerothreshold = 0.1);
+  static TH1* generate_histogram_random_gauss(int nbinsx = 50,
+                                              int ntoy = 100000,
+                                              double xmin = 1,
+                                              double xmax = 5,
+                                              double xpeak = 1.5,
+                                              double sigma = 0.6);
+  static void unit_test(TH1* hist,
+                        TFCS1DFunction* rtof,
+                        int nrnd = 1000000,
+                        TH1* histfine = nullptr);
 
 private:
-  ClassDef(TFCS1DFunction, 2) // TFCS1DFunction
+  ClassDef(TFCS1DFunction, 2)  // TFCS1DFunction
 };
 
 #endif

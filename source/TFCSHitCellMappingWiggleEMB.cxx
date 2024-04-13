@@ -2,22 +2,22 @@
   Copyright (C) 2002-2018 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "CLHEP/Random/RandFlat.h"
-
 #include "FastCaloSim/TFCSHitCellMappingWiggleEMB.h"
-#include "FastCaloSim/TFCSSimulationState.h"
 
-#include "TVector2.h"
+#include "CLHEP/Random/RandFlat.h"
+#include "FastCaloSim/TFCSSimulationState.h"
 #include "TMath.h"
+#include "TVector2.h"
 
 //=============================================
 //======= TFCSHitCellMappingWiggleEMB =========
 //=============================================
 
-TFCSHitCellMappingWiggleEMB::TFCSHitCellMappingWiggleEMB(const char *name,
-                                                         const char *title,
-                                                         ICaloGeometry *geo)
-    : TFCSHitCellMapping(name, title, geo) {
+TFCSHitCellMappingWiggleEMB::TFCSHitCellMappingWiggleEMB(const char* name,
+                                                         const char* title,
+                                                         ICaloGeometry* geo)
+    : TFCSHitCellMapping(name, title, geo)
+{
   double wiggleLayer1[] = {
       0.0110626, 0.0242509, 0.0398173, 0.055761, 0.0736173, 0.0938847, 0.115154,
       0.13639,   0.157644,  0.178934,  0.200182, 0.221473,  0.242745,  0.264019,
@@ -54,7 +54,8 @@ TFCSHitCellMappingWiggleEMB::TFCSHitCellMappingWiggleEMB(const char *name,
   }
 }
 
-double TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) {
+double TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand)
+{
   int layer = calosample();
 
   double wiggle = 0.0;
@@ -70,7 +71,7 @@ double TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) {
     return 0.0;
   }
 
-  // Now for layer dependant approach
+  // Now for layer dependent approach
   if (layer == 1) {
     int chosenBin = (Int_t)TMath::BinarySearch(50, m_wiggleLayer1, searchRand);
     double x_wigg = ((-0.98) + (chosenBin + 1) * 0.04) / 2;
@@ -93,8 +94,11 @@ double TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) {
 }
 
 FCSReturnCode TFCSHitCellMappingWiggleEMB::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol)
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }

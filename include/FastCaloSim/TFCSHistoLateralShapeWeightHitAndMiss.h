@@ -9,23 +9,24 @@
 
 class TH1;
 
-class TFCSHistoLateralShapeWeightHitAndMiss
-    : public TFCSHistoLateralShapeWeight {
+class TFCSHistoLateralShapeWeightHitAndMiss : public TFCSHistoLateralShapeWeight
+{
 public:
-  TFCSHistoLateralShapeWeightHitAndMiss(const char *name = nullptr,
-                                        const char *title = nullptr);
+  TFCSHistoLateralShapeWeightHitAndMiss(const char* name = nullptr,
+                                        const char* title = nullptr);
   virtual ~TFCSHistoLateralShapeWeightHitAndMiss();
 
   /// weight the energy of one hit in order to generate fluctuations. If the hit
   /// energy is 0, discard the hit
-  virtual FCSReturnCode
-  simulate_hit(Hit &hit, TFCSSimulationState &simulstate,
-               const TFCSTruthState *truth,
-               const TFCSExtrapolationState *extrapol) override;
+  virtual FCSReturnCode simulate_hit(
+      Hit& hit,
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol) override;
 
 private:
   ClassDefOverride(TFCSHistoLateralShapeWeightHitAndMiss,
-                   1) // TFCSHistoLateralShapeWeightHitAndMiss
+                   1)  // TFCSHistoLateralShapeWeightHitAndMiss
 };
 
 #endif

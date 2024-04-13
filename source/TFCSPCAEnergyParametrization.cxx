@@ -2,41 +2,42 @@
   Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "CLHEP/Random/RandGaussZiggurat.h"
-#include "CLHEP/Random/RandFlat.h"
-
 #include "FastCaloSim/TFCSPCAEnergyParametrization.h"
+
+#include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandGaussZiggurat.h"
 #include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
-
-#include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSExtrapolationState.h"
-
-#include "TFile.h"
-#include "TKey.h"
+#include "FastCaloSim/TFCSSimulationState.h"
 #include "TClass.h"
+#include "TFile.h"
+#include "TH1.h"
+#include "TKey.h"
+#include "TMath.h"
 #include "TMatrixD.h"
 #include "TMatrixDSymEigen.h"
-#include "TMath.h"
-#include "TH1.h"
 
 //=============================================
 //======= TFCSPCAEnergyParametrization =========
 //=============================================
 
-TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char *name,
-                                                           const char *title)
-    : TFCSEnergyParametrization(name, title) {
+TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char* name,
+                                                           const char* title)
+    : TFCSEnergyParametrization(name, title)
+{
   m_numberpcabins = 1;
   do_rescale = 1;
 }
 
-bool TFCSPCAEnergyParametrization::is_match_Ekin_bin(int Ekin_bin) const {
+bool TFCSPCAEnergyParametrization::is_match_Ekin_bin(int Ekin_bin) const
+{
   if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
     return true;
   return false;
 }
 
-bool TFCSPCAEnergyParametrization::is_match_calosample(int calosample) const {
+bool TFCSPCAEnergyParametrization::is_match_calosample(int calosample) const
+{
   for (unsigned int i = 0; i < m_RelevantLayers.size(); i++) {
     if (m_RelevantLayers[i] == calosample)
       return true;
@@ -44,7 +45,8 @@ bool TFCSPCAEnergyParametrization::is_match_calosample(int calosample) const {
   return false;
 }
 
-void TFCSPCAEnergyParametrization::Print(Option_t *option) const {
+void TFCSPCAEnergyParametrization::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
@@ -64,7 +66,8 @@ void TFCSPCAEnergyParametrization::Print(Option_t *option) const {
   }
 }
 
-float interpolate_get_y(TH1 *hist, float x) {
+float interpolate_get_y(TH1* hist, float x)
+{
   float m = 0;
   float n = 0;
   float x1 = 1;
@@ -99,7 +102,8 @@ float interpolate_get_y(TH1 *hist, float x) {
 }
 
 void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(int Ekin_bin,
-                                                                TH1 *hist) {
+                                                                TH1* hist)
+{
   if (Ekin_bin < 1)
     return;
   if (Ekin_bin - 1 >= (int)m_totalE_probability_ratio.size())
@@ -107,8 +111,9 @@ void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(int Ekin_bin,
   m_totalE_probability_ratio[Ekin_bin - 1] = hist;
 }
 
-TH1 *TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
-    int Ekin_bin) const {
+TH1* TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
+    int Ekin_bin) const
+{
   if (Ekin_bin < 1)
     return nullptr;
   if (Ekin_bin - 1 >= (int)m_totalE_probability_ratio.size())
@@ -117,9 +122,10 @@ TH1 *TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
 }
 
 FCSReturnCode TFCSPCAEnergyParametrization::simulate(
-    TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) const {
-
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/) const
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -133,21 +139,20 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
       simulstate.set_Efrac(s, 0.0);
     }
   } else {
+    TMatrixD* EV = m_EV[pcabin - 1];
+    TVectorD* MeanValues = m_MeanValues[pcabin - 1];
+    TVectorD* SigmaValues = m_SigmaValues[pcabin - 1];
+    TVectorD* Gauss_means = m_Gauss_means[pcabin - 1];
+    TVectorD* Gauss_rms = m_Gauss_rms[pcabin - 1];
+    std::vector<TFCS1DFunction*> cumulative = m_cumulative[pcabin - 1];
 
-    TMatrixD *EV = m_EV[pcabin - 1];
-    TVectorD *MeanValues = m_MeanValues[pcabin - 1];
-    TVectorD *SigmaValues = m_SigmaValues[pcabin - 1];
-    TVectorD *Gauss_means = m_Gauss_means[pcabin - 1];
-    TVectorD *Gauss_rms = m_Gauss_rms[pcabin - 1];
-    std::vector<TFCS1DFunction *> cumulative = m_cumulative[pcabin - 1];
+    const std::vector<int>& layerNr = m_RelevantLayers;
 
-    const std::vector<int> &layerNr = m_RelevantLayers;
+    double* vals_gauss_means = (double*)Gauss_means->GetMatrixArray();
+    double* vals_gauss_rms = Gauss_rms->GetMatrixArray();
 
-    double *vals_gauss_means = (double *)Gauss_means->GetMatrixArray();
-    double *vals_gauss_rms = Gauss_rms->GetMatrixArray();
-
-    double *output_data = new double[layerNr.size() + 1];
-    double *input_data = new double[layerNr.size() + 1];
+    double* output_data = new double[layerNr.size() + 1];
+    double* input_data = new double[layerNr.size() + 1];
 
     for (unsigned int l = 0; l <= layerNr.size(); l++) {
       double mean = vals_gauss_means[l];
@@ -157,10 +162,15 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
       input_data[l] = gauszz;
     }
 
-    P2X(SigmaValues, MeanValues, EV, layerNr.size() + 1, input_data,
-        output_data, layerNr.size() + 1);
+    P2X(SigmaValues,
+        MeanValues,
+        EV,
+        layerNr.size() + 1,
+        input_data,
+        output_data,
+        layerNr.size() + 1);
 
-    double *simdata = new double[layerNr.size() + 1];
+    double* simdata = new double[layerNr.size() + 1];
     double sum_fraction = 0.0;
     for (unsigned int l = 0; l <= layerNr.size(); l++) {
       double simdata_uniform =
@@ -168,7 +178,7 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
 
       simdata[l] = cumulative[l]->rnd_to_fct(simdata_uniform);
 
-      if (l != layerNr.size()) // sum up the fractions, but not the totalE
+      if (l != layerNr.size())  // sum up the fractions, but not the totalE
         sum_fraction += simdata[l];
     }
 
@@ -186,12 +196,13 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
     // Apply hit-and-miss reweighting of total energy response
     // This needs to run before simulstate is modified, otherwise a clean retry
     // is not possible
-    TH1 *h_totalE_ratio = get_totalE_probability_ratio(pcabin);
+    TH1* h_totalE_ratio = get_totalE_probability_ratio(pcabin);
     if (h_totalE_ratio) {
       float pass_probability = 0;
       float Etot = simdata[layerNr.size()];
-      if (Etot > h_totalE_ratio->GetXaxis()->GetXmin() &&
-          Etot < h_totalE_ratio->GetXaxis()->GetXmax()) {
+      if (Etot > h_totalE_ratio->GetXaxis()->GetXmin()
+          && Etot < h_totalE_ratio->GetXaxis()->GetXmax())
+      {
         pass_probability = interpolate_get_y(h_totalE_ratio, Etot);
       }
       float random = CLHEP::RandFlat::shoot(simulstate.randomEngine());
@@ -228,14 +239,17 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
   return FCSSuccess;
 }
 
-void TFCSPCAEnergyParametrization::P2X(TVectorD *SigmaValues,
-                                       TVectorD *MeanValues, TMatrixD *EV,
-                                       int gNVariables, const double *p,
-                                       double* x, int nTest) {
-
-  const double *gSigmaValues = SigmaValues->GetMatrixArray();
-  const double *gMeanValues = MeanValues->GetMatrixArray();
-  const double *gEigenVectors = EV->GetMatrixArray();
+void TFCSPCAEnergyParametrization::P2X(TVectorD* SigmaValues,
+                                       TVectorD* MeanValues,
+                                       TMatrixD* EV,
+                                       int gNVariables,
+                                       const double* p,
+                                       double* x,
+                                       int nTest)
+{
+  const double* gSigmaValues = SigmaValues->GetMatrixArray();
+  const double* gMeanValues = MeanValues->GetMatrixArray();
+  const double* gEigenVectors = EV->GetMatrixArray();
 
   for (int i = 0; i < gNVariables; i++) {
     x[i] = gMeanValues[i];
@@ -246,13 +260,14 @@ void TFCSPCAEnergyParametrization::P2X(TVectorD *SigmaValues,
   }
 }
 
-bool TFCSPCAEnergyParametrization::loadInputs(TFile *file) {
+bool TFCSPCAEnergyParametrization::loadInputs(TFile* file)
+{
   return loadInputs(file, "");
 }
 
-bool TFCSPCAEnergyParametrization::loadInputs(TFile *file,
-                                              const std::string &folder) {
-
+bool TFCSPCAEnergyParametrization::loadInputs(TFile* file,
+                                              const std::string& folder)
+{
   bool load_ok = 1;
 
   int trynext = 1;
@@ -262,7 +277,7 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile *file,
   else
     x = folder + "/bin";
   while (trynext) {
-    IntArray *test = (IntArray *)file->Get(
+    IntArray* test = (IntArray*)file->Get(
         x + Form("%i/pca/RelevantLayers", m_numberpcabins));
     if (test) {
       m_numberpcabins++;
@@ -273,10 +288,11 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile *file,
   m_numberpcabins -= 1;
 
   file->cd(x + "1/pca");
-  IntArray *RelevantLayers = (IntArray *)gDirectory->Get("RelevantLayers");
+  IntArray* RelevantLayers = (IntArray*)gDirectory->Get("RelevantLayers");
   if (RelevantLayers == nullptr) {
-    ATH_MSG_ERROR("TFCSPCAEnergyParametrization::m_RelevantLayers in first "
-                  "pcabin is null!");
+    ATH_MSG_ERROR(
+        "TFCSPCAEnergyParametrization::m_RelevantLayers in first "
+        "pcabin is null!");
     load_ok = false;
   }
 
@@ -288,14 +304,13 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile *file,
     m_RelevantLayers.push_back(RelevantLayers->GetAt(i));
 
   for (int bin = 1; bin <= m_numberpcabins; bin++) {
-
     file->cd(x + Form("%i/pca", bin));
 
-    TMatrixDSym *symCov = (TMatrixDSym *)gDirectory->Get("symCov");
-    TVectorD *MeanValues = (TVectorD *)gDirectory->Get("MeanValues");
-    TVectorD *SigmaValues = (TVectorD *)gDirectory->Get("SigmaValues");
-    TVectorD *Gauss_means = (TVectorD *)gDirectory->Get("Gauss_means");
-    TVectorD *Gauss_rms = (TVectorD *)gDirectory->Get("Gauss_rms");
+    TMatrixDSym* symCov = (TMatrixDSym*)gDirectory->Get("symCov");
+    TVectorD* MeanValues = (TVectorD*)gDirectory->Get("MeanValues");
+    TVectorD* SigmaValues = (TVectorD*)gDirectory->Get("SigmaValues");
+    TVectorD* Gauss_means = (TVectorD*)gDirectory->Get("Gauss_means");
+    TVectorD* Gauss_rms = (TVectorD*)gDirectory->Get("Gauss_rms");
 
     if (symCov == nullptr) {
       ATH_MSG_WARNING("TFCSPCAEnergyParametrization::symCov in pcabin "
@@ -327,7 +342,7 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile *file,
       return false;
 
     TMatrixDSymEigen cov_eigen(*symCov);
-    TMatrixD *EV = new TMatrixD(cov_eigen.GetEigenVectors());
+    TMatrixD* EV = new TMatrixD(cov_eigen.GetEigenVectors());
     m_EV.push_back(EV);
     m_MeanValues.push_back(MeanValues);
     m_SigmaValues.push_back(SigmaValues);
@@ -335,25 +350,25 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile *file,
     m_Gauss_rms.push_back(Gauss_rms);
 
     std::vector<std::string> layer;
-    const std::vector<int> &layerNr = m_RelevantLayers;
+    const std::vector<int>& layerNr = m_RelevantLayers;
 
     for (unsigned int i = 0; i < layerNr.size(); i++) {
       layer.emplace_back(Form("layer%i", layerNr[i]));
     }
     layer.emplace_back("totalE");
 
-    std::vector<TFCS1DFunction *> cumulative;
+    std::vector<TFCS1DFunction*> cumulative;
     cumulative.reserve(layer.size());
 
     for (unsigned int l = 0; l < layer.size(); l++) {
       file->cd(Form("%s/bin%i/%s", folder.c_str(), bin, layer[l].c_str()));
 
-      TFCS1DFunction *fct;
-      fct = (TFCS1DFunction *)gDirectory->Get("TFCS1DFunctionRegression");
+      TFCS1DFunction* fct;
+      fct = (TFCS1DFunction*)gDirectory->Get("TFCS1DFunctionRegression");
       if (!fct)
-        fct = (TFCS1DFunction *)gDirectory->Get("TFCS1DFunctionRegressionTF");
+        fct = (TFCS1DFunction*)gDirectory->Get("TFCS1DFunctionRegressionTF");
       if (!fct)
-        fct = (TFCS1DFunction *)gDirectory->Get("TFCS1DFunctionHistogram");
+        fct = (TFCS1DFunction*)gDirectory->Get("TFCS1DFunctionHistogram");
       cumulative.push_back(fct);
     }
 
@@ -364,12 +379,14 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile *file,
   return true;
 }
 
-void TFCSPCAEnergyParametrization::clean() {
+void TFCSPCAEnergyParametrization::clean()
+{
   for (unsigned int i = 0; i < m_EV.size(); i++)
     delete m_EV[i];
 }
 
-void TFCSPCAEnergyParametrization::Streamer(TBuffer &R__b) {
+void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
+{
   // Stream an object of class TFCSPCAEnergyParametrization
 
   if (R__b.IsReading()) {

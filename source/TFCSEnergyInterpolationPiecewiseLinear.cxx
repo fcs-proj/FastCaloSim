@@ -3,29 +3,35 @@
 */
 
 #include "FastCaloSim/TFCSEnergyInterpolationPiecewiseLinear.h"
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
 
-namespace Gaudi {
-namespace Units {
+namespace Gaudi
+{
+namespace Units
+{
 constexpr double megaelectronvolt = 1.;
 constexpr double kiloelectronvolt = 1.e-3 * megaelectronvolt;
 constexpr double keV = kiloelectronvolt;
-} // namespace Units
-} // namespace Gaudi
+}  // namespace Units
+}  // namespace Gaudi
 
 //========================================================
 //======= TFCSEnergyInterpolationPiecewiseLinear =========
 //========================================================
 
 TFCSEnergyInterpolationPiecewiseLinear::TFCSEnergyInterpolationPiecewiseLinear(
-    const char *name, const char *title)
-    : TFCSParametrization(name, title),
-      m_linInterpol(0, ROOT::Math::Interpolation::kLINEAR) {}
+    const char* name, const char* title)
+    : TFCSParametrization(name, title)
+    , m_linInterpol(0, ROOT::Math::Interpolation::kLINEAR)
+{
+}
 
 void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInLogEkin(
-    Int_t np, const Double_t logEkin[], const Double_t response[]) {
+    Int_t np, const Double_t logEkin[], const Double_t response[])
+{
   // save logEkin and response as std::vector class members
   // this is required for using the custom streamer
   m_logEkin.assign(logEkin, logEkin + np);
@@ -37,7 +43,8 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInLogEkin(
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
-    Int_t np, const Double_t Ekin[], const Double_t response[]) {
+    Int_t np, const Double_t Ekin[], const Double_t response[])
+{
   std::vector<Double_t> logEkin(np);
   for (int i = 0; i < np; i++)
     logEkin[i] = TMath::Log(Ekin[i]);
@@ -45,26 +52,27 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
 }
 
 FCSReturnCode TFCSEnergyInterpolationPiecewiseLinear::simulate(
-    TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *) const {
-
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState*) const
+{
   const float Ekin = truth->Ekin();
   const float Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
 
   // catch very small values of Ekin (use 1 keV here) and fix the interpolation
   // lookup to the 1keV value
   const float logEkin = Ekin > Gaudi::Units::keV
-                            ? TMath::Log(Ekin)
-                            : TMath::Log(Gaudi::Units::keV);
+      ? TMath::Log(Ekin)
+      : TMath::Log(Gaudi::Units::keV);
 
   float Emean;
   if (logEkin < m_MinMaxlogEkin.first) {
     Emean = m_linInterpol.Eval(m_MinMaxlogEkin.first) * Einit;
   } else if (logEkin > m_MinMaxlogEkin.second) {
-    Emean = (m_linInterpol.Eval(m_MinMaxlogEkin.second) +
-             m_linInterpol.Deriv(m_MinMaxlogEkin.second) *
-                 (logEkin - m_MinMaxlogEkin.second)) *
-            Einit;
+    Emean = (m_linInterpol.Eval(m_MinMaxlogEkin.second)
+             + m_linInterpol.Deriv(m_MinMaxlogEkin.second)
+                 * (logEkin - m_MinMaxlogEkin.second))
+        * Einit;
   } else {
     Emean = m_linInterpol.Eval(logEkin) * Einit;
   }
@@ -81,8 +89,9 @@ FCSReturnCode TFCSEnergyInterpolationPiecewiseLinear::simulate(
   return FCSSuccess;
 }
 
-double
-TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double &Ekin) const {
+double TFCSEnergyInterpolationPiecewiseLinear::evaluate(
+    const double& Ekin) const
+{
   // returns simple evaluation of the interpolation
   // if the lookup is below the minimum interpolation value, will return minimum
   // evaluation if the lookup is above the maximum interpolation value, will
@@ -92,8 +101,8 @@ TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double &Ekin) const {
   // catch very small values of Ekin (use 1 keV here) and fix the interpolation
   // lookup to the 1keV value
   const float logEkin = Ekin > Gaudi::Units::keV
-                            ? TMath::Log(Ekin)
-                            : TMath::Log(Gaudi::Units::keV);
+      ? TMath::Log(Ekin)
+      : TMath::Log(Gaudi::Units::keV);
 
   if (logEkin < m_MinMaxlogEkin.first)
     return m_linInterpol.Eval(m_MinMaxlogEkin.first);
@@ -103,8 +112,8 @@ TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double &Ekin) const {
     return m_linInterpol.Eval(logEkin);
 }
 
-void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t *option) const {
-
+void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
@@ -121,14 +130,15 @@ void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t *option) const {
                           << "<=Ekin<=" << TMath::Exp(m_MinMaxlogEkin.second));
 }
 
-void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer &R__b) {
+void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer& R__b)
+{
   // Stream an object of class TFCSEnergyInterpolationPiecewiseLinear
   if (R__b.IsReading()) {
     // read the class buffer
     R__b.ReadClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(), this);
     // initialize interpolation from saved class members
-    InitFromArrayInLogEkin(m_logEkin.size(), m_logEkin.data(),
-                           m_response.data());
+    InitFromArrayInLogEkin(
+        m_logEkin.size(), m_logEkin.data(), m_response.data());
   } else {
     R__b.WriteClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(),
                           this);
@@ -136,8 +146,11 @@ void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer &R__b) {
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::unit_test(
-    TFCSSimulationState *simulstate, TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol, TGraph *grlinear) {
+    TFCSSimulationState* simulstate,
+    TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol,
+    TGraph* grlinear)
+{
   if (!simulstate)
     simulstate = new TFCSSimulationState();
   if (!truth)
@@ -147,18 +160,24 @@ void TFCSEnergyInterpolationPiecewiseLinear::unit_test(
 
   if (!grlinear) {
     const int Graph0_n = 9;
-    Double_t Graph0_fx1001[Graph0_n] = {1.024,  2.048,  4.094,   8.192,  16.384,
-                                        32.768, 65.536, 131.072, 262.144};
+    Double_t Graph0_fx1001[Graph0_n] = {
+        1.024, 2.048, 4.094, 8.192, 16.384, 32.768, 65.536, 131.072, 262.144};
 
     for (int i = 0; i < Graph0_n; ++i)
       Graph0_fx1001[i] *= 1000;
-    Double_t Graph0_fy1001[Graph0_n] = {0.6535402, 0.6571529, 0.6843001,
-                                        0.7172835, 0.7708416, 0.798819,
-                                        0.8187628, 0.8332745, 0.8443931};
+    Double_t Graph0_fy1001[Graph0_n] = {0.6535402,
+                                        0.6571529,
+                                        0.6843001,
+                                        0.7172835,
+                                        0.7708416,
+                                        0.798819,
+                                        0.8187628,
+                                        0.8332745,
+                                        0.8443931};
     grlinear = new TGraph(Graph0_n, Graph0_fx1001, Graph0_fy1001);
   }
 
-  TGraph *grdraw = (TGraph *)grlinear->Clone();
+  TGraph* grdraw = (TGraph*)grlinear->Clone();
   grdraw->SetMarkerColor(46);
   grdraw->SetMarkerStyle(8);
 
@@ -173,14 +192,14 @@ void TFCSEnergyInterpolationPiecewiseLinear::unit_test(
   test.set_eta_nominal(0.225);
   test.set_eta_min(0.2);
   test.set_eta_max(0.25);
-  test.InitFromArrayInEkin(grlinear->GetN(), grlinear->GetX(),
-                           grlinear->GetY());
+  test.InitFromArrayInEkin(
+      grlinear->GetN(), grlinear->GetX(), grlinear->GetY());
   // test.set_OnlyScaleEnergy();
   test.Print();
 
   truth->set_pdgid(22);
 
-  TGraph *gr = new TGraph();
+  TGraph* gr = new TGraph();
   gr->SetNameTitle("testTFCSEnergyInterpolationPiecewiseLogX",
                    "test TFCSEnergyInterpolationPiecewiseLinear log x-axis");
   gr->GetXaxis()->SetTitle("Ekin [MeV]");
@@ -188,7 +207,8 @@ void TFCSEnergyInterpolationPiecewiseLinear::unit_test(
 
   int ip = 0;
   for (float Ekin = test.Ekin_min() * 0.25; Ekin <= test.Ekin_max() * 4;
-       Ekin *= 1.05) {
+       Ekin *= 1.05)
+  {
     // Init LorentzVector for truth. For photon Ekin=E
     truth->SetPxPyPzE(Ekin, 0, 0, Ekin);
     simulstate->set_E(Ekin);
@@ -199,7 +219,7 @@ void TFCSEnergyInterpolationPiecewiseLinear::unit_test(
     ++ip;
   }
 
-  TCanvas *c = new TCanvas(gr->GetName(), gr->GetTitle());
+  TCanvas* c = new TCanvas(gr->GetName(), gr->GetTitle());
   gr->Draw("APL");
   grdraw->Draw("Psame");
   c->SetLogx();

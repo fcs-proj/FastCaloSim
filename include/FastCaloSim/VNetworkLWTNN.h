@@ -6,7 +6,7 @@
  * and defined aspects common to all LWTNN networks.
  *
  * In particular, this derived virtual class handles
- * saving, memory managment and printing.
+ * saving, memory management and printing.
  *
  * To classes derive from this class;
  *   - TFCSSimpleLWTNNHandler; Designed to wrap a lwtnn neural network
@@ -19,8 +19,9 @@
 #include "VNetworkBase.h"
 
 // For reading and writing
-#include "TTree.h"
 #include <sstream>
+
+#include "TTree.h"
 
 /**
  * @brief A template defining the interface to a lwtnn network.
@@ -28,7 +29,8 @@
  * Has various subclasses to cover the various formats of lwtnn
  * networks.
  **/
-class VNetworkLWTNN : public VNetworkBase {
+class VNetworkLWTNN : public VNetworkBase
+{
 public:
   // Not sure if this is needed
   using VNetworkBase::VNetworkBase;
@@ -42,7 +44,7 @@ public:
    *
    * @param copy_from existing network that we are copying
    **/
-  VNetworkLWTNN(const VNetworkLWTNN &copy_from);
+  VNetworkLWTNN(const VNetworkLWTNN& copy_from);
 
   // Ensure we inherit methods of the same name with different signatures
   using VNetworkBase::writeNetToTTree;
@@ -55,16 +57,16 @@ public:
    *
    * @param tree  The tree to save inside.
    **/
-  void writeNetToTTree(TTree &tree) override;
+  void writeNetToTTree(TTree& tree) override;
 
   // virtual destructor, to ensure that it is always called, even
   // when a base class is deleted via a pointer to a derived class
   virtual ~VNetworkLWTNN();
 
   /**
-   * @brief Get rid of any memory objects that arn't needed to run the net.
+   * @brief Get rid of any memory objects that aren't needed to run the net.
    *
-   * Minimise memory usage by deleting nay inputs that are
+   * Minimize memory usage by deleting nay inputs that are
    * no longer required to run the compute function.
    * Will prevent the net from being saved, if you need
    * to call writeNetToTTree that must happen before this is called.
@@ -91,7 +93,7 @@ protected:
    *
    * @param strm  output parameter, to which the description will be written.
    **/
-  virtual void print(std::ostream &strm) const override;
+  virtual void print(std::ostream& strm) const override;
 
   /**
    * @brief Perform actions that prep data to create the net
@@ -109,41 +111,41 @@ private:
    * @brief Fill out m_json from a file provided to the constructor
    *
    * Provided the string provided as inputFile to the constructor
-   * is a known file type (root or json) this function retreives
+   * is a known file type (root or json) this function retrieves
    * the json string itself and puts it into m_json.
    *
    * @param tree_name   TTree name to check in when reading root files.
    **/
-  void fillJson(std::string const &tree_name = m_defaultTreeName);
+  void fillJson(std::string const& tree_name = m_defaultTreeName);
 
   /**
    * @brief Get json string from TTree.
    *
-   * Given a TTree object, retrive the json string from the
-   * standard branch. This is used to retrive a network previously
+   * Given a TTree object, retrieve the json string from the
+   * standard branch. This is used to retrieve a network previously
    * saved using writeNetToTTree.
    *
    * @param tree   TTree with the json saved inside.
    **/
-  std::string readStringFromTTree(TTree &tree);
+  std::string readStringFromTTree(TTree& tree);
 
   /**
    * @brief Get json string from TTree.
    *
-   * Given a TTree object, retrive the json string from the
-   * standard branch. This is used to retrive a network previously
+   * Given a TTree object, retrieve the json string from the
+   * standard branch. This is used to retrieve a network previously
    * saved using writeNetToTTree.
    *
    * @param tree   TTree with the json saved inside.
    **/
-  void writeStringToTTree(TTree &tree, std::string json_string);
+  void writeStringToTTree(TTree& tree, std::string json_string);
 
   /**
-   * @brief Stores a printable identifyer for the net. Not unique.
+   * @brief Stores a printable identifier for the net. Not unique.
    **/
   std::string m_printable_name;
 
-  // Suppling a ClassDef for writing to file.
+  // Supplying a ClassDef for writing to file.
   ClassDefOverride(VNetworkLWTNN, 1);
 };
 

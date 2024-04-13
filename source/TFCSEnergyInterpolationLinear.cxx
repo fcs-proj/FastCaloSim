@@ -2,27 +2,34 @@
   Copyright (C) 2002-2019 CERN for the benefit of the ATLAS collaboration
 */
 
+#include <iostream>
+
 #include "FastCaloSim/TFCSEnergyInterpolationLinear.h"
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
+#include "TAxis.h"
 #include "TCanvas.h"
 #include "TGraph.h"
-#include "TAxis.h"
-#include <iostream>
 
 //=============================================
 //======= TFCSEnergyInterpolationLinear =========
 //=============================================
 
-TFCSEnergyInterpolationLinear::TFCSEnergyInterpolationLinear(const char *name,
-                                                             const char *title)
-    : TFCSParametrization(name, title), m_slope(1), m_offset(0) {}
+TFCSEnergyInterpolationLinear::TFCSEnergyInterpolationLinear(const char* name,
+                                                             const char* title)
+    : TFCSParametrization(name, title)
+    , m_slope(1)
+    , m_offset(0)
+{
+}
 
-FCSReturnCode
-TFCSEnergyInterpolationLinear::simulate(TFCSSimulationState &simulstate,
-                                        const TFCSTruthState *truth,
-                                        const TFCSExtrapolationState *) const {
+FCSReturnCode TFCSEnergyInterpolationLinear::simulate(
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState*) const
+{
   const float Emean = m_slope * truth->Ekin() + m_offset;
 
   ATH_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin());
@@ -31,7 +38,8 @@ TFCSEnergyInterpolationLinear::simulate(TFCSSimulationState &simulstate,
   return FCSSuccess;
 }
 
-void TFCSEnergyInterpolationLinear::Print(Option_t *option) const {
+void TFCSEnergyInterpolationLinear::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
@@ -45,8 +53,10 @@ void TFCSEnergyInterpolationLinear::Print(Option_t *option) const {
 }
 
 void TFCSEnergyInterpolationLinear::unit_test(
-    TFCSSimulationState *simulstate, TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) {
+    TFCSSimulationState* simulstate,
+    TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol)
+{
   if (!simulstate)
     simulstate = new TFCSSimulationState();
   if (!truth)
@@ -69,7 +79,7 @@ void TFCSEnergyInterpolationLinear::unit_test(
 
   truth->set_pdgid(22);
 
-  TGraph *gr = new TGraph();
+  TGraph* gr = new TGraph();
   gr->SetNameTitle("testTFCSEnergyInterpolation",
                    "test linear TFCSEnergyInterpolation");
   gr->GetXaxis()->SetTitle("Ekin [MeV]");
@@ -86,7 +96,7 @@ void TFCSEnergyInterpolationLinear::unit_test(
     ++ip;
   }
 
-  TCanvas *c = new TCanvas("testTFCSEnergyInterpolation",
+  TCanvas* c = new TCanvas("testTFCSEnergyInterpolation",
                            "test linear TFCSEnergyInterpolation");
   gr->Draw("APL");
   c->SetLogx();

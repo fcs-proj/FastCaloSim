@@ -9,7 +9,7 @@ file(GLOB HepPDT_SOURCES "*.cxx")
 # Declare the library
 add_library(HepPDT SHARED ${HepPDT_SOURCES})
 
-# Set the target propertise
+# Set the target properties
 set_target_properties(
     HepPDT PROPERTIES
     EXPORT_NAME HepPDT

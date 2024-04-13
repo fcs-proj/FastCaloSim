@@ -1,14 +1,13 @@
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 /*
   Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "FastCaloSim/TFCSLateralShapeParametrizationFluctChain.h"
-#include "FastCaloSim/TFCSSimulationState.h"
 
 #include "CLHEP/Random/RandGaussZiggurat.h"
-
+#include "FastCaloSim/TFCSSimulationState.h"
 #include "TMath.h"
 
 //=============================================
@@ -16,18 +15,26 @@
 //=============================================
 
 TFCSLateralShapeParametrizationFluctChain::
-    TFCSLateralShapeParametrizationFluctChain(const char *name,
-                                              const char *title, float RMS)
-    : TFCSLateralShapeParametrizationHitChain(name, title), m_RMS(RMS) {}
+    TFCSLateralShapeParametrizationFluctChain(const char* name,
+                                              const char* title,
+                                              float RMS)
+    : TFCSLateralShapeParametrizationHitChain(name, title)
+    , m_RMS(RMS)
+{
+}
 
 TFCSLateralShapeParametrizationFluctChain::
     TFCSLateralShapeParametrizationFluctChain(
-        TFCSLateralShapeParametrizationHitBase *hitsim)
-    : TFCSLateralShapeParametrizationHitChain(hitsim) {}
+        TFCSLateralShapeParametrizationHitBase* hitsim)
+    : TFCSLateralShapeParametrizationHitChain(hitsim)
+{
+}
 
 float TFCSLateralShapeParametrizationFluctChain::get_E_hit(
-    TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol) const
+{
   const float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   const int sample = calosample();
   if (sigma2 <= 0 || sample < 0)
@@ -41,8 +48,10 @@ float TFCSLateralShapeParametrizationFluctChain::get_E_hit(
 }
 
 FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
-    TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol) const
+{
   MSG::Level old_level = level();
   const bool debug = msgLvl(MSG::DEBUG);
 
@@ -65,8 +74,9 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
   // Call get_sigma2_fluctuation only once, as it could contain a random number
   float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   if (sigma2 >= s_max_sigma2_fluctuation) {
-    ATH_MSG_ERROR("TFCSLateralShapeParametrizationFluctChain::simulate(): "
-                  "fluctuation of hits could not be calculated");
+    ATH_MSG_ERROR(
+        "TFCSLateralShapeParametrizationFluctChain::simulate(): "
+        "fluctuation of hits could not be calculated");
     return FCSFatal;
   }
 
@@ -99,8 +109,8 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
     hit.reset();
     // hit.E()=Eavghit;
     do {
-      hit.E() = CLHEP::RandGaussZiggurat::shoot(simulstate.randomEngine(),
-                                                Eavghit, m_RMS * Eavghit);
+      hit.E() = CLHEP::RandGaussZiggurat::shoot(
+          simulstate.randomEngine(), Eavghit, m_RMS * Eavghit);
     } while (std::abs(hit.E()) < absEavghit_tenth);
     bool failed = false;
     if (debug)
@@ -109,7 +119,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
         PropagateMSGLevel(MSG::INFO);
       }
     for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
-      TFCSLateralShapeParametrizationHitBase *hitsim = *hititr;
+      TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
 
       FCSReturnCode status =
           hitsim->simulate_hit(hit, simulstate, truth, extrapol);
@@ -141,19 +151,19 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
         error2 = error2_sumEhit / sumEhit2;
     } else {
       if (ifail >= retry) {
-        ATH_MSG_ERROR("TFCSLateralShapeParametrizationFluctChain::simulate(): "
-                      "simulate_hit call failed after "
-                      << ifail << "/" << retry
-                      << "retries, total fails=" << itotalfail);
+        ATH_MSG_ERROR(
+            "TFCSLateralShapeParametrizationFluctChain::simulate(): "
+            "simulate_hit call failed after "
+            << ifail << "/" << retry << "retries, total fails=" << itotalfail);
         if (debug)
           PropagateMSGLevel(old_level);
         return FCSFatal;
       }
       if (ifail >= retry_warning) {
-        ATH_MSG_WARNING("TFCSLateralShapeParametrizationFluctChain::simulate():"
-                        " retry simulate_hit calls "
-                        << ifail << "/" << retry
-                        << ", total fails=" << itotalfail);
+        ATH_MSG_WARNING(
+            "TFCSLateralShapeParametrizationFluctChain::simulate():"
+            " retry simulate_hit calls "
+            << ifail << "/" << retry << ", total fails=" << itotalfail);
       }
     }
   } while (error2 > sigma2);
@@ -171,7 +181,8 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
   return FCSSuccess;
 }
 
-void TFCSLateralShapeParametrizationFluctChain::Print(Option_t *option) const {
+void TFCSLateralShapeParametrizationFluctChain::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);

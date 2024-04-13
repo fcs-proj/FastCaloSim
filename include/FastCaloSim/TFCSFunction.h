@@ -5,14 +5,16 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSFunction_h
 #define ISF_FASTCALOSIMEVENT_TFCSFunction_h
 
-#include "TObject.h"
 #include "FastCaloSim/MLogging.h"
+#include "TObject.h"
 
-
-class TFCSFunction : public TObject, public ISF_FCS::MLogging {
+class TFCSFunction
+    : public TObject
+    , public ISF_FCS::MLogging
+{
 public:
-  TFCSFunction(){};
-  virtual ~TFCSFunction(){};
+  TFCSFunction() {};
+  virtual ~TFCSFunction() {};
 
   /// Gives the total memory size, including the size of additional memory
   /// allocated inside the class
@@ -27,7 +29,7 @@ public:
   virtual void rnd_to_fct(float value[], const float rnd[]) const = 0;
 
 private:
-  ClassDef(TFCSFunction, 3) // TFCSFunction
+  ClassDef(TFCSFunction, 3)  // TFCSFunction
 };
 
 #endif

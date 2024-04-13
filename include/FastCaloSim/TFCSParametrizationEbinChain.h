@@ -8,31 +8,35 @@
 #include "FastCaloSim/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 
-class TFCSParametrizationEbinChain : public TFCSParametrizationBinnedChain {
+class TFCSParametrizationEbinChain : public TFCSParametrizationBinnedChain
+{
 public:
-  TFCSParametrizationEbinChain(const char *name = nullptr,
-                               const char *title = nullptr)
-      : TFCSParametrizationBinnedChain(name, title){};
-  TFCSParametrizationEbinChain(const TFCSParametrizationEbinChain &ref)
-      : TFCSParametrizationBinnedChain(ref){};
+  TFCSParametrizationEbinChain(const char* name = nullptr,
+                               const char* title = nullptr)
+      : TFCSParametrizationBinnedChain(name, title) {};
+  TFCSParametrizationEbinChain(const TFCSParametrizationEbinChain& ref)
+      : TFCSParametrizationBinnedChain(ref) {};
 
   /// current convention is to start Ebin counting at 1, to be updated to start
   /// counting with 0
-  virtual int get_bin(TFCSSimulationState &simulstate, const TFCSTruthState *,
-                      const TFCSExtrapolationState *) const override {
+  virtual int get_bin(TFCSSimulationState& simulstate,
+                      const TFCSTruthState*,
+                      const TFCSExtrapolationState*) const override
+  {
     return simulstate.Ebin();
   };
-  virtual const std::string
-  get_variable_text(TFCSSimulationState &simulstate, const TFCSTruthState *,
-                    const TFCSExtrapolationState *) const override;
+  virtual const std::string get_variable_text(
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState*,
+      const TFCSExtrapolationState*) const override;
 
-  static void unit_test(TFCSSimulationState *simulstate = nullptr,
-                        const TFCSTruthState *truth = nullptr,
-                        const TFCSExtrapolationState *extrapol = nullptr);
+  static void unit_test(TFCSSimulationState* simulstate = nullptr,
+                        const TFCSTruthState* truth = nullptr,
+                        const TFCSExtrapolationState* extrapol = nullptr);
 
 private:
   ClassDefOverride(TFCSParametrizationEbinChain,
-                   1) // TFCSParametrizationEbinChain
+                   1)  // TFCSParametrizationEbinChain
 };
 
 #endif

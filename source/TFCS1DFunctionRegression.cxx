@@ -5,8 +5,8 @@
 #include "FastCaloSim/TFCS1DFunctionRegression.h"
 
 #include "TFile.h"
-#include "TString.h"
 #include "TMath.h"
+#include "TString.h"
 
 using namespace std;
 
@@ -14,14 +14,13 @@ using namespace std;
 //======= TFCS1DFunctionRegression =========
 //=============================================
 
-double TFCS1DFunctionRegression::regression_value(double uniform) const {
-
+double TFCS1DFunctionRegression::regression_value(double uniform) const
+{
   double myresult = -1;
 
   int n_neurons = m_fWeightMatrix0to1.size() - 1;
 
   if (n_neurons > 0) {
-
     int fLayers = 3;
     vector<int> fLayerSize;
     fLayerSize.push_back(2);
@@ -33,7 +32,7 @@ double TFCS1DFunctionRegression::regression_value(double uniform) const {
       vector<double> thisvector;
       thisvector.reserve(fLayerSize[l]);
       for (int i = 0; i < fLayerSize[l]; i++)
-        thisvector.push_back(0); // placeholder
+        thisvector.push_back(0);  // placeholder
       fWeights.push_back(thisvector);
     }
 
@@ -68,16 +67,16 @@ double TFCS1DFunctionRegression::regression_value(double uniform) const {
   return myresult;
 }
 
-double TFCS1DFunctionRegression::rnd_to_fct(double rnd) const {
-
+double TFCS1DFunctionRegression::rnd_to_fct(double rnd) const
+{
   double value = regression_value(rnd);
   return value;
 }
 
 void TFCS1DFunctionRegression::set_weights(
-    const vector<vector<double>> &fWeightMatrix0to1,
-    const vector<vector<double>> &fWeightMatrix1to2) {
-
+    const vector<vector<double>>& fWeightMatrix0to1,
+    const vector<vector<double>>& fWeightMatrix1to2)
+{
   m_fWeightMatrix0to1 = fWeightMatrix0to1;
   m_fWeightMatrix1to2 = fWeightMatrix1to2;
 }
@@ -95,7 +94,8 @@ void TFCS1DFunctionRegression::set_weights(
 ///
 /// From the mlpfit package (J.Schwindling   20-Jul-1999)
 
-double TFCS1DFunctionRegression::sigmoid(double x) {
+double TFCS1DFunctionRegression::sigmoid(double x)
+{
   static const Double_t sigval[7000] = {-3.500000e+01,
                                         6.30511676014698530e-16,
                                         6.30511676014698130e-16,
@@ -7102,16 +7102,22 @@ double TFCS1DFunctionRegression::sigmoid(double x) {
     return TMath::Exp(x);
   if (i > 699)
     return 1;
-  const Double_t *basePoint = sigval + (10 * i);
+  const Double_t* basePoint = sigval + (10 * i);
   Double_t res = x - basePoint[0];
-  res = basePoint[1] +
-        res * (basePoint[2] +
-               res * (basePoint[3] +
-                      res * (basePoint[4] +
-                             res * (basePoint[5] +
-                                    res * (basePoint[6] +
-                                           res * (basePoint[7] +
-                                                  res * (basePoint[8])))))));
+  res = basePoint[1]
+      + res
+          * (basePoint[2]
+             + res
+                 * (basePoint[3]
+                    + res
+                        * (basePoint[4]
+                           + res
+                               * (basePoint[5]
+                                  + res
+                                      * (basePoint[6]
+                                         + res
+                                             * (basePoint[7]
+                                                + res * (basePoint[8])))))));
   /*
   if(x<-15) return TMath::Exp(x);
   if(x> 15) return 1;

@@ -2,20 +2,23 @@
   Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "FastCaloSim/TFCS2DFunctionHistogram.h"
 #include <algorithm>
 #include <iostream>
-#include "TMath.h"
+
+#include "FastCaloSim/TFCS2DFunctionHistogram.h"
+
 #include "TCanvas.h"
-#include "TH2F.h"
-#include "TRandom.h"
 #include "TFile.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TRandom.h"
 
 //=============================================
 //======= TFCS2DFunctionHistogram =========
 //=============================================
 
-void TFCS2DFunctionHistogram::Initialize(TH2 *hist) {
+void TFCS2DFunctionHistogram::Initialize(TH2* hist)
+{
   Int_t nbinsx = hist->GetNbinsX();
   Int_t nbinsy = hist->GetNbinsY();
   Int_t nbins = nbinsx * nbinsy;
@@ -66,8 +69,11 @@ void TFCS2DFunctionHistogram::Initialize(TH2 *hist) {
     m_HistoContents[ibin] /= integral;
 }
 
-void TFCS2DFunctionHistogram::rnd_to_fct(float &valuex, float &valuey,
-                                         float rnd0, float rnd1) const {
+void TFCS2DFunctionHistogram::rnd_to_fct(float& valuex,
+                                         float& valuey,
+                                         float rnd0,
+                                         float rnd1) const
+{
   if (m_HistoContents.empty()) {
     valuex = 0;
     valuey = 0;
@@ -88,18 +94,19 @@ void TFCS2DFunctionHistogram::rnd_to_fct(float &valuex, float &valuey,
 
   float dcont = m_HistoContents[ibin] - basecont;
   if (dcont > 0) {
-    valuex = m_HistoBorders[binx] +
-             (m_HistoBorders[binx + 1] - m_HistoBorders[binx]) *
-                 (rnd0 - basecont) / dcont;
+    valuex = m_HistoBorders[binx]
+        + (m_HistoBorders[binx + 1] - m_HistoBorders[binx]) * (rnd0 - basecont)
+            / dcont;
   } else {
-    valuex = m_HistoBorders[binx] +
-             (m_HistoBorders[binx + 1] - m_HistoBorders[binx]) / 2;
+    valuex = m_HistoBorders[binx]
+        + (m_HistoBorders[binx + 1] - m_HistoBorders[binx]) / 2;
   }
-  valuey = m_HistoBordersy[biny] +
-           (m_HistoBordersy[biny + 1] - m_HistoBordersy[biny]) * rnd1;
+  valuey = m_HistoBordersy[biny]
+      + (m_HistoBordersy[biny + 1] - m_HistoBordersy[biny]) * rnd1;
 }
 
-void TFCS2DFunctionHistogram::unit_test(TH2 *hist) {
+void TFCS2DFunctionHistogram::unit_test(TH2* hist)
+{
   ISF_FCS::MLogging logger;
   int nbinsx;
   int nbinsy;
@@ -111,9 +118,10 @@ void TFCS2DFunctionHistogram::unit_test(TH2 *hist) {
     hist->Sumw2();
     for (int ix = 1; ix <= nbinsx; ++ix) {
       for (int iy = 1; iy <= nbinsy; ++iy) {
-        hist->SetBinContent(ix, iy,
-                            (0.5 + gRandom->Rndm()) * (nbinsx + ix) *
-                                (nbinsy * nbinsy / 2 + iy * iy));
+        hist->SetBinContent(ix,
+                            iy,
+                            (0.5 + gRandom->Rndm()) * (nbinsx + ix)
+                                * (nbinsy * nbinsy / 2 + iy * iy));
         if (gRandom->Rndm() < 0.1)
           hist->SetBinContent(ix, iy, 0);
         hist->SetBinError(ix, iy, 0);
@@ -126,20 +134,20 @@ void TFCS2DFunctionHistogram::unit_test(TH2 *hist) {
 
   float value[2];
   float rnd[2];
-  //cppcheck-suppress uninitvar
+  // cppcheck-suppress uninitvar
   for (rnd[0] = 0; rnd[0] < 0.9999; rnd[0] += 0.25) {
     for (rnd[1] = 0; rnd[1] < 0.9999; rnd[1] += 0.25) {
       rtof.rnd_to_fct(value, rnd);
-      ATH_MSG_NOCLASS(logger, "rnd0=" << rnd[0] << " rnd1=" << rnd[1]
-                                      << " -> x=" << value[0]
-                                      << " y=" << value[1]);
+      ATH_MSG_NOCLASS(logger,
+                      "rnd0=" << rnd[0] << " rnd1=" << rnd[1]
+                              << " -> x=" << value[0] << " y=" << value[1]);
     }
   }
 
   //  TH2F* hist_val=new
   //  TH2F("val2D","val2D",16,hist->GetXaxis()->GetXmin(),hist->GetXaxis()->GetXmax(),
   //                                          16,hist->GetYaxis()->GetXmin(),hist->GetYaxis()->GetXmax());
-  TH2F *hist_val = (TH2F *)hist->Clone("hist_val");
+  TH2F* hist_val = (TH2F*)hist->Clone("hist_val");
   hist_val->Reset();
   int nrnd = 100000000;
   float weight = hist->Integral() / nrnd;
@@ -152,7 +160,7 @@ void TFCS2DFunctionHistogram::unit_test(TH2 *hist) {
   }
   hist_val->Add(hist, -1);
 
-  TH1F *hist_pull = new TH1F("pull", "pull", 80, -4, 4);
+  TH1F* hist_pull = new TH1F("pull", "pull", 80, -4, 4);
   for (int ix = 1; ix <= nbinsx; ++ix) {
     for (int iy = 1; iy <= nbinsy; ++iy) {
       float val = hist_val->GetBinContent(ix, iy);
@@ -173,7 +181,6 @@ void TFCS2DFunctionHistogram::unit_test(TH2 *hist) {
     outputfile->Close();
   }
 
-
   new TCanvas("input", "Input");
   hist->Draw("colz");
 
@@ -182,5 +189,4 @@ void TFCS2DFunctionHistogram::unit_test(TH2 *hist) {
 
   new TCanvas("pull", "Pull");
   hist_pull->Draw();
-
 }

@@ -1,46 +1,53 @@
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 /*
   Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "CLHEP/Random/RandPoisson.h"
-
 #include "FastCaloSim/TFCSLateralShapeParametrizationHitNumberFromE.h"
-#include "FastCaloSim/TFCSSimulationState.h"
 
-#include "TMath.h"
 #include <TClass.h>
+
+#include "CLHEP/Random/RandPoisson.h"
+#include "FastCaloSim/TFCSSimulationState.h"
+#include "TMath.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeParametrization =========
 //=============================================
 
 TFCSLateralShapeParametrizationHitNumberFromE::
-    TFCSLateralShapeParametrizationHitNumberFromE(const char *name,
-                                                  const char *title,
+    TFCSLateralShapeParametrizationHitNumberFromE(const char* name,
+                                                  const char* title,
                                                   double stochastic,
                                                   double constant)
-    : TFCSLateralShapeParametrizationHitBase(name, title),
-      m_stochastic(stochastic), m_stochastic_hadron(0.0), m_constant(constant) {
+    : TFCSLateralShapeParametrizationHitBase(name, title)
+    , m_stochastic(stochastic)
+    , m_stochastic_hadron(0.0)
+    , m_constant(constant)
+{
   set_match_all_pdgid();
 }
 
 TFCSLateralShapeParametrizationHitNumberFromE::
-    TFCSLateralShapeParametrizationHitNumberFromE(const char *name,
-                                                  const char *title,
+    TFCSLateralShapeParametrizationHitNumberFromE(const char* name,
+                                                  const char* title,
                                                   double stochastic,
                                                   double stochastic_hadron,
                                                   double constant)
-    : TFCSLateralShapeParametrizationHitBase(name, title),
-      m_stochastic(stochastic), m_stochastic_hadron(stochastic_hadron),
-      m_constant(constant) {
+    : TFCSLateralShapeParametrizationHitBase(name, title)
+    , m_stochastic(stochastic)
+    , m_stochastic_hadron(stochastic_hadron)
+    , m_constant(constant)
+{
   set_match_all_pdgid();
 }
 
 double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
-    TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/) const
+{
   int cs = calosample();
   float energy = simulstate.E(cs);
 
@@ -71,8 +78,10 @@ double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
 }
 
 int TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
-    TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol) const
+{
   if (!simulstate.randomEngine()) {
     return -1;
   }
@@ -86,7 +95,8 @@ int TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
 }
 
 bool TFCSLateralShapeParametrizationHitNumberFromE::operator==(
-    const TFCSParametrizationBase &ref) const {
+    const TFCSParametrizationBase& ref) const
+{
   if (TFCSParametrizationBase::compare(ref))
     return true;
   if (!TFCSParametrization::compare(ref))
@@ -99,17 +109,19 @@ bool TFCSLateralShapeParametrizationHitNumberFromE::operator==(
 }
 
 bool TFCSLateralShapeParametrizationHitNumberFromE::compare(
-    const TFCSParametrizationBase &ref) const {
+    const TFCSParametrizationBase& ref) const
+{
   if (IsA() != ref.IsA()) {
     ATH_MSG_DEBUG("compare(): different class types "
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSLateralShapeParametrizationHitNumberFromE &ref_typed =
-      static_cast<const TFCSLateralShapeParametrizationHitNumberFromE &>(ref);
-  if (m_stochastic != ref_typed.m_stochastic ||
-      m_stochastic_hadron != ref_typed.m_stochastic_hadron ||
-      m_constant != ref_typed.m_constant) {
+  const TFCSLateralShapeParametrizationHitNumberFromE& ref_typed =
+      static_cast<const TFCSLateralShapeParametrizationHitNumberFromE&>(ref);
+  if (m_stochastic != ref_typed.m_stochastic
+      || m_stochastic_hadron != ref_typed.m_stochastic_hadron
+      || m_constant != ref_typed.m_constant)
+  {
     ATH_MSG_DEBUG("operator==(): different fluctuation model sigma^2=["
                   << m_stochastic << "/sqrt(E/GeV)]^2 + [" << m_constant
                   << " + " << m_stochastic_hadron
@@ -123,7 +135,8 @@ bool TFCSLateralShapeParametrizationHitNumberFromE::compare(
 }
 
 void TFCSLateralShapeParametrizationHitNumberFromE::Print(
-    Option_t *option) const {
+    Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
@@ -137,4 +150,4 @@ void TFCSLateralShapeParametrizationHitNumberFromE::Print(
                           << m_stochastic_hadron << "/sqrt(E/GeV)]^2");
 }
 
-#pragma GCC diagnostic pop 
+#pragma GCC diagnostic pop

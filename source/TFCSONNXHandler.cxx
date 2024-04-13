@@ -21,16 +21,18 @@
 // For throwing exceptions
 #include <stdexcept>
 
-TFCSONNXHandler::TFCSONNXHandler(const std::string &inputFile)
-    : VNetworkBase(inputFile) {
+TFCSONNXHandler::TFCSONNXHandler(const std::string& inputFile)
+    : VNetworkBase(inputFile)
+{
   ATH_MSG_INFO("Setting up from inputFile.");
   TFCSONNXHandler::setupPersistedVariables();
   TFCSONNXHandler::setupNet();
   ATH_MSG_DEBUG("Setup from file complete");
 };
 
-TFCSONNXHandler::TFCSONNXHandler(const std::vector<char> &bytes)
-    : m_bytes(bytes) {
+TFCSONNXHandler::TFCSONNXHandler(const std::vector<char>& bytes)
+    : m_bytes(bytes)
+{
   ATH_MSG_INFO("Given onnx session bytes as input.");
   // The super constructor got no inputFile,
   // so it won't call setupNet itself
@@ -38,9 +40,10 @@ TFCSONNXHandler::TFCSONNXHandler(const std::vector<char> &bytes)
   ATH_MSG_DEBUG("Setup from session complete");
 };
 
-TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler &copy_from)
-    : VNetworkBase(copy_from) {
-  ATH_MSG_DEBUG("TFCSONNXHandler copy construtor called");
+TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
+    : VNetworkBase(copy_from)
+{
+  ATH_MSG_DEBUG("TFCSONNXHandler copy constructor called");
   m_bytes = copy_from.m_bytes;
   // Cannot copy a session
   // m_session = copy_from.m_session;
@@ -53,29 +56,34 @@ TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler &copy_from)
   m_outputLayers = copy_from.m_outputLayers;
 };
 
-TFCSONNXHandler::NetworkOutputs
-TFCSONNXHandler::compute(TFCSONNXHandler::NetworkInputs const &inputs) const {
+TFCSONNXHandler::NetworkOutputs TFCSONNXHandler::compute(
+    TFCSONNXHandler::NetworkInputs const& inputs) const
+{
   return m_computeLambda(inputs);
 };
 
 // Writing out to ttrees
-void TFCSONNXHandler::writeNetToTTree(TTree &tree) {
+void TFCSONNXHandler::writeNetToTTree(TTree& tree)
+{
   ATH_MSG_DEBUG("TFCSONNXHandler writing net to tree.");
   this->writeBytesToTTree(tree, m_bytes);
 };
 
-std::vector<std::string> TFCSONNXHandler::getOutputLayers() const {
+std::vector<std::string> TFCSONNXHandler::getOutputLayers() const
+{
   ATH_MSG_DEBUG("TFCSONNXHandler output layers requested.");
   return m_outputLayers;
 };
 
-void TFCSONNXHandler::deleteAllButNet() {
+void TFCSONNXHandler::deleteAllButNet()
+{
   // As we don't copy the bytes, and the inputFile
   // is at most a name, nothing is needed here.
   ATH_MSG_DEBUG("Deleted nothing for ONNX.");
 };
 
-void TFCSONNXHandler::print(std::ostream &strm) const {
+void TFCSONNXHandler::print(std::ostream& strm) const
+{
   if (m_inputFile.empty()) {
     strm << "Unknown network";
   } else {
@@ -99,7 +107,8 @@ void TFCSONNXHandler::print(std::ostream &strm) const {
   };
 };
 
-void TFCSONNXHandler::setupPersistedVariables() {
+void TFCSONNXHandler::setupPersistedVariables()
+{
   ATH_MSG_DEBUG("Setting up persisted variables for ONNX network.");
   // depending which constructor was called,
   // bytes may already be filled
@@ -109,7 +118,8 @@ void TFCSONNXHandler::setupPersistedVariables() {
   ATH_MSG_DEBUG("Setup persisted variables for ONNX network.");
 };
 
-void TFCSONNXHandler::setupNet() {
+void TFCSONNXHandler::setupNet()
+{
   // From
   // https://gitlab.cern.ch/atlas/athena/-/blob/master/Control/AthOnnxruntimeUtils/AthOnnxruntimeUtils/OnnxUtils.h
   // m_session = AthONNX::CreateORTSession(inputFile);
@@ -121,7 +131,7 @@ void TFCSONNXHandler::setupNet() {
   this->readSerializedSession();
 
   // Need the type from the first node (which will be used to set
-  // just set it to undefined to avoid not initialised warnings
+  // just set it to undefined to avoid not initialized warnings
   ONNXTensorElementDataType first_input_type =
       ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
 
@@ -130,13 +140,13 @@ void TFCSONNXHandler::setupNet() {
   const int num_input_nodes = m_session->GetInputCount();
   Ort::AllocatorWithDefaultOptions allocator;
   for (int i = 0; i < num_input_nodes; i++) {
-
 #if ORT_API_VERSION > 11
-    Ort::AllocatedStringPtr node_names = m_session->GetInputNameAllocated(i, allocator);
+    Ort::AllocatedStringPtr node_names =
+        m_session->GetInputNameAllocated(i, allocator);
     m_storeInputNodeNames.push_back(std::move(node_names));
-    const char *input_name = m_storeInputNodeNames.back().get();
+    const char* input_name = m_storeInputNodeNames.back().get();
 #else
-    const char *input_name = m_session->GetInputName(i, allocator);
+    const char* input_name = m_session->GetInputName(i, allocator);
 #endif
     m_inputNodeNames.push_back(input_name);
     ATH_MSG_VERBOSE("Found input node named " << input_name);
@@ -153,8 +163,9 @@ void TFCSONNXHandler::setupNet() {
       ATH_MSG_ERROR("First type was " << first_input_type << ". In node " << i
                                       << " found type "
                                       << tensor_info.GetElementType());
-      throw std::runtime_error("Networks with varying input types not "
-                               "yet impelmented in TFCSONNXHandler.");
+      throw std::runtime_error(
+          "Networks with varying input types not "
+          "yet implemented in TFCSONNXHandler.");
     };
 
     std::vector<int64_t> recieved_dimension = tensor_info.GetShape();
@@ -192,11 +203,12 @@ void TFCSONNXHandler::setupNet() {
   ATH_MSG_DEBUG("Getting " << num_output_nodes << " output nodes.");
   for (int i = 0; i < num_output_nodes; i++) {
 #if ORT_API_VERSION > 11
-    Ort::AllocatedStringPtr node_names = m_session->GetOutputNameAllocated(i, allocator);
+    Ort::AllocatedStringPtr node_names =
+        m_session->GetOutputNameAllocated(i, allocator);
     m_storeOutputNodeNames.push_back(std::move(node_names));
-    const char *output_name = m_storeOutputNodeNames.back().get();
+    const char* output_name = m_storeOutputNodeNames.back().get();
 #else
-    const char *output_name = m_session->GetOutputName(i, allocator);
+    const char* output_name = m_session->GetOutputName(i, allocator);
 #endif
     m_outputNodeNames.push_back(output_name);
     ATH_MSG_VERBOSE("Found output node named " << output_name);
@@ -211,14 +223,15 @@ void TFCSONNXHandler::setupNet() {
       ATH_MSG_ERROR("First type was " << first_output_type << ". In node " << i
                                       << " found type "
                                       << tensor_info.GetElementType());
-      throw std::runtime_error("Networks with varying output types not "
-                               "yet impelmented in TFCSONNXHandler.");
+      throw std::runtime_error(
+          "Networks with varying output types not "
+          "yet implemented in TFCSONNXHandler.");
     };
 
     const std::vector<int64_t> recieved_dimension = tensor_info.GetShape();
     ATH_MSG_VERBOSE("There are " << recieved_dimension.size()
                                  << " dimensions.");
-    // Again, check for sybolic dimensions
+    // Again, check for symbolic dimensions
     std::vector<int64_t> dimension_of_node;
     int node_size = 1;
     for (int64_t node_dim : recieved_dimension) {
@@ -251,32 +264,35 @@ void TFCSONNXHandler::setupNet() {
   ATH_MSG_DEBUG("Setting up m_computeLambda with input type "
                 << first_input_type << " and output type "
                 << first_output_type);
-  if (first_input_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT &&
-      first_output_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
-    // gotta capture this in the lambda so it can access class methods
-    m_computeLambda = [this](NetworkInputs const &inputs) {
-      return computeTemplate<float, float>(inputs);
-    };
-  } else if (first_input_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE &&
-             first_output_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE) {
-    m_computeLambda = [this](NetworkInputs const &inputs) {
-      return computeTemplate<double, double>(inputs);
-    };
+  if (first_input_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT
+      && first_output_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT)
+  {
+    // got to capture this in the lambda so it can access class methods
+    m_computeLambda = [this](NetworkInputs const& inputs)
+    { return computeTemplate<float, float>(inputs); };
+  } else if (first_input_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE
+             && first_output_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE)
+  {
+    m_computeLambda = [this](NetworkInputs const& inputs)
+    { return computeTemplate<double, double>(inputs); };
   } else {
-    throw std::runtime_error("Haven't yet implemented that combination of "
-                             "input and output types as a subclass of VState.");
+    throw std::runtime_error(
+        "Haven't yet implemented that combination of "
+        "input and output types as a subclass of VState.");
   };
   ATH_MSG_DEBUG("Finished setting lambda function.");
 };
 
 // Needs to also work if the input file is a root file
-std::vector<char> TFCSONNXHandler::getSerializedSession(const std::string& tree_name) {
+std::vector<char> TFCSONNXHandler::getSerializedSession(
+    const std::string& tree_name)
+{
   ATH_MSG_DEBUG("Getting serialized session for ONNX network.");
 
   if (this->isRootFile()) {
     ATH_MSG_INFO("Reading bytes from root file.");
     TFile tfile(this->m_inputFile.c_str(), "READ");
-    TTree *tree = (TTree *)tfile.Get(tree_name.c_str());
+    TTree* tree = (TTree*)tfile.Get(tree_name.c_str());
     std::vector<char> bytes = this->readBytesFromTTree(*tree);
     ATH_MSG_DEBUG("Found bytes size " << bytes.size());
     return bytes;
@@ -294,7 +310,8 @@ std::vector<char> TFCSONNXHandler::getSerializedSession(const std::string& tree_
   }
 };
 
-std::vector<char> TFCSONNXHandler::readBytesFromTTree(TTree &tree) {
+std::vector<char> TFCSONNXHandler::readBytesFromTTree(TTree& tree)
+{
   ATH_MSG_DEBUG("TFCSONNXHandler reading bytes from tree.");
   std::vector<char> bytes;
   char data;
@@ -307,12 +324,13 @@ std::vector<char> TFCSONNXHandler::readBytesFromTTree(TTree &tree) {
   return bytes;
 };
 
-void TFCSONNXHandler::writeBytesToTTree(TTree &tree,
-                                        const std::vector<char> &bytes) {
+void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
+                                        const std::vector<char>& bytes)
+{
   ATH_MSG_DEBUG("TFCSONNXHandler writing bytes to tree.");
   char m_session_data;
-  tree.Branch("serialized_m_session", &m_session_data,
-              "serialized_m_session/B");
+  tree.Branch(
+      "serialized_m_session", &m_session_data, "serialized_m_session/B");
   for (Char_t here : bytes) {
     m_session_data = here;
     tree.Fill();
@@ -321,7 +339,8 @@ void TFCSONNXHandler::writeBytesToTTree(TTree &tree,
   ATH_MSG_DEBUG("TFCSONNXHandler written bytes to tree.");
 };
 
-void TFCSONNXHandler::readSerializedSession() {
+void TFCSONNXHandler::readSerializedSession()
+{
   ATH_MSG_DEBUG("Transforming bytes to session.");
   Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
   Ort::SessionOptions opts;
@@ -333,9 +352,10 @@ void TFCSONNXHandler::readSerializedSession() {
   ATH_MSG_DEBUG("Transformed bytes to session.");
 };
 
-template <typename Tin, typename Tout>
-VNetworkBase::NetworkOutputs
-TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
+template<typename Tin, typename Tout>
+VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
+    VNetworkBase::NetworkInputs const& inputs)
+{
   // working from
   // https://github.com/microsoft/onnxruntime-inference-examples/blob/main/c_cxx/squeezenet/main.cpp#L71
   //  and
@@ -347,7 +367,7 @@ TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
   //  The inputs must be reformatted to the correct data structure.
   const size_t num_input_nodes = m_inputNodeNames.size();
   //  A pointer to all the nodes we will make
-  //  Gonna keep the data in each node flat, becuase that's easier
+  //  Going to keep the data in each node flat, because that's easier
   std::vector<std::vector<Tin>> input_values(num_input_nodes);
   std::vector<Ort::Value> node_values;
   // Non const values that will be needed at each step.
@@ -356,7 +376,7 @@ TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
   size_t first_digit;
   // Move along the list of node names gathered in the constructor
   // we need both the node name, and the dimension
-  // so we cannot itterate directly on the vector.
+  // so we cannot iterate directly on the vector.
   ATH_MSG_DEBUG("Looping over " << num_input_nodes
                                 << " input nodes of ONNX network.");
   for (size_t node_n = 0; node_n < m_inputNodeNames.size(); node_n++) {
@@ -381,10 +401,10 @@ TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
     ATH_MSG_DEBUG("Found node named " << node_name << " with "
                                       << elements_in_node << " elements.");
     // Then the rest should be numbers from 0 up
-    for (auto element : node_inputs){
+    for (auto element : node_inputs) {
       first_digit = element.first.find_first_of("0123456789");
       // if there is no digit, it's not an element
-      if (first_digit < element.first.length()){
+      if (first_digit < element.first.length()) {
         key_number = std::stoi(element.first.substr(first_digit));
         node_elements[key_number] = element.second;
       }
@@ -395,10 +415,13 @@ TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
                   << n_dimensions
                   << ", elements_in_node = " << elements_in_node);
     // Doesn't copy data internally, so vector arguments need to stay alive
-    Ort::Value node = Ort::Value::CreateTensor<Tin>(
-        m_memoryInfo, input_values[node_n].data(), elements_in_node,
-        m_inputNodeDims[node_n].data(), n_dimensions);
-    // Problems with the string steam when compiling seperatly.
+    Ort::Value node =
+        Ort::Value::CreateTensor<Tin>(m_memoryInfo,
+                                      input_values[node_n].data(),
+                                      elements_in_node,
+                                      m_inputNodeDims[node_n].data(),
+                                      n_dimensions);
+    // Problems with the string steam when compiling separately.
     // ATH_MSG_DEBUG("Created input node " << node << " from values " <<
     // input_values[node_n]);
 
@@ -407,9 +430,12 @@ TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
 
   ATH_MSG_DEBUG("Running computation on ONNX network.");
   // All inputs have been correctly formatted and the net can be run.
-  auto output_tensors = m_session->Run(
-      Ort::RunOptions{nullptr}, m_inputNodeNames.data(), &node_values[0],
-      num_input_nodes, m_outputNodeNames.data(), m_outputNodeNames.size());
+  auto output_tensors = m_session->Run(Ort::RunOptions {nullptr},
+                                       m_inputNodeNames.data(),
+                                       &node_values[0],
+                                       num_input_nodes,
+                                       m_outputNodeNames.data(),
+                                       m_outputNodeNames.size());
 
   ATH_MSG_DEBUG("Sorting outputs from computation on ONNX network.");
   // Finaly, the output must be rearanged in the expected format.
@@ -417,7 +443,7 @@ TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
   // as the output format is just a string to double map
   // the outputs will be keyed like "<node_name>_<part_n>"
   std::string output_name;
-  const Tout *output_node;
+  const Tout* output_node;
   for (size_t node_n = 0; node_n < m_outputNodeNames.size(); node_n++) {
     // get a pointer to the data
     output_node = output_tensors[node_n].GetTensorMutableData<Tout>();
@@ -447,7 +473,8 @@ TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const &inputs) {
 // https://github.com/microsoft/onnxruntime/pull/8502
 
 // Giving this its own streamer to call setupNet
-void TFCSONNXHandler::Streamer(TBuffer &buf) {
+void TFCSONNXHandler::Streamer(TBuffer& buf)
+{
   ATH_MSG_DEBUG("In TFCSONNXHandler streamer.");
   if (buf.IsReading()) {
     ATH_MSG_INFO("Reading buffer in TFCSONNXHandler ");

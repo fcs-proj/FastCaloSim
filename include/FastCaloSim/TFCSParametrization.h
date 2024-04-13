@@ -1,4 +1,4 @@
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
 /*
@@ -6,9 +6,9 @@
 */
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
+#  define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
 
-#include "FastCaloSim/TFCSParametrizationBase.h"
+#  include "FastCaloSim/TFCSParametrizationBase.h"
 
 class TFCSParametrization : public ::TFCSParametrizationBase
 {
@@ -78,4 +78,4 @@ private:
 
 #endif
 
-#pragma GCC diagnostic pop 
+#pragma GCC diagnostic pop

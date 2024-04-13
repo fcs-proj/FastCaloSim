@@ -12,16 +12,18 @@
 #include "lwtnn/LightweightNeuralNetwork.hh"
 #include "lwtnn/parse_json.hh"
 
-TFCSSimpleLWTNNHandler::TFCSSimpleLWTNNHandler(const std::string &inputFile)
-    : VNetworkLWTNN(inputFile) {
+TFCSSimpleLWTNNHandler::TFCSSimpleLWTNNHandler(const std::string& inputFile)
+    : VNetworkLWTNN(inputFile)
+{
   ATH_MSG_DEBUG("Setting up from inputFile.");
   setupPersistedVariables();
   TFCSSimpleLWTNNHandler::setupNet();
 };
 
 TFCSSimpleLWTNNHandler::TFCSSimpleLWTNNHandler(
-    const TFCSSimpleLWTNNHandler &copy_from)
-    : VNetworkLWTNN(copy_from) {
+    const TFCSSimpleLWTNNHandler& copy_from)
+    : VNetworkLWTNN(copy_from)
+{
   // Cannot take copy of lwt::LightweightNeuralNetwork
   // (copy constructor disabled)
   ATH_MSG_DEBUG("Making new m_lwtnn_neural for copy of network.");
@@ -32,7 +34,8 @@ TFCSSimpleLWTNNHandler::TFCSSimpleLWTNNHandler(
   m_outputLayers = copy_from.m_outputLayers;
 };
 
-void TFCSSimpleLWTNNHandler::setupNet() {
+void TFCSSimpleLWTNNHandler::setupNet()
+{
   // build the graph
   ATH_MSG_DEBUG("Reading the m_json string stream into a neural network");
   std::stringstream json_stream(m_json);
@@ -50,14 +53,16 @@ void TFCSSimpleLWTNNHandler::setupNet() {
   ATH_MSG_DEBUG("Finished output nodes.");
 }
 
-std::vector<std::string> TFCSSimpleLWTNNHandler::getOutputLayers() const {
+std::vector<std::string> TFCSSimpleLWTNNHandler::getOutputLayers() const
+{
   return m_outputLayers;
 };
 
 // This is implement the specific compute, and ensure the output is returned in
 // regular format. For LWTNN, that's easy.
 TFCSSimpleLWTNNHandler::NetworkOutputs TFCSSimpleLWTNNHandler::compute(
-    TFCSSimpleLWTNNHandler::NetworkInputs const &inputs) const {
+    TFCSSimpleLWTNNHandler::NetworkInputs const& inputs) const
+{
   ATH_MSG_DEBUG("Running computation on LWTNN neural network");
   ATH_MSG_DEBUG(VNetworkBase::representNetworkInputs(inputs, 20));
   // Flatten the map depth
@@ -78,7 +83,8 @@ TFCSSimpleLWTNNHandler::NetworkOutputs TFCSSimpleLWTNNHandler::compute(
 };
 
 // Giving this it's own streamer to call setupNet
-void TFCSSimpleLWTNNHandler::Streamer(TBuffer &buf) {
+void TFCSSimpleLWTNNHandler::Streamer(TBuffer& buf)
+{
   ATH_MSG_DEBUG("In streamer of " << __FILE__);
   if (buf.IsReading()) {
     ATH_MSG_DEBUG("Reading buffer in TFCSSimpleLWTNNHandler ");

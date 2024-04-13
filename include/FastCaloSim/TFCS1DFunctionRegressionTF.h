@@ -5,15 +5,17 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegressionTF_h
 #define ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegressionTF_h
 
-#include "FastCaloSim/TFCS1DFunctionRegression.h"
-#include "TH1.h"
 #include <vector>
 
-class TFCS1DFunctionRegressionTF : public TFCS1DFunctionRegression {
+#include "FastCaloSim/TFCS1DFunctionRegression.h"
+#include "TH1.h"
+
+class TFCS1DFunctionRegressionTF : public TFCS1DFunctionRegression
+{
 public:
-  TFCS1DFunctionRegressionTF(){};
+  TFCS1DFunctionRegressionTF() {};
   TFCS1DFunctionRegressionTF(float, float);
-  ~TFCS1DFunctionRegressionTF(){};
+  ~TFCS1DFunctionRegressionTF() {};
 
   using TFCS1DFunctionRegression::rnd_to_fct;
   virtual double rnd_to_fct(double rnd) const;

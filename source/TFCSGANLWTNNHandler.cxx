@@ -12,15 +12,17 @@
 #include "lwtnn/LightweightGraph.hh"
 #include "lwtnn/parse_json.hh"
 
-TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const std::string &inputFile)
-    : VNetworkLWTNN(inputFile) {
+TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const std::string& inputFile)
+    : VNetworkLWTNN(inputFile)
+{
   ATH_MSG_DEBUG("Setting up from inputFile.");
   setupPersistedVariables();
   TFCSGANLWTNNHandler::setupNet();
 };
 
-TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler &copy_from)
-    : VNetworkLWTNN(copy_from) {
+TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler& copy_from)
+    : VNetworkLWTNN(copy_from)
+{
   // Cannot take copies of lwt::LightweightGraph
   // (copy constructor disabled)
   ATH_MSG_DEBUG("Making a new m_lwtnn_graph for copied network");
@@ -30,7 +32,8 @@ TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler &copy_from)
   m_outputLayers = copy_from.m_outputLayers;
 };
 
-void TFCSGANLWTNNHandler::setupNet() {
+void TFCSGANLWTNNHandler::setupNet()
+{
   // Backcompatability, previous versions stored this in m_input
   if (m_json.length() == 0 && m_input != nullptr) {
     m_json = *m_input;
@@ -49,7 +52,7 @@ void TFCSGANLWTNNHandler::setupNet() {
   for (auto node : config.outputs) {
     const std::string node_name = node.first;
     const lwt::OutputNodeConfig node_config = node.second;
-    for (const std::string & label : node_config.labels) {
+    for (const std::string& label : node_config.labels) {
       ATH_MSG_VERBOSE("Found output layer called " << node_name << "_"
                                                    << label);
       m_outputLayers.push_back(node_name + "_" + label);
@@ -60,14 +63,16 @@ void TFCSGANLWTNNHandler::setupNet() {
   ATH_MSG_VERBOSE("Finished output nodes.");
 };
 
-std::vector<std::string> TFCSGANLWTNNHandler::getOutputLayers() const {
+std::vector<std::string> TFCSGANLWTNNHandler::getOutputLayers() const
+{
   return m_outputLayers;
 };
 
 // This is implement the specific compute, and ensure the output is returned in
 // regular format. For LWTNN, that's easy.
 TFCSGANLWTNNHandler::NetworkOutputs TFCSGANLWTNNHandler::compute(
-    TFCSGANLWTNNHandler::NetworkInputs const &inputs) const {
+    TFCSGANLWTNNHandler::NetworkInputs const& inputs) const
+{
   ATH_MSG_DEBUG("Running computation on LWTNN graph network");
   NetworkInputs local_copy = inputs;
   if (inputs.find("Noise") != inputs.end()) {
@@ -89,7 +94,8 @@ TFCSGANLWTNNHandler::NetworkOutputs TFCSGANLWTNNHandler::compute(
 };
 
 // Giving this it's own streamer to call setupNet
-void TFCSGANLWTNNHandler::Streamer(TBuffer &buf) {
+void TFCSGANLWTNNHandler::Streamer(TBuffer& buf)
+{
   ATH_MSG_DEBUG("In streamer of " << __FILE__);
   if (buf.IsReading()) {
     ATH_MSG_DEBUG("Reading buffer in TFCSGANLWTNNHandler ");

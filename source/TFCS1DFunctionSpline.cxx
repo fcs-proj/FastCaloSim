@@ -2,22 +2,27 @@
   Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "FastCaloSim/TFCS1DFunctionSpline.h"
-#include "FastCaloSim/TFCS1DFunctionInt32Histogram.h"
 #include <algorithm>
 #include <iostream>
-#include "TMath.h"
+
+#include "FastCaloSim/TFCS1DFunctionSpline.h"
+
+#include "FastCaloSim/TFCS1DFunctionInt32Histogram.h"
 #include "TCanvas.h"
-#include "TH2F.h"
-#include "TRandom.h"
 #include "TFile.h"
+#include "TH2F.h"
+#include "TMath.h"
+#include "TRandom.h"
 
 //=============================================
 //======= TFCS1DFunctionSpline =========
 //=============================================
 
-double TFCS1DFunctionSpline::Initialize(TH1 *hist, double maxdevgoal,
-                                        double maxeffsiggoal, int maxnp) {
+double TFCS1DFunctionSpline::Initialize(TH1* hist,
+                                        double maxdevgoal,
+                                        double maxeffsiggoal,
+                                        int maxnp)
+{
   double max_penalty_best = -1;
   TSpline3 sp_best;
   for (int np = 3; np <= maxnp; ++np) {
@@ -64,9 +69,11 @@ double TFCS1DFunctionSpline::Initialize(TH1 *hist, double maxdevgoal,
   return max_penalty_best;
 }
 
-double TFCS1DFunctionSpline::InitializeFromSpline(TH1 *hist, const TSpline3 &sp,
+double TFCS1DFunctionSpline::InitializeFromSpline(TH1* hist,
+                                                  const TSpline3& sp,
                                                   double maxdevgoal,
-                                                  double maxeffsiggoal) {
+                                                  double maxeffsiggoal)
+{
   TFCS1DFunctionInt32Histogram hist_fct(hist);
 
   double maxeffsig;
@@ -133,10 +140,11 @@ double TFCS1DFunctionSpline::InitializeFromSpline(TH1 *hist, const TSpline3 &sp,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::InitializeEqualDistance(TH1 *hist,
+double TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
                                                      double maxdevgoal,
                                                      double maxeffsiggoal,
-                                                     int nsplinepoints) {
+                                                     int nsplinepoints)
+{
   TFCS1DFunctionInt32Histogram hist_fct(hist);
 
   double xmin = 0;
@@ -201,10 +209,11 @@ double TFCS1DFunctionSpline::InitializeEqualDistance(TH1 *hist,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::InitializeEqualProbability(TH1 *hist,
+double TFCS1DFunctionSpline::InitializeEqualProbability(TH1* hist,
                                                         double maxdevgoal,
                                                         double maxeffsiggoal,
-                                                        int nsplinepoints) {
+                                                        int nsplinepoints)
+{
   TFCS1DFunctionInt32Histogram hist_fct(hist);
 
   double dprop = 1.0 / (nsplinepoints - 1);
@@ -234,11 +243,13 @@ double TFCS1DFunctionSpline::InitializeEqualProbability(TH1 *hist,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::optimize(TSpline3 &sp_best,
-                                      std::vector<double> &nprop,
-                                      const TH1 *hist,
-                                      TFCS1DFunctionInt32Histogram &hist_fct,
-                                      double maxdevgoal, double maxeffsiggoal) {
+double TFCS1DFunctionSpline::optimize(TSpline3& sp_best,
+                                      std::vector<double>& nprop,
+                                      const TH1* hist,
+                                      TFCS1DFunctionInt32Histogram& hist_fct,
+                                      double maxdevgoal,
+                                      double maxeffsiggoal)
+{
   int nsplinepoints = (int)nprop.size();
   // double xmin=hist->GetXaxis()->GetXmin();
   // double xmax=hist->GetXaxis()->GetXmax();
@@ -249,7 +260,8 @@ double TFCS1DFunctionSpline::optimize(TSpline3 &sp_best,
   int ntry = 200 / p_gotobest;
   // int itrytot=0;
   for (double dproploop = 0.4 / nsplinepoints; dproploop > 0.02 / nsplinepoints;
-       dproploop /= 2) {
+       dproploop /= 2)
+  {
     double dprop = dproploop;
     int n_nogain = 0;
     for (int itry = 0; itry < ntry; ++itry) {
@@ -257,8 +269,8 @@ double TFCS1DFunctionSpline::optimize(TSpline3 &sp_best,
       for (int i = 0; i < nsplinepoints; ++i) {
         nx[i] = hist_fct.rnd_to_fct(nprop_try[i]);
       }
-      TSpline3 sp("1Dspline", nprop_try.data(), nx.data(), nsplinepoints,
-                  "b2e2", 0, 0);
+      TSpline3 sp(
+          "1Dspline", nprop_try.data(), nx.data(), nsplinepoints, "b2e2", 0, 0);
       double maxeffsig;
       double p_maxdev;
       double p_maxeffsig;
@@ -317,13 +329,17 @@ double TFCS1DFunctionSpline::optimize(TSpline3 &sp_best,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::get_maxdev(const TH1 *hist, const TSpline3 &sp,
-                                        double &maxeffsig, double &p_maxdev,
-                                        double &p_maxeffsig, int ntoy) {
+double TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
+                                        const TSpline3& sp,
+                                        double& maxeffsig,
+                                        double& p_maxdev,
+                                        double& p_maxeffsig,
+                                        int ntoy)
+{
   double maxdev = 0;
   maxeffsig = 0;
 
-  TH1 *hist_clone = (TH1 *)hist->Clone("hist_clone");
+  TH1* hist_clone = (TH1*)hist->Clone("hist_clone");
   hist_clone->SetDirectory(nullptr);
   hist_clone->Reset();
   double interr = 0;
@@ -371,14 +387,16 @@ double TFCS1DFunctionSpline::get_maxdev(const TH1 *hist, const TSpline3 &sp,
   return maxdev;
 }
 
-double TFCS1DFunctionSpline::rnd_to_fct(double rnd) const {
+double TFCS1DFunctionSpline::rnd_to_fct(double rnd) const
+{
   return m_spline.Eval(rnd);
 }
 
-void TFCS1DFunctionSpline::unit_test(TH1 *hist) {
+void TFCS1DFunctionSpline::unit_test(TH1* hist)
+{
   ISF_FCS::MLogging logger;
   int nbinsx;
-  TH1 *histfine = nullptr;
+  TH1* histfine = nullptr;
   if (hist == nullptr) {
     nbinsx = 50;
     double xmin = 1;
@@ -405,17 +423,17 @@ void TFCS1DFunctionSpline::unit_test(TH1 *hist) {
 
   float value[2];
   float rnd[2];
-  //cppcheck-suppress uninitvar
+  // cppcheck-suppress uninitvar
   for (rnd[0] = 0; rnd[0] < 0.9999; rnd[0] += 0.25) {
     rtof.rnd_to_fct(value, rnd);
     ATH_MSG_NOCLASS(logger, "rnd0=" << rnd[0] << " -> x=" << value[0]);
   }
 
-  TH1 *hist_val = (TH1 *)histfine->Clone("hist_val");
+  TH1* hist_val = (TH1*)histfine->Clone("hist_val");
   hist_val->SetTitle("toy simulation");
   hist_val->Reset();
   hist_val->SetLineColor(2);
-  TH1 *hist_diff = (TH1 *)hist->Clone("hist_diff");
+  TH1* hist_diff = (TH1*)hist->Clone("hist_diff");
   hist_diff->SetTitle("difference");
   hist_diff->Reset();
   int nrnd = 5000000;
@@ -431,7 +449,7 @@ void TFCS1DFunctionSpline::unit_test(TH1 *hist) {
   }
   hist_diff->Add(hist, -1);
 
-  TH1F *hist_pull = new TH1F("pull", "pull", 200, -10, 10);
+  TH1F* hist_pull = new TH1F("pull", "pull", 200, -10, 10);
   for (int ix = 1; ix <= nbinsx; ++ix) {
     float val = hist_diff->GetBinContent(ix);
     float err = hist_diff->GetBinError(ix);
@@ -439,7 +457,6 @@ void TFCS1DFunctionSpline::unit_test(TH1 *hist) {
       hist_pull->Fill(val / err);
     // ATH_MSG_NOCLASS(logger,"val="<<val<<" err="<<err);
   }
-
 
   new TCanvas("input", "Input");
   histfine->SetLineColor(kGray);
@@ -450,14 +467,14 @@ void TFCS1DFunctionSpline::unit_test(TH1 *hist) {
   new TCanvas("spline", "spline");
   TFCS1DFunctionInt32Histogram hist_fct(hist);
   int ngr = 101;
-  TGraph *gr = new TGraph();
+  TGraph* gr = new TGraph();
   for (int i = 0; i < ngr; ++i) {
     double r = i * 1.0 / (ngr - 1);
     gr->SetPoint(i, r, hist_fct.rnd_to_fct(r));
   }
   gr->SetMarkerStyle(7);
   gr->Draw("AP");
-  TSpline3 *sp = new TSpline3(rtof.spline());
+  TSpline3* sp = new TSpline3(rtof.spline());
   sp->SetLineColor(2);
   sp->SetMarkerColor(2);
   sp->SetMarkerStyle(2);

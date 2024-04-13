@@ -1,28 +1,31 @@
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 /*
   Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
 */
 
+#include <iostream>
+#include <string>
+
 #include "FastCaloSim/TFCS1DFunction.h"
 
-#include "TH1.h"
 #include "TCanvas.h"
+#include "TH1.h"
 #include "TRandom.h"
-#include <string>
-#include <iostream>
 
 //=============================================
 //======= TFCS1DFunction =========
 //=============================================
 
-void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const {
+void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const
+{
   value[0] = rnd_to_fct(rnd[0]);
 }
 
-double TFCS1DFunction::get_maxdev(TH1 *h_input1, TH1 *h_approx1) {
-  TH1D *h_input = (TH1D *)h_input1->Clone("h_input");
-  TH1D *h_approx = (TH1D *)h_approx1->Clone("h_approx");
+double TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1)
+{
+  TH1D* h_input = (TH1D*)h_input1->Clone("h_input");
+  TH1D* h_approx = (TH1D*)h_approx1->Clone("h_approx");
 
   double maxdev = 0.0;
 
@@ -34,13 +37,13 @@ double TFCS1DFunction::get_maxdev(TH1 *h_input1, TH1 *h_approx1) {
         h_approx->GetBinContent(h_approx->FindBin(h_input->GetBinCenter(b)));
   h_approx->Scale(integral_input / integral_approx);
 
-  double ymax = h_approx->GetBinContent(h_approx->GetNbinsX()) -
-                h_approx->GetBinContent(h_approx->GetMinimumBin());
+  double ymax = h_approx->GetBinContent(h_approx->GetNbinsX())
+      - h_approx->GetBinContent(h_approx->GetMinimumBin());
   for (int i = 1; i <= h_input->GetNbinsX(); i++) {
     double val = fabs(h_approx->GetBinContent(
-                          h_approx->FindBin(h_input->GetBinCenter(i))) -
-                      h_input->GetBinContent(i)) /
-                 ymax;
+                          h_approx->FindBin(h_input->GetBinCenter(i)))
+                      - h_input->GetBinContent(i))
+        / ymax;
     if (val > maxdev)
       maxdev = val;
   }
@@ -52,7 +55,8 @@ double TFCS1DFunction::get_maxdev(TH1 *h_input1, TH1 *h_approx1) {
 }
 
 double TFCS1DFunction::CheckAndIntegrate1DHistogram(
-    const TH1 *hist, std::vector<double> &integral_vec, int &first, int &last) {
+    const TH1* hist, std::vector<double>& integral_vec, int& first, int& last)
+{
   ISF_FCS::MLogging logger;
   Int_t nbins = hist->GetNbinsX();
 
@@ -64,12 +68,12 @@ double TFCS1DFunction::CheckAndIntegrate1DHistogram(
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
       if (TMath::Abs(fraction) > 1e-5) {
-        ATH_MSG_NOCLASS(logger, "Warning: bin content is negative in histogram "
-                                    << hist->GetName() << " : "
-                                    << hist->GetTitle() << " binval=" << binval
-                                    << " " << fraction * 100
-                                    << "% of integral=" << hist->Integral()
-                                    << ". Forcing bin to 0.");
+        ATH_MSG_NOCLASS(logger,
+                        "Warning: bin content is negative in histogram "
+                            << hist->GetName() << " : " << hist->GetTitle()
+                            << " binval=" << binval << " " << fraction * 100
+                            << "% of integral=" << hist->Integral()
+                            << ". Forcing bin to 0.");
       }
       binval = 0;
     }
@@ -86,16 +90,20 @@ double TFCS1DFunction::CheckAndIntegrate1DHistogram(
   last++;
 
   if (integral <= 0) {
-    ATH_MSG_NOCLASS(logger, "Error: histogram "
-                                << hist->GetName() << " : " << hist->GetTitle()
-                                << " integral=" << integral << " is <=0");
+    ATH_MSG_NOCLASS(logger,
+                    "Error: histogram "
+                        << hist->GetName() << " : " << hist->GetTitle()
+                        << " integral=" << integral << " is <=0");
   }
   return integral;
 }
 
-TH1 *TFCS1DFunction::generate_histogram_random_slope(int nbinsx, double xmin, double xmax,
-                      double zerothreshold) {
-  TH1 *hist = new TH1D("test_slope1D", "test_slope1D", nbinsx, xmin, xmax);
+TH1* TFCS1DFunction::generate_histogram_random_slope(int nbinsx,
+                                                     double xmin,
+                                                     double xmax,
+                                                     double zerothreshold)
+{
+  TH1* hist = new TH1D("test_slope1D", "test_slope1D", nbinsx, xmin, xmax);
   hist->Sumw2();
   for (int ix = 1; ix <= nbinsx; ++ix) {
     double val = (0.5 + gRandom->Rndm()) * (nbinsx + ix);
@@ -107,9 +115,10 @@ TH1 *TFCS1DFunction::generate_histogram_random_slope(int nbinsx, double xmin, do
   return hist;
 }
 
-TH1 *TFCS1DFunction::generate_histogram_random_gauss(int nbinsx, int ntoy, double xmin, double xmax,
-                      double xpeak, double sigma) {
-  TH1 *hist = new TH1D("test_gauss1D", "test_gauss1D", nbinsx, xmin, xmax);
+TH1* TFCS1DFunction::generate_histogram_random_gauss(
+    int nbinsx, int ntoy, double xmin, double xmax, double xpeak, double sigma)
+{
+  TH1* hist = new TH1D("test_gauss1D", "test_gauss1D", nbinsx, xmin, xmax);
   hist->Sumw2();
   for (int i = 1; i <= ntoy; ++i) {
     double x = gRandom->Gaus(xpeak, sigma);
@@ -119,35 +128,38 @@ TH1 *TFCS1DFunction::generate_histogram_random_gauss(int nbinsx, int ntoy, doubl
   return hist;
 }
 
-void TFCS1DFunction::unit_test(TH1 *hist,
-                                                     TFCS1DFunction *rtof,
-                                                     int nrnd, TH1 *histfine) {
+void TFCS1DFunction::unit_test(TH1* hist,
+                               TFCS1DFunction* rtof,
+                               int nrnd,
+                               TH1* histfine)
+{
   ISF_FCS::MLogging logger;
-  ATH_MSG_NOCLASS(logger, "========= " << hist->GetName() << " funcsize="
-                                       << rtof->MemorySize() << " ========");
+  ATH_MSG_NOCLASS(logger,
+                  "========= " << hist->GetName() << " funcsize="
+                               << rtof->MemorySize() << " ========");
   int nbinsx = hist->GetNbinsX();
   double integral = hist->Integral();
 
   float value[2];
   float rnd[2];
-  //cppcheck-suppress uninitvar
+  // cppcheck-suppress uninitvar
   for (rnd[0] = 0; rnd[0] < 0.9999; rnd[0] += 0.25) {
     rtof->rnd_to_fct(value, rnd);
     ATH_MSG_NOCLASS(logger, "rnd0=" << rnd[0] << " -> x=" << value[0]);
   }
 
-  TH1 *hist_val = nullptr;
+  TH1* hist_val = nullptr;
   if (histfine)
-    hist_val = (TH1 *)histfine->Clone(TString(hist->GetName()) + "hist_val");
+    hist_val = (TH1*)histfine->Clone(TString(hist->GetName()) + "hist_val");
   else
-    hist_val = (TH1 *)hist->Clone(TString(hist->GetName()) + "hist_val");
+    hist_val = (TH1*)hist->Clone(TString(hist->GetName()) + "hist_val");
   double weightfine = hist_val->Integral() / nrnd;
   hist_val->SetTitle("toy simulation");
   hist_val->Reset();
   hist_val->SetLineColor(2);
   hist_val->Sumw2();
 
-  TH1 *hist_diff = (TH1 *)hist->Clone(TString(hist->GetName()) + "_difference");
+  TH1* hist_diff = (TH1*)hist->Clone(TString(hist->GetName()) + "_difference");
   hist_diff->SetTitle("cut efficiency difference");
   hist_diff->Reset();
   hist_diff->Sumw2();
@@ -162,7 +174,7 @@ void TFCS1DFunction::unit_test(TH1 *hist,
   hist_diff->Add(hist, -1);
   hist_diff->Scale(1.0 / integral);
 
-  TH1F *hist_pull =
+  TH1F* hist_pull =
       new TH1F(TString(hist->GetName()) + "_pull", "pull", 200, -10, 10);
   for (int ix = 1; ix <= nbinsx; ++ix) {
     float val = hist_diff->GetBinContent(ix);
@@ -171,8 +183,7 @@ void TFCS1DFunction::unit_test(TH1 *hist,
       hist_pull->Fill(val / err);
   }
 
-
-  TCanvas *c = new TCanvas(hist->GetName(), hist->GetName());
+  TCanvas* c = new TCanvas(hist->GetName(), hist->GetName());
   c->Divide(2, 2);
 
   c->cd(1);
@@ -203,7 +214,6 @@ void TFCS1DFunction::unit_test(TH1 *hist,
   hist_pull->Draw();
 
   c->SaveAs(".png");
-
 }
 
 #pragma GCC diagnostic pop

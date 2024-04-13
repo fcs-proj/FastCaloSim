@@ -5,20 +5,23 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionInt16Histogram_h
 #define ISF_FASTCALOSIMEVENT_TFCS1DFunctionInt16Histogram_h
 
-#include "FastCaloSim/TFCS1DFunction.h"
 #include <vector>
+
+#include "FastCaloSim/TFCS1DFunction.h"
 
 class TH2;
 
-class TFCS1DFunctionInt16Histogram : public TFCS1DFunction {
+class TFCS1DFunctionInt16Histogram : public TFCS1DFunction
+{
 public:
-  TFCS1DFunctionInt16Histogram(const TH1 *hist = nullptr) {
+  TFCS1DFunctionInt16Histogram(const TH1* hist = nullptr)
+  {
     if (hist)
       Initialize(hist);
   };
-  ~TFCS1DFunctionInt16Histogram(){};
+  ~TFCS1DFunctionInt16Histogram() {};
 
-  void Initialize(const TH1 *hist);
+  void Initialize(const TH1* hist);
 
   using TFCS1DFunction::rnd_to_fct;
 
@@ -29,23 +32,25 @@ public:
   /// and returns function value according to a histogram distribution
   virtual double rnd_to_fct(double rnd) const;
 
-  const std::vector<float> &get_HistoBordersx() const {
+  const std::vector<float>& get_HistoBordersx() const
+  {
     return m_HistoBorders;
   };
-  std::vector<float> &get_HistoBordersx() { return m_HistoBorders; };
-  const std::vector<HistoContent_t> &get_HistoContents() const {
+  std::vector<float>& get_HistoBordersx() { return m_HistoBorders; };
+  const std::vector<HistoContent_t>& get_HistoContents() const
+  {
     return m_HistoContents;
   };
-  std::vector<HistoContent_t> &get_HistoContents() { return m_HistoContents; };
+  std::vector<HistoContent_t>& get_HistoContents() { return m_HistoContents; };
 
-  static void unit_test(TH1 *hist = nullptr);
+  static void unit_test(TH1* hist = nullptr);
 
 protected:
   std::vector<float> m_HistoBorders;
   std::vector<HistoContent_t> m_HistoContents;
 
 private:
-  ClassDef(TFCS1DFunctionInt16Histogram, 1) // TFCS1DFunctionInt16Histogram
+  ClassDef(TFCS1DFunctionInt16Histogram, 1)  // TFCS1DFunctionInt16Histogram
 };
 
 #endif

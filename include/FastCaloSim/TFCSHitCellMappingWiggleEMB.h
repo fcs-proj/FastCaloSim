@@ -7,18 +7,20 @@
 
 #include "FastCaloSim/TFCSHitCellMapping.h"
 
-class TFCSHitCellMappingWiggleEMB : public TFCSHitCellMapping {
+class TFCSHitCellMappingWiggleEMB : public TFCSHitCellMapping
+{
 public:
-  TFCSHitCellMappingWiggleEMB(const char *name = nullptr,
-                              const char *title = nullptr,
-                              ICaloGeometry *geo = nullptr);
+  TFCSHitCellMappingWiggleEMB(const char* name = nullptr,
+                              const char* title = nullptr,
+                              ICaloGeometry* geo = nullptr);
 
-  /// modify one hit position to emulate the LAr accordeon shape
+  /// modify one hit position to emulate the LAr accordion shape
   /// and then fills all hits into calorimeter cells
-  virtual FCSReturnCode
-  simulate_hit(Hit &hit, TFCSSimulationState &simulstate,
-               const TFCSTruthState *truth,
-               const TFCSExtrapolationState *extrapol) override;
+  virtual FCSReturnCode simulate_hit(
+      Hit& hit,
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol) override;
 
 private:
   //** Array for the hit-to-cell assignment accordion structure fix (wiggle)
@@ -31,7 +33,7 @@ private:
   double doWiggle(double searchRand);
 
   ClassDefOverride(TFCSHitCellMappingWiggleEMB,
-                   1) // TFCSHitCellMappingWiggleEMB
+                   1)  // TFCSHitCellMappingWiggleEMB
 };
 
 #endif

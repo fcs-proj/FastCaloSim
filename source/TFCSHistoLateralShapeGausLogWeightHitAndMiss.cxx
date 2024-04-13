@@ -2,31 +2,37 @@
   Copyright (C) 2002-2019 CERN for the benefit of the ATLAS collaboration
 */
 
+#include "FastCaloSim/TFCSHistoLateralShapeGausLogWeightHitAndMiss.h"
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
-
-#include "FastCaloSim/TFCSHistoLateralShapeGausLogWeightHitAndMiss.h"
 #include "FastCaloSim/TFCSSimulationState.h"
-
 #include "TH1.h"
-#include "TVector2.h"
 #include "TMath.h"
+#include "TVector2.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeGausLogWeightHitAndMiss =========
 //=============================================
 
 TFCSHistoLateralShapeGausLogWeightHitAndMiss::
-    TFCSHistoLateralShapeGausLogWeightHitAndMiss(const char *name,
-                                                 const char *title)
-    : TFCSHistoLateralShapeWeight(name, title) {}
+    TFCSHistoLateralShapeGausLogWeightHitAndMiss(const char* name,
+                                                 const char* title)
+    : TFCSHistoLateralShapeWeight(name, title)
+{
+}
 
 TFCSHistoLateralShapeGausLogWeightHitAndMiss::
-    ~TFCSHistoLateralShapeGausLogWeightHitAndMiss() {}
+    ~TFCSHistoLateralShapeGausLogWeightHitAndMiss()
+{
+}
 
 FCSReturnCode TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/)
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -37,8 +43,8 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
   const double center_z = hit.center_z();
 
   const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta) /
-                                      (1.0 + TMath::Exp(-2 * center_eta)));
+  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
+                                      / (1.0 + TMath::Exp(-2 * center_eta)));
 
   const float delta_eta = hit.eta() - center_eta;
   const float delta_phi = hit.phi() - center_phi;
@@ -58,8 +64,8 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
   float weight = meanweight;
   float RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
-    float logweight = CLHEP::RandGaussZiggurat::shoot(simulstate.randomEngine(),
-                                                      -0.5 * RMS * RMS, RMS);
+    float logweight = CLHEP::RandGaussZiggurat::shoot(
+        simulstate.randomEngine(), -0.5 * RMS * RMS, RMS);
     weight *= TMath::Exp(logweight);
   }
   if (meanweight <= 1) {

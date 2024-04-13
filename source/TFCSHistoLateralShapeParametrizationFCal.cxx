@@ -2,33 +2,38 @@
   Copyright (C) 2002-2018 CERN for the benefit of the ATLAS collaboration
 */
 
+#include "FastCaloSim/TFCSHistoLateralShapeParametrizationFCal.h"
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandPoisson.h"
-
-#include "FastCaloSim/TFCSHistoLateralShapeParametrizationFCal.h"
-#include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSExtrapolationState.h"
-
-#include "TMath.h"
-
+#include "FastCaloSim/TFCSSimulationState.h"
 #include "HepPDT/ParticleData.hh"
 #include "HepPDT/ParticleDataTable.hh"
+#include "TMath.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeParametrizationFCal =========
 //=============================================
 
 TFCSHistoLateralShapeParametrizationFCal::
-    TFCSHistoLateralShapeParametrizationFCal(const char *name,
-                                             const char *title)
-    : TFCSHistoLateralShapeParametrization(name, title) {}
+    TFCSHistoLateralShapeParametrizationFCal(const char* name,
+                                             const char* title)
+    : TFCSHistoLateralShapeParametrization(name, title)
+{
+}
 
 TFCSHistoLateralShapeParametrizationFCal::
-    ~TFCSHistoLateralShapeParametrizationFCal() {}
+    ~TFCSHistoLateralShapeParametrizationFCal()
+{
+}
 
 FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState * /*extrapol*/) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* /*extrapol*/)
+{
   if (!simulstate.randomEngine()) {
     return FCSFatal;
   }
@@ -50,12 +55,12 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
   rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
-    if (rnd2 >= 0.5) { // Fill negative phi half of shape
+    if (rnd2 >= 0.5) {  // Fill negative phi half of shape
       rnd2 -= 0.5;
       rnd2 *= 2;
       m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
       alpha = -alpha;
-    } else { // Fill positive phi half of shape
+    } else {  // Fill positive phi half of shape
       rnd2 *= 2;
       m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
     }
@@ -78,9 +83,9 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
   const float hit_r = r * cos(alpha) + center_r;
   float delta_phi = r * sin(alpha) / center_r;
   // We derive the shower shapes for electrons and positively charged hadrons.
-  // Particle with the opposite charge are expected to have the same shower shape
-  // after the transformation: delta_phi --> -delta_phi
-  if ((charge < 0. && pdgId!=11) || pdgId==-11)
+  // Particle with the opposite charge are expected to have the same shower
+  // shape after the transformation: delta_phi --> -delta_phi
+  if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi = -delta_phi;
   const float hit_phi = delta_phi + center_phi;
 

@@ -2,10 +2,10 @@
  * Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
  *
  * Abstract base class for Neural networks.
- * Intially aimed at replacing instances of an lwtnn network
+ * Initially aimed at replacing instances of an lwtnn network
  * with a network that could be either lwtnn or ONNX,
  * so it is an interface which mirrors that of lwtnn graphs.
- * At least 3 derived classes are avaliable;
+ * At least 3 derived classes are available;
  *
  *   - TFCSSimpleLWTNNHandler; Designed to wrap a lwtnn neural network
  *   - TFCSGANLWTNNHandler; Designed to wrap a lwtnn graph network
@@ -35,7 +35,8 @@
  * Has various subclasses to cover differing network
  * libraries and save formats.
  **/
-class VNetworkBase : public ISF_FCS::MLogging {
+class VNetworkBase : public ISF_FCS::MLogging
+{
 public:
   /**
    * @brief VNetworkBase default constructor.
@@ -49,26 +50,26 @@ public:
    * @brief VNetworkBase constructor.
    *
    * Only saves inputFile to m_inputFile;
-   * Inherting classes should call setupPersistedVariables
+   * Inheriting classes should call setupPersistedVariables
    * and setupNet in constructor;
    *
    * @param inputFile file-path on disk (with file name) of a readable
    *                  file containing a description of the network to
    *                  be constructed or the content of the file.
    **/
-  explicit VNetworkBase(const std::string &inputFile);
+  explicit VNetworkBase(const std::string& inputFile);
 
   /**
    * @brief VNetworkBase copy constructor.
    *
    * Does not call setupPersistedVariables or setupNet
    * but will pass on m_inputFile.
-   * Inherting classes should do whatever they need to move the variables
+   * Inheriting classes should do whatever they need to move the variables
    * created in the setup functions.
    *
    * @param copy_from existing network that we are copying
    **/
-  VNetworkBase(const VNetworkBase &copy_from);
+  VNetworkBase(const VNetworkBase& copy_from);
 
   // virtual destructor, to ensure that it is always called, even
   // when a base class is deleted via a pointer to a derived class
@@ -80,7 +81,7 @@ public:
    *
    * The doubles are the values to be passed into the network.
    * Strings in the outer map identify the input node, which
-   * must corrispond to the names of the nodes as read from the
+   * must correspond to the names of the nodes as read from the
    * description of the network found by the constructor.
    * Strings in the inner map identify the part of the input node,
    * for some networks these must be simple integers, in string form,
@@ -102,34 +103,34 @@ public:
   /**
    * @brief String representation of network inputs
    *
-   * Create a string that summarises a set of network inputs.
+   * Create a string that summarizes a set of network inputs.
    * Gives basic dimensions plus a few values, up to the maxValues
    *
    * @param inputs     values to be evaluated by the network
-   * @param maxValues  maximum number of values to include in the representaiton
+   * @param maxValues  maximum number of values to include in the representation
    * @return           string represetning the inputs
    **/
-  static std::string representNetworkInputs(NetworkInputs const &inputs,
+  static std::string representNetworkInputs(NetworkInputs const& inputs,
                                             int maxValues = 3);
 
   /**
    * @brief String representation of network outputs
    *
-   * Create a string that summarises a set of network outputs.
+   * Create a string that summarizes a set of network outputs.
    * Gives basic dimensions plus a few values, up to the maxValues
    *
    * @param outputs    output of the network
-   * @param maxValues  maximum number of values to include in the representaiton
+   * @param maxValues  maximum number of values to include in the representation
    * @return           string represetning the outputs
    **/
-  static std::string representNetworkOutputs(NetworkOutputs const &outputs,
+  static std::string representNetworkOutputs(NetworkOutputs const& outputs,
                                              int maxValues = 3);
 
-  // pure virtual, derived classes must impement this
+  // pure virtual, derived classes must implement this
   /**
    * @brief Function to pass values to the network.
    *
-   * This function hides variations in the formated needed
+   * This function hides variations in the formatted needed
    * by different network libraries, providing a uniform input
    * and output type.
    *
@@ -138,7 +139,7 @@ public:
    * @see VNetworkBase::NetworkInputs
    * @see VNetworkBase::NetworkOutputs
    **/
-  virtual NetworkOutputs compute(NetworkInputs const &inputs) const = 0;
+  virtual NetworkOutputs compute(NetworkInputs const& inputs) const = 0;
 
   // Conversion to ostream
   // It's not possible to have a virtual friend function
@@ -151,8 +152,9 @@ public:
    * This can be altered by subclasses by changing the protected
    * print function of this class.
    **/
-  friend std::ostream &operator<<(std::ostream &strm,
-                                  const VNetworkBase &vNetworkBase) {
+  friend std::ostream& operator<<(std::ostream& strm,
+                                  const VNetworkBase& vNetworkBase)
+  {
     vNetworkBase.print(strm);
     return strm;
   }
@@ -165,7 +167,7 @@ public:
    *
    * @param tree  The tree to save inside.
    **/
-  virtual void writeNetToTTree(TTree &tree) = 0;
+  virtual void writeNetToTTree(TTree& tree) = 0;
 
   /**
    * @brief Default name for the TTree to save in.
@@ -181,8 +183,8 @@ public:
    * @param root_file  The file to save inside.
    * @param tree_name  The name of the TTree to save inside.
    **/
-  void writeNetToTTree(TFile &root_file,
-                       std::string const &tree_name = m_defaultTreeName);
+  void writeNetToTTree(TFile& root_file,
+                       std::string const& tree_name = m_defaultTreeName);
 
   /**
    * @brief Save the network to a TTree.
@@ -193,8 +195,8 @@ public:
    * @param root_name  The path of the file to save inside.
    * @param tree_name  The name of the TTree to save inside.
    **/
-  void writeNetToTTree(std::string const &root_name,
-                       std::string const &tree_name = m_defaultTreeName);
+  void writeNetToTTree(std::string const& root_name,
+                       std::string const& tree_name = m_defaultTreeName);
 
   /**
    * @brief List the names of the outputs.
@@ -209,19 +211,19 @@ public:
   /**
    * @brief Check if a string is the path of a file on disk.
    *
-   * Determines if a string corrisponds to tha path of a file
+   * Determines if a string corresponds to tha path of a file
    * that can be read on the disk.
    *
    * @param inputFile  name of the pottential file
    * @return           is it a readable file on disk
    **/
-  static bool isFile(std::string const &inputFile);
+  static bool isFile(std::string const& inputFile);
 
   /**
    * @brief Check if the argument inputFile is the path of a file on disk.
    *
    * Determines if the string that was passed to the constructor as
-   * inputFile corrisponds to tha path of a file
+   * inputFile corresponds to tha path of a file
    * that can be read on the disk.
    *
    * @return           is it a readable file on disk
@@ -229,9 +231,9 @@ public:
   bool isFile() const;
 
   /**
-   * @brief Get rid of any memory objects that arn't needed to run the net.
+   * @brief Get rid of any memory objects that aren't needed to run the net.
    *
-   * Minimise memory usage by deleting any inputs that are
+   * Minimize memory usage by deleting any inputs that are
    * no longer required to run the compute function.
    * May prevent the net from being saved.
    *
@@ -274,7 +276,7 @@ protected:
    *
    * @param strm  output parameter, to which the description will be written.
    **/
-  virtual void print(std::ostream &strm) const;
+  virtual void print(std::ostream& strm) const;
 
   /**
    * @brief Check if a string is possibly a root file path.
@@ -286,24 +288,24 @@ protected:
    *                   if blank, m_inputFile is used.
    * @return           is it the path of a root file
    **/
-  bool isRootFile(std::string const &filename = "") const;
+  bool isRootFile(std::string const& filename = "") const;
 
   /**
    * @brief Remove any common prefix from the outputs.
    *
    * @param outputs    The outputs, changed in place.
    **/
-  void removePrefixes(NetworkOutputs &outputs) const;
+  void removePrefixes(NetworkOutputs& outputs) const;
 
   /**
    * @brief Remove any common prefix from the outputs.
    *
    * @param outputs    The output names, changed in place.
    **/
-  void removePrefixes(std::vector<std::string> &output_names) const;
+  void removePrefixes(std::vector<std::string>& output_names) const;
 
 private:
-  // Suppling a ClassDef for writing to file.
+  // Supplying a ClassDef for writing to file.
   ClassDef(VNetworkBase, 1);
 };
 

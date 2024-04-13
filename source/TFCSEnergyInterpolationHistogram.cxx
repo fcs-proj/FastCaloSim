@@ -2,37 +2,44 @@
   Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "FastCaloSim/TFCSEnergyInterpolationHistogram.h"
-#include "FastCaloSim/TFCSSimulationState.h"
-#include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
-#include "TFile.h"
-#include "TCanvas.h"
-#include "TGraph.h"
-#include "TAxis.h"
 #include <iostream>
 #include <vector>
 
-namespace Gaudi {
-namespace Units {
+#include "FastCaloSim/TFCSEnergyInterpolationHistogram.h"
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
+#include "FastCaloSim/TFCSSimulationState.h"
+#include "FastCaloSim/TFCSTruthState.h"
+#include "TAxis.h"
+#include "TCanvas.h"
+#include "TFile.h"
+#include "TGraph.h"
+
+namespace Gaudi
+{
+namespace Units
+{
 constexpr double megaelectronvolt = 1.;
 constexpr double kiloelectronvolt = 1.e-3 * megaelectronvolt;
 constexpr double keV = kiloelectronvolt;
-} // namespace Units
-} // namespace Gaudi
-
+}  // namespace Units
+}  // namespace Gaudi
 
 //=============================================
 //======= TFCSEnergyInterpolation =========
 //=============================================
 
 TFCSEnergyInterpolationHistogram::TFCSEnergyInterpolationHistogram(
-    const char *name, const char *title)
-    : TFCSParametrization(name, title) {}
+    const char* name, const char* title)
+    : TFCSParametrization(name, title)
+{
+}
 
 FCSReturnCode TFCSEnergyInterpolationHistogram::simulate(
-    TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState*) const
+{
   float Emean;
   float Einit;
   const float Ekin = truth->Ekin();
@@ -61,7 +68,8 @@ FCSReturnCode TFCSEnergyInterpolationHistogram::simulate(
   return FCSSuccess;
 }
 
-void TFCSEnergyInterpolationHistogram::Print(Option_t *option) const {
+void TFCSEnergyInterpolationHistogram::Print(Option_t* option) const
+{
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
   bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
@@ -78,8 +86,11 @@ void TFCSEnergyInterpolationHistogram::Print(Option_t *option) const {
 }
 
 void TFCSEnergyInterpolationHistogram::unit_test(
-    TFCSSimulationState *simulstate, TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol, TH1F *hist) {
+    TFCSSimulationState* simulstate,
+    TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol,
+    TH1F* hist)
+{
   if (!simulstate)
     simulstate = new TFCSSimulationState();
   if (!truth)
@@ -107,7 +118,7 @@ void TFCSEnergyInterpolationHistogram::unit_test(
     hist->SetBinContent(16, 0.943673);
   }
 
-  TH1F *hdraw = (TH1F *)hist->Clone();
+  TH1F* hdraw = (TH1F*)hist->Clone();
   hdraw->SetMarkerColor(46);
   hdraw->SetMarkerStyle(8);
 
@@ -115,9 +126,10 @@ void TFCSEnergyInterpolationHistogram::unit_test(
       "testTFCSEnergyInterpolationHistogram",
       "test TFCSEnergyInterpolationHistogram");
   test.set_pdgid(22);
-  test.set_Ekin_nominal(0.5 *
-                        (hdraw->GetXaxis()->GetBinLowEdge(1) +
-                         hdraw->GetXaxis()->GetBinUpEdge(hdraw->GetNbinsX())));
+  test.set_Ekin_nominal(
+      0.5
+      * (hdraw->GetXaxis()->GetBinLowEdge(1)
+         + hdraw->GetXaxis()->GetBinUpEdge(hdraw->GetNbinsX())));
   test.set_Ekin_min(hdraw->GetXaxis()->GetBinLowEdge(1));
   test.set_Ekin_max(hdraw->GetXaxis()->GetBinUpEdge(hdraw->GetNbinsX()));
   test.set_eta_nominal(0.225);
@@ -130,7 +142,7 @@ void TFCSEnergyInterpolationHistogram::unit_test(
 
   truth->set_pdgid(22);
 
-  TGraph *gr = new TGraph();
+  TGraph* gr = new TGraph();
   gr->SetNameTitle("testTFCSEnergyInterpolationHistogramLogX",
                    "test TFCSEnergyInterpolationHistogram");
   gr->GetXaxis()->SetTitle("Ekin [MeV]");
@@ -138,7 +150,9 @@ void TFCSEnergyInterpolationHistogram::unit_test(
 
   int ip = 0;
   for (float Ekin = std::max(test.Ekin_min() * 0.25, 0.1);
-       Ekin <= test.Ekin_max() * 4; Ekin *= 1.05) {
+       Ekin <= test.Ekin_max() * 4;
+       Ekin *= 1.05)
+  {
     // Init LorentzVector for truth. For photon Ekin=E
     truth->SetPxPyPzE(Ekin, 0, 0, Ekin);
     simulstate->set_E(Ekin);
@@ -149,8 +163,7 @@ void TFCSEnergyInterpolationHistogram::unit_test(
     ++ip;
   }
 
-
-  TCanvas *c = new TCanvas(hdraw->GetName(), hdraw->GetTitle());
+  TCanvas* c = new TCanvas(hdraw->GetName(), hdraw->GetTitle());
   hdraw->Draw("HIST");
   gr->Draw("same,APL");
   c->SetLogx();

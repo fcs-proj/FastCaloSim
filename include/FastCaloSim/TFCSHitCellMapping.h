@@ -9,29 +9,32 @@
 
 class ICaloGeometry;
 
-class TFCSHitCellMapping : public TFCSLateralShapeParametrizationHitBase {
+class TFCSHitCellMapping : public TFCSLateralShapeParametrizationHitBase
+{
 public:
-  TFCSHitCellMapping(const char *name = nullptr, const char *title = nullptr,
-                     ICaloGeometry *geo = nullptr);
+  TFCSHitCellMapping(const char* name = nullptr,
+                     const char* title = nullptr,
+                     ICaloGeometry* geo = nullptr);
 
-  virtual void set_geometry(ICaloGeometry *geo) override { m_geo = geo; };
-  ICaloGeometry *get_geometry() { return m_geo; };
+  virtual void set_geometry(ICaloGeometry* geo) override { m_geo = geo; };
+  ICaloGeometry* get_geometry() { return m_geo; };
 
   /// fills all hits into calorimeter cells
-  virtual FCSReturnCode
-  simulate_hit(Hit &hit, TFCSSimulationState &simulstate,
-               const TFCSTruthState *truth,
-               const TFCSExtrapolationState *extrapol) override;
+  virtual FCSReturnCode simulate_hit(
+      Hit& hit,
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol) override;
 
-  virtual bool operator==(const TFCSParametrizationBase &ref) const override;
+  virtual bool operator==(const TFCSParametrizationBase& ref) const override;
 
-  void Print(Option_t *option) const override;
+  void Print(Option_t* option) const override;
 
 protected:
-  ICaloGeometry *m_geo; //! do not persistify
+  ICaloGeometry* m_geo;  //! do not persistify
 
 private:
-  ClassDefOverride(TFCSHitCellMapping, 1) // TFCSHitCellMapping
+  ClassDefOverride(TFCSHitCellMapping, 1)  // TFCSHitCellMapping
 };
 
 #endif

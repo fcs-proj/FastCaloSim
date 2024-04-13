@@ -4,7 +4,7 @@
  * Class to perform runtime selection from the derived
  * classes of VNetworkBase given inout for a network.
  *
- * Has only static functions becuase no statelike
+ * Has only static functions because no statelike
  * information is needed to make this decision.
  *
  * Information about the which network would be
@@ -15,13 +15,15 @@
 #ifndef TFCSNETWORKFACTORY_H
 #define TFCSNETWORKFACTORY_H
 
-#include "FastCaloSim/VNetworkBase.h"
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
-#include <filesystem>
 
-class TFCSNetworkFactory {
+#include "FastCaloSim/VNetworkBase.h"
+
+class TFCSNetworkFactory
+{
 public:
   // Unspecified TFCSGANLWTNNHandler or TFCSSimpleLWTNNHandler, take a guess
   /**
@@ -78,7 +80,7 @@ public:
    * @param input        The content of an onnx proto file.
    *
    **/
-  static std::unique_ptr<VNetworkBase> create(std::vector<char> const &input);
+  static std::unique_ptr<VNetworkBase> create(std::vector<char> const& input);
 
   /**
    * @brief Create a network from whichever input isn't empty.
@@ -89,22 +91,23 @@ public:
    * @param vector_input        The content of an onnx proto file.
    * @param string_input        Either a file path, or the content of a file.
    **/
-  static std::unique_ptr<VNetworkBase>
-  create(std::vector<char> const &vector_input, std::string string_input);
+  static std::unique_ptr<VNetworkBase> create(
+      std::vector<char> const& vector_input, std::string string_input);
   /**
    * @brief Create a network from whichever input isn't empty.
    *
    * If the vector_input is not empty, construct a network from that,
    * otherwise, use the string_input to construct a network.
-   * Whether the network is in graph form is specifed for LWTNN networks.
+   * Whether the network is in graph form is specified for LWTNN networks.
    *
    * @param vector_input        The content of an onnx proto file.
    * @param string_input        Either a file path, or the content of a file.
-   * @param graph_form   Is the network the more compelx graph form?
+   * @param graph_form   Is the network the more complex graph form?
    **/
-  static std::unique_ptr<VNetworkBase>
-  create(std::vector<char> const &vector_input, std::string string_input,
-         bool graph_form);
+  static std::unique_ptr<VNetworkBase> create(
+      std::vector<char> const& vector_input,
+      std::string string_input,
+      bool graph_form);
 
 private:
   /**
@@ -112,11 +115,11 @@ private:
    *
    * If the filepath doesn't end in .*, no change is made.
    * Will check first for a .onnx file, then look for a .json.
-   * Throws an exception if niether are found.
+   * Throws an exception if neither are found.
    *
    * @param filename  Path to check.
    **/
-  static void resolveGlobs(std::string &filename);
+  static void resolveGlobs(std::string& filename);
 
   /**
    * @brief Check if a filename seems to be an onnx file.
@@ -125,7 +128,7 @@ private:
    *
    * @param filename  Path to check.
    **/
-  static bool isOnnxFile(std::string const &filename);
+  static bool isOnnxFile(std::string const& filename);
 };
 
-#endif // TFCSNETWORKFACTORY_H
+#endif  // TFCSNETWORKFACTORY_H

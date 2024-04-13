@@ -3,7 +3,7 @@
  *
  * Class for a neural network read in the LWTNN format.
  * Derived from the abstract base class VNetworkBase
- * such that it can be used interchangably with it's
+ * such that it can be used interchangeably with it's
  * sibling classes, TFCSSimpleLWTNNHandler, TFCSGANLWTNNHandler,
  * TFCSONNXHandler.
  *
@@ -22,16 +22,18 @@
 #ifndef TFCSSIMPLELWTNNHANDLER_H
 #define TFCSSIMPLELWTNNHANDLER_H
 
-#include "FastCaloSim/VNetworkLWTNN.h"
 #include <iostream>
 
-// Becuase we have a field of type LightweightNeuralNetwork
+#include "FastCaloSim/VNetworkLWTNN.h"
+
+// Because we have a field of type LightweightNeuralNetwork
 #include "lwtnn/LightweightNeuralNetwork.hh"
 
 // For writing to a tree
 #include "TTree.h"
 
-class TFCSSimpleLWTNNHandler : public VNetworkLWTNN {
+class TFCSSimpleLWTNNHandler : public VNetworkLWTNN
+{
 public:
   // Don't lose the default constructor
   using VNetworkLWTNN::VNetworkLWTNN;
@@ -46,7 +48,7 @@ public:
    *                  of the network to be constructed, or the json
    *                  itself as a string.
    **/
-  explicit TFCSSimpleLWTNNHandler(const std::string &inputFile);
+  explicit TFCSSimpleLWTNNHandler(const std::string& inputFile);
 
   /**
    * @brief TFCSSimpleLWTNNHandler copy constructor.
@@ -56,12 +58,12 @@ public:
    *
    * @param copy_from existing network that we are copying
    **/
-  TFCSSimpleLWTNNHandler(const TFCSSimpleLWTNNHandler &copy_from);
+  TFCSSimpleLWTNNHandler(const TFCSSimpleLWTNNHandler& copy_from);
 
   /**
    * @brief Function to pass values to the network.
    *
-   * This function, hides variations in the formated needed
+   * This function, hides variations in the formatted needed
    * by different network libraries, providing a uniform input
    * and output type.
    *
@@ -70,7 +72,7 @@ public:
    * @see VNetworkBase::NetworkInputs
    * @see VNetworkBase::NetworkOutputs
    **/
-  NetworkOutputs compute(NetworkInputs const &inputs) const override;
+  NetworkOutputs compute(NetworkInputs const& inputs) const override;
 
   /**
    * @brief List the names of the outputs.
@@ -100,14 +102,14 @@ private:
    * @brief The network that we are wrapping here.
    **/
   std::unique_ptr<lwt::LightweightNeuralNetwork>
-      m_lwtnn_neural; //! Do not persistify
+      m_lwtnn_neural;  //! Do not persistify
   /**
    * @brief List of names that index the output layer.
    **/
-  std::vector<std::string> m_outputLayers; //! Do not persistify
+  std::vector<std::string> m_outputLayers;  //! Do not persistify
 
-  // Suppling a ClassDef for writing to file.
+  // Supplying a ClassDef for writing to file.
   ClassDefOverride(TFCSSimpleLWTNNHandler, 1);
 };
 
-#endif // TFCSSIMPLELWTNNHANDLER_H
+#endif  // TFCSSIMPLELWTNNHANDLER_H

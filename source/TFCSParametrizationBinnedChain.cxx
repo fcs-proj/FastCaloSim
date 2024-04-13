@@ -2,34 +2,38 @@
   Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
 */
 
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+
 #include "FastCaloSim/TFCSParametrizationBinnedChain.h"
+
+#include "FastCaloSim/TFCSExtrapolationState.h"
 #include "FastCaloSim/TFCSInvisibleParametrization.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 #include "FastCaloSim/TFCSTruthState.h"
-#include "FastCaloSim/TFCSExtrapolationState.h"
-#include <algorithm>
-#include <iterator>
-#include <iostream>
 
 //=============================================
 //======= TFCSParametrizationBinnedChain =========
 //=============================================
 
 void TFCSParametrizationBinnedChain::push_before_first_bin(
-    TFCSParametrizationBase *param) {
+    TFCSParametrizationBase* param)
+{
   if (m_bin_start[0] == size()) {
     chain().push_back(param);
   } else {
     Chain_t::iterator it(&chain()[m_bin_start[0]]);
     chain().insert(it, param);
   }
-  for (auto &ele : m_bin_start)
+  for (auto& ele : m_bin_start)
     ele++;
   recalc();
 }
 
 void TFCSParametrizationBinnedChain::push_back_in_bin(
-    TFCSParametrizationBase *param, unsigned int bin) {
+    TFCSParametrizationBase* param, unsigned int bin)
+{
   if (m_bin_start.size() <= bin + 1) {
     m_bin_start.resize(bin + 2, m_bin_start.back());
     m_bin_start.shrink_to_fit();
@@ -45,25 +49,31 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
   recalc();
 }
 
-int TFCSParametrizationBinnedChain::get_bin(
-    TFCSSimulationState &, const TFCSTruthState *,
-    const TFCSExtrapolationState *) const {
+int TFCSParametrizationBinnedChain::get_bin(TFCSSimulationState&,
+                                            const TFCSTruthState*,
+                                            const TFCSExtrapolationState*) const
+{
   return 0;
 }
 
 const std::string TFCSParametrizationBinnedChain::get_variable_text(
-    TFCSSimulationState &, const TFCSTruthState *,
-    const TFCSExtrapolationState *) const {
+    TFCSSimulationState&,
+    const TFCSTruthState*,
+    const TFCSExtrapolationState*) const
+{
   return std::string("NO VARIABLE DEFINED");
 }
 
-const std::string TFCSParametrizationBinnedChain::get_bin_text(int bin) const {
+const std::string TFCSParametrizationBinnedChain::get_bin_text(int bin) const
+{
   return std::string(Form("bin %d", bin));
 }
 
 FCSReturnCode TFCSParametrizationBinnedChain::simulate(
-    TFCSSimulationState &simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) const {
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol) const
+{
   Int_t retry = 0;
   Int_t retry_warning = 1;
 
@@ -94,7 +104,9 @@ FCSReturnCode TFCSParametrizationBinnedChain::simulate(
       const int bin = get_bin(simulstate, truth, extrapol);
       if (bin >= 0 && bin < (int)get_number_of_bins()) {
         for (unsigned int ichain = m_bin_start[bin];
-             ichain < m_bin_start[bin + 1]; ++ichain) {
+             ichain < m_bin_start[bin + 1];
+             ++ichain)
+        {
           ATH_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
                                << " run " << get_bin_text(bin) << ": "
                                << chain()[ichain]->GetName());
@@ -139,16 +151,18 @@ FCSReturnCode TFCSParametrizationBinnedChain::simulate(
   }
 
   if (status != FCSSuccess) {
-    ATH_MSG_FATAL("TFCSParametrizationBinnedChain::simulate(): Simulate call "
-                  "failed after "
-                  << retry << " retries");
+    ATH_MSG_FATAL(
+        "TFCSParametrizationBinnedChain::simulate(): Simulate call "
+        "failed after "
+        << retry << " retries");
     return FCSFatal;
   }
 
   return FCSSuccess;
 }
 
-void TFCSParametrizationBinnedChain::Print(Option_t *option) const {
+void TFCSParametrizationBinnedChain::Print(Option_t* option) const
+{
   TFCSParametrization::Print(option);
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
@@ -183,8 +197,10 @@ void TFCSParametrizationBinnedChain::Print(Option_t *option) const {
 }
 
 void TFCSParametrizationBinnedChain::unit_test(
-    TFCSSimulationState *simulstate, const TFCSTruthState *truth,
-    const TFCSExtrapolationState *extrapol) {
+    TFCSSimulationState* simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol)
+{
   ISF_FCS::MLogging logger;
   if (!simulstate)
     simulstate = new TFCSSimulationState();
@@ -202,7 +218,7 @@ void TFCSParametrizationBinnedChain::unit_test(
   chain.simulate(*simulstate, truth, extrapol);
   ATH_MSG_NOCLASS(logger, "===================================" << std::endl);
 
-  TFCSParametrizationBase *param;
+  TFCSParametrizationBase* param;
   param = new TFCSInvisibleParametrization("A begin all", "A begin all");
   param->setLevel(MSG::VERBOSE);
   chain.push_before_first_bin(param);
@@ -222,14 +238,14 @@ void TFCSParametrizationBinnedChain::unit_test(
   ATH_MSG_NOCLASS(logger, "===================================" << std::endl);
 
   for (int i = 0; i < 3; ++i) {
-    TFCSParametrizationBase *param =
+    TFCSParametrizationBase* param =
         new TFCSInvisibleParametrization(Form("A%d", i), Form("A %d", i));
     param->setLevel(MSG::DEBUG);
     chain.push_back_in_bin(param, i);
   }
 
   for (int i = 3; i > 0; --i) {
-    TFCSParametrizationBase *param =
+    TFCSParametrizationBase* param =
         new TFCSInvisibleParametrization(Form("B%d", i), Form("B %d", i));
     param->setLevel(MSG::DEBUG);
     chain.push_back_in_bin(param, i);

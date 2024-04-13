@@ -1,4 +1,4 @@
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
 /*
@@ -6,6 +6,7 @@
 */
 
 #include "FastCaloSim/TFCSHitCellMappingFCal.h"
+
 #include "FastCaloSim/ICaloGeometry.h"
 #include "FastCaloSim/TFCSSimulationState.h"
 
@@ -14,11 +15,15 @@
 //=============================================
 
 FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
-    Hit &hit, TFCSSimulationState &simulstate, const TFCSTruthState * /*truth*/,
-    const TFCSExtrapolationState * /*extrapol*/) {
+    Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* /*extrapol*/)
+{
   int cs = calosample();
   float distance;
-  const CaloDetDescrElement* cellele=m_geo->getFCalDDE(cs,hit.x(),hit.y(),hit.z(),&distance);
+  const CaloDetDescrElement* cellele =
+      m_geo->getFCalDDE(cs, hit.x(), hit.y(), hit.z(), &distance);
   ATH_MSG_DEBUG("HIT: cellele=" << cellele << " E=" << hit.E() << " cs=" << cs
                                 << " x=" << hit.x() << " y=" << hit.y()
                                 << " z=" << hit.z());
@@ -29,20 +34,22 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
         "TFCSLateralShapeParametrizationHitCellMapping::simulate_hit: cellele="
         << cellele << " E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
         << " phi=" << hit.phi());
-    return (FCSReturnCode)(FCSRetry + 5); // retry simulation up to 5 times
+    return (FCSReturnCode)(FCSRetry + 5);  // retry simulation up to 5 times
   }
 
-  // If the distance is positive then we are using the nearest cell rather than are inside a cell
-  // If we are more than 2.25mm from the nearest cell we don't create a hit to avoid the build-up of energy in edge cells
-  // For FCSV2 another hit can be created but with a cutoff to avoid looping, 
-  // for FastCaloGAN the rest of the hits in the layer will be scaled up by the energy renormalization step.
-  if (distance<2.25){
-    simulstate.deposit(cellele,hit.E());
-  }else{
-    hit.setXYZE(hit.x(),hit.y(),hit.z(),0.0);
+  // If the distance is positive then we are using the nearest cell rather than
+  // are inside a cell If we are more than 2.25mm from the nearest cell we don't
+  // create a hit to avoid the build-up of energy in edge cells For FCSV2
+  // another hit can be created but with a cutoff to avoid looping, for
+  // FastCaloGAN the rest of the hits in the layer will be scaled up by the
+  // energy renormalization step.
+  if (distance < 2.25) {
+    simulstate.deposit(cellele, hit.E());
+  } else {
+    hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }
 
   return FCSSuccess;
 }
 
-#pragma GCC diagnostic pop 
+#pragma GCC diagnostic pop

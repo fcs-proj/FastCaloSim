@@ -6,11 +6,11 @@
 #define TFCSLateralShapeParametrizationHitNumberFromE_h
 
 #include "FastCaloSim/TFCSLateralShapeParametrizationHitBase.h"
-
 #include "TH2.h"
 
 class TFCSLateralShapeParametrizationHitNumberFromE
-    : public TFCSLateralShapeParametrizationHitBase {
+    : public TFCSLateralShapeParametrizationHitBase
+{
 public:
   /// LAr: 10.1%/sqrt(E)
   ///    stochastic=0.101;
@@ -24,34 +24,34 @@ public:
   /// FCAL:    28.5%/sqrt(E)
   ///    stochastic=0.285;
   ///    constant=0.035;
-  TFCSLateralShapeParametrizationHitNumberFromE(const char *name = nullptr,
-                                                const char *title = nullptr,
+  TFCSLateralShapeParametrizationHitNumberFromE(const char* name = nullptr,
+                                                const char* title = nullptr,
                                                 double stochastic = 0.1,
                                                 double constant = 0);
 
-  TFCSLateralShapeParametrizationHitNumberFromE(const char *name,
-                                                const char *title,
+  TFCSLateralShapeParametrizationHitNumberFromE(const char* name,
+                                                const char* title,
                                                 double stochastic,
                                                 double stochastic_hadron,
                                                 double constant);
 
   /// Give the effective size sigma^2 of the fluctuations from the stochastic
   /// and constant term
-  double
-  get_sigma2_fluctuation(TFCSSimulationState &simulstate,
-                         const TFCSTruthState *truth,
-                         const TFCSExtrapolationState *extrapol) const override;
+  double get_sigma2_fluctuation(
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol) const override;
 
-  int get_number_of_hits(TFCSSimulationState &simulstate,
-                         const TFCSTruthState *truth,
-                         const TFCSExtrapolationState *extrapol) const override;
+  int get_number_of_hits(TFCSSimulationState& simulstate,
+                         const TFCSTruthState* truth,
+                         const TFCSExtrapolationState* extrapol) const override;
 
-  virtual bool operator==(const TFCSParametrizationBase &ref) const override;
+  virtual bool operator==(const TFCSParametrizationBase& ref) const override;
 
-  void Print(Option_t *option = "") const override;
+  void Print(Option_t* option = "") const override;
 
 protected:
-  bool compare(const TFCSParametrizationBase &ref) const;
+  bool compare(const TFCSParametrizationBase& ref) const;
 
 private:
   // Information for the fluctuation terms
@@ -63,7 +63,7 @@ private:
   double m_constant;
 
   ClassDefOverride(TFCSLateralShapeParametrizationHitNumberFromE,
-                   2) // TFCSLateralShapeParametrizationHitNumberFromE
+                   2)  // TFCSLateralShapeParametrizationHitNumberFromE
 };
 
 #endif

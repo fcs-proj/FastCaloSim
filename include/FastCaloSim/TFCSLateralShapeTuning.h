@@ -17,37 +17,39 @@
 /*Pieciewise linear interpolation class include*/
 #include "FastCaloSim/TFCSEnergyInterpolationPiecewiseLinear.h"
 
-class TFCSLateralShapeTuning : public TFCSLateralShapeParametrizationHitBase {
-
-  typedef std::map<std::string, TFCSEnergyInterpolationPiecewiseLinear *>
+class TFCSLateralShapeTuning : public TFCSLateralShapeParametrizationHitBase
+{
+  typedef std::map<std::string, TFCSEnergyInterpolationPiecewiseLinear*>
       interpolationMap;
 
 public:
   /// Constructor
-  TFCSLateralShapeTuning(const char *name = nullptr,
-                         const char *title = nullptr);
+  TFCSLateralShapeTuning(const char* name = nullptr,
+                         const char* title = nullptr);
   // Destructor
   ~TFCSLateralShapeTuning();
   // Simulation call
-  virtual FCSReturnCode
-  simulate_hit(Hit &hit, TFCSSimulationState &simulstate,
-               const TFCSTruthState *truth,
-               const TFCSExtrapolationState *extrapol) override;
+  virtual FCSReturnCode simulate_hit(
+      Hit& hit,
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol) override;
   // Initialization from model parameter file
-  FCSReturnCode initFromModelFile(const std::string &pathToModelParameters,
-                                  int intMinEta, int intMaxEta);
+  FCSReturnCode initFromModelFile(const std::string& pathToModelParameters,
+                                  int intMinEta,
+                                  int intMaxEta);
   // Initialization from interpolation map
-  FCSReturnCode initFromMap(const interpolationMap &);
+  FCSReturnCode initFromMap(const interpolationMap&);
   // Helper function for strip layer model
-  static double getSeriesScalingFactor(double a0, double a1, double a2,
-                                       double a3, double distToShowerCenter);
+  static double getSeriesScalingFactor(
+      double a0, double a1, double a2, double a3, double distToShowerCenter);
 
 private:
   // mapping between the parameter names of the model and its pieciewise linear
-  // interpolation obect
+  // interpolation object
   interpolationMap m_parameterInterpol;
 
-  ClassDefOverride(TFCSLateralShapeTuning, 1) // TFCSLateralShapeTuning
+  ClassDefOverride(TFCSLateralShapeTuning, 1)  // TFCSLateralShapeTuning
 };
 
 #endif

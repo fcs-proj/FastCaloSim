@@ -7,16 +7,19 @@
 
 class CaloGeometry;
 
-#include "Identifier.h"
-#include <iostream>
-#include <iomanip>
 #include <cmath>
+#include <iomanip>
+#include <iostream>
+
+#include "Identifier.h"
 
 class CaloDetDescrElement
 {
- friend class CaloGeometry;
- public:
-  CaloDetDescrElement() {
+  friend class CaloGeometry;
+
+public:
+  CaloDetDescrElement()
+  {
     m_identify = 0;
     m_hash_id = 0;
     m_calosample = 0;
@@ -111,10 +114,10 @@ class CaloDetDescrElement
 
   unsigned long long calo_hash() const;
 
-  int getSampling() const ;
+  int getSampling() const;
 
- //ACH protected:
- //
+  // ACH protected:
+  //
   long long m_identify;
   long long m_hash_id;
 
@@ -127,10 +130,10 @@ class CaloDetDescrElement
    */
   float m_phi;
 
- /** @brief this one is cached for algorithm working in transverse Energy
-    */
+  /** @brief this one is cached for algorithm working in transverse Energy
+   */
   float m_sinTh;
-   /** @brief this one is cached for algorithm working in transverse Energy
+  /** @brief this one is cached for algorithm working in transverse Energy
    */
   float m_cosTh;
 
@@ -151,7 +154,7 @@ class CaloDetDescrElement
   float m_sinPhi;
 
   /** @brief cache to allow fast px py pz computation
-  */
+   */
   float m_cosPhi;
 
   /** @brief cylindric coordinates : r
@@ -197,58 +200,95 @@ class CaloDetDescrElement
   /** @brief cartesian coordinates : delta Z
    */
   float m_dz;
-
 };
 
 inline Identifier CaloDetDescrElement::identify() const
 {
-	Identifier id((unsigned long long) m_identify);
-	return id;
+  Identifier id((unsigned long long)m_identify);
+  return id;
 }
 
 inline unsigned long long CaloDetDescrElement::calo_hash() const
 {
-	return m_hash_id;
+  return m_hash_id;
 }
 
 inline int CaloDetDescrElement::getSampling() const
-{ return m_calosample;}
+{
+  return m_calosample;
+}
 inline float CaloDetDescrElement::eta() const
-{ return m_eta;}
+{
+  return m_eta;
+}
 inline float CaloDetDescrElement::phi() const
-{ return m_phi;}
+{
+  return m_phi;
+}
 inline float CaloDetDescrElement::r() const
-{ return m_r;}
+{
+  return m_r;
+}
 inline float CaloDetDescrElement::eta_raw() const
-{ return m_eta_raw;}
+{
+  return m_eta_raw;
+}
 inline float CaloDetDescrElement::phi_raw() const
-{ return m_phi_raw;}
+{
+  return m_phi_raw;
+}
 inline float CaloDetDescrElement::r_raw() const
-{ return m_r_raw;}
+{
+  return m_r_raw;
+}
 inline float CaloDetDescrElement::deta() const
-{ return m_deta;}
+{
+  return m_deta;
+}
 inline float CaloDetDescrElement::dphi() const
-{ return m_dphi;}
+{
+  return m_dphi;
+}
 inline float CaloDetDescrElement::dr() const
-{ return m_dr;}
+{
+  return m_dr;
+}
 
 inline float CaloDetDescrElement::x() const
-{ return m_x;}
+{
+  return m_x;
+}
 inline float CaloDetDescrElement::y() const
-{ return m_y;}
+{
+  return m_y;
+}
 inline float CaloDetDescrElement::z() const
-{ return m_z;}
+{
+  return m_z;
+}
 inline float CaloDetDescrElement::x_raw() const
-{ return m_x_raw;}
+{
+  return m_x_raw;
+}
 inline float CaloDetDescrElement::y_raw() const
-{ return m_y_raw;}
+{
+  return m_y_raw;
+}
 inline float CaloDetDescrElement::z_raw() const
-{ return m_z_raw;}
+{
+  return m_z_raw;
+}
 inline float CaloDetDescrElement::dx() const
-{ return m_dx;}
+{
+  return m_dx;
+}
 inline float CaloDetDescrElement::dy() const
-{ return m_dy;}
+{
+  return m_dy;
+}
 inline float CaloDetDescrElement::dz() const
-{ return m_dz;}
+{
+  return m_dz;
+}
 
 #endif
