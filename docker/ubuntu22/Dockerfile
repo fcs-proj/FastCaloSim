@@ -14,13 +14,22 @@ RUN apt-get update -qq \
  && rm -rf /var/lib/apt/lists/* \
  && rm packages.txt
 
-# ROOT install from precompiled binaries
-# See https://github.com/root-project/root-ci-images/blob/main/ubuntu22/packages.txt for ROOT dependencies
-# See https://root.cern/install/all_releases/ for available ROOT binaries
-ARG ROOT_BINARIES=root_v6.30.06.Linux-ubuntu22.04-x86_64-gcc11.4.tar.gz
-RUN wget https://root.cern/download/$ROOT_BINARIES \
-    && tar -xzvf $ROOT_BINARIES \
-    && rm $ROOT_BINARIES
+RUN git clone --branch "v6-30-06" --depth=1 https://github.com/root-project/root.git root_src \
+&& mkdir root_build \
+&& cd root_build \
+&& cmake -DCMAKE_INSTALL_PREFIX=../root ../root_src -D mathmore=ON \
+&& cmake --build . --target install -j4 \
+&& rm -rf ../root_src ../root_build
+
+# Install lwtnn for inference
+# See https://github.com/lwtnn/lwtnn for instructions
+RUN git clone --branch "v2.13" --depth=1 https://github.com/lwtnn/lwtnn.git lwtnn_src \
+ && mkdir lwtnn_build lwtnn_install\
+ && cd lwtnn_build \
+ && cmake -DBUILTIN_BOOST=true -DBUILTIN_EIGEN=true -DCMAKE_INSTALL_PREFIX=../lwtnn ../lwtnn_src \
+ && make -j4 \
+ && make install \
+ && rm -rf ../lwtnn_src ../lwtnn_build
 
 # Set ROOT environment
 ENTRYPOINT ["/bin/bash", "-c", "source /root/bin/thisroot.sh;/bin/bash"]
