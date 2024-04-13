@@ -46,5 +46,8 @@ RUN git clone --branch "v2.13" --depth=1 https://github.com/lwtnn/lwtnn.git lwtn
 # Add ROOT .bashrc to the image 
 # Note: this is just for the .devcontainer which ignores the docker
 # jobs in CI will be launched in separate sub shells, ignoring any set environment variables
-RUN touch /root/.bashrc \
- && echo 'source /root-install/bin/thisroot.sh' >> /root/.bashrc
+# RUN touch /root/.bashrc \
+#  && echo 'source /root-install/bin/thisroot.sh' >> /root/.bashrc
+
+# Set ROOT environment
+ENTRYPOINT ["/bin/bash", "-c", "source /root-install/bin/thisroot.sh;/bin/bash"]

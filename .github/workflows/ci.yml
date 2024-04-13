@@ -47,9 +47,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup ROOT environment
-      run: source /root-install/bin/thisroot.sh
-
     - name: Install LCov
       run: dnf update -y 
         && dnf install -y lcov
@@ -83,9 +80,6 @@ jobs:
     steps:
 
     - uses: actions/checkout@v4
-
-    - name: Setup ROOT environment
-      run: source /root-install/bin/thisroot.sh
 
     - name: Install sanitizers
       run: dnf update -y 
@@ -127,9 +121,6 @@ jobs:
 
       steps:
       - uses: actions/checkout@v4
-
-      - name: Setup ROOT environment
-        run: source /root-install/bin/thisroot.sh
         
       - name: Install static analyzers for Ubuntu 22.04 
         if: matrix.os == 'ubuntu22'
