@@ -14,13 +14,15 @@ RUN apt-get update -qq \
  && rm -rf /var/lib/apt/lists/* \
  && rm packages.txt
 
-# ROOT install from precompiled binaries
-# See https://github.com/root-project/root-ci-images/blob/main/ubuntu22/packages.txt for ROOT dependencies
+# See https://github.com/root-project/root-ci-images/blob/main/alma9/packages.txt for ROOT dependencies
 # See https://root.cern/install/all_releases/ for available ROOT binaries
-ARG ROOT_BINARIES=root_v6.30.06.Linux-ubuntu22.04-x86_64-gcc11.4.tar.gz
-RUN wget https://root.cern/download/$ROOT_BINARIES \
-    && tar -xzvf $ROOT_BINARIES \
-    && rm $ROOT_BINARIES
+# We compile ROOT from source as currently we require mathmore which is off by default in the precompiled binaries
+RUN git clone --branch "v6-30-06" --depth=1 https://github.com/root-project/root.git root_src \
+ && mkdir root-build root-install \
+ && cd root-build \
+ && cmake -DCMAKE_INSTALL_PREFIX=../root-install ../root_src -D mathmore=ON \
+ && cmake --build . --target install -j4
+
 
 # Set ROOT environment
-ENTRYPOINT ["/bin/bash", "-c", "source /root/bin/thisroot.sh;/bin/bash"]
+ENTRYPOINT ["/bin/bash", "-c", "source /root-install/bin/thisroot.sh;/bin/bash"]

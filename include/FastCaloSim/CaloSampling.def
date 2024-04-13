@@ -1,0 +1,76 @@
+// This file is -*- C++ -*-.
+// $Id$
+/**
+ * @file CaloGeoHelpers/CaloSampling.def
+ * @author scott snyder <snyder@bnl.gov>
+ * @date Mar, 2014
+ * @brief Define calo sampling codes.
+ *
+ * This file contains information about the definitions of calo samplings.
+ * It may be included multiple times to use this information in different
+ * ways.
+ *
+ * For each sampling, we have a definition
+ *
+ *    CALOSAMPLING(name, isbarrel, isendcap)
+ *
+ * name is the name of the sampling.  isbarrel is 1 if the sampling
+ * is part of the barrel and 0 otherwise; isendcap is the same
+ * for the endcap.
+ *
+ * This is used at least to define the sampling enum, the lookup
+ * between the enum and string names, and the bit patterns of samplings.
+ *
+ * Never reorder these entries!
+ */
+
+// No include guard --- this file is included multiple times with
+// differing definitions of CALOSAMPLING.
+
+
+// LAr barrel
+CALOSAMPLING(PreSamplerB, 1, 0) //  0
+CALOSAMPLING(EMB1,        1, 0) //  1
+CALOSAMPLING(EMB2,        1, 0) //  2
+CALOSAMPLING(EMB3,        1, 0) //  3
+
+// LAr EM endcap
+CALOSAMPLING(PreSamplerE, 0, 1) //  4
+CALOSAMPLING(EME1,        0, 1) //  5
+CALOSAMPLING(EME2,        0, 1) //  6
+CALOSAMPLING(EME3,        0, 1) //  7
+
+// Hadronic endcap
+CALOSAMPLING(HEC0,        0, 1) //  8
+CALOSAMPLING(HEC1,        0, 1) //  9
+CALOSAMPLING(HEC2,        0, 1) // 10
+CALOSAMPLING(HEC3,        0, 1) // 11
+
+// Tile barrel
+CALOSAMPLING(TileBar0,    1, 0) // 12
+CALOSAMPLING(TileBar1,    1, 0) // 13
+CALOSAMPLING(TileBar2,    1, 0) // 14
+
+// Tile gap (ITC & scint)
+CALOSAMPLING(TileGap1,    1, 0) // 15
+CALOSAMPLING(TileGap2,    1, 0) // 16
+CALOSAMPLING(TileGap3,    1, 0) // 17
+
+// Tile extended barrel
+CALOSAMPLING(TileExt0,    1, 0) // 18
+CALOSAMPLING(TileExt1,    1, 0) // 19
+CALOSAMPLING(TileExt2,    1, 0) // 20
+
+// Forward EM endcap
+CALOSAMPLING(FCAL0,       0, 1) // 21
+CALOSAMPLING(FCAL1,       0, 1) // 22
+CALOSAMPLING(FCAL2,       0, 1) // 23
+
+// MiniFCAL
+CALOSAMPLING(MINIFCAL0,   0, 1) // 24
+CALOSAMPLING(MINIFCAL1,   0, 1) // 25
+CALOSAMPLING(MINIFCAL2,   0, 1) // 26
+CALOSAMPLING(MINIFCAL3,   0, 1) // 27
+
+// End
+CALOSAMPLING(Unknown,     0, 0) // 28
