@@ -43,5 +43,8 @@ RUN git clone --branch "v2.13" --depth=1 https://github.com/lwtnn/lwtnn.git lwtn
  && rm -rf ../onnx_src ../onnx_build
 
 
-# Set ROOT environment (not this is ignored by default in vscode .devcontainer)
-ENTRYPOINT ["/bin/bash", "-c", "source /root-install/bin/thisroot.sh;/bin/bash"]
+# Add ROOT .bashrc to the image 
+# Note: this is just for the .devcontainer which ignores the docker
+# jobs in CI will be launched in seperate sub shells, ignoring any set environment variables
+RUN touch /root/.bashrc \
+ && echo 'source /root-install/bin/thisroot.sh' >> /root/.bashrc
