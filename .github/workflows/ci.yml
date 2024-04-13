@@ -14,44 +14,15 @@ jobs:
   test:
       runs-on: ubuntu-22.04
 
-      strategy:
-        matrix:
-          os: [ubuntu22]
-
-          type: [shared]
-
-          include:
-          - { type: shared, shared: YES }
-          - { type: static, shared: NO }
-
       container:
-        image: docker://jbeirer/${{ matrix.os }}-fastcalosim:latest
+        image: docker://jbeirer/ubuntu22-fastcalosim:latest
 
       steps:
       - uses: actions/checkout@v4
 
-      - name: Install static analyzers for Ubuntu 22.04 
-        if: matrix.os == 'ubuntu22'
-        run: >-
-          apt-get update -q
-          && apt-get install lsb-release wget software-properties-common gnupg -q -y
-          && wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh
-          && ./llvm.sh 16
-          && apt-get install clang-tidy-16 cppcheck -y -q
-
-          update-alternatives --install
-          /usr/bin/clang-tidy clang-tidy
-          /usr/bin/clang-tidy-16 160
-
-      - name: Install static analyzers for AlmaLinux 9
-        if: matrix.os == 'alma9'
-        run: >-
-          dnf update -y 
-          && dnf install clang-tools-extra cppcheck -y -q
-
       - name: Configure
         run: cmake "--preset=ci-ubuntu"
-          -D BUILD_SHARED_LIBS=${{ matrix.shared }}
+          -D BUILD_SHARED_LIBS=YES
 
       - name: Build
         run: cmake --build build --config Release -j 2
