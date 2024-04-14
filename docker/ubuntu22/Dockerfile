@@ -50,4 +50,4 @@ RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Mi
  && rm -rf ../onnx_src ../onnx_build
 
 
-ENTRYPOINT ["/bin/bash", "-c", "source /root/bin/thisroot.sh;/bin/bash"]
+ CMD ["/bin/bash", "-c", "source /root/bin/thisroot.sh;/bin/bash"]
