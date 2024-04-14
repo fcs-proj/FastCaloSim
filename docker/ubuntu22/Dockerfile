@@ -49,5 +49,15 @@ RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Mi
  && make install -C RelWithDebInfo \
  && rm -rf ../onnx_src ../onnx_build
 
+# Make clang-tidy-16 cppcheck available
+RUN apt-get update -q \
+&& wget https://apt.llvm.org/llvm.sh \
+&& chmod +x llvm.sh \
+&& ./llvm.sh 16 \
+&& apt-get install clang-tidy-16 cppcheck -y -q \
+&& rm llvm.sh
 
- CMD ["/bin/bash", "-c", "source /root/bin/thisroot.sh;/bin/bash"]
+# Set up the ROOT environment
+# Note that this gets ignored in the GitHub CI
+# As long as ROOT is installed in /usr/local the CI should find ROOT in any case
+ENTRYPOINT ["/bin/bash", "-c", "source /root/bin/thisroot.sh;/bin/bash"]
