@@ -80,3 +80,4 @@ xlibmesa-glu-dev
 xrootd-plugins
 libboost-all-dev
 libeigen3-dev
+cppcheck
