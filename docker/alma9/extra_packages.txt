@@ -1,0 +1,11 @@
+wget
+eigen3-devel 
+boost-devel
+lcov
+clang-tools-extra
+cppcheck
+libasan
+libubsan
+xrootd
+gnupg
+doxygen

@@ -1,23 +1,24 @@
 FROM gitlab-registry.cern.ch/linuxsupport/alma9-base
 
-# Install packages listes in packages.txt
-COPY packages.txt packages.txt
+# Install ROOT dependencies
+# Note: Taken from https://github.com/root-project/root-ci-images/blob/main/alma9/packages.txt
+COPY root_dependencies.txt root_dependencies.txt
 
 RUN dnf update -y \
  && dnf install -y epel-release \
  && dnf install -y 'dnf-command(config-manager)' \
  && crb enable \
- && dnf install -y --setopt=install_weak_deps=False $(cat packages.txt) \
- && rm -f packages.txt \
+ && dnf install -y --setopt=install_weak_deps=False $(cat root_dependencies.txt) \
  && dnf clean all \
- && rm -rf /var/cache/dnf
+ && rm -rf root_dependencies.txt /var/cache/dnf
 
 # Upgrade CMake version
-# TODO: delete .sh file after installation
 ARG CMAKE_VERSION=3.29.2
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
- && chmod +x cmake-${CMAKE_VERSION}-linux-x86_64.sh \  
- && sh cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local
+RUN dnf install -y wget \
+ && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
+ && chmod +x cmake-${CMAKE_VERSION}-linux-x86_64.sh \
+ && sh cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local \
+ && rm cmake-${CMAKE_VERSION}-linux-x86_64.sh
 
 # Build ROOT from source.
 # Note: mathmore is currently needed for interpolation, clad is deactivated due to build issues
@@ -44,9 +45,15 @@ RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Mi
 # See https://github.com/lwtnn/lwtnn for instructions
 ARG LWTNN_VERSION=2.13
 RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtnn.git lwtnn_src \
- && mkdir lwtnn_build lwtnn_install\
+ && mkdir lwtnn_build \
  && cd lwtnn_build \
  && cmake -DBUILTIN_BOOST=true -DBUILTIN_EIGEN=true -DCMAKE_INSTALL_PREFIX=/usr/local ../lwtnn_src \
  && make -j4 \
  && make install \
  && rm -rf ../lwtnn_src ../lwtnn_build
+
+ # Install extra packages
+COPY extra_packages.txt extra_packages.txt
+RUN  dnf install -y --setopt=install_weak_deps=False $(cat extra_packages.txt) \
+ && dnf clean all \
+ && rm -rf extra_packages.txt /var/cache/dnf
