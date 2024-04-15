@@ -9,4 +9,3 @@ doxygen
 lsb-release
 software-properties-common
 cppcheck
-libxml2-dev

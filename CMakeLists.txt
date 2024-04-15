@@ -20,7 +20,9 @@ include(cmake/variables.cmake)
 find_package(ROOT 6.30 CONFIG REQUIRED)
 find_package(lwtnn 2.13 CONFIG REQUIRED)
 find_package(OnnxRuntime 1.16.3 REQUIRED)
-find_package(LibXml2 CONFIG REQUIRED)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LibXml2 REQUIRED libxml-2.0)
 
 add_subdirectory(thirdparty/CLHEP/Random)
 add_subdirectory(thirdparty/HepPDT)
@@ -36,7 +38,7 @@ add_library(
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
-target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore LibXml2::LibXml2 CLHEP HepPDT lwtnn::lwtnn OnnxRuntime)
+target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore CLHEP HepPDT lwtnn::lwtnn OnnxRuntime ${LibXml2_LIBRARIES})
 
 # Generate ROOT dictionary for custom classes when building a shared library
 if (BUILD_SHARED_LIBS)
