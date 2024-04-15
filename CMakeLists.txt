@@ -10,11 +10,30 @@ project(
     LANGUAGES CXX
 )
 
+# Set the path for CMake to loook for any custom modules, e.g. Findlwtnn.cmake
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)  
+
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
 # ---- Project dependencies ----
+
+# ROOT is a required dependency for FastCaloSim
 find_package(ROOT 6.30 CONFIG REQUIRED)
+# lwtnn for neural network inference
+find_package(lwtnn 2.13 CONFIG REQUIRED)
+# OnnxRuntime for neural network inference  
+find_package(OnnxRuntime 1.16.3 REQUIRED)
+# LibXml2 for reading XML files
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LibXml2 REQUIRED libxml-2.0)
+include_directories(${LibXml2_INCLUDE_DIRS})
+link_directories(${LibXml2_LIBRARY_DIRS})
+add_definitions(${LibXml2_CFLAGS_OTHER})
+# CLHEP for random number generation
+add_subdirectory(thirdparty/CLHEP/Random)
+# HepPDT for particle data table
+add_subdirectory(thirdparty/HepPDT)
 
 # ---- Declare library ----
 
@@ -27,15 +46,22 @@ add_library(
 )
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
-# Link against ROOT libraries
-target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core)
+# Link against external libraries
+target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore CLHEP HepPDT lwtnn::lwtnn OnnxRuntime ${LibXml2_LIBRARIES})
+
 # Generate ROOT dictionary for custom classes when building a shared library
 if (BUILD_SHARED_LIBS)
-  target_include_directories(FastCaloSim_FastCaloSim PRIVATE  ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
+  target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
   ROOT_GENERATE_DICTIONARY(FastCaloSim_dict FastCaloSim.h MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
-  # Disable compiler and clang-tidy warnings from ROOT
+  # Disable compiler and clang-tidy warnings for ROOT
   set_target_properties(FastCaloSim_dict PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
 endif()
+# Disable clang-tidy warnings for external libraries
+set_target_properties(CLHEP PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
+set_target_properties(HepPDT PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
+
+# For now also deactivate all clang-tidy warnings from FastCaloSim. TODO: Remove this line and fix all warnings
+set_target_properties(FastCaloSim_FastCaloSim PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
 
 include(GenerateExportHeader)
 generate_export_header(

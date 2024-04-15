@@ -1,0 +1,11 @@
+wget
+libeigen3-dev
+libboost-all-dev
+lcov
+lsb-release
+software-properties-common
+gnupg
+doxygen
+lsb-release
+software-properties-common
+cppcheck

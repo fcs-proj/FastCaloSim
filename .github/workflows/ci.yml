@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     container:
-      image: docker://jbeirer/alma9-fastcalosim:latest
+      image: jbeirer/alma9-fastcalosim:latest
     
     steps:
     - uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     container:
-      image: docker://jbeirer/alma9-fastcalosim:latest
+      image: jbeirer/alma9-fastcalosim:latest
 
     if: github.repository_owner == 'jbeirer'
 
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     container:
-      image: docker://jbeirer/alma9-fastcalosim:latest
+      image: jbeirer/alma9-fastcalosim:latest
 
     steps:
 
@@ -117,11 +117,11 @@ jobs:
           - { type: static, shared: NO }
 
       container:
-        image: docker://jbeirer/${{ matrix.os }}-fastcalosim:latest
+        image: jbeirer/${{ matrix.os }}-fastcalosim:latest
 
       steps:
       - uses: actions/checkout@v4
-
+        
       - name: Install static analyzers for Ubuntu 22.04 
         if: matrix.os == 'ubuntu22'
         run: >-
