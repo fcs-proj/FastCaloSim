@@ -17,15 +17,24 @@ include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
 # ---- Project dependencies ----
-find_package(ROOT 6.30 CONFIG REQUIRED)
-find_package(lwtnn 2.13 CONFIG REQUIRED)
-find_package(OnnxRuntime 1.16.3 REQUIRED)
 
+# ROOT is a required dependency for FastCaloSim
+find_package(ROOT 6.30 CONFIG REQUIRED)
+# lwtnn for neural network inference
+find_package(lwtnn 2.13 CONFIG REQUIRED)
+# OnnxRuntime for neural network inference  
+find_package(OnnxRuntime 1.16.3 REQUIRED)
+# LibXml2 for reading XML files
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LibXml2 REQUIRED libxml-2.0)
-
+include_directories(${LibXml2_INCLUDE_DIRS})
+link_directories(${LibXml2_LIBRARY_DIRS})
+add_definitions(${LibXml2_CFLAGS_OTHER})
+# CLHEP for random number generation
 add_subdirectory(thirdparty/CLHEP/Random)
+# HepPDT for particle data table
 add_subdirectory(thirdparty/HepPDT)
+
 # ---- Declare library ----
 
 # Globbing all .cxx files in the FastCaloSim directory
