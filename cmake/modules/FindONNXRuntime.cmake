@@ -4,9 +4,9 @@ set_package_properties(
     URL "https://onnxruntime.ai/"
     DESCRIPTION "Machine learning runtime")
 
-set(ONNXRuntime_ROOT_DIR
-    "${ONNXRuntime_ROOT_DIR}"
-    CACHE PATH "Root to search for ONNXRuntime")
+# Optionally, you can set a ONNX root directory here to help cmake find the library
+# Should not be necessary in any standard installations
+set(ONNXRuntime_ROOT_DIR " " CACHE PATH "Root to search for ONNXRuntime")
 
 find_package(PkgConfig)
 pkg_check_modules(PC_ONNXRuntime QUIET libonnxruntime)
