@@ -23,7 +23,7 @@ find_package(ROOT 6.30 CONFIG REQUIRED)
 # lwtnn for neural network inference
 find_package(lwtnn 2.13 CONFIG REQUIRED)
 # OnnxRuntime for neural network inference  
-find_package(OnnxRuntime 1.16.3 REQUIRED)
+find_package(ONNXRuntime 1.16.3 REQUIRED)
 # LibXml2 for reading XML files
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LibXml2 REQUIRED libxml-2.0)
@@ -47,7 +47,7 @@ add_library(
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
-target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore CLHEP HepPDT lwtnn::lwtnn OnnxRuntime ${LibXml2_LIBRARIES})
+target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore CLHEP HepPDT lwtnn::lwtnn ${LibXml2_LIBRARIES} ONNXRuntime::ONNXRuntime)
 
 # Generate ROOT dictionary for custom classes when building a shared library
 if (BUILD_SHARED_LIBS)
