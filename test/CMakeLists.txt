@@ -7,6 +7,9 @@ include(../cmake/folders.cmake)
 include(../cmake/silencer.cmake)
 include(../cmake/tests.cmake)
 
+# ---- Test Data ----
+add_definitions(-DTEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
+
 # ---- Dependencies ----
 
 if(PROJECT_IS_TOP_LEVEL)
