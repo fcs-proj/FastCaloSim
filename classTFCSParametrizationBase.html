@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TFCSParametrizationBase class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          TFCSParametrizationBase <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSParametrizationBase_8h.html">&lt;TFCSParametrizationBase.h&gt;</a></div>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#derived-classes">Derived classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pro-methods">Protected functions</a></li>
+                <li><a href="#pro-static-attribs">Protected static variables</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="base-classes">
+          <h2><a href="#base-classes">Base classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classISF__FCS_1_1MLogging.html" class="m-doc">ISF_FCS::MLogging</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="derived-classes">
+          <h2><a href="#derived-classes">Derived classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classTFCSParametrization.html" class="m-doc">TFCSParametrization</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              class <a href="classTFCSParametrizationPlaceholder.html" class="m-doc">TFCSParametrizationPlaceholder</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              struct <a href="structTFCSParametrizationBase_1_1Duplicate__t.html" class="m-doc">Duplicate_t</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">enum <a href="#aa4a8eb28a7a50f215e529288a5ad6597" class="m-doc">FCSStatusBits</a> { </span><span class="m-doc-wrap"><a href="#aa4a8eb28a7a50f215e529288a5ad6597a96c67c7dec07b6d7091ccea13893e952" class="m-doc">kMatchAllPDGID</a> = BIT(
+        14) }</span>
+            </dt>
+            <dd>Status bit for FCS needs.</dd>
+            <dt id="a810fa8b7e3b10e8f417721b19cd0a182">
+              using <a href="#a810fa8b7e3b10e8f417721b19cd0a182" class="m-doc-self">FindDuplicates_t</a> = std::map&lt;<a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>*, <a href="structTFCSParametrizationBase_1_1Duplicate__t.html" class="m-doc">Duplicate_<wbr />t</a>&gt;
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa5d2a72d36b1c29654b1fff3cca1e5b3">
+              using <a href="#aa5d2a72d36b1c29654b1fff3cca1e5b3" class="m-doc-self">FindDuplicateClasses_t</a> = std::map&lt;std::string, <a href="classTFCSParametrizationBase.html#a810fa8b7e3b10e8f417721b19cd0a182" class="m-doc">FindDuplicates_<wbr />t</a>&gt;
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="aea57eec598d5aa4a237e420de40ccc28">
+              <span class="m-doc-wrap-bumper"><a href="#aea57eec598d5aa4a237e420de40ccc28" class="m-doc-self">TFCSParametrizationBase</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
+              const char* title = nullptr)</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="afb4ab407cb9b6b7d619f743222a8e215">
+              <span class="m-doc-wrap-bumper">auto <a href="#afb4ab407cb9b6b7d619f743222a8e215" class="m-doc-self">is_match_pdgid</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ade6e14e92f3c83093a3e5a33d0b54318">
+              <span class="m-doc-wrap-bumper">auto <a href="#ade6e14e92f3c83093a3e5a33d0b54318" class="m-doc-self">is_match_Ekin</a>(</span><span class="m-doc-wrap">float) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="acb633c1aae1a03e1a5a79696a5084ef3">
+              <span class="m-doc-wrap-bumper">auto <a href="#acb633c1aae1a03e1a5a79696a5084ef3" class="m-doc-self">is_match_eta</a>(</span><span class="m-doc-wrap">float) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a169705832297319d97b903e4f3684b39">
+              <span class="m-doc-wrap-bumper">auto <a href="#a169705832297319d97b903e4f3684b39" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a58cbf6d53d1273265ce1c132e6c2faf5">
+              <span class="m-doc-wrap-bumper">auto <a href="#a58cbf6d53d1273265ce1c132e6c2faf5" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad0f5ff41684395958a02ebdda29b1e89">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad0f5ff41684395958a02ebdda29b1e89" class="m-doc-self">is_match_all_pdgid</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a2701af8f0c5279c6fd4306342bcb7586">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2701af8f0c5279c6fd4306342bcb7586" class="m-doc-self">is_match_all_Ekin</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a248e02cf979bdcd04455ffc0a32b31f6">
+              <span class="m-doc-wrap-bumper">auto <a href="#a248e02cf979bdcd04455ffc0a32b31f6" class="m-doc-self">is_match_all_eta</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a0e2e2c5fa74624dd42b08b369c327545">
+              <span class="m-doc-wrap-bumper">auto <a href="#a0e2e2c5fa74624dd42b08b369c327545" class="m-doc-self">is_match_all_Ekin_bin</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a274e4fc98d1cc3148f3c18f8ba7a6918">
+              <span class="m-doc-wrap-bumper">auto <a href="#a274e4fc98d1cc3148f3c18f8ba7a6918" class="m-doc-self">is_match_all_calosample</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aeb5e69f55ec22d88670f7fb09b9f0ef6">
+              <span class="m-doc-wrap-bumper">auto <a href="#aeb5e69f55ec22d88670f7fb09b9f0ef6" class="m-doc-self">pdgid</a>(</span><span class="m-doc-wrap">) const -&gt; const std::set&lt;int&gt;&amp; <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af38dc3814d6d7ad1669b41f7d6abd370">
+              <span class="m-doc-wrap-bumper">auto <a href="#af38dc3814d6d7ad1669b41f7d6abd370" class="m-doc-self">Ekin_nominal</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a3314c151376099d488823aa45f363330">
+              <span class="m-doc-wrap-bumper">auto <a href="#a3314c151376099d488823aa45f363330" class="m-doc-self">Ekin_min</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa714aa83a5ed082aa545ec6cd402a34e">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa714aa83a5ed082aa545ec6cd402a34e" class="m-doc-self">Ekin_max</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad77133086a309c8844bf841c33ce17d4">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad77133086a309c8844bf841c33ce17d4" class="m-doc-self">eta_nominal</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9e9572f13654d4650016eb9397ccd661">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9e9572f13654d4650016eb9397ccd661" class="m-doc-self">eta_min</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6585b92fde9f30494c047576617e2e70">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6585b92fde9f30494c047576617e2e70" class="m-doc-self">eta_max</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9e22577be96b4d757ed4ca0d71fb1e3e">
+              <span class="m-doc-wrap-bumper">void <a href="#a9e22577be96b4d757ed4ca0d71fb1e3e" class="m-doc-self">set_match_all_pdgid</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa1312512ae9af7cdd7b62c22ed4ac0fb">
+              <span class="m-doc-wrap-bumper">void <a href="#aa1312512ae9af7cdd7b62c22ed4ac0fb" class="m-doc-self">reset_match_all_pdgid</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a2199deddaa86ec51f6915e24bbeaff35" class="m-doc">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classICaloGeometry.html" class="m-doc">ICaloGeometry</a>* geo) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a902fc0b5c8c8fa9711dd2df3d198373c" class="m-doc">size</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned int <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a79b3907773f096d7317705dcc9133ab7" class="m-doc">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) const -&gt; const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>* <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a7a17adcc0288e559f89df742425d3cee" class="m-doc">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) -&gt; <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>* <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a6a451c5e2ed1f0e7502ca168878a5fd3" class="m-doc">set_daughter</a>(</span><span class="m-doc-wrap">unsigned int,
+              <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>*) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a0dff80cb00d18c15b432143beb9769c8" class="m-doc">operator==</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>&amp; ref) const -&gt; bool <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
+            <dt id="aea22288dfbf755303ab48a55fbcd3069">
+              <span class="m-doc-wrap-bumper">auto <a href="#aea22288dfbf755303ab48a55fbcd3069" class="m-doc-self">simulate</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; <a href="TFCSParametrizationBase_8h.html#ab0749ab8fe854de16604ff6d70028527" class="m-doc">FCSReturnCode</a> <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd>Method in all derived classes to do some simulation.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a28c4f407c0a95bd7e8a75e4b9e9cb0db" class="m-doc">CleanAuxInfo</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp;) const <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
+            <dt id="ab05287db4b3b1b4220c131c63974aa73">
+              <span class="m-doc-wrap-bumper">void <a href="#ab05287db4b3b1b4220c131c63974aa73" class="m-doc-self">Print</a>(</span><span class="m-doc-wrap">Option_t* option = &quot;&quot;) const</span>
+            </dt>
+            <dd>Print object information.</dd>
+            <dt id="a0f893bb5754fc7b93ae0e600005b6dab">
+              <span class="m-doc-wrap-bumper">void <a href="#a0f893bb5754fc7b93ae0e600005b6dab" class="m-doc-self">FindDuplicates</a>(</span><span class="m-doc-wrap"><a href="classTFCSParametrizationBase.html#aa5d2a72d36b1c29654b1fff3cca1e5b3" class="m-doc">FindDuplicateClasses_<wbr />t</a>&amp; dup)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af00ca457db936ea82bfdee142f62e439">
+              <span class="m-doc-wrap-bumper">void <a href="#af00ca457db936ea82bfdee142f62e439" class="m-doc-self">RemoveDuplicates</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a1f86da884382d493466b2b6dcc1a4581">
+              <span class="m-doc-wrap-bumper">void <a href="#a1f86da884382d493466b2b6dcc1a4581" class="m-doc-self">RemoveNameTitle</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a0c63fc3ea68c7d39a0d56a43d76a08c2">
+              <span class="m-doc-wrap-bumper">void <a href="#a0c63fc3ea68c7d39a0d56a43d76a08c2" class="m-doc-self">setLevel</a>(</span><span class="m-doc-wrap">int level,
+              bool recursive) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pro-methods">
+          <h2><a href="#pro-methods">Protected functions</a></h2>
+          <dl class="m-doc">
+            <dt id="ad119a11deefbc32ad3039b1307e4756b">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad119a11deefbc32ad3039b1307e4756b" class="m-doc-self">compare</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>&amp; ref) const -&gt; bool</span>
+            </dt>
+            <dd>Do not persistify!</dd>
+          </dl>
+        </section>
+        <section id="pro-static-attribs">
+          <h2><a href="#pro-static-attribs">Protected static variables</a></h2>
+          <dl class="m-doc">
+            <dt id="a23513321ed52e34b6ff0cbe6cce7f2f2">
+              static double <a href="#a23513321ed52e34b6ff0cbe6cce7f2f2" class="m-doc-self">init_Ekin_nominal</a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a90a0614142a20b1f0940bae35f13e779">
+              static double <a href="#a90a0614142a20b1f0940bae35f13e779" class="m-doc-self">init_Ekin_min</a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd>Do not persistify!</dd>
+            <dt id="a4090f2a1f38f6c149be0301ef0570999">
+              static double <a href="#a4090f2a1f38f6c149be0301ef0570999" class="m-doc-self">init_Ekin_max</a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd>Do not persistify!</dd>
+            <dt id="a81d0db30ad521f62d14714a818e06c47">
+              static double <a href="#a81d0db30ad521f62d14714a818e06c47" class="m-doc-self">init_eta_nominal</a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd>Do not persistify!</dd>
+            <dt id="a8813364320935b08d30b0de6a165fa80">
+              static double <a href="#a8813364320935b08d30b0de6a165fa80" class="m-doc-self">init_eta_min</a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd>Do not persistify!</dd>
+            <dt id="a253c401f14c099a7acd2d8749c5baa7b">
+              static double <a href="#a253c401f14c099a7acd2d8749c5baa7b" class="m-doc-self">init_eta_max</a> <span class="m-label m-flat m-primary">constexpr</span>
+            </dt>
+            <dd>Do not persistify!</dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Enum documentation</h2>
+          <section class="m-doc-details" id="aa4a8eb28a7a50f215e529288a5ad6597"><div>
+            <h3>
+              enum TFCSParametrizationBase::<wbr /><a href="#aa4a8eb28a7a50f215e529288a5ad6597" class="m-doc-self">FCSStatusBits</a>
+            </h3>
+            <p>Status bit for FCS needs.</p>
+            <table class="m-table m-fullwidth m-flat m-doc">
+              <thead><tr><th style="width: 1%">Enumerators</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="#aa4a8eb28a7a50f215e529288a5ad6597a96c67c7dec07b6d7091ccea13893e952" class="m-doc-self" id="aa4a8eb28a7a50f215e529288a5ad6597a96c67c7dec07b6d7091ccea13893e952">kMatchAllPDGID</a></td>
+                  <td>
+                  <p>Set this bit in the TObject bit field if valid for all PDGID.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a2199deddaa86ec51f6915e24bbeaff35"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2199deddaa86ec51f6915e24bbeaff35" class="m-doc-self">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classICaloGeometry.html" class="m-doc">ICaloGeometry</a>* geo) <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>Method to set the geometry access pointer. Loops over daughter objects if present</p>
+          </div></section>
+          <section class="m-doc-details" id="a902fc0b5c8c8fa9711dd2df3d198373c"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">unsigned int TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a902fc0b5c8c8fa9711dd2df3d198373c" class="m-doc-self">size</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSParametrizationBase.html#a902fc0b5c8c8fa9711dd2df3d198373c" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
+          </div></section>
+          <section class="m-doc-details" id="a79b3907773f096d7317705dcc9133ab7"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>* TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a79b3907773f096d7317705dcc9133ab7" class="m-doc-self">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) const <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSParametrizationBase.html#a902fc0b5c8c8fa9711dd2df3d198373c" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
+          </div></section>
+          <section class="m-doc-details" id="a7a17adcc0288e559f89df742425d3cee"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>* TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7a17adcc0288e559f89df742425d3cee" class="m-doc-self">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSParametrizationBase.html#a902fc0b5c8c8fa9711dd2df3d198373c" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
+          </div></section>
+          <section class="m-doc-details" id="a6a451c5e2ed1f0e7502ca168878a5fd3"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a6a451c5e2ed1f0e7502ca168878a5fd3" class="m-doc-self">set_daughter</a>(</span><span class="m-doc-wrap">unsigned int,
+              <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>*) <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The set_daughter method allows to change these daughters - expert use only! The original element at this position is not deleted</p>
+          </div></section>
+          <section class="m-doc-details" id="a0dff80cb00d18c15b432143beb9769c8"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">bool TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0dff80cb00d18c15b432143beb9769c8" class="m-doc-self">operator==</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>&amp; ref) const <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>The == operator compares the content of instances. The implementation in the base class only returns true for a comparison with itself</p>
+          </div></section>
+          <section class="m-doc-details" id="a28c4f407c0a95bd7e8a75e4b9e9cb0db"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a28c4f407c0a95bd7e8a75e4b9e9cb0db" class="m-doc-self">CleanAuxInfo</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp;) const <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>Method in all derived classes to delete objects stored in the simulstate AuxInfo</p>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>

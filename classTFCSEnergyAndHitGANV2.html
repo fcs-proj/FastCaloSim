@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TFCSEnergyAndHitGANV2 class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          TFCSEnergyAndHitGANV2 <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSEnergyAndHitGANV2_8h.html">&lt;TFCSEnergyAndHitGANV2.h&gt;</a></div>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pro-methods">Protected functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="base-classes">
+          <h2><a href="#base-classes">Base classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classTFCSParametrizationBinnedChain.html" class="m-doc">TFCSParametrizationBinnedChain</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">enum <a href="#adc84050a87a4ad517858f700e4093ff7" class="m-doc">FCSGANfreemem</a> { </span><span class="m-doc-wrap"><a href="#adc84050a87a4ad517858f700e4093ff7ada14c54cae8607850cffb1e8d1e4ef0f" class="m-doc">kGANfreemem</a> =
+        BIT(17) }</span>
+            </dt>
+            <dd>Status bit for chain persistency.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">enum <a href="#ab8abde38abae5053d54c482af969aa25" class="m-doc">FCSEnergyInitializationStatusBits</a> { </span><span class="m-doc-wrap"><a href="#ab8abde38abae5053d54c482af969aa25aaf40543f51a576501942f5b64d311558" class="m-doc">kOnlyScaleEnergy</a> =
+        BIT(18) }</span>
+            </dt>
+            <dd>Status bit for energy initialization.</dd>
+          </dl>
+        </section>
+        <section id="pub-static-methods">
+          <h2><a href="#pub-static-methods">Public static functions</a></h2>
+          <dl class="m-doc">
+            <dt id="aed31cb7b3c35d05f96e8e75a5341ff01">
+              <span class="m-doc-wrap-bumper">static void <a href="#aed31cb7b3c35d05f96e8e75a5341ff01" class="m-doc-self">test_path</a>(</span><span class="m-doc-wrap">const std::string&amp; path,
+              <a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>* simulstate = nullptr,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth = nullptr,
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol = nullptr,
+              const std::string&amp; outputname = &quot;unnamed&quot;,
+              int pid = 211)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab5452e2048d0ff9c6750ab9fc8510ce6">
+              <span class="m-doc-wrap-bumper">static void <a href="#ab5452e2048d0ff9c6750ab9fc8510ce6" class="m-doc-self">unit_test</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>* simulstate = nullptr,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth = nullptr,
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol = nullptr)</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="ac56a2185a11d8593b5387f31f9ddb29e">
+              <span class="m-doc-wrap-bumper"><a href="#ac56a2185a11d8593b5387f31f9ddb29e" class="m-doc-self">TFCSEnergyAndHitGANV2</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
+              const char* title = nullptr)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a01ab96e17a772f79665723e45f5ea159">
+              <span class="m-doc-wrap-bumper"><a href="#a01ab96e17a772f79665723e45f5ea159" class="m-doc-self">~TFCSEnergyAndHitGANV2</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="abbdd4d979da92a6ad524be7cea1a5b4e">
+              <span class="m-doc-wrap-bumper">auto <a href="#abbdd4d979da92a6ad524be7cea1a5b4e" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad3540c943b4e61f945b980e2f6755180">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad3540c943b4e61f945b980e2f6755180" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">int calosample) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab0103ec1744ba5c2a23347b566d1a679">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab0103ec1744ba5c2a23347b566d1a679" class="m-doc-self">is_match_all_Ekin_bin</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a2592c9b19a861ec34591971f83486b26">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2592c9b19a861ec34591971f83486b26" class="m-doc-self">is_match_all_calosample</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6aa48e1d8bc04f0962bf5e608ef65d9d">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6aa48e1d8bc04f0962bf5e608ef65d9d" class="m-doc-self">GANfreemem</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5bc331923d3b942a17afd1b71c3ab107">
+              <span class="m-doc-wrap-bumper">void <a href="#a5bc331923d3b942a17afd1b71c3ab107" class="m-doc-self">set_GANfreemem</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a7898bf39d3346008883854f98e200903">
+              <span class="m-doc-wrap-bumper">void <a href="#a7898bf39d3346008883854f98e200903" class="m-doc-self">reset_GANfreemem</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a79c1e356a8b37fb09cc85b2abf1a902d">
+              <span class="m-doc-wrap-bumper">auto <a href="#a79c1e356a8b37fb09cc85b2abf1a902d" class="m-doc-self">OnlyScaleEnergy</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a8eb0108495d024c3108c92550b5ba674">
+              <span class="m-doc-wrap-bumper">void <a href="#a8eb0108495d024c3108c92550b5ba674" class="m-doc-self">set_OnlyScaleEnergy</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a51430bf45b35f68189be8f7e5cdc84f0">
+              <span class="m-doc-wrap-bumper">void <a href="#a51430bf45b35f68189be8f7e5cdc84f0" class="m-doc-self">reset_OnlyScaleEnergy</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5855b6be6db3efc34a6e4bc6ebc20a39">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5855b6be6db3efc34a6e4bc6ebc20a39" class="m-doc-self">get_bin</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>*,
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; int <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd>use the layer to be done as binning of the GAN chain</dd>
+            <dt id="ad8a3ee3f9834fe97fdd477be3813b8cd">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad8a3ee3f9834fe97fdd477be3813b8cd" class="m-doc-self">get_variable_text</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>*,
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; const std::string <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a3dbebdfb6ec630cf1e6589d8783bf683">
+              <span class="m-doc-wrap-bumper">auto <a href="#a3dbebdfb6ec630cf1e6589d8783bf683" class="m-doc-self">get_nr_of_init</a>(</span><span class="m-doc-wrap">unsigned int bin) const -&gt; unsigned int</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae5fea0aeb6a3fb2debf9c87c311bc5fd">
+              <span class="m-doc-wrap-bumper">void <a href="#ae5fea0aeb6a3fb2debf9c87c311bc5fd" class="m-doc-self">set_nr_of_init</a>(</span><span class="m-doc-wrap">unsigned int bin,
+              unsigned int ninit)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac0ce8daaa992c19ff94b248613d270a1">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac0ce8daaa992c19ff94b248613d270a1" class="m-doc-self">get_Binning</a>(</span><span class="m-doc-wrap">) const -&gt; const <a href="classTFCSGANXMLParameters.html#a1f90aa1824a7d55fe98194c255c25463" class="m-doc">TFCSGANXMLParameters::<wbr />Binning</a>&amp;</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac079646ad9616b89dcbddd854060fb85">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac079646ad9616b89dcbddd854060fb85" class="m-doc-self">get_ExtrapolationWeights</a>(</span><span class="m-doc-wrap">) const -&gt; const <a href="classTFCSGANEtaSlice.html#a54e5c0ccf9ad40ac24bfa732b3529d56" class="m-doc">TFCSGANEtaSlice::<wbr />ExtrapolatorWeights</a></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a0d57ca10092a9037b060fc329378f61d">
+              <span class="m-doc-wrap-bumper">auto <a href="#a0d57ca10092a9037b060fc329378f61d" class="m-doc-self">initializeNetwork</a>(</span><span class="m-doc-wrap">int const&amp; pid,
+              int const&amp; etaMin,
+              const std::string&amp; FastCaloGANInputFolderName) -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac98da15fc50b9e2db3c027d9b54be182">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac98da15fc50b9e2db3c027d9b54be182" class="m-doc-self">fillEnergy</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a1bc77895979511f74bed47d69b344cec">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1bc77895979511f74bed47d69b344cec" class="m-doc-self">simulate</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; <a href="TFCSParametrizationBase_8h.html#ab0749ab8fe854de16604ff6d70028527" class="m-doc">FCSReturnCode</a> <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd>Method in all derived classes to do some simulation.</dd>
+            <dt id="ae6bd23fa091a7167a6c4f72e831953b0">
+              <span class="m-doc-wrap-bumper">void <a href="#ae6bd23fa091a7167a6c4f72e831953b0" class="m-doc-self">Print</a>(</span><span class="m-doc-wrap">Option_t* option = &quot;&quot;) const <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pro-methods">
+          <h2><a href="#pro-methods">Protected functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a6e57f1428fc5eadd931589072ac54dd4">
+              <span class="m-doc-wrap-bumper">void <a href="#a6e57f1428fc5eadd931589072ac54dd4" class="m-doc-self">SetRegionAndSliceFromXML</a>(</span><span class="m-doc-wrap">int pid,
+              int etaMax,
+              std::string FastCaloGANInputFolderName)</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Enum documentation</h2>
+          <section class="m-doc-details" id="adc84050a87a4ad517858f700e4093ff7"><div>
+            <h3>
+              enum TFCSEnergyAndHitGANV2::<wbr /><a href="#adc84050a87a4ad517858f700e4093ff7" class="m-doc-self">FCSGANfreemem</a>
+            </h3>
+            <p>Status bit for chain persistency.</p>
+            <table class="m-table m-fullwidth m-flat m-doc">
+              <thead><tr><th style="width: 1%">Enumerators</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="#adc84050a87a4ad517858f700e4093ff7ada14c54cae8607850cffb1e8d1e4ef0f" class="m-doc-self" id="adc84050a87a4ad517858f700e4093ff7ada14c54cae8607850cffb1e8d1e4ef0f">kGANfreemem</a></td>
+                  <td>
+<p>Set this bit in the TObject bit if the memory for m_input should be freed after reading in athena</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="ab8abde38abae5053d54c482af969aa25"><div>
+            <h3>
+              enum TFCSEnergyAndHitGANV2::<wbr /><a href="#ab8abde38abae5053d54c482af969aa25" class="m-doc-self">FCSEnergyInitializationStatusBits</a>
+            </h3>
+            <p>Status bit for energy initialization.</p>
+            <table class="m-table m-fullwidth m-flat m-doc">
+              <thead><tr><th style="width: 1%">Enumerators</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="#ab8abde38abae5053d54c482af969aa25aaf40543f51a576501942f5b64d311558" class="m-doc-self" id="ab8abde38abae5053d54c482af969aa25aaf40543f51a576501942f5b64d311558">kOnlyScaleEnergy</a></td>
+                  <td>
+<p>Set this bit in the TObject bit field the simulated energy should only be scaled by the GAN</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TFCS1DFunction_HistogramCompactBinEdges class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCS1DFunctionTemplateHelpers_8h.html">&lt;TFCS1DFunctionTemplateHelpers.h&gt;</a></div>
+          <div class="m-doc-template">template&lt;typename T, typename Tint, typename Trandom = float&gt;</div>
+          TFCS1DFunction_HistogramCompactBinEdges <span class="m-thin">class</span>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt id="a7bec668f788b88ed6ffed67870503dc2">
+              using <a href="#a7bec668f788b88ed6ffed67870503dc2" class="m-doc-self">size_t</a> = <a href="TFCS1DFunctionTemplateHelpers_8h.html#a8b5ba380178984b008fca54571b528b3" class="m-doc">TFCS1DFunction_<wbr />size_<wbr />t</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a90531915716a479e980be27499b84d4d">
+              using <a href="#a90531915716a479e980be27499b84d4d" class="m-doc-self">value_type</a> = T
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa9c5facc73a97be1bfaa2bcdf551fa96">
+              using <a href="#aa9c5facc73a97be1bfaa2bcdf551fa96" class="m-doc-self">random_type</a> = Trandom
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac8d15bb1c40181ac598b34f58ccfee81">
+              using <a href="#ac8d15bb1c40181ac598b34f58ccfee81" class="m-doc-self">internal_storage_type</a> = Tint
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="af91842006aae1098ec040580484b0a28">
+              <span class="m-doc-wrap-bumper"><a href="#af91842006aae1098ec040580484b0a28" class="m-doc-self">TFCS1DFunction_HistogramCompactBinEdges</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> nbins = 0)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9c0d3bd2517ae8f477cacdd00b832982">
+              <span class="m-doc-wrap-bumper"><a href="#a9c0d3bd2517ae8f477cacdd00b832982" class="m-doc-self">~TFCS1DFunction_HistogramCompactBinEdges</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="ad7b8cfe7c3ba31b71e13da3bd15ae837">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad7b8cfe7c3ba31b71e13da3bd15ae837" class="m-doc-self">MemorySizeArray</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aec5641f4dc57b04f68b4bc141c2e5716">
+              <span class="m-doc-wrap-bumper">auto <a href="#aec5641f4dc57b04f68b4bc141c2e5716" class="m-doc-self">MemorySize</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a78647e6a4e8efd49bac8bfb2da887f69">
+              <span class="m-doc-wrap-bumper">void <a href="#a78647e6a4e8efd49bac8bfb2da887f69" class="m-doc-self">set_nbins</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> nbins)</span>
+            </dt>
+            <dd>set number of bins</dd>
+            <dt id="af7c2af9c69aa061b7862da6b1f2f904a">
+              <span class="m-doc-wrap-bumper">auto <a href="#af7c2af9c69aa061b7862da6b1f2f904a" class="m-doc-self">get_nbins</a>(</span><span class="m-doc-wrap">) const -&gt; <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a></span>
+            </dt>
+            <dd>return number of bins</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a0d61c7700e85c3189a7bf25ba28475e7" class="m-doc">SetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              const T&amp; value)</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#ab428db3699500ccfb8effbcec7ae2012" class="m-doc">GetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos) const -&gt; const T</span>
+            </dt>
+            <dd></dd>
+            <dt id="abd8de667392874339163be43a225c2bc">
+              <span class="m-doc-wrap-bumper">auto <a href="#abd8de667392874339163be43a225c2bc" class="m-doc-self">GetBinLength</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos) const -&gt; const T</span>
+            </dt>
+            <dd>get the length of a bin</dd>
+            <dt id="adc7267622fcc72767abda6fea4fa6f72">
+              <span class="m-doc-wrap-bumper">void <a href="#adc7267622fcc72767abda6fea4fa6f72" class="m-doc-self">SetMin</a>(</span><span class="m-doc-wrap">const T&amp; value)</span>
+            </dt>
+            <dd>set and get minimum</dd>
+            <dt id="a225bd5e074a836a717dfef4e7f3946da">
+              <span class="m-doc-wrap-bumper">auto <a href="#a225bd5e074a836a717dfef4e7f3946da" class="m-doc-self">GetMin</a>(</span><span class="m-doc-wrap">) const -&gt; const T&amp;</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="afc98f816a3620e1cd0ef9ec81883d66d">
+              <span class="m-doc-wrap-bumper">void <a href="#afc98f816a3620e1cd0ef9ec81883d66d" class="m-doc-self">SetMax</a>(</span><span class="m-doc-wrap">const T&amp; value)</span>
+            </dt>
+            <dd>set and get maximum</dd>
+            <dt id="aea22f6c1318e8acae37a24f04cba2258">
+              <span class="m-doc-wrap-bumper">auto <a href="#aea22f6c1318e8acae37a24f04cba2258" class="m-doc-self">GetMax</a>(</span><span class="m-doc-wrap">) const -&gt; const T&amp;</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a152cb28f666e0602209af6d8aacdee6d">
+              <span class="m-doc-wrap-bumper">void <a href="#a152cb28f666e0602209af6d8aacdee6d" class="m-doc-self">SetMinMax</a>(</span><span class="m-doc-wrap">const T&amp; valuemin,
+              const T&amp; valuemax)</span>
+            </dt>
+            <dd>set minimum and maximum</dd>
+            <dt id="af9447b41ed1ac8f74ba4bfbae75a0ba0">
+              <span class="m-doc-wrap-bumper">auto <a href="#af9447b41ed1ac8f74ba4bfbae75a0ba0" class="m-doc-self">Length</a>(</span><span class="m-doc-wrap">) const -&gt; const T</span>
+            </dt>
+            <dd>Get length of interval of all bins.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a989d4a042d26f2733a07cfc1d1993c5e" class="m-doc">position</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              const Trandom&amp; drnd) const -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#abe8fabd7521f1a3a6a25d63db2389f9d" class="m-doc">position_lin</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              Trandom m,
+              const Trandom&amp; drnd) const -&gt; T</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a18266c62c764d325c7c13dc663669f85" class="m-doc">position_exp</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              Trandom beta,
+              const Trandom&amp; drnd) const -&gt; T</span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a0d61c7700e85c3189a7bf25ba28475e7"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename T, typename Tint, typename Trandom&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">void TFCS1DFunction_<wbr />HistogramCompactBinEdges&lt;T, Tint, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0d61c7700e85c3189a7bf25ba28475e7" class="m-doc-self">SetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              const T&amp; value)</span></span>
+            </h3>
+<p>set position of lower edge of bins. Requires <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a225bd5e074a836a717dfef4e7f3946da" class="m-doc">GetMin()</a> and <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#aea22f6c1318e8acae37a24f04cba2258" class="m-doc">GetMax()</a> to be set and may not be changed!</p>
+          </div></section>
+          <section class="m-doc-details" id="ab428db3699500ccfb8effbcec7ae2012"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename T, typename Tint, typename Trandom&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">const T TFCS1DFunction_<wbr />HistogramCompactBinEdges&lt;T, Tint, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ab428db3699500ccfb8effbcec7ae2012" class="m-doc-self">GetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos) const</span></span>
+            </h3>
+<p>get position of lower edge of bins. Requires <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a225bd5e074a836a717dfef4e7f3946da" class="m-doc">GetMin()</a> and <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#aea22f6c1318e8acae37a24f04cba2258" class="m-doc">GetMax()</a> to be set and may not be changed!</p>
+          </div></section>
+          <section class="m-doc-details" id="a989d4a042d26f2733a07cfc1d1993c5e"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename T, typename Tint, typename Trandom&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">T TFCS1DFunction_<wbr />HistogramCompactBinEdges&lt;T, Tint, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a989d4a042d26f2733a07cfc1d1993c5e" class="m-doc-self">position</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              const Trandom&amp; drnd) const</span></span>
+            </h3>
+<p>return linear interpolated position for bin pos. Interpolation is done with a random value in the range [0,1]</p>
+          </div></section>
+          <section class="m-doc-details" id="abe8fabd7521f1a3a6a25d63db2389f9d"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename T, typename Tint, typename Trandom&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">T TFCS1DFunction_<wbr />HistogramCompactBinEdges&lt;T, Tint, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#abe8fabd7521f1a3a6a25d63db2389f9d" class="m-doc-self">position_lin</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              Trandom m,
+              const Trandom&amp; drnd) const</span></span>
+            </h3>
+<p>return interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1] return linearly interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1]</p>
+          </div></section>
+          <section class="m-doc-details" id="a18266c62c764d325c7c13dc663669f85"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename T, typename Tint, typename Trandom&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">T TFCS1DFunction_<wbr />HistogramCompactBinEdges&lt;T, Tint, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a18266c62c764d325c7c13dc663669f85" class="m-doc-self">position_exp</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a7bec668f788b88ed6ffed67870503dc2" class="m-doc">size_<wbr />t</a> pos,
+              Trandom beta,
+              const Trandom&amp; drnd) const</span></span>
+            </h3>
+<p>return exponentially interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1]</p><p>(m_array[pos+1] - m_array[pos]);</p>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>

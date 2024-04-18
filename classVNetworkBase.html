@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VNetworkBase class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          VNetworkBase <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="VNetworkBase_8h.html">&lt;VNetworkBase.h&gt;</a></div>
+        </h1>
+        <p>A template defining the interface to a neural network.</p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#derived-classes">Derived classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-static-attribs">Public static variables</a></li>
+                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pro-methods">Protected functions</a></li>
+                <li><a href="#pro-attribs">Protected variables</a></li>
+                <li><a href="#friends">Friends</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+<p>Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration</p><p>Abstract base class for Neural networks. Initially aimed at replacing instances of an lwtnn network with a network that could be either lwtnn or ONNX, so it is an interface which mirrors that of lwtnn graphs. At least 3 derived classes are available;</p><ul><li><a href="classTFCSSimpleLWTNNHandler.html" class="m-doc">TFCSSimpleLWTNNHandler</a>; Designed to wrap a lwtnn neural network</li><li><a href="classTFCSGANLWTNNHandler.html" class="m-doc">TFCSGANLWTNNHandler</a>; Designed to wrap a lwtnn graph network</li><li><a href="classTFCSONNXHandler.html" class="m-doc">TFCSONNXHandler</a>; Designed to wrap an ONNX network</li></ul><p>The TFCSNetworkFactory::Create function has this class as its return type so that it can make a run-time decision about which derived class to use, based on the file or data presented.</p><p>Has various subclasses to cover differing network libraries and save formats.</p>
+        <section id="base-classes">
+          <h2><a href="#base-classes">Base classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classISF__FCS_1_1MLogging.html" class="m-doc">ISF_FCS::MLogging</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="derived-classes">
+          <h2><a href="#derived-classes">Derived classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classTFCSONNXHandler.html" class="m-doc">TFCSONNXHandler</a>
+            </dt>
+            <dd>A handler specific for an ONNX network.</dd>
+            <dt>
+              class <a href="classVNetworkLWTNN.html" class="m-doc">VNetworkLWTNN</a>
+            </dt>
+            <dd>A template defining the interface to a lwtnn network.</dd>
+          </dl>
+        </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              using <a href="#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> = std::map&lt;std::string, std::map&lt;std::string, double&gt;&gt;
+            </dt>
+            <dd>Format for network inputs.</dd>
+            <dt>
+              using <a href="#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> = std::map&lt;std::string, double&gt;
+            </dt>
+            <dd>Format for network outputs.</dd>
+          </dl>
+        </section>
+        <section id="pub-static-attribs">
+          <h2><a href="#pub-static-attribs">Public static variables</a></h2>
+          <dl class="m-doc">
+            <dt id="a1ba68c0f3009e8baa9ac82d5331f44bf">
+              static const std::string <a href="#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc-self">m_defaultTreeName</a>
+            </dt>
+            <dd>Default name for the TTree to save in.</dd>
+          </dl>
+        </section>
+        <section id="pub-static-methods">
+          <h2><a href="#pub-static-methods">Public static functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">static auto <a href="#a5450468cb580351d1ce9631b00dcfd5a" class="m-doc">representNetworkInputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs,
+              int maxValues = 3) -&gt; std::string</span>
+            </dt>
+            <dd>String representation of network inputs.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static auto <a href="#a9d456e7569fa4045a2416632f6673e30" class="m-doc">representNetworkOutputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> const&amp; outputs,
+              int maxValues = 3) -&gt; std::string</span>
+            </dt>
+            <dd>String representation of network outputs.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">static auto <a href="#abf365bdb6a68e11b77872fe994d5c8ff" class="m-doc">isFile</a>(</span><span class="m-doc-wrap">std::string const&amp; inputFile) -&gt; bool</span>
+            </dt>
+            <dd>Check if a string is the path of a file on disk.</dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper"><a href="#a2e82d2bc703228de253d4397e401b877" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> default constructor.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper"><a href="#af0ce4f963d627913b64550927dfe65aa" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">const std::string&amp; inputFile) <span class="m-label m-flat m-info">explicit</span> </span>
+            </dt>
+            <dd><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> constructor.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper"><a href="#ac0a4898e4187e4d44fb53ef860ee6dde" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; copy_from)</span>
+            </dt>
+            <dd><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> copy constructor.</dd>
+            <dt id="ad1b92a5999575496fc607d3dd852f173">
+              <span class="m-doc-wrap-bumper"><a href="#ad1b92a5999575496fc607d3dd852f173" class="m-doc-self">~VNetworkBase</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a3a3f53fab5604f80ddd924e154061555" class="m-doc">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs) const -&gt; <a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> <span class="m-label m-flat m-warning">pure virtual</span></span>
+            </dt>
+            <dd>Function to pass values to the network.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a67a72e59de0fce8cd056fdb5429ec0b3" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">TTree&amp; tree) <span class="m-label m-flat m-warning">pure virtual</span></span>
+            </dt>
+            <dd>Save the network to a TTree.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a365a55b8d028e0c9c2b39c72cd861933" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">TFile&amp; root_file,
+              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span>
+            </dt>
+            <dd>Save the network to a TTree.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#aeb2725fc6b5413c92f2e4619941b0d2e" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">std::string const&amp; root_name,
+              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span>
+            </dt>
+            <dd>Save the network to a TTree.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#afd742c834ad0134dda4794150af0c618" class="m-doc">getOutputLayers</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt;std::string&gt; <span class="m-label m-flat m-warning">pure virtual</span></span>
+            </dt>
+            <dd>List the names of the outputs.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#aeb866e081cf65eea74552ce4d2c821b8" class="m-doc">isFile</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd>Check if the argument inputFile is the path of a file on disk.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#ae30d38bb3b43ce76fd20000c448fdd70" class="m-doc">deleteAllButNet</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">pure virtual</span></span>
+            </dt>
+            <dd>Get rid of any memory objects that aren&#x27;t needed to run the net.</dd>
+          </dl>
+        </section>
+        <section id="pro-methods">
+          <h2><a href="#pro-methods">Protected functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#afb7126174b1543ab40eb65ded86a4b83" class="m-doc">setupPersistedVariables</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">pure virtual</span></span>
+            </dt>
+            <dd>Perform actions that prep data to create the net.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#af7c35fed911d05fa7a3b921f78a79124" class="m-doc">setupNet</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">pure virtual</span></span>
+            </dt>
+            <dd>Perform actions that prepare network for use.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a9fa8ff77c3f2b0dcde96ff3257fc9ba0" class="m-doc">print</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm) const <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd>Write a short description of this net to the string stream.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a90a258cdd6e4cc4383d13cc81aafafc4" class="m-doc">isRootFile</a>(</span><span class="m-doc-wrap">std::string const&amp; filename = &quot;&quot;) const -&gt; bool</span>
+            </dt>
+            <dd>Check if a string is possibly a root file path.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a>&amp; outputs) const</span>
+            </dt>
+            <dd>Remove any common prefix from the outputs.</dd>
+            <dt id="ab32127d45529c3ad65a27a8d1e0f56ae">
+              <span class="m-doc-wrap-bumper">void <a href="#ab32127d45529c3ad65a27a8d1e0f56ae" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap">std::vector&lt;std::string&gt;&amp; output_names) const</span>
+            </dt>
+            <dd>Remove any common prefix from the outputs.</dd>
+          </dl>
+        </section>
+        <section id="pro-attribs">
+          <h2><a href="#pro-attribs">Protected variables</a></h2>
+          <dl class="m-doc">
+            <dt id="a63d622ec55507128308dcc59e99fc451">
+              std::string <a href="#a63d622ec55507128308dcc59e99fc451" class="m-doc-self">m_inputFile</a>
+            </dt>
+            <dd>Path to the file describing the network, including filename.</dd>
+          </dl>
+        </section>
+        <section id="friends">
+          <h2><a href="#friends">Friends</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a3ae270ee94908caaf85b64d112a73221" class="m-doc">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm,
+              const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; vNetworkBase) -&gt; std::ostream&amp;</span>
+            </dt>
+            <dd>Put-to operator to facilitate printing.</dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Typedef documentation</h2>
+          <section class="m-doc-details" id="a4d6471d5a9c6a42a89aa6659a76ebf65"><div>
+            <h3>
+              typedef std::map&lt;std::string, std::map&lt;std::string, double&gt;&gt; VNetworkBase::<wbr /><a href="#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc-self">NetworkInputs</a>
+            </h3>
+            <p>Format for network inputs.</p>
+<p>The doubles are the values to be passed into the network. Strings in the outer map identify the input node, which must correspond to the names of the nodes as read from the description of the network found by the constructor. Strings in the inner map identify the part of the input node, for some networks these must be simple integers, in string form, as parts of nodes do not always have the ability to carry real string labels.</p>
+          </div></section>
+          <section class="m-doc-details" id="a764549e2ddcb6bc685f452744484c1e0"><div>
+            <h3>
+              typedef std::map&lt;std::string, double&gt; VNetworkBase::<wbr /><a href="#a764549e2ddcb6bc685f452744484c1e0" class="m-doc-self">NetworkOutputs</a>
+            </h3>
+            <p>Format for network outputs.</p>
+<p>The doubles are the values generated by the network. Strings identify which node this value came from, and when nodes have multiple values, are suffixed with a number to indicate which part of the node they came from. So in multi-value nodes the format becomes &quot;&lt;node_name&gt;_&lt;part_n&gt;&quot;</p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a5450468cb580351d1ce9631b00dcfd5a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static std::string VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a5450468cb580351d1ce9631b00dcfd5a" class="m-doc-self">representNetworkInputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs,
+              int maxValues = 3)</span></span>
+            </h3>
+            <p>String representation of network inputs.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">inputs</td>
+                  <td>values to be evaluated by the network</td>
+                </tr>
+                <tr>
+                  <td>maxValues</td>
+                  <td>maximum number of values to include in the representation</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>string represetning the inputs</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Create a string that summarizes a set of network inputs. Gives basic dimensions plus a few values, up to the maxValues</p>
+          </div></section>
+          <section class="m-doc-details" id="a9d456e7569fa4045a2416632f6673e30"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static std::string VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a9d456e7569fa4045a2416632f6673e30" class="m-doc-self">representNetworkOutputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> const&amp; outputs,
+              int maxValues = 3)</span></span>
+            </h3>
+            <p>String representation of network outputs.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">outputs</td>
+                  <td>output of the network</td>
+                </tr>
+                <tr>
+                  <td>maxValues</td>
+                  <td>maximum number of values to include in the representation</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>string represetning the outputs</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Create a string that summarizes a set of network outputs. Gives basic dimensions plus a few values, up to the maxValues</p>
+          </div></section>
+          <section class="m-doc-details" id="abf365bdb6a68e11b77872fe994d5c8ff"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static bool VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#abf365bdb6a68e11b77872fe994d5c8ff" class="m-doc-self">isFile</a>(</span><span class="m-doc-wrap">std::string const&amp; inputFile)</span></span>
+            </h3>
+            <p>Check if a string is the path of a file on disk.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">inputFile</td>
+                  <td>name of the pottential file</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>is it a readable file on disk</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Determines if a string corresponds to the path of a file that can be read on the disk.</p>
+          </div></section>
+          <section class="m-doc-details" id="a2e82d2bc703228de253d4397e401b877"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"> VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2e82d2bc703228de253d4397e401b877" class="m-doc-self">VNetworkBase</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> default constructor.</p>
+<p>For use in streamers.</p>
+          </div></section>
+          <section class="m-doc-details" id="af0ce4f963d627913b64550927dfe65aa"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"> VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af0ce4f963d627913b64550927dfe65aa" class="m-doc-self">VNetworkBase</a>(</span><span class="m-doc-wrap">const std::string&amp; inputFile) <span class="m-label m-info">explicit</span> </span></span>
+            </h3>
+            <p><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> constructor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">inputFile</td>
+                  <td>file-path on disk (with file name) of a readable file containing a description of the network to be constructed or the content of the file.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Only saves inputFile to m_inputFile; Inheriting classes should call setupPersistedVariables and setupNet in constructor;</p>
+          </div></section>
+          <section class="m-doc-details" id="ac0a4898e4187e4d44fb53ef860ee6dde"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"> VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac0a4898e4187e4d44fb53ef860ee6dde" class="m-doc-self">VNetworkBase</a>(</span><span class="m-doc-wrap">const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; copy_from)</span></span>
+            </h3>
+            <p><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> copy constructor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">copy_from</td>
+                  <td>existing network that we are copying</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Does not call setupPersistedVariables or setupNet but will pass on m_inputFile. Inheriting classes should do whatever they need to move the variables created in the setup functions.</p>
+          </div></section>
+          <section class="m-doc-details" id="a3a3f53fab5604f80ddd924e154061555"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3a3f53fab5604f80ddd924e154061555" class="m-doc-self">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs) const <span class="m-label m-warning">pure virtual</span></span></span>
+            </h3>
+            <p>Function to pass values to the network.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">inputs</td>
+                  <td>values to be evaluated by the network</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>the output of the network</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>This function hides variations in the formatted needed by different network libraries, providing a uniform input and output type.</p><aside class="m-note m-default"><h4>See also</h4><p><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">VNetworkBase::<wbr />NetworkInputs</a></p><p><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">VNetworkBase::<wbr />NetworkOutputs</a></p></aside>
+          </div></section>
+          <section class="m-doc-details" id="a67a72e59de0fce8cd056fdb5429ec0b3"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a67a72e59de0fce8cd056fdb5429ec0b3" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">TTree&amp; tree) <span class="m-label m-warning">pure virtual</span></span></span>
+            </h3>
+            <p>Save the network to a TTree.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">tree</td>
+                  <td>The tree to save inside.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
+          </div></section>
+          <section class="m-doc-details" id="a365a55b8d028e0c9c2b39c72cd861933"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a365a55b8d028e0c9c2b39c72cd861933" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">TFile&amp; root_file,
+              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span></span>
+            </h3>
+            <p>Save the network to a TTree.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">root_file</td>
+                  <td>The file to save inside.</td>
+                </tr>
+                <tr>
+                  <td>tree_name</td>
+                  <td>The name of the TTree to save inside.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
+          </div></section>
+          <section class="m-doc-details" id="aeb2725fc6b5413c92f2e4619941b0d2e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aeb2725fc6b5413c92f2e4619941b0d2e" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">std::string const&amp; root_name,
+              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span></span>
+            </h3>
+            <p>Save the network to a TTree.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">root_name</td>
+                  <td>The path of the file to save inside.</td>
+                </tr>
+                <tr>
+                  <td>tree_name</td>
+                  <td>The name of the TTree to save inside.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
+          </div></section>
+          <section class="m-doc-details" id="afd742c834ad0134dda4794150af0c618"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">std::vector&lt;std::string&gt; VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#afd742c834ad0134dda4794150af0c618" class="m-doc-self">getOutputLayers</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">pure virtual</span></span></span>
+            </h3>
+            <p>List the names of the outputs.</p>
+<p>Outputs are stored in an NetworkOutputs object which is indexed by strings. This function returns the list of all strings that will index the outputs.</p>
+          </div></section>
+          <section class="m-doc-details" id="aeb866e081cf65eea74552ce4d2c821b8"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">bool VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aeb866e081cf65eea74552ce4d2c821b8" class="m-doc-self">isFile</a>(</span><span class="m-doc-wrap">) const</span></span>
+            </h3>
+            <p>Check if the argument inputFile is the path of a file on disk.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td>is it a readable file on disk</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Determines if the string that was passed to the constructor as inputFile corresponds to the path of a file that can be read on the disk.</p>
+          </div></section>
+          <section class="m-doc-details" id="ae30d38bb3b43ce76fd20000c448fdd70"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae30d38bb3b43ce76fd20000c448fdd70" class="m-doc-self">deleteAllButNet</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">pure virtual</span></span></span>
+            </h3>
+            <p>Get rid of any memory objects that aren&#x27;t needed to run the net.</p>
+<p>Minimize memory usage by deleting any inputs that are no longer required to run the compute function. May prevent the net from being saved.</p>
+          </div></section>
+          <section class="m-doc-details" id="afb7126174b1543ab40eb65ded86a4b83"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#afb7126174b1543ab40eb65ded86a4b83" class="m-doc-self">setupPersistedVariables</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">pure virtual</span> <span class="m-label m-warning">protected</span></span></span>
+            </h3>
+            <p>Perform actions that prep data to create the net.</p>
+<p>Will be called in the class constructor before calling setupNet, but not in the streamer. It sets any variables that the sreamer would persist when saving or loading to file.</p>
+          </div></section>
+          <section class="m-doc-details" id="af7c35fed911d05fa7a3b921f78a79124"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af7c35fed911d05fa7a3b921f78a79124" class="m-doc-self">setupNet</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">pure virtual</span> <span class="m-label m-warning">protected</span></span></span>
+            </h3>
+            <p>Perform actions that prepare network for use.</p>
+<p>Will be called in the streamer or class constructor after the inputs have been set (either automaically by the streamer or by setupPersistedVariables in the constructor). Does not delete any resources used.</p>
+          </div></section>
+          <section class="m-doc-details" id="a9fa8ff77c3f2b0dcde96ff3257fc9ba0"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a9fa8ff77c3f2b0dcde96ff3257fc9ba0" class="m-doc-self">print</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm) const <span class="m-label m-warning">virtual</span> <span class="m-label m-warning">protected</span></span></span>
+            </h3>
+            <p>Write a short description of this net to the string stream.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">strm</td>
+                  <td>output parameter, to which the description will be written.</td>
+                </tr>
+              </tbody>
+            </table>
+<p>Intended to facilitate the put-to operator, allowing subclasses to change how this object is displayed.</p>
+          </div></section>
+          <section class="m-doc-details" id="a90a258cdd6e4cc4383d13cc81aafafc4"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">bool VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a90a258cdd6e4cc4383d13cc81aafafc4" class="m-doc-self">isRootFile</a>(</span><span class="m-doc-wrap">std::string const&amp; filename = &quot;&quot;) const <span class="m-label m-warning">protected</span></span></span>
+            </h3>
+            <p>Check if a string is possibly a root file path.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td>is it the path of a root file</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>Just checks if the string ends in .root as there are almost no reliable rules for file paths.</p>
+          </div></section>
+          <section class="m-doc-details" id="aae9544aaf496d892863f4be3104c168d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a>&amp; outputs) const <span class="m-label m-warning">protected</span></span></span>
+            </h3>
+            <p>Remove any common prefix from the outputs.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">outputs</td>
+                  <td>The outputs, changed in place.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a3ae270ee94908caaf85b64d112a73221"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">std::ostream&amp; </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3ae270ee94908caaf85b64d112a73221" class="m-doc-self">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm,
+              const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; vNetworkBase)</span></span>
+            </h3>
+            <p>Put-to operator to facilitate printing.</p>
+<p>It is useful to be able to display a reasonable representation of a network for debugging. This can be altered by subclasses by changing the protected print function of this class.</p>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>

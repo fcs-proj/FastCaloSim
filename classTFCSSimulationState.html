@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TFCSSimulationState class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          TFCSSimulationState <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSSimulationState_8h.html">&lt;TFCSSimulationState.h&gt;</a></div>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="base-classes">
+          <h2><a href="#base-classes">Base classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classISF__FCS_1_1MLogging.html" class="m-doc">ISF_FCS::MLogging</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              union <a href="unionTFCSSimulationState_1_1AuxInfo__t.html" class="m-doc">AuxInfo_t</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9f0ae2ec9ce86863db1e06a49af49e45">
+              using <a href="#a9f0ae2ec9ce86863db1e06a49af49e45" class="m-doc-self">Cellmap_t</a> = std::map&lt;const <a href="classCaloDetDescrElement.html" class="m-doc">CaloDetDescrElement</a>*, float&gt;
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-static-methods">
+          <h2><a href="#pub-static-methods">Public static functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a03419267e3f159409595f0ad149239a1">
+              <span class="m-doc-wrap-bumper">static auto <a href="#a03419267e3f159409595f0ad149239a1" class="m-doc-self">fnv1a_32</a>(</span><span class="m-doc-wrap">char const* s,
+              std::size_t count) -&gt; std::uint32_t <span class="m-label m-flat m-primary">constexpr</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac5bf4e6a8642a9cedb311d6b397c97f9">
+              <span class="m-doc-wrap-bumper">static auto <a href="#ac5bf4e6a8642a9cedb311d6b397c97f9" class="m-doc-self">getAuxIndex</a>(</span><span class="m-doc-wrap">const std::string&amp; s) -&gt; std::uint32_t</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a8d7df5a945b73bd540c34b89f65b4057">
+              <span class="m-doc-wrap-bumper">static auto <a href="#a8d7df5a945b73bd540c34b89f65b4057" class="m-doc-self">getAuxIndex</a>(</span><span class="m-doc-wrap">const char* s) -&gt; std::uint32_t</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="a9455b7a1c9062096d28a873d11b35a1a">
+              <span class="m-doc-wrap-bumper"><a href="#a9455b7a1c9062096d28a873d11b35a1a" class="m-doc-self">TFCSSimulationState</a>(</span><span class="m-doc-wrap">CLHEP::HepRandomEngine* randomEngine = nullptr)</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="aaf9696b73d8ce85edfc81f4ff4dc79ca">
+              <span class="m-doc-wrap-bumper">auto <a href="#aaf9696b73d8ce85edfc81f4ff4dc79ca" class="m-doc-self">randomEngine</a>(</span><span class="m-doc-wrap">) -&gt; CLHEP::HepRandomEngine*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af10c3d7312f5a6a9aa2b46571e8d88ff">
+              <span class="m-doc-wrap-bumper">void <a href="#af10c3d7312f5a6a9aa2b46571e8d88ff" class="m-doc-self">setRandomEngine</a>(</span><span class="m-doc-wrap">CLHEP::HepRandomEngine* engine)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a21117b944c86bc5cb7ba8f83ee280640">
+              <span class="m-doc-wrap-bumper">auto <a href="#a21117b944c86bc5cb7ba8f83ee280640" class="m-doc-self">is_valid</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aef10831bab3703acb2f22b1950792262">
+              <span class="m-doc-wrap-bumper">auto <a href="#aef10831bab3703acb2f22b1950792262" class="m-doc-self">E</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a2e9f5c50c7feae5c4cdb5d94649af2f3">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2e9f5c50c7feae5c4cdb5d94649af2f3" class="m-doc-self">E</a>(</span><span class="m-doc-wrap">int sample) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a01273fa60bc18d66f569295affcaf4be">
+              <span class="m-doc-wrap-bumper">auto <a href="#a01273fa60bc18d66f569295affcaf4be" class="m-doc-self">Efrac</a>(</span><span class="m-doc-wrap">int sample) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac76b211820456af69e88531777a7feb5">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac76b211820456af69e88531777a7feb5" class="m-doc-self">Ebin</a>(</span><span class="m-doc-wrap">) const -&gt; int</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6185c3d3a04d26bf772e7ad1a2a80ee9">
+              <span class="m-doc-wrap-bumper">void <a href="#a6185c3d3a04d26bf772e7ad1a2a80ee9" class="m-doc-self">set_Ebin</a>(</span><span class="m-doc-wrap">int bin)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6513a1b789a2efc0ced1f2875813d507">
+              <span class="m-doc-wrap-bumper">void <a href="#a6513a1b789a2efc0ced1f2875813d507" class="m-doc-self">set_E</a>(</span><span class="m-doc-wrap">int sample,
+              double Esample)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ace8f8c454980c7775a724cbc01c1b54d">
+              <span class="m-doc-wrap-bumper">void <a href="#ace8f8c454980c7775a724cbc01c1b54d" class="m-doc-self">set_Efrac</a>(</span><span class="m-doc-wrap">int sample,
+              double Efracsample)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9b04a0911b5af8cec7ef5e7908ee3d2d">
+              <span class="m-doc-wrap-bumper">void <a href="#a9b04a0911b5af8cec7ef5e7908ee3d2d" class="m-doc-self">set_E</a>(</span><span class="m-doc-wrap">double E)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="accc286a04ba6beb05e87c9da5dc182de">
+              <span class="m-doc-wrap-bumper">void <a href="#accc286a04ba6beb05e87c9da5dc182de" class="m-doc-self">add_E</a>(</span><span class="m-doc-wrap">int sample,
+              double Esample)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a0d2abb7f0f8cff4d06d645de9da49c29">
+              <span class="m-doc-wrap-bumper">auto <a href="#a0d2abb7f0f8cff4d06d645de9da49c29" class="m-doc-self">cells</a>(</span><span class="m-doc-wrap">) -&gt; <a href="classTFCSSimulationState.html#a9f0ae2ec9ce86863db1e06a49af49e45" class="m-doc">Cellmap_<wbr />t</a>&amp;</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad0c065552c1da940fcd875b33c44042c">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad0c065552c1da940fcd875b33c44042c" class="m-doc-self">cells</a>(</span><span class="m-doc-wrap">) const -&gt; const <a href="classTFCSSimulationState.html#a9f0ae2ec9ce86863db1e06a49af49e45" class="m-doc">Cellmap_<wbr />t</a>&amp;</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ace87adb5475e75b4109f2bcb4142d689">
+              <span class="m-doc-wrap-bumper">void <a href="#ace87adb5475e75b4109f2bcb4142d689" class="m-doc-self">deposit</a>(</span><span class="m-doc-wrap">const <a href="classCaloDetDescrElement.html" class="m-doc">CaloDetDescrElement</a>* cellele,
+              float E)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a0f84431b4f9bd4b05f4c49f77c6fa5c6">
+              <span class="m-doc-wrap-bumper">void <a href="#a0f84431b4f9bd4b05f4c49f77c6fa5c6" class="m-doc-self">Print</a>(</span><span class="m-doc-wrap">Option_t* option = &quot;&quot;) const</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a1c801d62b78370da0cf1e3f2bddb6e3a">
+              <span class="m-doc-wrap-bumper">void <a href="#a1c801d62b78370da0cf1e3f2bddb6e3a" class="m-doc-self">set_SF</a>(</span><span class="m-doc-wrap">double mysf)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a7f8e27361f684ef537ca1547e13585c0">
+              <span class="m-doc-wrap-bumper">auto <a href="#a7f8e27361f684ef537ca1547e13585c0" class="m-doc-self">get_SF</a>(</span><span class="m-doc-wrap">) -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a8aa5aa70c554828f47964462b84e0a6e">
+              <span class="m-doc-wrap-bumper">void <a href="#a8aa5aa70c554828f47964462b84e0a6e" class="m-doc-self">clear</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a79779799cce08492eef7c0ec6c392926">
+              <span class="m-doc-wrap-bumper">auto <a href="#a79779799cce08492eef7c0ec6c392926" class="m-doc-self">hasAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa55da580d95de888cc7a82768a77de55">
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#aa55da580d95de888cc7a82768a77de55" class="m-doc-self">getAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; const T</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad4846d5fa486bdff046b8ea4a6a4ed30">
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a href="#ad4846d5fa486bdff046b8ea4a6a4ed30" class="m-doc-self">setAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index,
+              const T&amp; val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a75b8f24f6470f1c4d9c45b16affaa456">
+              <span class="m-doc-wrap-bumper">void <a href="#a75b8f24f6470f1c4d9c45b16affaa456" class="m-doc-self">AddAuxInfoCleanup</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>* para)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a766224648465f492b22d772f502c1fdb">
+              <span class="m-doc-wrap-bumper">void <a href="#a766224648465f492b22d772f502c1fdb" class="m-doc-self">DoAuxInfoCleanup</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>

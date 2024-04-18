@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TFCSExtrapolationState class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          TFCSExtrapolationState <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSExtrapolationState_8h.html">&lt;TFCSExtrapolationState.h&gt;</a></div>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="base-classes">
+          <h2><a href="#base-classes">Base classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classISF__FCS_1_1MLogging.html" class="m-doc">ISF_FCS::MLogging</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt id="a77b192955ec76032531b4b869b6e2bb2">
+              <span class="m-doc-wrap-bumper">enum <a href="#a77b192955ec76032531b4b869b6e2bb2" class="m-doc-self">SUBPOS</a> { </span><span class="m-doc-wrap"><a href="#a77b192955ec76032531b4b869b6e2bb2abb3e7d91a00c8ce6e7a5ab57c0bbd6d4" class="m-doc">SUBPOS_MID</a> = 0,
+              <a href="#a77b192955ec76032531b4b869b6e2bb2a53a661802aa07d7536dc705b4f9b5300" class="m-doc">SUBPOS_ENT</a> = 1,
+              <a href="#a77b192955ec76032531b4b869b6e2bb2aab47adae04c7923bd9bf03e35e5b5f4c" class="m-doc">SUBPOS_EXT</a> = 2 }</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="ad14a3eb37c015b12d2dd489ebf148217">
+              <span class="m-doc-wrap-bumper"><a href="#ad14a3eb37c015b12d2dd489ebf148217" class="m-doc-self">TFCSExtrapolationState</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a522fc65b055f0a8e8e09b77e08ef0b04">
+              <span class="m-doc-wrap-bumper">void <a href="#a522fc65b055f0a8e8e09b77e08ef0b04" class="m-doc-self">clear</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa4527441bc57f500fff07f4fb1440024">
+              <span class="m-doc-wrap-bumper">void <a href="#aa4527441bc57f500fff07f4fb1440024" class="m-doc-self">set_OK</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos,
+              bool val = true)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae6ea074fa1dad1d6f2db46eb78bb4fd4">
+              <span class="m-doc-wrap-bumper">void <a href="#ae6ea074fa1dad1d6f2db46eb78bb4fd4" class="m-doc-self">set_eta</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos,
+              double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9c902827e3252e0cb4c7190965aea0e4">
+              <span class="m-doc-wrap-bumper">void <a href="#a9c902827e3252e0cb4c7190965aea0e4" class="m-doc-self">set_phi</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos,
+              double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aeb507bec32000a6b6e6002646b09d63e">
+              <span class="m-doc-wrap-bumper">void <a href="#aeb507bec32000a6b6e6002646b09d63e" class="m-doc-self">set_r</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos,
+              double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa795e2477d9d110047b2fcd07f44d1b1">
+              <span class="m-doc-wrap-bumper">void <a href="#aa795e2477d9d110047b2fcd07f44d1b1" class="m-doc-self">set_z</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos,
+              double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a3dc00f9a295ec539dd9261ebc61f598c">
+              <span class="m-doc-wrap-bumper">void <a href="#a3dc00f9a295ec539dd9261ebc61f598c" class="m-doc-self">set_d</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos,
+              double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a3949c01f7d117e5954fc7c1bbed57cf9">
+              <span class="m-doc-wrap-bumper">void <a href="#a3949c01f7d117e5954fc7c1bbed57cf9" class="m-doc-self">set_detaBorder</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos,
+              double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="adcbfe1c000560030465b78823a96671b">
+              <span class="m-doc-wrap-bumper">void <a href="#adcbfe1c000560030465b78823a96671b" class="m-doc-self">set_IDCaloBoundary_eta</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af280b7ce827d2d5e465d5960194e867e">
+              <span class="m-doc-wrap-bumper">void <a href="#af280b7ce827d2d5e465d5960194e867e" class="m-doc-self">set_IDCaloBoundary_phi</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a41c7a22f4459ad36250a26b8495ec10e">
+              <span class="m-doc-wrap-bumper">void <a href="#a41c7a22f4459ad36250a26b8495ec10e" class="m-doc-self">set_IDCaloBoundary_r</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa95eb94cbd86587ba50f7055912a6c3f">
+              <span class="m-doc-wrap-bumper">void <a href="#aa95eb94cbd86587ba50f7055912a6c3f" class="m-doc-self">set_IDCaloBoundary_z</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a893408dcaec10a239d6fb71f4a3f6e49">
+              <span class="m-doc-wrap-bumper">auto <a href="#a893408dcaec10a239d6fb71f4a3f6e49" class="m-doc-self">OK</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae0b0b820d58cfcf23a755e66b9b0860d">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae0b0b820d58cfcf23a755e66b9b0860d" class="m-doc-self">eta</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a2bc9e9716ff4a86e828d152559a58468">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2bc9e9716ff4a86e828d152559a58468" class="m-doc-self">phi</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5bec25da9d07fcf7e765d1c73c3a393c">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5bec25da9d07fcf7e765d1c73c3a393c" class="m-doc-self">r</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a40232ccd494833305ed673e0d6eb971f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a40232ccd494833305ed673e0d6eb971f" class="m-doc-self">z</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa7106cede9f8e303afff7ea9c7faff0a">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa7106cede9f8e303afff7ea9c7faff0a" class="m-doc-self">d</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aad585a7f1b4f3372bf1b3d302dc19c7b">
+              <span class="m-doc-wrap-bumper">auto <a href="#aad585a7f1b4f3372bf1b3d302dc19c7b" class="m-doc-self">detaBorder</a>(</span><span class="m-doc-wrap">int layer,
+              int subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5abc221d457156a0fd0414513c66035f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5abc221d457156a0fd0414513c66035f" class="m-doc-self">IDCaloBoundary_eta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a72a9165b5a5521a49ca7f21fe9188d1d">
+              <span class="m-doc-wrap-bumper">auto <a href="#a72a9165b5a5521a49ca7f21fe9188d1d" class="m-doc-self">IDCaloBoundary_phi</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae958df73be0831f3d58b692083ea9060">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae958df73be0831f3d58b692083ea9060" class="m-doc-self">IDCaloBoundary_r</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a4e6d6ffde60bd3fcaaceeb8a71969e13">
+              <span class="m-doc-wrap-bumper">auto <a href="#a4e6d6ffde60bd3fcaaceeb8a71969e13" class="m-doc-self">IDCaloBoundary_z</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac0ea5260f83da75a75ece59fae7e9059">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac0ea5260f83da75a75ece59fae7e9059" class="m-doc-self">IDCaloBoundary_AngleEta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a8be974828fcf4480daf9b86b3ab2ec18">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8be974828fcf4480daf9b86b3ab2ec18" class="m-doc-self">IDCaloBoundary_Angle3D</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a40970ccf9fabc05737e1d72a8ae609ad">
+              <span class="m-doc-wrap-bumper">void <a href="#a40970ccf9fabc05737e1d72a8ae609ad" class="m-doc-self">set_IDCaloBoundary_AngleEta</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a71ab894d5a95d9165a488912ebfcd182">
+              <span class="m-doc-wrap-bumper">void <a href="#a71ab894d5a95d9165a488912ebfcd182" class="m-doc-self">set_IDCaloBoundary_Angle3D</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a83cecb7aa842c0801b0f491de4475c7c">
+              <span class="m-doc-wrap-bumper">void <a href="#a83cecb7aa842c0801b0f491de4475c7c" class="m-doc-self">Print</a>(</span><span class="m-doc-wrap">Option_t* option = &quot;&quot;) const</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>
