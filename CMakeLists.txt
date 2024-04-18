@@ -42,6 +42,7 @@ file(GLOB FastCaloSim_SOURCES "source/*.cxx")
 
 add_library(
     FastCaloSim_FastCaloSim
+    SHARED
     ${FastCaloSim_SOURCES}
 )
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
@@ -50,18 +51,12 @@ add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore CLHEP HepPDT lwtnn::lwtnn ${LibXml2_LIBRARIES} ONNXRuntime::ONNXRuntime)
 
 # Generate ROOT dictionary for custom classes when building a shared library
-if (BUILD_SHARED_LIBS)
-  target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
-  ROOT_GENERATE_DICTIONARY(FastCaloSim_dict FastCaloSim.h MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
-  # Disable compiler and clang-tidy warnings for ROOT
-  set_target_properties(FastCaloSim_dict PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
-endif()
-# Disable clang-tidy warnings for external libraries
-set_target_properties(CLHEP PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
-set_target_properties(HepPDT PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
+target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
+ROOT_GENERATE_DICTIONARY(FastCaloSim_dict FastCaloSim.h MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
 
-# For now also deactivate all clang-tidy warnings from FastCaloSim. TODO: Remove this line and fix all warnings
-set_target_properties(FastCaloSim_FastCaloSim PROPERTIES COMPILE_FLAGS "-w" CXX_CLANG_TIDY "")
+# Deactivate compiler warnings and static analyzers for third party libraries
+# TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
+deactivate_checks(FastCaloSim_dict CLHEP HepPDT FastCaloSim_FastCaloSim)
 
 include(GenerateExportHeader)
 generate_export_header(
@@ -70,10 +65,6 @@ generate_export_header(
     EXPORT_FILE_NAME export/FastCaloSim/FastCaloSim_export.h
     CUSTOM_CONTENT_FROM_VARIABLE pragma_suppress_c4251
 )
-
-if(NOT BUILD_SHARED_LIBS)
-  target_compile_definitions(FastCaloSim_FastCaloSim PUBLIC FASTCALOSIM_STATIC_DEFINE)
-endif()
 
 set_target_properties(
     FastCaloSim_FastCaloSim PROPERTIES
