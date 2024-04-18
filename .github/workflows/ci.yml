@@ -91,6 +91,9 @@ jobs:
 
     - name: Build
       run: cmake --build build/sanitize -j 2
+      
+    - name: Install
+      run: cmake --install build/sanitize --config Release --prefix prefix
 
     - name: Test
       working-directory: build/sanitize
