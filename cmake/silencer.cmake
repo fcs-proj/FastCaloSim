@@ -1,4 +1,4 @@
-# Function to deactivate checks for a speficied target
+# Function to deactivate checks for a specified target
 function(deactivate_target_checks target)
   set_target_properties(${target} PROPERTIES
     COMPILE_FLAGS "-w" # Deactivate compiler warnings
