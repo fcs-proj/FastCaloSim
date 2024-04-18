@@ -1,11 +1,11 @@
 #include <string>
+
 #include <gtest/gtest.h>
 
 #include "FastCaloSim/FastCaloSim.h"
 
-
-TEST(BasicClassTests, ClassExportOk) {
-  
+TEST(BasicClassTests, ClassExportOk)
+{
   auto const exported = exported_class {};
 
   auto const expected_name = std::string("FastCaloSim");
@@ -13,4 +13,3 @@ TEST(BasicClassTests, ClassExportOk) {
 
   EXPECT_EQ(expected_name, actual_name);
 }
-
