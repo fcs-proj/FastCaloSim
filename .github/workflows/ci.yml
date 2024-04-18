@@ -172,8 +172,8 @@ jobs:
       run: pip3 install jinja2 Pygments
 
     - name: Install Doxygen
-      run: apt-get update -q
-        && apt-get install doxygen -q -y
+      run: sudo apt-get update -q
+        && sudo apt-get install doxygen -q -y
 
     - name: Build docs
       run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build"
