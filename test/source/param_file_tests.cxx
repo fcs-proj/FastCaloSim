@@ -12,5 +12,7 @@ TEST(ParamFileTests, Read)
 
   Long64_t bytes_read = param_file->GetBytesRead();
 
+  param_file->Close();
+
   EXPECT_EQ(bytes_read, 8312);
 }
