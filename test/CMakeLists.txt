@@ -37,9 +37,6 @@ deactivate_checks(gtest gtest_main
 
 include(GoogleTest)
 
-# Enable testing for current directory and below.
-enable_testing()
-
 # Create the test suites. Note test suites need to 
 # --> be in the source directory
 # --> have the name *_tests.cxx
