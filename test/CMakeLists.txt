@@ -4,6 +4,8 @@ project(FastCaloSimTests LANGUAGES CXX)
 
 include(../cmake/project-is-top-level.cmake)
 include(../cmake/folders.cmake)
+include(../cmake/silencer.cmake)
+include(../cmake/tests.cmake)
 
 # ---- Dependencies ----
 
@@ -12,13 +14,33 @@ if(PROJECT_IS_TOP_LEVEL)
   enable_testing()
 endif()
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest
+  GIT_TAG v1.14.0
+  GIT_PROGRESS TRUE
+)
+
+FetchContent_MakeAvailable(googletest)
+
+# Deactivate compiler warnings and static analyzers
+deactivate_checks(gtest gtest_main 
+                  gmock gmock_main
+                  FastCaloSim_FastCaloSim
+                  FastCaloSim_dict)
+
 # ---- Tests ----
 
-add_executable(FastCaloSim_test source/FastCaloSim_test.cxx)
-target_link_libraries(FastCaloSim_test PRIVATE FastCaloSim::FastCaloSim)
-target_compile_features(FastCaloSim_test PRIVATE cxx_std_17)
+include(GoogleTest)
 
-add_test(NAME FastCaloSim_test COMMAND FastCaloSim_test)
+# Enable testing for current directory and below.
+enable_testing()
+
+# Create the test suites. Note test suites need to 
+# --> be in the source directory
+# --> have the name *_tests.cxx
+create_test_suites(basic_class param_file)
 
 # ---- End-of-file commands ----
 
