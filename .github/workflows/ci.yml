@@ -110,12 +110,6 @@ jobs:
         matrix:
           os: [alma9, ubuntu22]
 
-          type: [shared, static]
-
-          include:
-          - { type: shared, shared: YES }
-          - { type: static, shared: NO }
-
       container:
         image: jbeirer/${{ matrix.os }}-fastcalosim:latest
 
@@ -143,7 +137,6 @@ jobs:
 
       - name: Configure
         run: cmake "--preset=ci-ubuntu"
-          -D BUILD_SHARED_LIBS=${{ matrix.shared }}
 
       - name: Build
         run: cmake --build build --config Release -j 2
