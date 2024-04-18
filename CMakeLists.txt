@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 
 include(cmake/prelude.cmake)
+include(cmake/silencer.cmake)
+
 
 project(
     FastCaloSim
