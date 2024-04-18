@@ -1,3 +1,4 @@
+// clang-format off
 /*
   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
 */
@@ -642,3 +643,4 @@
 #pragma link C++ class TFCSExtrapolationState + ;
 #pragma link C++ class TFCSSimulationState + ;
 #endif
+// clang-format on
