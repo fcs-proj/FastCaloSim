@@ -5,11 +5,14 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSTruthState_h
 #define ISF_FASTCALOSIMEVENT_TFCSTruthState_h
 
+
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include <TLorentzVector.h>
 
 #include "FastCaloSim/MLogging.h"
 
-class TFCSTruthState
+class FASTCALOSIM_EXPORT TFCSTruthState
     : public TLorentzVector
     , public ISF_FCS::MLogging
 {

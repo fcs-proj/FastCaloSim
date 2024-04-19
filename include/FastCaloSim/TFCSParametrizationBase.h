@@ -5,6 +5,8 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include <map>
 #include <mutex>
 #include <set>
@@ -46,7 +48,7 @@ enum FCSReturnCode
 
 #define FCS_RETRY_COUNT 3
 
-class TFCSParametrizationBase
+class FASTCALOSIM_EXPORT TFCSParametrizationBase
     : public TNamed
     , public ISF_FCS::MLogging
 {

@@ -5,6 +5,8 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
 #define ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include <cstdint>
 #include <map>
 #include <set>
@@ -31,7 +33,7 @@ class HepRandomEngine;
 
 constexpr std::uint32_t operator"" _FCShash(char const* s, std::size_t count);
 
-class TFCSSimulationState
+class FASTCALOSIM_EXPORTTFCSSimulationState
     : public TObject
     , public ISF_FCS::MLogging
 {

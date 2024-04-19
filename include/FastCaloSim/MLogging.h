@@ -5,6 +5,8 @@
 #ifndef ISF_FASTCALOSIMEVENT_MLogging_h
 #define ISF_FASTCALOSIMEVENT_MLogging_h
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include <iomanip>
 #include <iostream>
 
@@ -78,7 +80,7 @@ typedef std::ostream MsgStream;
 // Force a new line, and end any stream
 #define endmsg this->streamerEndLine(MSG::INFO)
 
-class MLogging
+class FASTCALOSIM_EXPORT MLogging
 {
 public:
   /// Constructor

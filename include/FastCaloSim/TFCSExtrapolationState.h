@@ -5,12 +5,14 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
 #define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include <TObject.h>
 
 #include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/MLogging.h"
 
-class TFCSExtrapolationState
+class FASTCALOSIM_EXPORT TFCSExtrapolationState
     : public TObject
     , public ISF_FCS::MLogging
 {
