@@ -32,7 +32,7 @@ class HepRandomEngine;
 
 constexpr std::uint32_t operator"" _FCShash(char const* s, std::size_t count);
 
-class FASTCALOSIM_EXPORTTFCSSimulationState
+class FASTCALOSIM_EXPORT TFCSSimulationState
     : public TObject
     , public ISF_FCS::MLogging
 {
