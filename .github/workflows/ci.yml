@@ -42,8 +42,7 @@ jobs:
     container:
       image: jbeirer/alma9-fastcalosim:latest
 
-    # Coverage currently deactivated, change <name> to your GitHub username to activate
-    if: github.repository_owner == '<name>'
+    if: github.repository_owner == 'jbeirer'
 
     steps:
     - uses: actions/checkout@v4
