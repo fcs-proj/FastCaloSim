@@ -5,14 +5,13 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
 #define ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
 
-#include <FastCaloSim/FastCaloSim_export.h>
-
 #include <cstdint>
 #include <map>
 #include <set>
 #include <unordered_map>
 #include <vector>
 
+#include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
 
 #include "FastCaloSim/FastCaloSim_CaloCell_ID.h"

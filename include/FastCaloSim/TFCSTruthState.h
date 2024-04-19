@@ -5,9 +5,7 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSTruthState_h
 #define ISF_FASTCALOSIMEVENT_TFCSTruthState_h
 
-
 #include <FastCaloSim/FastCaloSim_export.h>
-
 #include <TLorentzVector.h>
 
 #include "FastCaloSim/MLogging.h"

@@ -5,11 +5,10 @@
 #ifndef ISF_FASTCALOSIMEVENT_MLogging_h
 #define ISF_FASTCALOSIMEVENT_MLogging_h
 
-#include <FastCaloSim/FastCaloSim_export.h>
-
 #include <iomanip>
 #include <iostream>
 
+#include <FastCaloSim/FastCaloSim_export.h>
 #include <TNamed.h>  //for ClassDef
 namespace MSG
 {

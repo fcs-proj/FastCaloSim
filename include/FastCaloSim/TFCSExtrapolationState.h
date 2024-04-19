@@ -6,7 +6,6 @@
 #define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
 
 #include <FastCaloSim/FastCaloSim_export.h>
-
 #include <TObject.h>
 
 #include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
