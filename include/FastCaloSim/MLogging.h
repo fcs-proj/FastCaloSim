@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include <FastCaloSim/FastCaloSim_export.h>
 #include <TNamed.h>  //for ClassDef
 namespace MSG
 {
@@ -78,7 +79,7 @@ typedef std::ostream MsgStream;
 // Force a new line, and end any stream
 #define endmsg this->streamerEndLine(MSG::INFO)
 
-class MLogging
+class FASTCALOSIM_EXPORT MLogging
 {
 public:
   /// Constructor

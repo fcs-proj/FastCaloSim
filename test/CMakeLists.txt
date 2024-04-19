@@ -40,7 +40,7 @@ include(GoogleTest)
 # Create the test suites. Note test suites need to 
 # --> be in the source directory
 # --> have the name *_tests.cxx
-create_test_suites(basic_class param_file)
+create_test_suites(param_file truth_state sim_state)
 
 # ---- End-of-file commands ----
 

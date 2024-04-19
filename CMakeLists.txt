@@ -54,7 +54,7 @@ target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT:
 
 # Generate ROOT dictionary for custom classes when building a shared library
 target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
-ROOT_GENERATE_DICTIONARY(FastCaloSim_dict FastCaloSim.h MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
+ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list

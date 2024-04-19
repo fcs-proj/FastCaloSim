@@ -9,6 +9,8 @@
 #include <mutex>
 #include <set>
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include "FastCaloSim/MLogging.h"
 
 class ICaloGeometry;
@@ -46,7 +48,7 @@ enum FCSReturnCode
 
 #define FCS_RETRY_COUNT 3
 
-class TFCSParametrizationBase
+class FASTCALOSIM_EXPORT TFCSParametrizationBase
     : public TNamed
     , public ISF_FCS::MLogging
 {

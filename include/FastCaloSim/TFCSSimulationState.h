@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
 
 #include "FastCaloSim/FastCaloSim_CaloCell_ID.h"
@@ -31,7 +32,7 @@ class HepRandomEngine;
 
 constexpr std::uint32_t operator"" _FCShash(char const* s, std::size_t count);
 
-class TFCSSimulationState
+class FASTCALOSIM_EXPORT TFCSSimulationState
     : public TObject
     , public ISF_FCS::MLogging
 {
