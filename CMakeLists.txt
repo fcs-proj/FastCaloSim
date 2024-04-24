@@ -39,21 +39,22 @@ add_subdirectory(thirdparty/HepPDT)
 
 # ---- Declare library ----
 
-# Globbing all .cxx files in the FastCaloSim directory
-file(GLOB FastCaloSim_SOURCES "source/*.cxx")
+# Create a shared library
+add_library(FastCaloSim_FastCaloSim SHARED "")
 
-add_library(
-    FastCaloSim_FastCaloSim
-    SHARED
-    ${FastCaloSim_SOURCES}
-)
+# Add the source files
+add_subdirectory(source/Core)
+add_subdirectory(source/Geometry)
+
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
 target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore CLHEP HepPDT lwtnn::lwtnn ${LibXml2_LIBRARIES} ONNXRuntime::ONNXRuntime)
 
+# Add the include directory to the target
+target_include_directories(FastCaloSim_FastCaloSim PRIVATE  ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
+
 # Generate ROOT dictionary for custom classes when building a shared library
-target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim)
 ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
 
 # Deactivate compiler warnings and static analyzers for third party libraries
