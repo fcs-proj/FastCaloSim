@@ -8,8 +8,8 @@
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
 
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/Core/MLogging.h"
+#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 class FASTCALOSIM_EXPORT TFCSExtrapolationState
     : public TObject

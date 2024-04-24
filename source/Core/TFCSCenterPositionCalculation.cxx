@@ -4,9 +4,9 @@
 
 #include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 //=============================================
 //======= TFCSCenterPositionCalculation =========

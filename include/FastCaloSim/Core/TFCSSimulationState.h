@@ -14,12 +14,12 @@
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
 
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/Core/MLogging.h"
+#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 #undef FCS_USE_HASH_SORTED_CELLMAP
 #ifdef FCS_USE_HASH_SORTED_CELLMAP
-#include "FastCaloSim/Geometry/CaloDetDescrElement.h"
+#  include "FastCaloSim/Geometry/CaloDetDescrElement.h"
 #else
 class CaloDetDescrElement;
 #endif

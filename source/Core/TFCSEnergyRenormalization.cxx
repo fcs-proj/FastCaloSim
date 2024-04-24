@@ -6,9 +6,9 @@
 
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
 
+#include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloDetDescrElement.h"
 #include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
-#include "FastCaloSim/Core/TFCSSimulationState.h"
 
 //=============================================
 //======= TFCSEnergyRenormalization =========

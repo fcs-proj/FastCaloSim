@@ -8,10 +8,10 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
-#include "FastCaloSim/Geometry/ICaloGeometry.h"
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 #include "FastCaloSim/Core/TFCS1DFunctionTemplateHistogram.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Geometry/ICaloGeometry.h"
 #include "TFile.h"
 #include "TH2.h"
 #include "TMath.h"

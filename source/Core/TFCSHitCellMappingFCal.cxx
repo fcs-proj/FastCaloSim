@@ -7,8 +7,8 @@
 
 #include "FastCaloSim/Core/TFCSHitCellMappingFCal.h"
 
-#include "FastCaloSim/Geometry/ICaloGeometry.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Geometry/ICaloGeometry.h"
 
 //=============================================
 //======= TFCSHitCellMappingFCal =========

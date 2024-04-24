@@ -5,13 +5,13 @@
 */
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
+#  define ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
 
-#include <iostream>
+#  include <iostream>
 
-#include "FastCaloSim/Core/TFCS1DFunction.h"
-#include "FastCaloSim/Core/TFCS1DFunctionTemplateHelpers.h"
-#include "TH1.h"
+#  include "FastCaloSim/Core/TFCS1DFunction.h"
+#  include "FastCaloSim/Core/TFCS1DFunctionTemplateHelpers.h"
+#  include "TH1.h"
 
 template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateHistogram : public TFCS1DFunction

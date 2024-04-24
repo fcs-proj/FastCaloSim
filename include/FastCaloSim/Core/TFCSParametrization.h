@@ -6,9 +6,9 @@
 */
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
+#  define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
 
-#include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#  include "FastCaloSim/Core/TFCSParametrizationBase.h"
 
 class TFCSParametrization : public ::TFCSParametrizationBase
 {
