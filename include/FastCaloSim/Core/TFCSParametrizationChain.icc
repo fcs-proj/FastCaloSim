@@ -1,0 +1,41 @@
+/*
+  Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
+*/
+
+#include "FastCaloSim/Core/TFCSParametrization.h"
+
+inline FCSReturnCode TFCSParametrizationChain::simulate_and_retry(
+    TFCSParametrizationBase *parametrization, TFCSSimulationState &simulstate,
+    const TFCSTruthState *truth, const TFCSExtrapolationState *extrapol) const {
+  int retry_warning = 1;
+  int retry = 0;
+  for (int i = 0; i <= retry; i++) {
+    if (i >= retry_warning)
+      ATH_MSG_WARNING(
+          "TFCSParametrizationChain::simulate_and_retry(): Retry simulate call "
+          << i << "/" << retry);
+
+    FCSReturnCode status =
+        parametrization->simulate(simulstate, truth, extrapol);
+
+    if (status == FCSSuccess)
+      return FCSSuccess;
+    if (status == FCSFatal)
+      return FCSFatal;
+    if (status >= FCSRetry) {
+      retry = status - FCSRetry;
+      retry_warning = retry >> 1;
+      if (retry_warning < 1)
+        retry_warning = 1;
+    }
+
+    if (RetryChainFromStart())
+      return status;
+  }
+
+  ATH_MSG_FATAL("TFCSParametrizationChain::simulate_and_retry(): Simulate call "
+                "failed after "
+                << retry << " retries");
+
+  return FCSFatal;
+}

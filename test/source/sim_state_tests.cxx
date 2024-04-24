@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "CLHEP/Random/TRandomEngine.h"
-#include "FastCaloSim/CaloDetDescrElement.h"
-#include "FastCaloSim/TFCSSimulationState.h"
+#include "FastCaloSim/Geometry/CaloDetDescrElement.h"
+#include "FastCaloSim/Core/TFCSSimulationState.h"
 
 class TFCSSimulationStateTest : public ::testing::Test
 {

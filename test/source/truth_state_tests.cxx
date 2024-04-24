@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "FastCaloSim/TFCSTruthState.h"
+#include "FastCaloSim/Core/TFCSTruthState.h"
 
 // Test default constructor
 TEST(TFCSTruthStateTest, DefaultConstructor)
