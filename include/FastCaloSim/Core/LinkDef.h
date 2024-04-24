@@ -3,13 +3,6 @@
   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
 */
 
-#include "FastCaloSim/Geometry/CaloDetDescrElement.h"
-#include "FastCaloSim/Geometry/CaloSampling.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
-#include "FastCaloSim/Geometry/Identifier.h"
-
-
-
 #include "FastCaloSim/Core/DoubleArray.h"
 #include "FastCaloSim/Core/IntArray.h"
 #include "FastCaloSim/Core/TFCSFunction.h"
