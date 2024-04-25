@@ -20,7 +20,7 @@
 
 #include "FastCaloSim/Geometry/FCAL_ChannelMap.h"
 
-#include <studio.h>
+#include <stdio.h>
 
 /* === Geometrical parameters === */
 // const double cm = 0.01;
