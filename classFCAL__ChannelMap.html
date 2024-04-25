@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FCAL_ChannelMap class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          FCAL_ChannelMap <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="FCAL__ChannelMap_8h.html">&lt;FCAL_ChannelMap.h&gt;</a></div>
+        </h1>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+<p>This class contains the tube and tile maps for the FCAL<br />A tile is of a set of FCAL tubes</p>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classFCAL__ChannelMap_1_1TilePosition.html" class="m-doc">TilePosition</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              class <a href="classFCAL__ChannelMap_1_1TubePosition.html" class="m-doc">TubePosition</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af11af74a35585c015c7a6986ea03b7f3">
+              using <a href="#af11af74a35585c015c7a6986ea03b7f3" class="m-doc-self">tileName_t</a> = unsigned int
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a01574055e12dc5a26c4523e64b4015ef">
+              using <a href="#a01574055e12dc5a26c4523e64b4015ef" class="m-doc-self">tubeID_t</a> = unsigned int
+            </dt>
+            <dd><span></span></dd>
+            <dt id="accc9139e979a043766d3928fcd6f0fdb">
+              using <a href="#accc9139e979a043766d3928fcd6f0fdb" class="m-doc-self">tubeMap_t</a> = std::map&lt;<a href="classFCAL__ChannelMap.html#a01574055e12dc5a26c4523e64b4015ef" class="m-doc">tubeID_<wbr />t</a>, <a href="classFCAL__ChannelMap_1_1TubePosition.html" class="m-doc">TubePosition</a>&gt;
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a2ea18a097e81a19d17f8e7430a14d4b3">
+              using <a href="#a2ea18a097e81a19d17f8e7430a14d4b3" class="m-doc-self">tubemap_sizetype</a> = tubeMap_t::size_type
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5ace2579b755373adf32662da78e62c2">
+              using <a href="#a5ace2579b755373adf32662da78e62c2" class="m-doc-self">tubemap_valuetype</a> = tubeMap_t::value_type
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a7bf74c011246703e123944efb8a19b17">
+              using <a href="#a7bf74c011246703e123944efb8a19b17" class="m-doc-self">tubemap_const_iterator</a> = tubeMap_t::const_iterator
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              using <a href="#afc4b976947b47ef253906a731c339812" class="m-doc">tileMap_t</a> = std::map&lt;<a href="classFCAL__ChannelMap.html#af11af74a35585c015c7a6986ea03b7f3" class="m-doc">tileName_<wbr />t</a>, <a href="classFCAL__ChannelMap_1_1TilePosition.html" class="m-doc">TilePosition</a>&gt;
+            </dt>
+            <dd></dd>
+            <dt id="a413f71b3fbc640b15078124cebd26f35">
+              using <a href="#a413f71b3fbc640b15078124cebd26f35" class="m-doc-self">tileMap_sizetype</a> = tileMap_t::size_type
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a43bc2931205c1d8f79ac442dcbf0cda4">
+              using <a href="#a43bc2931205c1d8f79ac442dcbf0cda4" class="m-doc-self">tileMap_valuetype</a> = tileMap_t::value_type
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a73d61452feb82fde514efb8ff0e7a9ae">
+              using <a href="#a73d61452feb82fde514efb8ff0e7a9ae" class="m-doc-self">tileMap_const_iterator</a> = tileMap_t::const_iterator
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper"><a href="#a188ca764b7d8b979f3daadc63e26f997" class="m-doc">FCAL_ChannelMap</a>(</span><span class="m-doc-wrap">int itemp)</span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#ab35be7d15e5c0746fbba8a69fa2b8a99" class="m-doc">tubemap_begin</a>(</span><span class="m-doc-wrap">int isam) const -&gt; <a href="classFCAL__ChannelMap.html#a7bf74c011246703e123944efb8a19b17" class="m-doc">tubemap_<wbr />const_<wbr />iterator</a></span>
+            </dt>
+            <dd></dd>
+            <dt id="ab22ec95bb50ecae99b0ec71f90ce0352">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab22ec95bb50ecae99b0ec71f90ce0352" class="m-doc-self">tubemap_end</a>(</span><span class="m-doc-wrap">int isam) const -&gt; <a href="classFCAL__ChannelMap.html#a7bf74c011246703e123944efb8a19b17" class="m-doc">tubemap_<wbr />const_<wbr />iterator</a></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a54d8a8f21a90a6be3dc7a929528f68ce">
+              <span class="m-doc-wrap-bumper">auto <a href="#a54d8a8f21a90a6be3dc7a929528f68ce" class="m-doc-self">tubemap_size</a>(</span><span class="m-doc-wrap">int isam) const -&gt; <a href="classFCAL__ChannelMap.html#a2ea18a097e81a19d17f8e7430a14d4b3" class="m-doc">tubemap_<wbr />sizetype</a></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a105de82de385d45ca821a7e845b18c8c">
+              <span class="m-doc-wrap-bumper">auto <a href="#a105de82de385d45ca821a7e845b18c8c" class="m-doc-self">getTubeByCopyNumber</a>(</span><span class="m-doc-wrap">int isam,
+              int copyNo) const -&gt; <a href="classFCAL__ChannelMap.html#a7bf74c011246703e123944efb8a19b17" class="m-doc">tubemap_<wbr />const_<wbr />iterator</a></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a0462fcbf0f2c8c214b6a1849a3089c14" class="m-doc">getTileID</a>(</span><span class="m-doc-wrap">int isam,
+              float x,
+              float y,
+              int&amp; eta,
+              int&amp; phi) const -&gt; bool</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#ae693620f4bf72baad1efb6883d9391b1" class="m-doc">x</a>(</span><span class="m-doc-wrap">int isam,
+              int eta,
+              int phi) const -&gt; float</span>
+            </dt>
+            <dd></dd>
+            <dt id="ad669d656d85ad405c7b82ebd4ad718b3">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad669d656d85ad405c7b82ebd4ad718b3" class="m-doc-self">y</a>(</span><span class="m-doc-wrap">int isam,
+              int eta,
+              int phi) const -&gt; float</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aec029de4a0baed6caa8f13c9d4ba976c">
+              <span class="m-doc-wrap-bumper">void <a href="#aec029de4a0baed6caa8f13c9d4ba976c" class="m-doc-self">tileSize</a>(</span><span class="m-doc-wrap">int sam,
+              int eta,
+              int phi,
+              float&amp; dx,
+              float&amp; dy) const</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a20022987df0dc08ef35c0eeea5d08556">
+              <span class="m-doc-wrap-bumper">void <a href="#a20022987df0dc08ef35c0eeea5d08556" class="m-doc-self">tileSize</a>(</span><span class="m-doc-wrap">int isam,
+              int ntubes,
+              float&amp; dx,
+              float&amp; dy) const</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a4236d1c9fccb63a756284356dfbe7c96" class="m-doc">print_tubemap</a>(</span><span class="m-doc-wrap">int isam) const</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a93c2d092f20cb92b3890338cf49da4e2" class="m-doc">invert_x</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd></dd>
+            <dt id="ab9631b71f2c50dce75d8d1ea2e3108eb">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab9631b71f2c50dce75d8d1ea2e3108eb" class="m-doc-self">invert_xy</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="abca50e0ec190bc0256ac48926cf31bb0">
+              <span class="m-doc-wrap-bumper">void <a href="#abca50e0ec190bc0256ac48926cf31bb0" class="m-doc-self">set_invert_x</a>(</span><span class="m-doc-wrap">bool)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac98b2614b315910b9812b5da9f56bf4c">
+              <span class="m-doc-wrap-bumper">void <a href="#ac98b2614b315910b9812b5da9f56bf4c" class="m-doc-self">set_invert_xy</a>(</span><span class="m-doc-wrap">bool)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a3741af38d6cfa89caf956f071c022770">
+              <span class="m-doc-wrap-bumper">void <a href="#a3741af38d6cfa89caf956f071c022770" class="m-doc-self">add_tube</a>(</span><span class="m-doc-wrap">const std::string&amp; tileName,
+              int mod,
+              int id,
+              int i,
+              int j,
+              double xCm,
+              double yCm)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aba4d3d3965d570dfeb05138510e3d66c">
+              <span class="m-doc-wrap-bumper">void <a href="#aba4d3d3965d570dfeb05138510e3d66c" class="m-doc-self">add_tube</a>(</span><span class="m-doc-wrap">const std::string&amp; tileName,
+              int mod,
+              int id,
+              int i,
+              int j,
+              double xCm,
+              double yCm,
+              const std::string&amp; hvFT)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab58295651fbfafdae785a49b4d36fdc0">
+              <span class="m-doc-wrap-bumper">void <a href="#ab58295651fbfafdae785a49b4d36fdc0" class="m-doc-self">finish</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad597cf41996281733b0ba57ddbf37d9d">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad597cf41996281733b0ba57ddbf37d9d" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap">int isam) const -&gt; <a href="classFCAL__ChannelMap.html#a73d61452feb82fde514efb8ff0e7a9ae" class="m-doc">tileMap_<wbr />const_<wbr />iterator</a></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="acf0cd01cf4b9031e765dbee603b1cbbd">
+              <span class="m-doc-wrap-bumper">auto <a href="#acf0cd01cf4b9031e765dbee603b1cbbd" class="m-doc-self">end</a>(</span><span class="m-doc-wrap">int isam) const -&gt; <a href="classFCAL__ChannelMap.html#a73d61452feb82fde514efb8ff0e7a9ae" class="m-doc">tileMap_<wbr />const_<wbr />iterator</a></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Typedef documentation</h2>
+          <section class="m-doc-details" id="afc4b976947b47ef253906a731c339812"><div>
+            <h3>
+              typedef std::map&lt;<a href="classFCAL__ChannelMap.html#af11af74a35585c015c7a6986ea03b7f3" class="m-doc">tileName_<wbr />t</a>, <a href="classFCAL__ChannelMap_1_1TilePosition.html" class="m-doc">TilePosition</a>&gt; FCAL_<wbr />ChannelMap::<wbr /><a href="#afc4b976947b47ef253906a731c339812" class="m-doc-self">tileMap_t</a>
+            </h3>
+<p>TileMap</p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a188ca764b7d8b979f3daadc63e26f997"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"> FCAL_<wbr />ChannelMap::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a188ca764b7d8b979f3daadc63e26f997" class="m-doc-self">FCAL_ChannelMap</a>(</span><span class="m-doc-wrap">int itemp)</span></span>
+            </h3>
+<p>Constructors:</p>
+          </div></section>
+          <section class="m-doc-details" id="ab35be7d15e5c0746fbba8a69fa2b8a99"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a href="classFCAL__ChannelMap.html#a7bf74c011246703e123944efb8a19b17" class="m-doc">tubemap_<wbr />const_<wbr />iterator</a> FCAL_<wbr />ChannelMap::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ab35be7d15e5c0746fbba8a69fa2b8a99" class="m-doc-self">tubemap_begin</a>(</span><span class="m-doc-wrap">int isam) const</span></span>
+            </h3>
+<p>tubeMap access functions</p>
+          </div></section>
+          <section class="m-doc-details" id="a0462fcbf0f2c8c214b6a1849a3089c14"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">bool FCAL_<wbr />ChannelMap::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0462fcbf0f2c8c214b6a1849a3089c14" class="m-doc-self">getTileID</a>(</span><span class="m-doc-wrap">int isam,
+              float x,
+              float y,
+              int&amp; eta,
+              int&amp; phi) const</span></span>
+            </h3>
+<p>-&mdash; For the new LArFCAL_ID <a href="classIdentifier.html" class="m-doc">Identifier</a></p>
+          </div></section>
+          <section class="m-doc-details" id="ae693620f4bf72baad1efb6883d9391b1"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">float FCAL_<wbr />ChannelMap::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae693620f4bf72baad1efb6883d9391b1" class="m-doc-self">x</a>(</span><span class="m-doc-wrap">int isam,
+              int eta,
+              int phi) const</span></span>
+            </h3>
+<p>For reconstruction, decoding of tile identifiers</p>
+          </div></section>
+          <section class="m-doc-details" id="a4236d1c9fccb63a756284356dfbe7c96"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void FCAL_<wbr />ChannelMap::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4236d1c9fccb63a756284356dfbe7c96" class="m-doc-self">print_tubemap</a>(</span><span class="m-doc-wrap">int isam) const</span></span>
+            </h3>
+<p>print functions</p>
+          </div></section>
+          <section class="m-doc-details" id="a93c2d092f20cb92b3890338cf49da4e2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">bool FCAL_<wbr />ChannelMap::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a93c2d092f20cb92b3890338cf49da4e2" class="m-doc-self">invert_x</a>(</span><span class="m-doc-wrap">) const</span></span>
+            </h3>
+<p>set and get for the inversion flags</p>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>
