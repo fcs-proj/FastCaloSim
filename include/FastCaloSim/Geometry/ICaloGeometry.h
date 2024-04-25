@@ -5,12 +5,14 @@
 #ifndef ICaloGeometry_h
 #define ICaloGeometry_h
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include "FastCaloSim/Geometry/CaloDetDescrElement.h"
 #include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/Geometry/Identifier.h"
 
 class CaloDetDescrElement;
-class ICaloGeometry
+class FASTCALOSIM_EXPORT ICaloGeometry
 {
 public:
   virtual bool PostProcessGeometry() = 0;
