@@ -4,4 +4,4 @@ check-filenames =
 check-hidden =
 skip = */.git,*/build,*/prefix,*/thirdparty
 quiet-level = 2
-ignore-words-list = hist,gaus
+ignore-words-list = hist,gaus,stdio

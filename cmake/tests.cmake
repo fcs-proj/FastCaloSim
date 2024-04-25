@@ -1,20 +1,12 @@
-# Function to add a google test to the project
-function(create_test_suite suite_name)
-  # Glob the source file 
+# Function to create a single test executable out of multiple source files
+function(create_test_executable suite_name test_sources)
   # Create the executable from the provided source file
-  add_executable(${suite_name}_tests source/${suite_name}_tests.cxx)
+  add_executable(${suite_name} ${test_sources})
   # Link the necessary libraries
-  target_link_libraries(${suite_name}_tests PRIVATE FastCaloSim::FastCaloSim GTest::gtest_main)
+  target_link_libraries(${suite_name} PRIVATE FastCaloSim::FastCaloSim GTest::gtest_main)
   # Enable GTest discovery
-  gtest_discover_tests(${suite_name}_tests)
+  gtest_discover_tests(${suite_name})
   # Deactivate compiler warnings and static analyzers
   # Note: this is necessary until we have fixed all FastCaloSim related warnings
-  deactivate_checks(${suite_name}_tests)
-endfunction()
-
-# Function to create multiple tests, e.g. create_tests(test1 test2 test3)
-function(create_test_suites)
-  foreach(suite IN LISTS ARGN)
-    create_test_suite(${suite})
-  endforeach()
+  deactivate_checks(${suite_name})
 endfunction()
