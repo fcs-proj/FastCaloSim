@@ -35,10 +35,9 @@ ARG SPACK_VERSION=0.21
 ARG GEANT4_VERSION=11.1.2
 RUN git clone --depth=100 --branch=releases/v${SPACK_VERSION} https://github.com/spack/spack.git ~/spack \
  && . ~/spack/share/spack/setup-env.sh \
- && spack --debug install geant4@${GEANT4_VERSION} \
+ && spack install geant4@${GEANT4_VERSION} \
  && spack load geant4 \
- && spack clean -a \
- && rm -rf ~/spack
+ && spack clean -a
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions

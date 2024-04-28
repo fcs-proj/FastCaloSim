@@ -40,8 +40,7 @@ RUN dnf -y install patch lbzip2 \
  && . ~/spack/share/spack/setup-env.sh \
  && spack install geant4@${GEANT4_VERSION} \
  && spack load geant4 \
- && spack clean -a \
- && rm -rf ~/spack
+ && spack clean -a
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
