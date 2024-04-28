@@ -31,6 +31,17 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && cmake --build . --target install -j6 \
  && rm -rf ../root_src ../root_build
 
+# Install Geant4 via Spack
+ARG SPACK_VERSION=0.21
+ARG GEANT4_VERSION=11.1.2
+RUN dnf -y install patch lbzip2 \
+ && dnf clean all \
+ && git clone --depth=100 --branch=releases/v${SPACK_VERSION} https://github.com/spack/spack.git ~/spack \
+ && . ~/spack/share/spack/setup-env.sh \
+ && spack install geant4@${GEANT4_VERSION} \
+ && spack load geant4 \
+ && spack clean -a \
+ && rm -rf ~/spack
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
@@ -52,7 +63,7 @@ RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtn
  && make install \
  && rm -rf ../lwtnn_src ../lwtnn_build
 
- # Install extra packages
+# Install extra packages
 COPY extra_packages.txt extra_packages.txt
 RUN  dnf install -y --setopt=install_weak_deps=False $(cat extra_packages.txt) \
  && dnf clean all \

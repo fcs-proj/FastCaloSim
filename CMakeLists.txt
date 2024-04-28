@@ -22,6 +22,8 @@ include(cmake/variables.cmake)
 
 # ROOT is a required dependency for FastCaloSim
 find_package(ROOT 6.30 CONFIG REQUIRED)
+# Geant4 is a required dependency for FastCaloSim 
+find_package(Geant4 REQUIRED)
 # lwtnn for neural network inference
 find_package(lwtnn 2.13 CONFIG REQUIRED)
 # OnnxRuntime for neural network inference  
@@ -49,7 +51,13 @@ add_subdirectory(source/Geometry)
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
-target_link_libraries(FastCaloSim_FastCaloSim PUBLIC ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore CLHEP HepPDT lwtnn::lwtnn ${LibXml2_LIBRARIES} ONNXRuntime::ONNXRuntime)
+target_link_libraries(FastCaloSim_FastCaloSim PUBLIC  ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore 
+                                                      CLHEP 
+                                                      HepPDT 
+                                                      lwtnn::lwtnn
+                                                      ONNXRuntime::ONNXRuntime 
+                                                      ${LibXml2_LIBRARIES}
+                                                      ${Geant4_LIBRARIES})
 
 # Add the include directory to the target
 target_include_directories(FastCaloSim_FastCaloSim PRIVATE  ${CMAKE_SOURCE_DIR}/include/FastCaloSim)

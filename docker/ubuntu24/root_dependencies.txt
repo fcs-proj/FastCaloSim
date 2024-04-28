@@ -40,7 +40,6 @@ libllvm-ocaml-dev
 liblz4-dev
 liblzma-dev
 libmysqlclient-dev
-libpcre++-dev
 libpcre3-dev
 libpng-dev
 libpq-dev
@@ -52,6 +51,7 @@ libssl-dev
 libtbb-dev
 libtiff-dev
 libuuid1
+libvdt-dev
 libx11-dev
 libxext-dev
 libxft-dev
