@@ -30,14 +30,13 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && cmake --build . --target install -j6 \
  && rm -rf ../root_src ../root_build
 
-# Install Geant4 via Spack
-ARG SPACK_VERSION=0.21
-ARG GEANT4_VERSION=11.1.2
-RUN git clone --depth=100 --branch=releases/v${SPACK_VERSION} https://github.com/spack/spack.git ~/spack \
- && . ~/spack/share/spack/setup-env.sh \
- && spack install geant4@${GEANT4_VERSION} \
- && spack load geant4 \
- && spack clean -a
+# Build Geant4 from source
+ARG GEANT4_VERSION=11.2.1
+RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
+ && mkdir geant4_build && cd geant4_build \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../geant4_src \
+ && cmake --build . --target install -j6  \
+ && rm -rf ../geant4_src ../geant4_build
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
