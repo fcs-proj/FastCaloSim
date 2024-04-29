@@ -9,3 +9,4 @@ doxygen
 lsb-release
 software-properties-common
 cppcheck
+clang-tidy-16

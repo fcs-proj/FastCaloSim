@@ -1,7 +1,7 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Install ROOT dependencies
-# Note: Taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu22/packages.txt
+# Note: Taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu2310/packages.txt
 COPY root_dependencies.txt root_dependencies.txt
 
 RUN apt-get update -qq \
@@ -29,6 +29,14 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../root_src -D mathmore=ON -D clad=OFF \
  && cmake --build . --target install -j6 \
  && rm -rf ../root_src ../root_build
+
+# Build Geant4 from source
+ARG GEANT4_VERSION=11.2.1
+RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
+ && mkdir geant4_build && cd geant4_build \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../geant4_src \
+ && cmake --build . --target install -j6  \
+ && rm -rf ../geant4_src ../geant4_build
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
@@ -59,14 +67,3 @@ RUN apt-get update -qq \
 && apt-get clean -y \
 && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
 && rm extra_packages.txt
-
- # Make clang-tidy-16 available on Ubuntu (not available in the default repositories)
-RUN wget https://apt.llvm.org/llvm.sh \
-&& chmod +x llvm.sh \
-&& ./llvm.sh 16 \
-&& rm llvm.sh \
-&& apt-get update -qq \
-&& apt-get -y install clang-tidy-16 \
-&& apt-get autoremove -y \
-&& apt-get clean -y \
-&& rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*

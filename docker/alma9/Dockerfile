@@ -31,6 +31,14 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && cmake --build . --target install -j6 \
  && rm -rf ../root_src ../root_build
 
+# Build Geant4 from source
+ARG GEANT4_VERSION=11.2.1
+RUN dnf install -y expat-devel \
+ && git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
+ && mkdir geant4_build && cd geant4_build \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../geant4_src \
+ && cmake --build . --target install -j6  \
+ && rm -rf ../geant4_src ../geant4_build
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
@@ -52,7 +60,7 @@ RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtn
  && make install \
  && rm -rf ../lwtnn_src ../lwtnn_build
 
- # Install extra packages
+# Install extra packages
 COPY extra_packages.txt extra_packages.txt
 RUN  dnf install -y --setopt=install_weak_deps=False $(cat extra_packages.txt) \
  && dnf clean all \
