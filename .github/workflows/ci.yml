@@ -120,7 +120,7 @@ jobs:
       steps:
       - uses: actions/checkout@v4
         
-      - name: Install static analyzers for Ubuntu 22.04 
+      - name: Install static analyzers for Ubuntu 24.04 
         if: matrix.os == 'ubuntu24'
         run: >-
           apt-get update -q
