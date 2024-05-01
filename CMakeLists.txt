@@ -22,8 +22,8 @@ include(cmake/variables.cmake)
 
 # ROOT is a required dependency for FastCaloSim
 find_package(ROOT 6.30 CONFIG REQUIRED)
-# Geant4 is a required dependency for FastCaloSim 
-find_package(Geant4 REQUIRED)
+# Geant4 (with gdml activated) is a required dependency for FastCaloSim 
+find_package(Geant4 REQUIRED gdml)
 # lwtnn for neural network inference
 find_package(lwtnn 2.13 CONFIG REQUIRED)
 # OnnxRuntime for neural network inference  

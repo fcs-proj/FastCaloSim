@@ -31,12 +31,12 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && cmake --build . --target install -j6 \
  && rm -rf ../root_src ../root_build
 
-# Build Geant4 from source
+# Build Geant4 from source with GDML support
 ARG GEANT4_VERSION=11.2.1
-RUN dnf install -y expat-devel \
+RUN dnf install -y expat-devel xerces-c-devel \
  && git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
- && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../geant4_src \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DGEANT4_USE_GDML=ON ../geant4_src \
  && cmake --build . --target install -j6  \
  && rm -rf ../geant4_src ../geant4_build
 

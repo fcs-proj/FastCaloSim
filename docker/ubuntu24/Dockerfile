@@ -32,9 +32,10 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
 
 # Build Geant4 from source
 ARG GEANT4_VERSION=11.2.1
-RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
+RUN apt-get update -qq && apt-get -y install libxerces-c-dev \
+ && git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
- && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../geant4_src \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DGEANT4_USE_GDML=ON ../geant4_src \
  && cmake --build . --target install -j6  \
  && rm -rf ../geant4_src ../geant4_build
 
