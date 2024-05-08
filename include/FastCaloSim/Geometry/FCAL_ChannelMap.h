@@ -44,7 +44,7 @@ public:
     tileName_t get_tileName() const;  //
     float x() const;  //
     float y() const;  //
-    const std::string& getHVft() const;   // Gabe
+    const std::string& getHVft() const;  // Gabe
   private:  //
     tileName_t m_tileName;  //
     float m_x;  //
