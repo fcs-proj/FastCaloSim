@@ -7,9 +7,10 @@
 
 #include "FastCaloSim/Core/TFCSPredictExtrapWeights.h"
 
+#include <CLHEP/Random/RanluxEngine.h>
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
-#include <CLHEP/Random/RanluxEngine.h>
 #include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"

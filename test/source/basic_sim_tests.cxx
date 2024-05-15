@@ -1,8 +1,8 @@
 #include <memory>
 
+#include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
-#include <CLHEP/Random/RanluxEngine.h>
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"

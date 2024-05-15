@@ -1,6 +1,6 @@
+#include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
-#include <CLHEP/Random/RanluxEngine.h>
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloDetDescrElement.h"
 
