@@ -35,7 +35,8 @@ include_directories(${LibXml2_INCLUDE_DIRS})
 link_directories(${LibXml2_LIBRARY_DIRS})
 add_definitions(${LibXml2_CFLAGS_OTHER})
 # CLHEP for random number generation
-add_subdirectory(thirdparty/CLHEP/Random)
+find_package(CLHEP REQUIRED)
+
 # HepPDT for particle data table
 add_subdirectory(thirdparty/HepPDT)
 
@@ -52,7 +53,7 @@ add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
 target_link_libraries(FastCaloSim_FastCaloSim PUBLIC  ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore 
-                                                      CLHEP 
+                                                      CLHEP::CLHEP
                                                       HepPDT 
                                                       lwtnn::lwtnn
                                                       ONNXRuntime::ONNXRuntime 
@@ -67,7 +68,7 @@ ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict CLHEP HepPDT FastCaloSim_FastCaloSim)
+deactivate_checks(FastCaloSim_dict HepPDT FastCaloSim_FastCaloSim)
 
 include(GenerateExportHeader)
 generate_export_header(

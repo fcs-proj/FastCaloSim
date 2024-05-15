@@ -9,7 +9,7 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
-#include "CLHEP/Random/TRandomEngine.h"
+#include <CLHEP/Random/RanluxEngine.h>
 #include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
@@ -408,7 +408,7 @@ void TFCSPredictExtrapWeights::test_path(std::string& net_path,
                       << norm_path.substr(norm_path.length() - 20));
   if (!simulstate) {
     simulstate = new TFCSSimulationState();
-    simulstate->setRandomEngine(new CLHEP::TRandomEngine());
+    simulstate->setRandomEngine(new CLHEP::RanluxEngine());
   }
   if (!truth) {
     TFCSTruthState* t = new TFCSTruthState();
