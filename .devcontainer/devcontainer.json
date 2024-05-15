@@ -13,8 +13,7 @@
     },
 
     // Command to run after the container is created
-    // Install dev packages such as static analyzers and debuggers that are not direct project dependencies
-    // Note: this gives us clang-format version 16.0.6, make sure to use identical version in CI
-    "postCreateCommand": "dnf update -y && dnf install -y clang-tools-extra cppcheck gdb python3-pip && pip3 install codespell"
+    // Static code analysis tools such as clang-format come pre-installed in the container
+    "postCreateCommand": "python3 -m ensurepip --default-pip && pip3 install codespell"
   
 }
