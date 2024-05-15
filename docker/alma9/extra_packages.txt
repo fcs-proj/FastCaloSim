@@ -8,5 +8,6 @@ libubsan
 xrootd
 gnupg
 doxygen
+gdb
 clang-tools-extra-17.0.6-5.el9
 
