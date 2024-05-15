@@ -73,8 +73,11 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
 COPY extra_packages.txt extra_packages.txt
 
 RUN apt-get update -qq \
-&& apt-get -y install $(cat extra_packages.txt) --no-install-recommends \
-&& apt-get autoremove -y \
-&& apt-get clean -y \
-&& rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
-&& rm extra_packages.txt
+ && apt-get -y install $(cat extra_packages.txt) --no-install-recommends \
+ && apt-get autoremove -y \
+ && apt-get clean -y \
+ && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
+ && rm extra_packages.txt
+
+# Configure the clang-tidy version
+RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 170

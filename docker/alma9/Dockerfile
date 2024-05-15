@@ -73,6 +73,7 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
 
 # Install extra packages
 COPY extra_packages.txt extra_packages.txt
-RUN  dnf install -y --setopt=install_weak_deps=False $(cat extra_packages.txt) \
+RUN  dnf clean all && dnf update -y \
+ && dnf install -y --setopt=install_weak_deps=False $(cat extra_packages.txt) \
  && dnf clean all \
  && rm -rf extra_packages.txt /var/cache/dnf
