@@ -163,6 +163,7 @@ public:
            1)  // TFCS1DFunctionInt16Int32InterpolationHistogram
 };
 
+// clang-format off
 #if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
 #  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
           < TFCS1DFunction_HistogramInt8BinEdges, \
@@ -183,5 +184,6 @@ public:
 #  pragma link C++ class TFCS1DFunctionInt16Int32InterpolationHistogram + ;
 
 #endif
+// clang-format on
 
 #endif

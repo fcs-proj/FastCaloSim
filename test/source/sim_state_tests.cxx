@@ -1,6 +1,6 @@
+#include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
-#include "CLHEP/Random/TRandomEngine.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloDetDescrElement.h"
 
@@ -9,7 +9,7 @@ class TFCSSimulationStateTest : public ::testing::Test
 protected:
   CLHEP::HepRandomEngine* m_random_engine;
 
-  void SetUp() override { m_random_engine = new CLHEP::TRandomEngine(); }
+  void SetUp() override { m_random_engine = new CLHEP::RanluxEngine(); }
 
   void TearDown() override { delete m_random_engine; }
 };

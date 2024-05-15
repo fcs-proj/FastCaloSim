@@ -8,9 +8,10 @@
 
 #include "FastCaloSim/Core/TFCSEnergyAndHitGANV2.h"
 
+#include <CLHEP/Random/RanluxEngine.h>
+
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
-#include "CLHEP/Random/TRandomEngine.h"
 #include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -618,7 +619,7 @@ void TFCSEnergyAndHitGANV2::test_path(const std::string& path,
   ATH_MSG_NOCLASS(logger, "Running test on " << path << std::endl);
   if (!simulstate) {
     simulstate = new TFCSSimulationState();
-    simulstate->setRandomEngine(new CLHEP::TRandomEngine());
+    simulstate->setRandomEngine(new CLHEP::RanluxEngine());
   }
   if (!truth) {
     ATH_MSG_NOCLASS(logger, "New particle");

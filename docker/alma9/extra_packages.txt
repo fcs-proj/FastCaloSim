@@ -2,10 +2,11 @@ wget
 eigen3-devel 
 boost-devel
 lcov
-clang-tools-extra
 cppcheck
 libasan
 libubsan
 xrootd
 gnupg
 doxygen
+clang-tools-extra-17.0.6-5.el9
+

@@ -1,8 +1,8 @@
 #include <memory>
 
+#include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
-#include "CLHEP/Random/TRandomEngine.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
@@ -106,8 +106,8 @@ TEST_F(BasicSimTests, DoDummySimulation)
   param->setLevel(MSG::Level::VERBOSE);
 
   // Set up a random engine
-  std::unique_ptr<CLHEP::TRandomEngine> rnd_engine =
-      std::make_unique<CLHEP::TRandomEngine>();
+  std::unique_ptr<CLHEP::RanluxEngine> rnd_engine =
+      std::make_unique<CLHEP::RanluxEngine>();
   rnd_engine->setSeed(42);
 
   // Set up simulation state and assign random engine
@@ -147,10 +147,10 @@ TEST_F(BasicSimTests, DoDummySimulation)
   param->simulate(simul_state, &truth_state, &extrapol_state);
 
   // Check that simulation was successful
-  EXPECT_NEAR(simul_state.E(), 66567.4, 1e-1);
-  EXPECT_NEAR(simul_state.E(0), 30.8618, 1e-1);
-  EXPECT_NEAR(simul_state.E(1), 6709.85, 1e-1);
-  EXPECT_NEAR(simul_state.E(2), 59469.8, 1e-1);
-  EXPECT_NEAR(simul_state.E(3), 213.284, 1e-1);
-  EXPECT_NEAR(simul_state.E(12), 143.563, 1e-1);
+  EXPECT_NEAR(simul_state.E(), 66943.7, 1e-1);
+  EXPECT_NEAR(simul_state.E(0), 1096.21, 1e-1);
+  EXPECT_NEAR(simul_state.E(1), 19513.9, 1e-1);
+  EXPECT_NEAR(simul_state.E(2), 46197.6, 1e-1);
+  EXPECT_NEAR(simul_state.E(3), 85.8894, 1e-1);
+  EXPECT_NEAR(simul_state.E(12), 50.1765, 1e-1);
 }

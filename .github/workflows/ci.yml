@@ -22,10 +22,6 @@ jobs:
     - name: Install codespell
       run: python3 -m ensurepip --default-pip
         && pip3 install codespell
-
-    - name: Install clang-format
-      run: dnf update -y 
-        && dnf install -y clang-tools-extra
       
     - name: Lint
       run: cmake -D FORMAT_COMMAND=clang-format -P cmake/lint.cmake
@@ -46,10 +42,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Install LCov
-      run: dnf update -y 
-        && dnf install -y lcov
 
     - name: Configure
       run: cmake --preset=ci-coverage
@@ -81,10 +73,6 @@ jobs:
     steps:
 
     - uses: actions/checkout@v4
-
-    - name: Install sanitizers
-      run: dnf update -y 
-        && dnf install -y clang-tools-extra libasan libubsan
 
     - name: Configure
       run: cmake --preset=ci-sanitize
@@ -119,23 +107,6 @@ jobs:
 
       steps:
       - uses: actions/checkout@v4
-        
-      - name: Install static analyzers for Ubuntu 24.04 
-        if: matrix.os == 'ubuntu24'
-        run: >-
-          apt-get update -q
-          && apt-get install lsb-release wget software-properties-common gnupg -q -y
-          && apt-get install clang-tidy-16 cppcheck -y -q
-
-          update-alternatives --install
-          /usr/bin/clang-tidy clang-tidy
-          /usr/bin/clang-tidy-16 160
-
-      - name: Install static analyzers for AlmaLinux 9
-        if: matrix.os == 'alma9'
-        run: >-
-          dnf update -y 
-          && dnf install clang-tools-extra cppcheck -y -q
 
       - name: Configure
         run: cmake "--preset=ci-ubuntu"
@@ -168,10 +139,6 @@ jobs:
 
     - name: Install m.css dependencies
       run: pip3 install jinja2 Pygments
-
-    - name: Install Doxygen
-      run: sudo apt-get update -q
-        && sudo apt-get install doxygen -q -y
 
     - name: Build docs
       run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build"
