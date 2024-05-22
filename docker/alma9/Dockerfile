@@ -30,7 +30,7 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && cd root_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../root_src -D mathmore=ON -D clad=OFF \
  && cmake --build . --config RelWithDebInfo --target install -j6 \
- && rm -rf ../root_src ../root_build
+ && rm -rf ../root_build
 
 # Build Geant4 from source with GDML support and installed data
 # See https://geant4-userdoc.web.cern.ch/UsersGuides/InstallationGuide/html/buildtools.html for build instructions
@@ -40,7 +40,7 @@ RUN dnf install -y expat-devel xerces-c-devel \
  && mkdir geant4_build && cd geant4_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_BUILD_TYPE=Debug ../geant4_src \
  && cmake --build . --config RelWithDebInfo --target install -j6  \
- && rm -rf ../geant4_src ../geant4_build
+ && rm -rf ../geant4_build
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
@@ -49,7 +49,7 @@ RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Mi
  && mkdir onnx_build && cd onnx_build \
  && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel 4 --skip_submodule_sync --skip_tests --build_dir . \
  && make install -C RelWithDebInfo \
- && rm -rf ../onnx_src ../onnx_build
+ && rm -rf ../onnx_build
 
 # Build lwtnn for inference from source
 # See https://github.com/lwtnn/lwtnn for instructions
@@ -59,7 +59,7 @@ RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtn
  && cmake -DBUILTIN_BOOST=true -DBUILTIN_EIGEN=true -DCMAKE_INSTALL_PREFIX=/usr/local ../lwtnn_src \
  && make -j4 \
  && make install \
- && rm -rf ../lwtnn_src ../lwtnn_build
+ && rm -rf ../lwtnn_build
 
 # Build CLHEP from source
 # See https://gitlab.cern.ch/CLHEP/CLHEP for instructions
@@ -68,7 +68,7 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
  && mkdir clhep_build && cd clhep_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../clhep_src \
  && cmake --build . --config RelWithDebInfo --target install -j6 \
- && rm -rf ../clhep_src ../clhep_build
+ && rm -rf ../clhep_build
 
 
 # Install extra packages
