@@ -4,6 +4,8 @@ function(create_test_executable suite_name test_sources)
   add_executable(${suite_name} ${test_sources})
   # Link the necessary libraries
   target_link_libraries(${suite_name} PRIVATE FastCaloSim::FastCaloSim GTest::gtest_main)
+  # Add include directory
+  target_include_directories(${suite_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   # Enable GTest discovery
   gtest_discover_tests(${suite_name})
   # Deactivate compiler warnings and static analyzers

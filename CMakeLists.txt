@@ -8,7 +8,7 @@ project(
     FastCaloSim
     VERSION 0.1.0
     DESCRIPTION "An experiment-independent library for fast calorimeter simulation"
-    HOMEPAGE_URL "https://example.com/"
+    HOMEPAGE_URL "https://jbeirer.github.io/FastCaloSim/"
     LANGUAGES CXX
 )
 
@@ -48,6 +48,7 @@ add_library(FastCaloSim_FastCaloSim SHARED "")
 # Add the source files
 add_subdirectory(source/Core)
 add_subdirectory(source/Geometry)
+add_subdirectory(source/Transport)
 
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
