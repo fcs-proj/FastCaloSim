@@ -14,6 +14,6 @@
 
     // Command to run after the container is created
     // Static code analysis tools such as clang-format come pre-installed in the container
-    "postCreateCommand": "python3 -m pip install --upgrade pip && python3 -m ensurepip --default-pip && pip3 install codespell"
+    "postCreateCommand": "python3 -m pip install --upgrade pip && python3 -m ensurepip --default-pip && pip3 install codespell==2.2.6"
   
 }
