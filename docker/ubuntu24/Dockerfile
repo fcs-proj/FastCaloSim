@@ -1,5 +1,7 @@
 FROM ubuntu:24.04
 
+ENV PIP_ROOT_USER_ACTION=ignore
+
 # Install ROOT dependencies
 # Note: Taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu2310/packages.txt
 COPY root_dependencies.txt root_dependencies.txt
@@ -81,3 +83,10 @@ RUN apt-get update -qq \
 
 # Configure the clang-tidy version
 RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 170
+
+# Install python packages
+COPY python_packages.txt python_packages.txt
+
+RUN pip3 install --break-system-packages --upgrade pip \
+ && pip3 install --break-system-packages $(cat python_packages.txt) \
+ && rm -rf python_packages.txt

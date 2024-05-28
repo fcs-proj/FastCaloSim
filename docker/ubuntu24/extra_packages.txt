@@ -11,3 +11,4 @@ software-properties-common
 cppcheck
 gdb
 clang-tidy-17
+python3-pip
