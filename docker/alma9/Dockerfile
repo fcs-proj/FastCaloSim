@@ -1,5 +1,7 @@
 FROM gitlab-registry.cern.ch/linuxsupport/alma9-base
 
+ENV PIP_ROOT_USER_ACTION=ignore
+
 # Install ROOT dependencies
 # Note: Taken from https://github.com/root-project/root-ci-images/blob/main/alma9/packages.txt
 COPY root_dependencies.txt root_dependencies.txt
@@ -70,10 +72,18 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
  && cmake --build . --config RelWithDebInfo --target install -j6 \
  && rm -rf ../clhep_build
 
-
 # Install extra packages
 COPY extra_packages.txt extra_packages.txt
+
 RUN  dnf clean all && dnf update -y \
  && dnf install -y --setopt=install_weak_deps=False $(cat extra_packages.txt) \
  && dnf clean all \
  && rm -rf extra_packages.txt /var/cache/dnf
+
+ # Install python packages
+ COPY python_packages.txt python_packages.txt
+
+ RUN python3 -m ensurepip --default-pip \
+ && python3 -m pip install --upgrade pip \
+ && pip3 install $(cat python_packages.txt) \
+ && rm -rf python_packages.txt

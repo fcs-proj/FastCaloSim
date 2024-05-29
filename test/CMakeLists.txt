@@ -7,9 +7,16 @@ include(../cmake/folders.cmake)
 include(../cmake/silencer.cmake)
 include(../cmake/tests.cmake)
 
-# ---- Test Data ----
+# ---- Test Data Location ----
 add_definitions(-DTEST_PARAM_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/param/")
 add_definitions(-DTEST_GEO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/geometry/")
+
+# ---- Python Scripts Location ----
+add_definitions(-DPYTHON_SCRIPT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/python/")
+
+# ---- Test Output Location ----
+add_definitions(-DTEST_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output/")
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/output)
 
 # ---- Dependencies ----
 
@@ -34,20 +41,29 @@ deactivate_checks(gtest gtest_main
                   FastCaloSim_FastCaloSim
                   FastCaloSim_dict)
 
-# ---- Tests ----
 
-# Note: 
-# - we generate a single test executable which can take advantage of gtest fixture, etc.
-# - you can also run with ctest to get a more detailed output, but no fixture support
-# - Run a specific test within a test suite as ctest -R TestSuiteName.TestName --verbose
+# Build a simple geant4 application
+# - Used to test the particle transport
+# - Uses simplified geometry 
+add_subdirectory(g4app)
+deactivate_checks(g4app)
+
+# ---- Tests ----
 
 include(GoogleTest)
 
-# Glob test sources
+#Glob test sources
 file(GLOB TEST_SOURCES "source/*_tests.cxx")
 
-# Create a test executablecd 
-create_test_executable(run_tests "${TEST_SOURCES}")
+# Create test executables
+foreach(TEST_SOURCE ${TEST_SOURCES})
+  get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
+  create_test_executable(${TEST_NAME} ${TEST_SOURCE})
+endforeach()
+
+#Tests that are Geant4 dependent
+target_link_libraries(transport_tests PRIVATE g4app)
+
 
 # ---- End-of-file commands ----
 

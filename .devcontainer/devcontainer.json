@@ -5,15 +5,10 @@
     // Activate vs code extensions and set cmake path
     "customizations": {
         "vscode": {
-          "extensions": ["ms-vscode.cpptools", "llvm-vs-code-extensions.vscode-clangd", "ms-vscode.cmake-tools", "ibm.output-colorizer"],
+          "extensions": ["ms-toolsai.jupiter", "ms-vscode.cpptools", "llvm-vs-code-extensions.vscode-clangd", "ms-vscode.cmake-tools", "ibm.output-colorizer"],
           "settings": {
             "cmake.cmakePath": "/usr/bin/cmake"
           }
         }
-    },
-
-    // Command to run after the container is created
-    // Static code analysis tools such as clang-format come pre-installed in the container
-    "postCreateCommand": "python3 -m ensurepip --default-pip && pip3 install codespell"
-  
+    }
 }

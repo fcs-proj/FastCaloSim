@@ -1,0 +1,457 @@
+<?xml version="1.0" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+	<define/>
+	<materials/>
+	<solids>
+		<box name="World_Solid" x="40000" y="40000" z="80000" lunit="mm"/>
+		<tube name="Layer0POS_Solid" rmin="1430.7772521972656" rmax="1482.5467224121094" z="3667.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer0NEG_Solid" rmin="1430.7772521972656" rmax="1482.5467224121094" z="3667.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer1POS_Solid" rmin="1504.1173114776611" rmax="1569.4562149047852" z="3667.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer1NEG_Solid" rmin="1504.1173114776611" rmax="1569.4562149047852" z="3667.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer2POS_Solid" rmin="1715.6034660339355" rmax="1848.2722473144531" z="3761.991171836853" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer2NEG_Solid" rmin="1715.6034660339355" rmax="1848.2722473144531" z="3761.991171836853" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer3POS_Solid" rmin="1849.2722473144531" rmax="1956.9808592796326" z="3761.991171836853" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer3NEG_Solid" rmin="1849.2722473144531" rmax="1956.9808592796326" z="3761.991171836853" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer4POS_Solid" rmin="69.98501943859821" rmax="1714.6034660339355" z="2.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer4NEG_Solid" rmin="69.98501943859821" rmax="1714.6034660339355" z="2.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer5POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="48.61881923675537" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer5NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="48.61881923675537" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer6POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="316.67103576660156" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer6NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="316.67103576660156" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer7POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="87.83922004699707" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer7NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="87.83922004699707" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer8POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="140.25" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer8NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="140.25" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer9POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="194.10009765625" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer9NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="194.10009765625" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer10POS_Solid" rmin="476.52766841772285" rmax="2444.0" z="246.5" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer10NEG_Solid" rmin="476.52766841772285" rmax="2444.0" z="246.5" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer11POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="147.0498046875" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer11NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="147.0498046875" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer12POS_Solid" rmin="2300.0" rmax="2600.0" z="3107.202897618112" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer12NEG_Solid" rmin="2300.0" rmax="2600.0" z="3107.202897618112" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer13POS_Solid" rmin="2600.0" rmax="3440.0" z="3089.5136721366266" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer13NEG_Solid" rmin="2600.0" rmax="3440.0" z="3089.5136721366266" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer14POS_Solid" rmin="3440.0" rmax="3820.0" z="3090.823160775413" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer14NEG_Solid" rmin="3440.0" rmax="3820.0" z="3090.823160775413" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer15POS_Solid" rmin="2990.0" rmax="3440.0" z="3641.3661818674377" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer15NEG_Solid" rmin="2990.0" rmax="3440.0" z="3641.3661818674377" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer16POS_Solid" rmin="3486.0" rmax="3820.0" z="3640.0566932286515" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer16NEG_Solid" rmin="3486.0" rmax="3820.0" z="3640.0566932286515" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer18POS_Solid" rmin="2445.0" rmax="2600.0" z="3623.6769563859525" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer18NEG_Solid" rmin="2445.0" rmax="2600.0" z="3623.6769563859525" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer19POS_Solid" rmin="2601.0" rmax="2989.0" z="3641.3661818674377" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer19NEG_Solid" rmin="2601.0" rmax="2989.0" z="3641.3661818674377" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer20POS_Solid" rmin="3441.0" rmax="3485.0" z="3640.0566932286515" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer20NEG_Solid" rmin="3441.0" rmax="3485.0" z="3640.0566932286515" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer21POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="116.05000305175781" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer21NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="116.05000305175781" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer22POS_Solid" rmin="69.98501943859821" rmax="475.52766841772285" z="221.14999389648438" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer22NEG_Solid" rmin="69.98501943859821" rmax="475.52766841772285" z="221.14999389648438" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer23POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="115.57499694824219" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer23NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="115.57499694824219" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="BarrelEnvelope_Solid" rmin="3821.0" rmax="3921.0" z="13463.759708008129" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="EndcapEnvelopePOS_Solid" rmin="0" rmax="3921.0" z="100.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="EndcapEnvelopeNEG_Solid" rmin="0" rmax="3921.0" z="100.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+	</solids>
+	<structure>
+		<volume name="Layer0POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer0POS_Solid"/>
+		</volume>
+		<volume name="Layer0NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer0NEG_Solid"/>
+		</volume>
+		<volume name="Layer1POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer1POS_Solid"/>
+		</volume>
+		<volume name="Layer1NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer1NEG_Solid"/>
+		</volume>
+		<volume name="Layer2POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer2POS_Solid"/>
+		</volume>
+		<volume name="Layer2NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer2NEG_Solid"/>
+		</volume>
+		<volume name="Layer3POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer3POS_Solid"/>
+		</volume>
+		<volume name="Layer3NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer3NEG_Solid"/>
+		</volume>
+		<volume name="Layer4POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer4POS_Solid"/>
+		</volume>
+		<volume name="Layer4NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer4NEG_Solid"/>
+		</volume>
+		<volume name="Layer5POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer5POS_Solid"/>
+		</volume>
+		<volume name="Layer5NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer5NEG_Solid"/>
+		</volume>
+		<volume name="Layer6POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer6POS_Solid"/>
+		</volume>
+		<volume name="Layer6NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer6NEG_Solid"/>
+		</volume>
+		<volume name="Layer7POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer7POS_Solid"/>
+		</volume>
+		<volume name="Layer7NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer7NEG_Solid"/>
+		</volume>
+		<volume name="Layer8POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer8POS_Solid"/>
+		</volume>
+		<volume name="Layer8NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer8NEG_Solid"/>
+		</volume>
+		<volume name="Layer9POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer9POS_Solid"/>
+		</volume>
+		<volume name="Layer9NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer9NEG_Solid"/>
+		</volume>
+		<volume name="Layer10POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer10POS_Solid"/>
+		</volume>
+		<volume name="Layer10NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer10NEG_Solid"/>
+		</volume>
+		<volume name="Layer11POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer11POS_Solid"/>
+		</volume>
+		<volume name="Layer11NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer11NEG_Solid"/>
+		</volume>
+		<volume name="Layer12POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer12POS_Solid"/>
+		</volume>
+		<volume name="Layer12NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer12NEG_Solid"/>
+		</volume>
+		<volume name="Layer13POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer13POS_Solid"/>
+		</volume>
+		<volume name="Layer13NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer13NEG_Solid"/>
+		</volume>
+		<volume name="Layer14POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer14POS_Solid"/>
+		</volume>
+		<volume name="Layer14NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer14NEG_Solid"/>
+		</volume>
+		<volume name="Layer15POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer15POS_Solid"/>
+		</volume>
+		<volume name="Layer15NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer15NEG_Solid"/>
+		</volume>
+		<volume name="Layer16POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer16POS_Solid"/>
+		</volume>
+		<volume name="Layer16NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer16NEG_Solid"/>
+		</volume>
+		<volume name="Layer18POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer18POS_Solid"/>
+		</volume>
+		<volume name="Layer18NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer18NEG_Solid"/>
+		</volume>
+		<volume name="Layer19POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer19POS_Solid"/>
+		</volume>
+		<volume name="Layer19NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer19NEG_Solid"/>
+		</volume>
+		<volume name="Layer20POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer20POS_Solid"/>
+		</volume>
+		<volume name="Layer20NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer20NEG_Solid"/>
+		</volume>
+		<volume name="Layer21POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer21POS_Solid"/>
+		</volume>
+		<volume name="Layer21NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer21NEG_Solid"/>
+		</volume>
+		<volume name="Layer22POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer22POS_Solid"/>
+		</volume>
+		<volume name="Layer22NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer22NEG_Solid"/>
+		</volume>
+		<volume name="Layer23POS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer23POS_Solid"/>
+		</volume>
+		<volume name="Layer23NEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="Layer23NEG_Solid"/>
+		</volume>
+		<volume name="BarrelEnvelope_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="BarrelEnvelope_Solid"/>
+		</volume>
+		<volume name="EndcapEnvelopePOS_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="EndcapEnvelopePOS_Solid"/>
+		</volume>
+		<volume name="EndcapEnvelopeNEG_Log">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="EndcapEnvelopeNEG_Solid"/>
+		</volume>
+		<volume name="WorldLog">
+			<materialref ref="G4_Galactic"/>
+			<solidref ref="World_Solid"/>
+			<physvol name="Layer0POS_Phys">
+				<volumeref ref="Layer0POS_Log"/>
+				<position name="Layer0POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="1833.500000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer0NEG_Phys">
+				<volumeref ref="Layer0NEG_Log"/>
+				<position name="Layer0NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-1833.500000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer1POS_Phys">
+				<volumeref ref="Layer1POS_Log"/>
+				<position name="Layer1POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="1833.500000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer1NEG_Phys">
+				<volumeref ref="Layer1NEG_Log"/>
+				<position name="Layer1NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-1833.500000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer2POS_Phys">
+				<volumeref ref="Layer2POS_Log"/>
+				<position name="Layer2POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="1880.995585918426514" unit="mm"/>
+			</physvol>
+			<physvol name="Layer2NEG_Phys">
+				<volumeref ref="Layer2NEG_Log"/>
+				<position name="Layer2NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-1880.995585918426514" unit="mm"/>
+			</physvol>
+			<physvol name="Layer3POS_Phys">
+				<volumeref ref="Layer3POS_Log"/>
+				<position name="Layer3POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="1880.995585918426514" unit="mm"/>
+			</physvol>
+			<physvol name="Layer3NEG_Phys">
+				<volumeref ref="Layer3NEG_Log"/>
+				<position name="Layer3NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-1880.995585918426514" unit="mm"/>
+			</physvol>
+			<physvol name="Layer4POS_Phys">
+				<volumeref ref="Layer4POS_Log"/>
+				<position name="Layer4POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="3669.000000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer4NEG_Phys">
+				<volumeref ref="Layer4NEG_Log"/>
+				<position name="Layer4NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-3669.000000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer5POS_Phys">
+				<volumeref ref="Layer5POS_Log"/>
+				<position name="Layer5POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="3787.300581455230713" unit="mm"/>
+			</physvol>
+			<physvol name="Layer5NEG_Phys">
+				<volumeref ref="Layer5NEG_Log"/>
+				<position name="Layer5NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-3787.300581455230713" unit="mm"/>
+			</physvol>
+			<physvol name="Layer6POS_Phys">
+				<volumeref ref="Layer6POS_Log"/>
+				<position name="Layer6POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="3994.034469604492188" unit="mm"/>
+			</physvol>
+			<physvol name="Layer6NEG_Phys">
+				<volumeref ref="Layer6NEG_Log"/>
+				<position name="Layer6NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-3994.034469604492188" unit="mm"/>
+			</physvol>
+			<physvol name="Layer7POS_Phys">
+				<volumeref ref="Layer7POS_Log"/>
+				<position name="Layer7POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4197.289597511291504" unit="mm"/>
+			</physvol>
+			<physvol name="Layer7NEG_Phys">
+				<volumeref ref="Layer7NEG_Log"/>
+				<position name="Layer7NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4197.289597511291504" unit="mm"/>
+			</physvol>
+			<physvol name="Layer8POS_Phys">
+				<volumeref ref="Layer8POS_Log"/>
+				<position name="Layer8POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4461.250000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer8NEG_Phys">
+				<volumeref ref="Layer8NEG_Log"/>
+				<position name="Layer8NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4461.250000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer9POS_Phys">
+				<volumeref ref="Layer9POS_Log"/>
+				<position name="Layer9POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4832.550048828125000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer9NEG_Phys">
+				<volumeref ref="Layer9NEG_Log"/>
+				<position name="Layer9NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4832.550048828125000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer10POS_Phys">
+				<volumeref ref="Layer10POS_Log"/>
+				<position name="Layer10POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="5424.500000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer10NEG_Phys">
+				<volumeref ref="Layer10NEG_Log"/>
+				<position name="Layer10NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-5424.500000000000000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer11POS_Phys">
+				<volumeref ref="Layer11POS_Log"/>
+				<position name="Layer11POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="5948.475097656250000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer11NEG_Phys">
+				<volumeref ref="Layer11NEG_Log"/>
+				<position name="Layer11NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-5948.475097656250000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer12POS_Phys">
+				<volumeref ref="Layer12POS_Log"/>
+				<position name="Layer12POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="1553.601448809055910" unit="mm"/>
+			</physvol>
+			<physvol name="Layer12NEG_Phys">
+				<volumeref ref="Layer12NEG_Log"/>
+				<position name="Layer12NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-1553.601448809055910" unit="mm"/>
+			</physvol>
+			<physvol name="Layer13POS_Phys">
+				<volumeref ref="Layer13POS_Log"/>
+				<position name="Layer13POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="1544.756836068313305" unit="mm"/>
+			</physvol>
+			<physvol name="Layer13NEG_Phys">
+				<volumeref ref="Layer13NEG_Log"/>
+				<position name="Layer13NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-1544.756836068313305" unit="mm"/>
+			</physvol>
+			<physvol name="Layer14POS_Phys">
+				<volumeref ref="Layer14POS_Log"/>
+				<position name="Layer14POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="1545.411580387706408" unit="mm"/>
+			</physvol>
+			<physvol name="Layer14NEG_Phys">
+				<volumeref ref="Layer14NEG_Log"/>
+				<position name="Layer14NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-1545.411580387706408" unit="mm"/>
+			</physvol>
+			<physvol name="Layer15POS_Phys">
+				<volumeref ref="Layer15POS_Log"/>
+				<position name="Layer15POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4911.196763070345696" unit="mm"/>
+			</physvol>
+			<physvol name="Layer15NEG_Phys">
+				<volumeref ref="Layer15NEG_Log"/>
+				<position name="Layer15NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4911.196763070345696" unit="mm"/>
+			</physvol>
+			<physvol name="Layer16POS_Phys">
+				<volumeref ref="Layer16POS_Log"/>
+				<position name="Layer16POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4911.851507389738799" unit="mm"/>
+			</physvol>
+			<physvol name="Layer16NEG_Phys">
+				<volumeref ref="Layer16NEG_Log"/>
+				<position name="Layer16NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4911.851507389738799" unit="mm"/>
+			</physvol>
+			<physvol name="Layer18POS_Phys">
+				<volumeref ref="Layer18POS_Log"/>
+				<position name="Layer18POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4920.041375811088074" unit="mm"/>
+			</physvol>
+			<physvol name="Layer18NEG_Phys">
+				<volumeref ref="Layer18NEG_Log"/>
+				<position name="Layer18NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4920.041375811088074" unit="mm"/>
+			</physvol>
+			<physvol name="Layer19POS_Phys">
+				<volumeref ref="Layer19POS_Log"/>
+				<position name="Layer19POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4911.196763070345696" unit="mm"/>
+			</physvol>
+			<physvol name="Layer19NEG_Phys">
+				<volumeref ref="Layer19NEG_Log"/>
+				<position name="Layer19NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4911.196763070345696" unit="mm"/>
+			</physvol>
+			<physvol name="Layer20POS_Phys">
+				<volumeref ref="Layer20POS_Log"/>
+				<position name="Layer20POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4911.851507389738799" unit="mm"/>
+			</physvol>
+			<physvol name="Layer20NEG_Phys">
+				<volumeref ref="Layer20NEG_Log"/>
+				<position name="Layer20NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4911.851507389738799" unit="mm"/>
+			</physvol>
+			<physvol name="Layer21POS_Phys">
+				<volumeref ref="Layer21POS_Log"/>
+				<position name="Layer21POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4988.625099182128906" unit="mm"/>
+			</physvol>
+			<physvol name="Layer21NEG_Phys">
+				<volumeref ref="Layer21NEG_Log"/>
+				<position name="Layer21NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4988.625099182128906" unit="mm"/>
+			</physvol>
+			<physvol name="Layer22POS_Phys">
+				<volumeref ref="Layer22POS_Log"/>
+				<position name="Layer22POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="5394.450195312500000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer22NEG_Phys">
+				<volumeref ref="Layer22NEG_Log"/>
+				<position name="Layer22NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-5394.450195312500000" unit="mm"/>
+			</physvol>
+			<physvol name="Layer23POS_Phys">
+				<volumeref ref="Layer23POS_Log"/>
+				<position name="Layer23POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="5816.162696838378906" unit="mm"/>
+			</physvol>
+			<physvol name="Layer23NEG_Phys">
+				<volumeref ref="Layer23NEG_Log"/>
+				<position name="Layer23NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-5816.162696838378906" unit="mm"/>
+			</physvol>
+			<physvol name="BarrelEnvelope_Phys">
+				<volumeref ref="BarrelEnvelope_Log"/>
+			</physvol>
+			<physvol name="EndcapEnvelopePOS_Phys">
+				<volumeref ref="EndcapEnvelopePOS_Log"/>
+				<position name="EndcapEnvelopePOS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="6782.879854004064327" unit="mm"/>
+			</physvol>
+			<physvol name="EndcapEnvelopeNEG_Phys">
+				<volumeref ref="EndcapEnvelopeNEG_Log"/>
+				<position name="EndcapEnvelopeNEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-6782.879854004064327" unit="mm"/>
+			</physvol>
+		</volume>
+	</structure>
+	<setup name="Default" version="1.0">
+		<world ref="WorldLog"/>
+	</setup>
+</gdml>
