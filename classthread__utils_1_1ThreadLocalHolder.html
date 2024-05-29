@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FastCaloSim/ directory | FastCaloSim</title>
+  <title>thread_utils::ThreadLocalHolder class | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,37 +49,81 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          FastCaloSim<span class="m-breadcrumb">/</span> <span class="m-thin">directory</span>
+          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="ThreadLocalHolder_8h.html">&lt;ThreadLocalHolder.h&gt;</a></div>
+          <div class="m-doc-template">template&lt;class T&gt;</div>
+          <span class="m-breadcrumb"><a href="namespacethread__utils.html">thread_utils</a>::<wbr/></span>ThreadLocalHolder <span class="m-thin">class</span>
         </h1>
-        <p><span></span></p>
+        <p>A thread-local storage wrapper.</p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
             <li>
               Reference
               <ul>
-                <li><a href="#subdirs">Directories</a></li>
-                <li><a href="#files">Files</a></li>
+                <li><a href="#derived-classes">Derived classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pro-attribs">Protected variables</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="subdirs">
-          <h2><a href="#subdirs">Directories</a></h2>
+<p>This container is implemented as a wrapper for a concurrent map keyed by std thread ID. It is thus fully thread-safe (in theory).</p><p>This container is non-owning. It doesn&#x27;t clean up memory. For a corresponding container which owns its objects, see <a href="classthread__utils_1_1ThreadLocalOwner.html" class="m-doc">ThreadLocalOwner</a>.</p><aside class="m-note m-default"><h4>Author</h4><p>Steve Farrell <a href="mailto:Steven.Farrell@cern.ch">Steven.Farrell@cern.ch</a></p></aside>
+        <section id="derived-classes">
+          <h2><a href="#derived-classes">Derived classes</a></h2>
           <dl class="m-doc">
-            <dt>directory <a href="dir_f53789fc1a2c3da2e63c760ac6630d4b.html" class="m-doc">Core</a>/</dt>
+            <dt>
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              class <a href="classthread__utils_1_1ThreadLocalOwner.html" class="m-doc">ThreadLocalOwner</a>
+            </dt>
+            <dd>A <a href="classthread__utils_1_1ThreadLocalHolder.html" class="m-doc">ThreadLocalHolder</a> which owns its objects.</dd>
+          </dl>
+        </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt id="a42a37b308061c342dcfed35594e7fe96">
+              using <a href="#a42a37b308061c342dcfed35594e7fe96" class="m-doc-self">MapKey_t</a> = std::thread::id
+            </dt>
             <dd><span></span></dd>
-            <dt>directory <a href="dir_d22115def6822a1b9973e90174884e74.html" class="m-doc">Geometry</a>/</dt>
+            <dt id="ae93fe80724722fbf0d71a8720d98b645">
+              using <a href="#ae93fe80724722fbf0d71a8720d98b645" class="m-doc-self">MapVal_t</a> = T*
+            </dt>
             <dd><span></span></dd>
-            <dt>directory <a href="dir_945a3893c9bdffdccd279dcc68fd0c46.html" class="m-doc">Transport</a>/</dt>
+            <dt id="a6466c52352a046396d41c4826aa1c096">
+              using <a href="#a6466c52352a046396d41c4826aa1c096" class="m-doc-self">MapHash_t</a> = std::hash&lt;<a href="classthread__utils_1_1ThreadLocalHolder.html#a42a37b308061c342dcfed35594e7fe96" class="m-doc">MapKey_<wbr />t</a>&gt;
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aade059630986b37191fa310cfaf2c67b">
+              using <a href="#aade059630986b37191fa310cfaf2c67b" class="m-doc-self">ThreadMap_t</a> = tbb::concurrent_unordered_map&lt;<a href="classthread__utils_1_1ThreadLocalHolder.html#a42a37b308061c342dcfed35594e7fe96" class="m-doc">MapKey_<wbr />t</a>, <a href="classthread__utils_1_1ThreadLocalHolder.html#ae93fe80724722fbf0d71a8720d98b645" class="m-doc">MapVal_<wbr />t</a>, <a href="classthread__utils_1_1ThreadLocalHolder.html#a6466c52352a046396d41c4826aa1c096" class="m-doc">MapHash_<wbr />t</a>&gt;
+            </dt>
             <dd><span></span></dd>
           </dl>
         </section>
-        <section id="files">
-          <h2><a href="#files">Files</a></h2>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt>file <a href="LinkDef_8h.html" class="m-doc">LinkDef.h</a></dt>
-            <dd><span></span></dd>
+            <dt id="a1e502288c1b09ed624d40addc5f36c0e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1e502288c1b09ed624d40addc5f36c0e" class="m-doc-self">get</a>(</span><span class="m-doc-wrap">) -&gt; T*</span>
+            </dt>
+            <dd>Get the object of the current thread.</dd>
+            <dt id="a75834a5b5e29316d9a45f84a18c9d85b">
+              <span class="m-doc-wrap-bumper">void <a href="#a75834a5b5e29316d9a45f84a18c9d85b" class="m-doc-self">set</a>(</span><span class="m-doc-wrap">T* obj)</span>
+            </dt>
+            <dd>Assign the object of the current thread.</dd>
+            <dt id="a8b9b1bf81ae6bae3869473e92a34c940">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8b9b1bf81ae6bae3869473e92a34c940" class="m-doc-self">getMap</a>(</span><span class="m-doc-wrap">) const -&gt; const <a href="classthread__utils_1_1ThreadLocalHolder.html#aade059630986b37191fa310cfaf2c67b" class="m-doc">ThreadMap_<wbr />t</a>&amp;</span>
+            </dt>
+            <dd>Constant access for iteration, etc.</dd>
+          </dl>
+        </section>
+        <section id="pro-attribs">
+          <h2><a href="#pro-attribs">Protected variables</a></h2>
+          <dl class="m-doc">
+            <dt id="aafdb382bd7fb2cf0d16ce268f23618d4">
+              <a href="classthread__utils_1_1ThreadLocalHolder.html#aade059630986b37191fa310cfaf2c67b" class="m-doc">ThreadMap_<wbr />t</a> <a href="#aafdb382bd7fb2cf0d16ce268f23618d4" class="m-doc-self">m_threadMap</a>
+            </dt>
+            <dd>The wrapped thread-local storage container.</dd>
           </dl>
         </section>
       </div>
