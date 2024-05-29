@@ -117,6 +117,12 @@ jobs:
         working-directory: build
         run: ctest --output-on-failure --no-tests=error -C Release -j 2
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: test/output
+          if-no-files-found: error
+          retention-days: 90
   docs:
     # Deploy docs only when builds succeed
     needs: [sanitize, test]
