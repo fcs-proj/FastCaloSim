@@ -26,7 +26,7 @@ struct IDCaloBoundaryDimension
    * @brief Dimensions of a virtual boundary between Inner Detector and
    * calorimeter system of the ATLAS detector
    * @details The boundary is defined by a series of cylinders with 10 mm of
-   * thicknes that cover the ATLAS ID-Calo boundary. The values describe the
+   * thickness that cover the ATLAS ID-Calo boundary. The values describe the
    * positive z half sapce of the boundary. The full boundary is constructed by
    * mirroring the positive z half space in the negative z half space.
    */
@@ -43,7 +43,7 @@ struct IDCaloBoundaryDimension
                            barrel.rmax,
                            barrel.zmax,
                            barrel.zmax + cylinderThickness};
-  // Inner beampipe cylinder definitio
+  // Inner beampipe cylinder definition
   Cylinder innerBeamPipe = {barrelEndcap.rmin,
                             barrelEndcap.rmin + cylinderThickness,
                             barrelEndcap.zmax,
@@ -69,7 +69,7 @@ public:
   virtual G4VPhysicalVolume* Construct() override;
   virtual void ConstructSDandField() override;
 
-  // Interface to acess the name of the fast simulation trigger region
+  // Interface to access the name of the fast simulation trigger region
   auto getFastSimTriggerRegionName() const -> std::string
   {
     return fFastSimTriggerRegionName;
