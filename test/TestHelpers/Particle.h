@@ -1,8 +1,10 @@
-#ifndef PARTICLE_H
-#define PARTICLE_H
+#pragma once
 
-#include "CLHEP/Units/SystemOfUnits.h"
-#include "G4ThreeVector.hh"
+#ifndef PARTICLE_H
+#  define PARTICLE_H
+
+#  include "CLHEP/Units/SystemOfUnits.h"
+#  include "G4ThreeVector.hh"
 
 namespace TestHelpers
 {

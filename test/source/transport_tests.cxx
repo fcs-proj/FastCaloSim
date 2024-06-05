@@ -10,26 +10,32 @@
 #include "G4RunManagerFactory.hh"
 #include "TestHelpers/IOManager.h"
 #include "TestHelpers/Particle.h"
-#include "TestHelpers/ParticleSampler.h"
+#include "TestHelpers/ParticleContainer.h"
 
-namespace
+class TestEnvironment : public ::testing::Environment
 {
-
-// Location of the simplified geometry
-const std::string kTestGeoFile =
-    std::string(TEST_GEO_DIR) + "simplified_geo.gdml";
-// Location of the python script to plot the particle transport
-const std::string kPythonScript =
-    std::string(PYTHON_SCRIPT_DIR) + "plot_transport.py";
-// Properties of particles to test in the transport
-const std::vector<int> kParticleIds = {22, 11, -11};
-const std::vector<float> kEtaValues = {-0.8, 0.8};
-const float kKineticEnergy = 1 * CLHEP::GeV;
-// Note: we generate at the origin but we only simulate the primary particles in
-// the fast simulation DoIt method
-const G4ThreeVector kPrimaryVertex(0, 0, 0);
-
-}  // namespace
+public:
+  // The Location of the python script to plot the transport
+  inline static const std::string PYTHON_SCRIPT =
+      std::string(PYTHON_SCRIPT_DIR) + "plot_transport.py";
+  // The location of the simplified geometry file
+  inline static const std::string GEO_FILE_PATH =
+      std::string(TEST_GEO_DIR) + "simplified_geo.gdml";
+  // Boolean flag to enable verbose tracking
+  inline static const bool ENABLE_VERBOSE_TRACKING = false;
+  // The list of particles to be tested
+  inline static const TestHelpers::ParticleContainer PARTICLE_CONTAINER = []()
+  {
+    TestHelpers::ParticleContainer container;
+    container.addParticle(
+        22, 0.2, 0.3 * CLHEP::GeV, 0.0, G4ThreeVector(0.0, 0.0, 0.0));
+    container.addParticle(
+        22, 4.5, 0.3 * CLHEP::GeV, 0.0, G4ThreeVector(0.0, 0.0, 0.0));
+    container.addParticle(
+        2212, 1, 0.2 * CLHEP::GeV, 0.0, G4ThreeVector(0.0, 0.0, 0.0));
+    return container;
+  }();
+};
 
 class TransportTests : public ::testing::TestWithParam<TestHelpers::Particle>
 {
@@ -42,7 +48,7 @@ protected:
   {
     // Load the simplified geometry from a GDML file into the volume store
     G4GDMLParser fParser;
-    fParser.Read(kTestGeoFile, false);
+    fParser.Read(TestEnvironment::GEO_FILE_PATH, false);
 
     // Construct the default run manager
     runManager =
@@ -51,18 +57,22 @@ protected:
     // Construct the detector
     runManager->SetUserInitialization(new DetectorConstruction);
 
-    // Enable verbose tracking
-    bool enableVerboseTracking = false;
+    // Set verbosity of the tracking manager
     G4TrackingManager* trackingManager =
         G4EventManager::GetEventManager()->GetTrackingManager();
-    trackingManager->SetVerboseLevel(static_cast<G4int>(enableVerboseTracking));
+    trackingManager->SetVerboseLevel(
+        static_cast<G4int>(TestEnvironment::ENABLE_VERBOSE_TRACKING));
 
     // Configure fast simulation
     auto* fastSimulationPhysics = new G4FastSimulationPhysics();
     fastSimulationPhysics->BeVerbose();
-    fastSimulationPhysics->ActivateFastSimulation("e-");
-    fastSimulationPhysics->ActivateFastSimulation("e+");
-    fastSimulationPhysics->ActivateFastSimulation("gamma");
+
+    // Activate fast simulation for the following particles
+    std::vector<G4String> fast_sim_particles = {
+        "e-", "e+", "gamma", "pi+", "pi-", "pi0", "proton", "anti-proton"};
+    for (auto& particle : fast_sim_particles) {
+      fastSimulationPhysics->ActivateFastSimulation(particle);
+    }
 
     // Create physics list with fast simulation
     auto* physicsList = new FTFP_BERT(0);
@@ -117,17 +127,14 @@ TEST_P(TransportTests, ParticleTransportTest)
 
   // Run the python script to plot the transport and check that it runs
   // successfully
-  ASSERT_TRUE(system(("python3 " + kPythonScript + " --input "
+  ASSERT_TRUE(system(("python3 " + TestEnvironment::PYTHON_SCRIPT + " --input "
                       + transport_output_path + " --output " + plot_output_path)
                          .c_str())
               == 0);
 }
 
-// Calls the ParticleTransportTest for each particle returned by the
-// create_particles method
 INSTANTIATE_TEST_SUITE_P(
     ParticleTransportTests,
     TransportTests,
-    ::testing::ValuesIn(TestHelpers::ParticleSampler::generate_particles(
-        kParticleIds, kEtaValues, kKineticEnergy, 0, kPrimaryVertex)),
+    ::testing::ValuesIn(TestEnvironment::PARTICLE_CONTAINER.get()),
     testing::PrintToStringParamName());

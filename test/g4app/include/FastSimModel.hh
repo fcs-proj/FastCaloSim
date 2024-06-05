@@ -25,8 +25,22 @@ class FastSimModel : public G4VFastSimulationModel
   virtual void DoIt(const G4FastTrack&, G4FastStep&) final;
   void DoStep(G4FieldTrack&, G4Navigator*);
 
-  void saveTransport(std::string outputPath) { fTransportOutputPath = outputPath; }
+  void saveTransport(std::string outputPath) { 
+    fTransportOutputPath = outputPath;
+    fNEventMap[fTransportOutputPath] = 0;
+    fNFastTrackMap[fTransportOutputPath] = 0;
+    }
+    
   std::string fTransportOutputPath = "";
+
+  private:
+    // Current event number for a specific transport path
+    // As we are re-using the same class instance for multiple tests, we map the event number to the transport path
+    std::map<std::string, int> fNEventMap;
+    // Current number of tracks processed by this model for the current event and transport path
+    std::map<std::string, int> fNFastTrackMap;
+
+    void writeTransportData(std::vector<G4FieldTrack> step_vector);
 
 };
 #endif /* FASTSIMMODEL_HH */
