@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 3.5 )
 
 set(CMAKE_CXX_STANDARD 17)
 
-project( "ATLASMagneticFieldMapPlugin" )
+project( "ATLASMagneticFieldMapPlugin" VERSION 1.0 LANGUAGES CXX )
 
 # Find the header and source files.
 file( GLOB SOURCES src/*.cxx )
@@ -28,12 +28,10 @@ target_link_libraries ( ATLASMagneticFieldMapPlugin PUBLIC ${CMAKE_DL_LIBS} ${Ge
 
 set_target_properties( ATLASMagneticFieldMapPlugin PROPERTIES
 		       VERSION ${PROJECT_VERSION}
-		       SOVERSION ${PROJECT_VERSION_MAJOR}
-			   INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
-			   INSTALL_RPATH_USE_LINK_PATH TRUE )
+		       SOVERSION ${PROJECT_VERSION_MAJOR} )
 			   
 			
 install( TARGETS ATLASMagneticFieldMapPlugin
-	 LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	 LIBRARY DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/MagneticFieldPlugins
 	 COMPONENT Runtime
 	 NAMELINK_COMPONENT Development )
