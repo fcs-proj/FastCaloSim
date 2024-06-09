@@ -57,13 +57,16 @@ public:
       TestHelpers::ParticleContainer particles = sampler.uniformEtaSample(
           type.pid, energy, min_eta, max_eta, step_size);
 
-      // energy string rounded to 2 decimal places
+      // Plot label rounded to 2 decimal places
       std::stringstream estring;
       estring << std::fixed << std::setprecision(2) << energy;
       std::string evt_label = "$ E=" + estring.str() + R"(\,\text{MeV}\,)"
           + std::string(type.label) + "$";
       // Construct the event with the particle container and event label
       TestHelpers::Event evt(particles, evt_label);
+      // How should the test for this event be printed?
+      std::string ptcl_name = std::string(type.name);
+      evt.set_print_string(ptcl_name);
 
       events.emplace_back(evt);
     }
@@ -176,14 +179,7 @@ TEST_P(TransportTests, ParticleTransportTest)
   ASSERT_TRUE(system(command.c_str()) == 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ParticleTransportTests,
-    TransportTests,
-    ::testing::ValuesIn(TestEnvironment::EVENT_VECTOR),
-    [](const testing::TestParamInfo<TransportTests::ParamType>& info)
-        -> std::string
-    {
-      std::ostringstream name;
-      name << "Event_" << info.index;
-      return name.str();
-    });
+INSTANTIATE_TEST_SUITE_P(ParticleTransportTests,
+                         TransportTests,
+                         ::testing::ValuesIn(TestEnvironment::EVENT_VECTOR),
+                         testing::PrintToStringParamName());
