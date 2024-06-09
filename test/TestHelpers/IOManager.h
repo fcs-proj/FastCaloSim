@@ -1,5 +1,4 @@
-#ifndef IOMANAGER_H
-#define IOMANAGER_H
+#pragma once
 
 #include <gtest/gtest.h>
 
@@ -22,5 +21,3 @@ inline auto create_test_output_dir() -> std::string
   return output_dir;
 }
 }  // namespace TestHelpers::IOManager
-
-#endif  // IOMANAGER_H

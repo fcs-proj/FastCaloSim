@@ -10,6 +10,7 @@ include(../cmake/tests.cmake)
 # ---- Test Data Location ----
 add_definitions(-DTEST_PARAM_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/param/")
 add_definitions(-DTEST_GEO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/geometry/")
+add_definitions(-DTEST_MAG_FIELD_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/fieldmap/")
 
 # ---- Python Scripts Location ----
 add_definitions(-DPYTHON_SCRIPT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/python/")
@@ -41,12 +42,18 @@ deactivate_checks(gtest gtest_main
                   FastCaloSim_FastCaloSim
                   FastCaloSim_dict)
 
-
 # Build a simple geant4 application
 # - Used to test the particle transport
 # - Uses simplified geometry 
 add_subdirectory(g4app)
 deactivate_checks(g4app)
+
+# Build the ATLAS magnetic field map plugin
+# - Used to transport particles through the simplified geometry
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/ATLASMagneticFieldMapPlugin ${CMAKE_CURRENT_BINARY_DIR}/ATLASMagneticFieldMapPlugin)
+deactivate_checks(ATLASMagneticFieldMapPlugin)
+# Pass the path to the magnetic field shared library (ATLASMagneticFieldMapPlugin.so) to the g4app
+target_compile_definitions(g4app PRIVATE ATLASMagneticFieldMapPluginLib="$<TARGET_FILE:ATLASMagneticFieldMapPlugin>")
 
 # ---- Tests ----
 

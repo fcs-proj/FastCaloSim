@@ -3,7 +3,7 @@
 
 #include <G4PrimaryParticle.hh>
 #include "G4VUserActionInitialization.hh"
-#include "TestHelpers/Particle.h"
+#include "TestHelpers/ParticleContainer.h"
 
 class G4ParticleDefinition;
 
@@ -17,12 +17,14 @@ public:
 
     virtual void BuildForMaster() const override;
     virtual void Build() const override;
-    
-    void set_particle(const TestHelpers::Particle* particle){fPrimaryParticle = particle;};
-    const TestHelpers::Particle *fPrimaryParticle;
+
+    // @brief Set the container of particles you want to use
+    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;};
 
     private:
     
+    const TestHelpers::ParticleContainer *fParticleContainer;
+
 };
 
 #endif
