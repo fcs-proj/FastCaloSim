@@ -40,11 +40,13 @@ class G4ParticleDefinition;
 FastSimModel::FastSimModel(G4String aModelName, G4Region* aEnvelope)
   : G4VFastSimulationModel(aModelName, aEnvelope)
 {
+  fTransportTool.initializePropagator();
 }
 
 FastSimModel::FastSimModel(G4String aModelName)
   : G4VFastSimulationModel(aModelName)
 {
+  fTransportTool.initializePropagator();
 }
 
 
@@ -82,12 +84,9 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
   float ekin = aFastTrack.GetPrimaryTrack()->GetKineticEnergy();
 
   std::cout<<"[FastSimModel::DoIt] Processing event "<<n_event<<" track "<<fNFastTrackMap[fTransportOutputPath]<<std::endl;
-  std::cout<<"[FastSimModel::DoIt] Received particle with pid=" << pid << " eta="<<eta<< " phi="<<phi<<" r="<<r<<" ekin="<<ekin<<std::endl;
+  std::cout<<"[FastSimModel::DoIt] Received particle with pid=" << pid << " eta="<<eta<< " phi="<<phi<<" r="<<r<<" ekin="<<ekin<<" mom_dir_eta= " <<  aFastTrack.GetPrimaryTrack()->GetMomentumDirection().eta()<<std::endl;
 
-  G4CaloTransportTool transportTool;
-  transportTool.initializePropagator();
-
-  std::vector<G4FieldTrack> step_vector = transportTool.transport(*aFastTrack.GetPrimaryTrack());
+  std::vector<G4FieldTrack> step_vector = fTransportTool.transport(*aFastTrack.GetPrimaryTrack());
 
   // write the transport data to a file if requested
   if (!fTransportOutputPath.empty()) { 
@@ -132,7 +131,7 @@ void FastSimModel::writeTransportData(std::vector<G4FieldTrack> step_vector){
                     << step.GetPosition().x() << "," 
                     << step.GetPosition().y() << "," 
                     << step.GetPosition().z() << ","
-                    << step.GetPosition().perp() << ","
+                    << step.GetPosition().rho() << ","
                     << step.GetPosition().eta() << ","
                     << step.GetPosition().phi()
                     << std::endl;

@@ -8,36 +8,71 @@
 #include "G4GDMLParser.hh"
 #include "G4GlobalFastSimulationManager.hh"
 #include "G4RunManagerFactory.hh"
+#include "TestHelpers/Event.h"
 #include "TestHelpers/IOManager.h"
-#include "TestHelpers/Particle.h"
 #include "TestHelpers/ParticleContainer.h"
+#include "TestHelpers/ParticleSampler.h"
+#include "TestHelpers/ParticleTypes.h"
 
 class TestEnvironment : public ::testing::Environment
 {
 public:
-  // The Location of the python script to plot the transport
+  // The location of the python script to plot the transport
   inline static const std::string PYTHON_SCRIPT =
       std::string(PYTHON_SCRIPT_DIR) + "plot_transport.py";
+  // The location of calo layer data used for plotting the transport
+  inline static const std::string CALO_LAYER_DATA =
+      std::string(PYTHON_SCRIPT_DIR) + "calo_layers.csv";
   // The location of the simplified geometry file
   inline static const std::string GEO_FILE_PATH =
       std::string(TEST_GEO_DIR) + "simplified_geo.gdml";
   // Boolean flag to enable verbose tracking
   inline static const bool ENABLE_VERBOSE_TRACKING = false;
-  // The list of particles to be tested
-  inline static const TestHelpers::ParticleContainer PARTICLE_CONTAINER = []()
+  // Boolean flag to enable usage of the ATLAS magnetic field
+  inline static const bool USE_ATLAS_FIELD = true;
+  // Boolean flag to zoom into region with tracks in plotting
+  inline static const bool ZOOM_IN = false;
+
+  // The list of events (event = particle container) to be transported
+  inline static const std::vector<TestHelpers::Event> EVENT_VECTOR = []()
   {
-    TestHelpers::ParticleContainer container;
-    container.addParticle(
-        22, 0.2, 0.3 * CLHEP::GeV, 0.0, G4ThreeVector(0.0, 0.0, 0.0));
-    container.addParticle(
-        22, 4.5, 0.3 * CLHEP::GeV, 0.0, G4ThreeVector(0.0, 0.0, 0.0));
-    container.addParticle(
-        2212, 1, 0.2 * CLHEP::GeV, 0.0, G4ThreeVector(0.0, 0.0, 0.0));
-    return container;
+    // Vector of events to be processed
+    std::vector<TestHelpers::Event> events;
+
+    // For each event we sample particles of the same type uniformly in eta
+    const float min_eta = -5;
+    const float max_eta = 5;
+    const float step_size = 0.5;
+    const float energy = 50 * CLHEP::MeV;
+    std::vector<TestHelpers::ParticleType> ptype = {
+        TestHelpers::ParticleTypes::Photon,
+        TestHelpers::ParticleTypes::Electron,
+        TestHelpers::ParticleTypes::Positron,
+        TestHelpers::ParticleTypes::Proton};
+
+    // Particle sampler on the ID-calorimeter boundary
+    TestHelpers::IDCaloBoundarySampler sampler;
+
+    for (const auto& type : ptype) {
+      TestHelpers::ParticleContainer particles = sampler.uniformEtaSample(
+          type.pid, energy, min_eta, max_eta, step_size);
+
+      // energy string rounded to 2 decimal places
+      std::stringstream estring;
+      estring << std::fixed << std::setprecision(2) << energy;
+      std::string evt_label = "$ E=" + estring.str() + R"(\,\text{MeV}\,)"
+          + std::string(type.label) + "$";
+      // Construct the event with the particle container and event label
+      TestHelpers::Event evt(particles, evt_label);
+
+      events.emplace_back(evt);
+    }
+
+    return events;
   }();
 };
 
-class TransportTests : public ::testing::TestWithParam<TestHelpers::Particle>
+class TransportTests : public ::testing::TestWithParam<TestHelpers::Event>
 {
 protected:
   static G4RunManager* runManager;
@@ -55,7 +90,9 @@ protected:
         G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
 
     // Construct the detector
-    runManager->SetUserInitialization(new DetectorConstruction);
+    auto* detectorConstruction = new DetectorConstruction();
+    detectorConstruction->setUseAtlasField(TestEnvironment::USE_ATLAS_FIELD);
+    runManager->SetUserInitialization(detectorConstruction);
 
     // Set verbosity of the tracking manager
     G4TrackingManager* trackingManager =
@@ -95,7 +132,7 @@ G4RunManager* TransportTests::runManager = nullptr;
 TEST_P(TransportTests, ParticleTransportTest)
 {
   // Retrieve the particle to be transported
-  const TestHelpers::Particle& particle = GetParam();
+  const TestHelpers::Event evt = GetParam();
   // Create the output directory of the test
   const std::string output_dir =
       TestHelpers::IOManager::create_test_output_dir();
@@ -104,7 +141,7 @@ TEST_P(TransportTests, ParticleTransportTest)
   auto* actionInitialization = new ActionInitialization();
 
   // Tell the action initialization to set the particl
-  actionInitialization->set_particle(&particle);
+  actionInitialization->set_particle_container(&evt.get_container());
   runManager->SetUserInitialization(actionInitialization);
 
   // Initialize G4 kernel
@@ -127,14 +164,26 @@ TEST_P(TransportTests, ParticleTransportTest)
 
   // Run the python script to plot the transport and check that it runs
   // successfully
-  ASSERT_TRUE(system(("python3 " + TestEnvironment::PYTHON_SCRIPT + " --input "
-                      + transport_output_path + " --output " + plot_output_path)
-                         .c_str())
-              == 0);
+  std::string command = "python3 " + TestEnvironment::PYTHON_SCRIPT
+      + " --input " + transport_output_path + " --output " + plot_output_path
+      + " --calo_layer_csv " + TestEnvironment::CALO_LAYER_DATA + " --label \""
+      + evt.get_label() + "\"";
+
+  if (TestEnvironment::ZOOM_IN) {
+    command += " --track_zoom";
+  }
+
+  ASSERT_TRUE(system(command.c_str()) == 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ParticleTransportTests,
     TransportTests,
-    ::testing::ValuesIn(TestEnvironment::PARTICLE_CONTAINER.get()),
-    testing::PrintToStringParamName());
+    ::testing::ValuesIn(TestEnvironment::EVENT_VECTOR),
+    [](const testing::TestParamInfo<TransportTests::ParamType>& info)
+        -> std::string
+    {
+      std::ostringstream name;
+      name << "Event_" << info.index;
+      return name.str();
+    });

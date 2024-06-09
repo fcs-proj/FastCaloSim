@@ -1,5 +1,4 @@
-#ifndef PARTICLE_SAMPLER_H
-#define PARTICLE_SAMPLER_H
+#pragma once
 
 #include <vector>
 
@@ -34,12 +33,9 @@ public:
   }
 
   // Add a particle based on pid, eta, ekin, phi, pos
-  inline void addParticle(
-      int pid, float eta, float ekin, float phi, const G4ThreeVector& pos)
+  inline void addParticle(int pid, float ekin, RPhiEta pos, RPhiEta dir)
   {
-    G4ThreeVector dir;
-    dir.setRhoPhiEta(1.0, phi, eta);
-    Particle particle = {pid, ekin, pos, dir.unit()};
+    Particle particle = {pid, ekin, pos.get(), dir.get().unit()};
     m_particles.emplace_back(particle);
   }
 
@@ -54,5 +50,3 @@ private:
 };
 
 }  // namespace TestHelpers
-
-#endif  // PARTICLE_SAMPLER_H

@@ -1,5 +1,5 @@
-#ifndef _MAGFIELDPLUGIN_H_
-#define _MAGFIELDPLUGIN_H_
+#pragma once
+
 class G4MagneticField;
 class MagFieldPlugin
 {
@@ -17,5 +17,3 @@ private:
 
   MagFieldPlugin& operator=(const MagFieldPlugin&) = delete;
 };
-
-#endif

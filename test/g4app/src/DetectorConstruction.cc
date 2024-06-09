@@ -1,11 +1,11 @@
 #include "DetectorConstruction.hh"
 
 #include <G4MagneticField.hh>
+#include "G4UniformMagField.hh"
 
 #include "FastSimModel.hh"
 #include "G4Box.hh"
 #include "G4FieldManager.hh"
-#include "G4GlobalMagFieldMessenger.hh"
 #include "G4LogicalVolume.hh"
 #include "G4NistManager.hh"
 #include "G4PVPlacement.hh"
@@ -45,40 +45,51 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // Add the cylinders of the ID-Calo boundary to the fast simulation trigger
   // region
-  IDCaloBoundaryDimension boundary;
-  add_cylinder(world_log, detectorRegion, boundary.barrel, "Barrel");
-  add_cylinder(
-      world_log, detectorRegion, boundary.barrelEndcap, "BarrelEndcap");
-  add_cylinder(
-      world_log, detectorRegion, boundary.innerBeamPipe, "InnerBeamPipe");
-  add_cylinder(world_log,
-               detectorRegion,
-               boundary.innerBeamPipeEndcap,
-               "InnerBeamPipeEndcap");
-  add_cylinder(
-      world_log, detectorRegion, boundary.outerBeamPipe, "OuterBeamPipe");
-
+  TestHelpers::IDCaloBoundary boundary;
+  std::map<std::string, TestHelpers::Cylinder> cylinders = boundary.getCylinders();
+  for (const auto& [name, cyl] : cylinders) {
+    add_cylinder(world_log, detectorRegion, cyl, name);
+  }
+  
   return world_phys;
 }
 
 void DetectorConstruction::ConstructSDandField()
 {
-  // Load the ATLAS magnetic field
-  GeoPluginLoader<MagFieldPlugin> loader;
-  MagFieldPlugin* plugin = loader.load(ATLASMagneticFieldMapPluginLib);
-  G4MagneticField* field = plugin->getField();
-
-  if (field == nullptr) {
-    G4cerr << "Failed to load magnetic field plugin" << G4endl;
-    abort();
-  }
-  fField.Put(field);
-
+  // Retrieve the static Geant4 field manager
   G4FieldManager* fieldMgr =
-      G4TransportationManager::GetTransportationManager()->GetFieldManager();
+        G4TransportationManager::GetTransportationManager()->GetFieldManager();
 
-  fieldMgr->SetDetectorField(dynamic_cast<G4MagneticField*>(fField.Get()));
-  fieldMgr->CreateChordFinder(fField.Get());
+  if (fUseAtlasField){
+    G4cout<<"*************************************************"<<G4endl;
+    G4cout<< "          Using ATLAS magnetic field"           << G4endl;
+    G4cout<<"*************************************************"<<G4endl;
+
+    // Load the ATLAS magnetic field
+    GeoPluginLoader<MagFieldPlugin> loader;
+    MagFieldPlugin* plugin = loader.load(ATLASMagneticFieldMapPluginLib);
+    G4MagneticField* field = plugin->getField();
+
+    if (field == nullptr) {
+        G4cerr << "Failed to load magnetic field plugin" << G4endl;
+        abort();
+    }
+    fField.Put(field);
+
+    fieldMgr->SetDetectorField(dynamic_cast<G4MagneticField*>(fField.Get()));
+    fieldMgr->CreateChordFinder(fField.Get());
+  } else {
+
+    G4cout<<"*************************************************"<<G4endl;
+    G4cout<< "          Using uniform magnetic field"          << G4endl;
+    G4cout<<"*************************************************"<<G4endl;
+
+    auto uniformMagField     = new G4UniformMagField(G4ThreeVector(0.0, 0.0, fMagFieldStrength));
+    fieldMgr->SetDetectorField(uniformMagField);
+    fieldMgr->CreateChordFinder(uniformMagField);  
+
+  }
+
 
   // Create the fast simulation model
   auto triggerRegion =
@@ -88,7 +99,7 @@ void DetectorConstruction::ConstructSDandField()
 
 void DetectorConstruction::add_cylinder(G4LogicalVolume* world_log,
                                         G4Region* region,
-                                        Cylinder cyl,
+                                        TestHelpers::Cylinder cyl,
                                         const std::string& name)
 {
   // Compute the cylinder half-length

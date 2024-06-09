@@ -1,6 +1,9 @@
 #ifndef FASTSIMMODEL_HH
 #define FASTSIMMODEL_HH
 
+#include "FastCaloSim/Transport/G4CaloTransportTool.h"
+
+
 #include <G4FieldTrack.hh>
 #include <G4String.hh>                // for G4String
 #include <G4ThreeVector.hh>           // for G4ThreeVector
@@ -39,8 +42,10 @@ class FastSimModel : public G4VFastSimulationModel
     std::map<std::string, int> fNEventMap;
     // Current number of tracks processed by this model for the current event and transport path
     std::map<std::string, int> fNFastTrackMap;
-
+    // Writes the transport vector to a csv file
     void writeTransportData(std::vector<G4FieldTrack> step_vector);
+    // Geant4 transport tool
+    G4CaloTransportTool fTransportTool;
 
 };
 #endif /* FASTSIMMODEL_HH */

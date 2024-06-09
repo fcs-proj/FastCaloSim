@@ -2,8 +2,7 @@
   Copyright (C) 2002-2017 CERN for the benefit of the ATLAS collaboration
 */
 
-#ifndef GEOPLUGINLOADER_H_
-#define GEOPLUGINLOADER_H_
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -77,5 +76,3 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   Plugin* factory = (Plugin*)F();
   return factory;
 }
-
-#endif
