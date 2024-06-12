@@ -36,7 +36,8 @@ link_directories(${LibXml2_LIBRARY_DIRS})
 add_definitions(${LibXml2_CFLAGS_OTHER})
 # CLHEP for random number generation
 find_package(CLHEP REQUIRED)
-
+# Eigen for extrapolation
+find_package(Eigen3 REQUIRED)
 # HepPDT for particle data table
 add_subdirectory(thirdparty/HepPDT)
 
@@ -49,6 +50,7 @@ add_library(FastCaloSim_FastCaloSim SHARED "")
 add_subdirectory(source/Core)
 add_subdirectory(source/Geometry)
 add_subdirectory(source/Transport)
+add_subdirectory(source/Extrapolation)
 
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
