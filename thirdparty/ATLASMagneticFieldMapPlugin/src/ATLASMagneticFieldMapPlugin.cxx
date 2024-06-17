@@ -61,7 +61,7 @@ ATLASMagneticFieldMapPlugin::~ATLASMagneticFieldMapPlugin()
 G4MagneticField* ATLASMagneticFieldMapPlugin::getField()
 {
   MagField::AtlasFieldSvc* atlasFieldSvs = new MagField::AtlasFieldSvc(
-      (TEST_MAG_FIELD_DIR + std::string("bmagatlas_09_fullAsym20400.data"))
+      (TEST_BASE_DIR + std::string("data/fieldmap/bmagatlas_09_fullAsym20400.data"))
           .c_str(),
       true);
   atlasFieldSvs->handle();

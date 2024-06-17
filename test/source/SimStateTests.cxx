@@ -1,18 +1,10 @@
+#include "SimStateTests.h"
+
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloDetDescrElement.h"
-
-class TFCSSimulationStateTest : public ::testing::Test
-{
-protected:
-  CLHEP::HepRandomEngine* m_random_engine;
-
-  void SetUp() override { m_random_engine = new CLHEP::RanluxEngine(); }
-
-  void TearDown() override { delete m_random_engine; }
-};
 
 TEST_F(TFCSSimulationStateTest, Initialization)
 {
@@ -71,10 +63,4 @@ TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)
   uint32_t hash = TFCSSimulationState::getAuxIndex("testInfo");
   sim_state.setAuxInfo<double>(hash, 123.456);
   EXPECT_DOUBLE_EQ(sim_state.getAuxInfo<double>(hash), 123.456);
-}
-
-auto main(int argc, char** argv) -> int
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

@@ -6,6 +6,7 @@
 #define FastCaloSimCaloExtrapolation_H
 
 #include <CLHEP/Vector/ThreeVector.h>
+#include <FastCaloSim/FastCaloSim_export.h>
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 
@@ -23,7 +24,7 @@ struct CylinderIntersections
   unsigned int number;
 };
 
-class FastCaloSimCaloExtrapolation : public ISF_FCS::MLogging
+class FASTCALOSIM_EXPORT FastCaloSimCaloExtrapolation : public ISF_FCS::MLogging
 {
 public:
   FastCaloSimCaloExtrapolation();
@@ -173,8 +174,8 @@ private:
                     const Vector3D& dirB) const -> Vector3D;
 
   // uniquely defined ID-Calo surfaces
-  std::vector<float> m_CaloBoundaryR {1148.0, 120.0, 41.0};
-  std::vector<float> m_CaloBoundaryZ {3550.0, 4587.0, 4587.0};
+  std::vector<double> m_CaloBoundaryR {1148.0, 120.0, 41.0};
+  std::vector<double> m_CaloBoundaryZ {3550.0, 4587.0, 4587.0};
 
   // FastCaloSim geometry helper
   ICaloGeometry* m_geo;

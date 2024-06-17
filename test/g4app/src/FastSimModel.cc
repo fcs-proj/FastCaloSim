@@ -29,25 +29,32 @@
 #include <G4Track.hh>                    
 #include <G4VFastSimulationModel.hh>     
 #include <G4Region.hh>                
-#include "FastCaloSim/Transport/G4CaloTransportTool.h" 
 #include "G4FieldTrackUpdator.hh"         
 #include "G4FieldTrack.hh"                
 #include "G4RunManager.hh"
+#include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Core/TFCSExtrapolationState.h"
+
 
 class G4ParticleDefinition;
 
 
 FastSimModel::FastSimModel(G4String aModelName, G4Region* aEnvelope)
   : G4VFastSimulationModel(aModelName, aEnvelope)
+  , fDoSimulation(true)
+  , m_debug(false)
+  , fParametrization(nullptr)
 {
   fTransportTool.initializePropagator();
+  m_random_engine.setSeed(42);
 }
 
-FastSimModel::FastSimModel(G4String aModelName)
-  : G4VFastSimulationModel(aModelName)
-{
-  fTransportTool.initializePropagator();
-}
+// FastSimModel::FastSimModel(G4String aModelName)
+//   : G4VFastSimulationModel(aModelName)
+// {
+//   fTransportTool.initializePropagator();
+//   m_random_engine.setSeed(42);
+// }
 
 
 FastSimModel::~FastSimModel() {}
@@ -68,74 +75,76 @@ G4bool FastSimModel::ModelTrigger(const G4FastTrack& aFastTrack)
 
 void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
 {
-  // Current event number
-  G4int n_event = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+
+  // Get Geant4 primary track
+  const G4Track * track = aFastTrack.GetPrimaryTrack(); 
+
+  // Set the FastCaloSim truth state
+  TFCSTruthState truth;
+  truth.set_pdgid( track -> GetDefinition() -> GetPDGEncoding());
   
-  // Counts the number of tracks processed by this model for the current event and test iteration
-  if(n_event != fNEventMap[fTransportOutputPath]){
-    fNEventMap[fTransportOutputPath] = n_event;
-    fNFastTrackMap[fTransportOutputPath] = 0;
+  // Set the kinematics of the FastCaloSim truth state
+  truth.SetPtEtaPhiM(track -> GetMomentum().perp(), 
+                    track -> GetMomentum().eta(), 
+                    track -> GetMomentum().phi(), 
+                      track -> GetDefinition() -> GetPDGMass());
+  
+  // Set the vertex of the FastCaloSim truth state
+  truth.set_vertex( track -> GetPosition().x(), 
+                    track -> GetPosition().y(), 
+                    track -> GetPosition().z());
+
+  if(m_debug){
+    std::cout << "[FastSimModel::DoIt] Received particle with pid=" 
+              << truth.pdgid() << std::endl;
+
+    std::cout << "[FastSimModel::DoIt] Particle has position x=" << truth.X() 
+              << " y=" << truth.Y() 
+              << " z=" << truth.Z() 
+              << " eta=" << truth.Eta() 
+              << " phi=" << truth.Phi() 
+              << " r=" << truth.Perp() 
+              << " ekin=" << truth.Ekin() << std::endl;
+
+    std::cout << "[FastSimModel::DoIt] Particle has momentum px=" << track->GetMomentum().x() 
+              << " py=" << track->GetMomentum().y() 
+              << " pz=" << track->GetMomentum().z() 
+              << " p=" << track->GetMomentum().mag() 
+              << " pt=" << track->GetMomentum().perp() 
+              << " eta=" << track->GetMomentum().eta() << std::endl;
   }
 
-  int pid = aFastTrack.GetPrimaryTrack()->GetParticleDefinition()->GetPDGEncoding();
-  float eta = aFastTrack.GetPrimaryTrack()->GetPosition().eta();
-  float phi = aFastTrack.GetPrimaryTrack()->GetPosition().phi();
-  float r = aFastTrack.GetPrimaryTrack()->GetPosition().perp();
-  float ekin = aFastTrack.GetPrimaryTrack()->GetKineticEnergy();
-
-  std::cout<<"[FastSimModel::DoIt] Processing event "<<n_event<<" track "<<fNFastTrackMap[fTransportOutputPath]<<std::endl;
-  std::cout<<"[FastSimModel::DoIt] Received particle with pid=" << pid << " eta="<<eta<< " phi="<<phi<<" r="<<r<<" ekin="<<ekin<<" mom_dir_eta= " <<  aFastTrack.GetPrimaryTrack()->GetMomentumDirection().eta()<<std::endl;
-
+  // Perform the FastCaloSim transportation
   std::vector<G4FieldTrack> step_vector = fTransportTool.transport(*aFastTrack.GetPrimaryTrack());
+  // Add the track to the vector of tracks
+  TestHelpers::Track trk( step_vector );
+  fTransportTracks.addTrack(trk);
 
-  // write the transport data to a file if requested
-  if (!fTransportOutputPath.empty()) { 
-    writeTransportData(step_vector);
+  // Do the extrapolation
+  TFCSExtrapolationState extrap;
+  fExtrapolationTool.extrapolate(extrap, &truth, step_vector);
+  fExtrapolations.addState(extrap);
+
+  // Do the simulation if requested
+  if (fDoSimulation) {
+
+    if(!fParametrization){
+      std::cerr << "[FastSimModel::DoIt] No parametrization set!" << std::endl;
+      return;
+    }
+    // set the random engine
+    TFCSSimulationState simul;
+    simul.setRandomEngine(&m_random_engine);
+
+    // Simulate the energy response of the particle
+    fParametrization->simulate(simul, &truth, &extrap);
+
+    // Add the simulation state to the vector of simulation states
+    fSimulationStates.emplace_back(simul);
   }
 
   // Kill particle
   aFastStep.KillPrimaryTrack();
   aFastStep.SetPrimaryTrackPathLength(0.0);
 
-  // Increase processed track number
-  fNFastTrackMap[fTransportOutputPath]++;
-
-}
-
-void FastSimModel::writeTransportData(std::vector<G4FieldTrack> step_vector){
-
-  // Check if this is the first call to DoIt
-  bool initCall = (fNEventMap[fTransportOutputPath] == 0 && fNFastTrackMap[fTransportOutputPath] == 0);
-
-  // Save the step vector as csv in case that saveTransport was set
-  std::ofstream transport_file;
-  if (initCall) {
-    // If its the first call, create a new file
-    transport_file.open(fTransportOutputPath);
-  } else {
-    // If its not the first call, append to the existing file
-    transport_file.open(fTransportOutputPath, std::ios::app);
-  } 
-
-  if (!transport_file.is_open()) {
-    G4cerr << "Error: Unable to open transport output file: " << fTransportOutputPath;
-  }
-  
-  if(fNEventMap[fTransportOutputPath] == 0 && fNFastTrackMap[fTransportOutputPath] == 0){
-    transport_file << "event,track,x,y,z,r,eta,phi" << std::endl;
-  }
-
-  for (auto& step : step_vector) {
-    transport_file  << fNEventMap[fTransportOutputPath] << "," 
-                    << fNFastTrackMap[fTransportOutputPath] << ","
-                    << step.GetPosition().x() << "," 
-                    << step.GetPosition().y() << "," 
-                    << step.GetPosition().z() << ","
-                    << step.GetPosition().rho() << ","
-                    << step.GetPosition().eta() << ","
-                    << step.GetPosition().phi()
-                    << std::endl;
-  }
-  transport_file.close();
-  
 }

@@ -16,6 +16,7 @@ public:
   explicit Event(ParticleContainer container)
       : m_ptcl_container(std::move(container))
       , m_event_id(-1)
+      , m_print_string("Event")
   {
   }
 
@@ -58,19 +59,14 @@ private:
   std::string m_print_string;
 
   // Friend method to let google test know how to label a test parametrized by
-  // Event Either take manual set print string or event id
+  // If event_id is set, the print string will be the label + "_" + event_id
   friend void PrintTo(const Event& evt, std::ostream* os)
   {
-    if (evt.m_print_string.empty()) {
-      if (evt.m_event_id == -1) {
-        std::runtime_error(
-            "Error: you must either set a print string or an event id!");
-      }
-      *os << "Event_" + std::to_string(evt.m_event_id);
-      return;
+    if (evt.m_event_id == -1) {
+      *os << evt.m_print_string;
+    } else {
+      *os << evt.m_print_string + "_" + std::to_string(evt.m_event_id);
     }
-
-    *os << evt.m_print_string;
   }
 };
 

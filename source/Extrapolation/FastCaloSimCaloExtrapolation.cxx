@@ -90,7 +90,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
     ATH_MSG_DEBUG(
         "[ExtrapolateToID] Testing condition 1: hit z=" << extPos.z());
     if (surfID > 0
-        && std::abs(extPos.z()) < m_CaloBoundaryZ.at(surfID - 1) - tolerance)
+        && std::abs(extPos.z()) < m_CaloBoundaryZ.at(surfID - 1) + tolerance)
       continue;
     ATH_MSG_DEBUG("[ExtrapolateToID] Passed condition 1.");
 
@@ -98,7 +98,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
     ATH_MSG_DEBUG(
         "[ExtrapolateToID] Testing condition 2: hit r=" << extPos.perp());
     if (surfID < m_CaloBoundaryR.size() - 1
-        && extPos.perp() < m_CaloBoundaryR.at(surfID + 1) - tolerance)
+        && extPos.perp() < m_CaloBoundaryR.at(surfID + 1) + tolerance)
       continue;
     ATH_MSG_DEBUG("[ExtrapolateToID] Passed condition 2.");
 
@@ -265,7 +265,7 @@ bool FastCaloSimCaloExtrapolation::extrapolateToCylinder(
                   << cylR << ",Z=" << cylZ
                   << ")] Extrapolating single hit position to surface.");
     extPos = projectOnCylinder(cylR, cylZ, hitPos);
-    momDir = caloSteps.at(0).GetMomentum();
+    momDir = caloSteps.at(0).GetMomentumDir();
     return true;
   }
 
@@ -324,8 +324,8 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
     // check if one of the hit positions already lays on the cylinder surface
     if (cylPosHit1 == ON || cylPosHit2 == ON) {
       extPos = cylPosHit1 == ON ? hitPos1 : hitPos2;
-      momDir = cylPosHit1 == ON ? caloSteps.at(hitID - 1).GetMomentum()
-                                : caloSteps.at(hitID).GetMomentum();
+      momDir = cylPosHit1 == ON ? caloSteps.at(hitID - 1).GetMomentumDir()
+                                : caloSteps.at(hitID).GetMomentumDir();
       ATH_MSG_DEBUG("[extrapolateWithIntersection(R="
                     << cylR << ",Z=" << cylZ
                     << ")] Hit position already on cylinder surface.");
@@ -399,8 +399,8 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
         double distHitPos2 =
             (hitPos2 - projectOnCylinder(cylR, cylZ, hitPos2)).mag();
         momDir = distHitPos1 < distHitPos2
-            ? caloSteps.at(hitID - 1).GetMomentum()
-            : caloSteps.at(hitID).GetMomentum();
+            ? caloSteps.at(hitID - 1).GetMomentumDir()
+            : caloSteps.at(hitID).GetMomentumDir();
         extPos = selectedIntersection;
         return true;
       }
@@ -464,8 +464,9 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithPCA(
           (hitPos1 - projectOnCylinder(cylR, cylZ, hitPos1)).mag();
       double distHitPos2 =
           (hitPos2 - projectOnCylinder(cylR, cylZ, hitPos2)).mag();
-      momDir = distHitPos1 < distHitPos2 ? caloSteps.at(hitID - 1).GetMomentum()
-                                         : caloSteps.at(hitID).GetMomentum();
+      momDir = distHitPos1 < distHitPos2
+          ? caloSteps.at(hitID - 1).GetMomentumDir()
+          : caloSteps.at(hitID).GetMomentumDir();
 
       minDistToSurface = tmpMinDistToSurface;
     }

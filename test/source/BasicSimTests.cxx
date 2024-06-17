@@ -1,4 +1,4 @@
-#include <memory>
+#include "BasicSimTests.h"
 
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
@@ -7,58 +7,6 @@
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
-#include "FastCaloSim/Geometry/CaloGeometryFromFile.h"
-#include "TFile.h"
-
-class BasicSimTests : public ::testing::Test
-{
-protected:
-  static CaloGeometryFromFile* geo;
-  static TFile* param_file;
-
-  // Per-test-suite set-up.
-  // Called before the first test in this test suite.
-  // Note: this does not work if incurred via ctest
-  static void SetUpTestSuite()
-  {
-    // Load geometry
-    geo = new CaloGeometryFromFile();
-    const std::string geo_tag = "ATLAS-R2-2016-01-00-01";
-    const std::string geo_path = std::string(TEST_GEO_DIR) + geo_tag + ".root";
-    const std::string hash_file_path =
-        std::string(TEST_GEO_DIR) + "cellId_vs_cellHashId_map.txt";
-    const std::string fcal1_geo_path =
-        std::string(TEST_GEO_DIR) + "FCal1-electrodes.sorted.HV.09Nov2007.dat";
-    const std::string fcal2_geo_path =
-        std::string(TEST_GEO_DIR) + "FCal2-electrodes.sorted.HV.April2011.dat";
-    const std::string fcal3_geo_path =
-        std::string(TEST_GEO_DIR) + "FCal3-electrodes.sorted.HV.09Nov2007.dat";
-    geo->LoadGeometryFromFile(geo_path, geo_tag, hash_file_path);
-    geo->LoadFCalGeometryFromFiles(
-        {fcal1_geo_path, fcal2_geo_path, fcal3_geo_path});
-
-    // Load Parmaetrization file
-    const std::string input_file_path = std::string(TEST_PARAM_DIR)
-        + "TFCSParam_pid22_Mom16384_131072_eta_15_30.root";
-    // param_file = std::unique_ptr<TFile> {TFile::Open(input_file_path.c_str(),
-    // "READ")};
-    param_file = new TFile(input_file_path.c_str(), "READ");
-  }
-
-  // Per-test-suite tear-down.
-  // Called after the last test in this test suite.
-  // Note: this does not work if incurred via ctest
-  static void TearDownTestSuite()
-  {
-    param_file->Close();
-    delete param_file;
-    delete geo;
-  }
-};
-
-// Define static members to make them accessible in the tests
-CaloGeometryFromFile* BasicSimTests::geo = nullptr;
-TFile* BasicSimTests::param_file = nullptr;
 
 TEST_F(BasicSimTests, ReadParamFile)
 {
@@ -72,26 +20,6 @@ TEST_F(BasicSimTests, CheckParamObject)
   TFCSParametrizationBase* param = static_cast<TFCSParametrizationBase*>(
       param_file->Get(paramsObject.c_str()));
   EXPECT_NE(param, nullptr);
-}
-
-TEST_F(BasicSimTests, GetGeoCellBySamplingEtaPhi)
-{
-  const CaloDetDescrElement* cell = geo->getDDE(2, 0.24, 0.24);
-  long int cell_id = cell->identify();
-  EXPECT_EQ(cell_id, 3296654795753914368);
-  EXPECT_EQ(cell->getSampling(), 2);
-  EXPECT_NEAR(cell->eta(), 0.238859, 1e-4);
-  EXPECT_NEAR(cell->phi(), 0.228048, 1e-4);
-}
-
-TEST_F(BasicSimTests, GetGeoCellByIdentifier)
-{
-  const CaloDetDescrElement* cell = geo->getDDE(3260641881524011008);
-  long int cell_id = cell->identify();
-  EXPECT_EQ(cell_id, 3260641881524011008);
-  EXPECT_EQ(cell->getSampling(), 2);
-  EXPECT_NEAR(cell->eta(), -0.411563, 1e-4);
-  EXPECT_NEAR(cell->phi(), 1.63532, 1e-4);
 }
 
 TEST_F(BasicSimTests, DoDummySimulation)
