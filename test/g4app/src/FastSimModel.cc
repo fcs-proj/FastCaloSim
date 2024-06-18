@@ -49,14 +49,6 @@ FastSimModel::FastSimModel(G4String aModelName, G4Region* aEnvelope)
   m_random_engine.setSeed(42);
 }
 
-// FastSimModel::FastSimModel(G4String aModelName)
-//   : G4VFastSimulationModel(aModelName)
-// {
-//   fTransportTool.initializePropagator();
-//   m_random_engine.setSeed(42);
-// }
-
-
 FastSimModel::~FastSimModel() {}
 
 

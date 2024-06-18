@@ -26,7 +26,6 @@ class FastSimModel : public G4VFastSimulationModel
 {
  public:
   FastSimModel(G4String, G4Region*);
-  FastSimModel(G4String);
   ~FastSimModel();
 
   virtual G4bool ModelTrigger(const G4FastTrack&) final;
