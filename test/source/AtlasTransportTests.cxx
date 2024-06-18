@@ -59,8 +59,7 @@ TEST_P(AtlasTransportTests, AtlasTransport)
   ASSERT_TRUE(system(transport_exec.c_str()) == 0);
 
   // Serialize the extrapolation states to json file
-  TestHelpers::ExtrapolationStateContainer extrapolations =
-      model->GetExtrapolations();
+  TestHelpers::ExtrapStateContainer extrapolations = model->GetExtrapolations();
   extrapolations.serialize(
       AtlasTransportTestConfig::extrapolation_output_path());
 

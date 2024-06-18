@@ -14,7 +14,8 @@
 #include <G4Types.hh>                 
 #include "G4VFastSimulationModel.hh"
 #include "TestHelpers/TrackContainer.h"
-#include "TestHelpers/ExtrapolationStateContainer.h"
+#include "TestHelpers/ExtrapStateContainer.h"
+#include "TestHelpers/SimStateContainer.h"
 
 class G4FastTrack;
 class G4ParticleDefinition;
@@ -36,9 +37,9 @@ class FastSimModel : public G4VFastSimulationModel
   // Get the current track container
   auto GetTransportTracks() const -> TestHelpers::TrackContainer { return fTransportTracks; }
   // Get extrapolation states
-  auto GetExtrapolations() const -> TestHelpers::ExtrapolationStateContainer { return fExtrapolations; }
+  auto GetExtrapolations() const -> TestHelpers::ExtrapStateContainer { return fExtrapolations; }
   // Get simulation states
-  auto GetSimulationStates() const -> std::vector<TFCSSimulationState> { return fSimulationStates; }
+  auto GetSimulationStates() const -> TestHelpers::SimStateContainer { return fSimulationStates; }
 
   // Reset the current state of the model
   void Reset() { 
@@ -65,9 +66,9 @@ class FastSimModel : public G4VFastSimulationModel
   // Current vector of tracks
   TestHelpers::TrackContainer fTransportTracks;
   // Current vector of extrapolations
-  TestHelpers::ExtrapolationStateContainer fExtrapolations;
+  TestHelpers::ExtrapStateContainer fExtrapolations;
   // Current vector of simulation states
-  std::vector<TFCSSimulationState> fSimulationStates;
+  TestHelpers::SimStateContainer fSimulationStates;
   // Core FastCaloSim API
   TFCSParametrizationBase* fParametrization;
 
