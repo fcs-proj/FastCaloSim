@@ -1,3 +1,5 @@
+#include "TruthStateTests.h"
+
 #include <gtest/gtest.h>
 
 #include "FastCaloSim/Core/TFCSTruthState.h"

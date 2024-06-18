@@ -7,17 +7,12 @@ include(../cmake/folders.cmake)
 include(../cmake/silencer.cmake)
 include(../cmake/tests.cmake)
 
-# ---- Test Data Location ----
-add_definitions(-DTEST_PARAM_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/param/")
-add_definitions(-DTEST_GEO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/geometry/")
-add_definitions(-DTEST_MAG_FIELD_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/fieldmap/")
+# ---- Test Base Directory ----
+add_definitions(-DTEST_BASE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/")
 
-# ---- Python Scripts Location ----
-add_definitions(-DPYTHON_SCRIPT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/python/")
-
-# ---- Test Output Location ----
-add_definitions(-DTEST_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output/")
+# ---- Create test output Location ----
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/output)
+add_definitions(-DTEST_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output/")
 
 # ---- Dependencies ----
 
@@ -37,6 +32,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 # Deactivate compiler warnings and static analyzers
+# Note: test should be linked with gtest_main unless
+# you want to write your own main function
 deactivate_checks(gtest gtest_main 
                   gmock gmock_main
                   FastCaloSim_FastCaloSim
@@ -60,7 +57,8 @@ target_compile_definitions(g4app PRIVATE ATLASMagneticFieldMapPluginLib="$<TARGE
 include(GoogleTest)
 
 #Glob test sources
-file(GLOB TEST_SOURCES "source/*_tests.cxx")
+file(GLOB TEST_SOURCES "source/*Tests.cxx")
+
 
 # Create test executables
 foreach(TEST_SOURCE ${TEST_SOURCES})
@@ -68,8 +66,13 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
   create_test_executable(${TEST_NAME} ${TEST_SOURCE})
 endforeach()
 
-#Tests that are Geant4 dependent
-target_link_libraries(transport_tests PRIVATE g4app)
+# Boost is used for transport / extrapolation data serialization in the transport test
+find_package(Boost REQUIRED COMPONENTS serialization)
+include_directories(${Boost_INCLUDE_DIRS})
+
+# Tests that are Geant4 dependent
+target_link_libraries(AtlasTransportTests PRIVATE g4app ${Boost_LIBRARIES})
+target_link_libraries(AtlasSimTests PRIVATE g4app)
 
 
 # ---- End-of-file commands ----

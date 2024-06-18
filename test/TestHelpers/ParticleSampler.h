@@ -99,15 +99,20 @@ public:
     if (min_eta > max_eta) {
       throw std::runtime_error("min_eta must be less than or equal to max_eta");
     }
-    if (step_size <= 0 || step_size > (max_eta - min_eta)) {
+    if (step_size < 0 || step_size > (max_eta - min_eta)) {
       throw std::runtime_error(
-          "step_size must be greater than zero and less than or equal to "
+          "step_size must be zero or greater than zero and less than or equal "
+          "to "
           "max_eta - min_eta");
     }
 
     // Calculate the number of steps
-    int n_steps =
-        static_cast<int>(std::floor((max_eta - min_eta) / step_size)) + 1;
+    // If min_eta == max_eta, we still want to sample at least once
+    int n_steps = 1;
+    if (!(min_eta == max_eta)) {
+      n_steps =
+          static_cast<int>(std::floor((max_eta - min_eta) / step_size)) + 1;
+    }
 
     std::vector<float> etas;
     etas.reserve(n_steps);

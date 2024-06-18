@@ -2,13 +2,19 @@
 #define FASTSIMMODEL_HH
 
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
+#include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
+#include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#include <CLHEP/Random/RanluxEngine.h>
 
 
 #include <G4FieldTrack.hh>
-#include <G4String.hh>                // for G4String
-#include <G4ThreeVector.hh>           // for G4ThreeVector
-#include <G4Types.hh>                 // for G4bool, G4double
-#include "G4VFastSimulationModel.hh"  // for G4VFastSimulationModel
+#include <G4String.hh>                
+#include <G4ThreeVector.hh>           
+#include <G4Types.hh>                 
+#include "G4VFastSimulationModel.hh"
+#include "TestHelpers/TrackContainer.h"
+#include "TestHelpers/ExtrapolationStateContainer.h"
 
 class G4FastTrack;
 class G4ParticleDefinition;
@@ -20,7 +26,6 @@ class FastSimModel : public G4VFastSimulationModel
 {
  public:
   FastSimModel(G4String, G4Region*);
-  FastSimModel(G4String);
   ~FastSimModel();
 
   virtual G4bool ModelTrigger(const G4FastTrack&) final;
@@ -28,24 +33,51 @@ class FastSimModel : public G4VFastSimulationModel
   virtual void DoIt(const G4FastTrack&, G4FastStep&) final;
   void DoStep(G4FieldTrack&, G4Navigator*);
 
-  void saveTransport(std::string outputPath) { 
-    fTransportOutputPath = outputPath;
-    fNEventMap[fTransportOutputPath] = 0;
-    fNFastTrackMap[fTransportOutputPath] = 0;
+  // Get the current track container
+  auto GetTransportTracks() const -> TestHelpers::TrackContainer { return fTransportTracks; }
+  // Get extrapolation states
+  auto GetExtrapolations() const -> TestHelpers::ExtrapolationStateContainer { return fExtrapolations; }
+  // Get simulation states
+  auto GetSimulationStates() const -> std::vector<TFCSSimulationState> { return fSimulationStates; }
+
+  // Reset the current state of the model
+  void Reset() { 
+    fTransportTracks.clear();
+    fExtrapolations.clear();
+    fSimulationStates.clear();
     }
-    
-  std::string fTransportOutputPath = "";
+
+  // Set the boolean flag whether to do simulation
+  void doSimulation(G4bool doSimulation) { fDoSimulation = doSimulation; }
+  // Set the extrapolator tool
+  void setExtrapolationTool(FastCaloSimCaloExtrapolation tool) { fExtrapolationTool = tool; }
+  // Set debug flag 
+  void setDebug(bool debug) { m_debug = debug; }
+  // Set FastCaloSim parametrization
+  void setParametrization(TFCSParametrizationBase* param) { fParametrization = param; }
 
   private:
-    // Current event number for a specific transport path
-    // As we are re-using the same class instance for multiple tests, we map the event number to the transport path
-    std::map<std::string, int> fNEventMap;
-    // Current number of tracks processed by this model for the current event and transport path
-    std::map<std::string, int> fNFastTrackMap;
-    // Writes the transport vector to a csv file
-    void writeTransportData(std::vector<G4FieldTrack> step_vector);
-    // Geant4 transport tool
-    G4CaloTransportTool fTransportTool;
+
+  // Geant4 transport tool
+  G4CaloTransportTool fTransportTool;
+  // Extrapolation tool
+  FastCaloSimCaloExtrapolation fExtrapolationTool;
+  // Current vector of tracks
+  TestHelpers::TrackContainer fTransportTracks;
+  // Current vector of extrapolations
+  TestHelpers::ExtrapolationStateContainer fExtrapolations;
+  // Current vector of simulation states
+  std::vector<TFCSSimulationState> fSimulationStates;
+  // Core FastCaloSim API
+  TFCSParametrizationBase* fParametrization;
+
+  // Boolean flag whether to do the simulation
+  G4bool fDoSimulation;
+  
+  // Random engine
+  CLHEP::RanluxEngine m_random_engine;
+  // Boolean flag to enable debug output
+  bool m_debug;
 
 };
 #endif /* FASTSIMMODEL_HH */
