@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FastCaloSim/ directory | FastCaloSim</title>
+  <title>FastCaloSimCaloExtrapolation class | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,7 +49,8 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          FastCaloSim<span class="m-breadcrumb">/</span> <span class="m-thin">directory</span>
+          FastCaloSimCaloExtrapolation <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="FastCaloSimCaloExtrapolation_8h.html">&lt;FastCaloSimCaloExtrapolation.h&gt;</a></div>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -58,29 +59,66 @@
             <li>
               Reference
               <ul>
-                <li><a href="#subdirs">Directories</a></li>
-                <li><a href="#files">Files</a></li>
+                <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="subdirs">
-          <h2><a href="#subdirs">Directories</a></h2>
+        <section id="base-classes">
+          <h2><a href="#base-classes">Base classes</a></h2>
           <dl class="m-doc">
-            <dt>directory <a href="dir_f53789fc1a2c3da2e63c760ac6630d4b.html" class="m-doc">Core</a>/</dt>
-            <dd><span></span></dd>
-            <dt>directory <a href="dir_aa823d5c5c8602af5348a40ad058e23e.html" class="m-doc">Extrapolation</a>/</dt>
-            <dd><span></span></dd>
-            <dt>directory <a href="dir_d22115def6822a1b9973e90174884e74.html" class="m-doc">Geometry</a>/</dt>
-            <dd><span></span></dd>
-            <dt>directory <a href="dir_945a3893c9bdffdccd279dcc68fd0c46.html" class="m-doc">Transport</a>/</dt>
+            <dt>
+              class <a href="classISF__FCS_1_1MLogging.html" class="m-doc">ISF_FCS::MLogging</a>
+            </dt>
             <dd><span></span></dd>
           </dl>
         </section>
-        <section id="files">
-          <h2><a href="#files">Files</a></h2>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
-            <dt>file <a href="LinkDef_8h.html" class="m-doc">LinkDef.h</a></dt>
+            <dt id="a7c4c5aae23f83b42a6539af6f725ee29">
+              <span class="m-doc-wrap-bumper">enum <a href="#a7c4c5aae23f83b42a6539af6f725ee29" class="m-doc-self">SUBPOS</a> { </span><span class="m-doc-wrap"><a href="#a7c4c5aae23f83b42a6539af6f725ee29a09bbc54d245fb649b9b9b1147b5e6962" class="m-doc">SUBPOS_MID</a> = TFCSExtrapolationState::SUBPOS_MID,
+              <a href="#a7c4c5aae23f83b42a6539af6f725ee29a091a72120e5fc40ba608ae19f1d4ff61" class="m-doc">SUBPOS_ENT</a> =
+        TFCSExtrapolationState::SUBPOS_ENT,
+              <a href="#a7c4c5aae23f83b42a6539af6f725ee29ac35b61dddc5f44d42389104553a8db37" class="m-doc">SUBPOS_EXT</a> = TFCSExtrapolationState::SUBPOS_EXT }</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad1e80bfa8754219af360a1a89f7c9be8">
+              <span class="m-doc-wrap-bumper">enum <a href="#ad1e80bfa8754219af360a1a89f7c9be8" class="m-doc-self">HITPOSITION</a> { </span><span class="m-doc-wrap"><a href="#ad1e80bfa8754219af360a1a89f7c9be8a278b08271d63079db2e7a4bc7d28e7fc" class="m-doc">INSIDE</a>,
+              <a href="#ad1e80bfa8754219af360a1a89f7c9be8ae210422551a56307a9b5c367a4fec744" class="m-doc">OUTSIDE</a>,
+              <a href="#ad1e80bfa8754219af360a1a89f7c9be8ad4135a2fbe436cec6a3f69ae9c402499" class="m-doc">ON</a> }</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="ad7a943840f23bd6792849a10ba30a195">
+              <span class="m-doc-wrap-bumper"><a href="#ad7a943840f23bd6792849a10ba30a195" class="m-doc-self">FastCaloSimCaloExtrapolation</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a1422902ce61d29929ecd710d135b49a2">
+              <span class="m-doc-wrap-bumper"><a href="#a1422902ce61d29929ecd710d135b49a2" class="m-doc-self">~FastCaloSimCaloExtrapolation</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a70f54e5354461c91fa8c6255a4b84a70">
+              <span class="m-doc-wrap-bumper">void <a href="#a70f54e5354461c91fa8c6255a4b84a70" class="m-doc-self">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classICaloGeometry.html" class="m-doc">ICaloGeometry</a>* geo)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a491bd52cd7330d97001d8261912fd07f">
+              <span class="m-doc-wrap-bumper">void <a href="#a491bd52cd7330d97001d8261912fd07f" class="m-doc-self">extrapolate</a>(</span><span class="m-doc-wrap"><a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>&amp; result,
+              const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
+              const std::vector&lt;G4FieldTrack&gt;&amp; caloSteps) const <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
             <dd><span></span></dd>
           </dl>
         </section>
