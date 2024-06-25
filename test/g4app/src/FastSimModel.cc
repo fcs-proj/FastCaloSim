@@ -110,12 +110,12 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
   std::vector<G4FieldTrack> step_vector = fTransportTool.transport(*aFastTrack.GetPrimaryTrack());
   // Add the track to the vector of tracks
   TestHelpers::Track trk( step_vector );
-  fTransportTracks.addTrack(trk);
+  fTransportTracks.add(trk);
 
   // Do the extrapolation
   TFCSExtrapolationState extrap;
   fExtrapolationTool.extrapolate(extrap, &truth, step_vector);
-  fExtrapolations.addState(extrap);
+  fExtrapolations.add(extrap);
 
   // Do the simulation if requested
   if (fDoSimulation) {
@@ -132,7 +132,7 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
     fParametrization->simulate(simul, &truth, &extrap);
 
     // Add the simulation state to the vector of simulation states
-    fSimulationStates.emplace_back(simul);
+    fSimulationStates.add(simul);
   }
 
   // Kill particle

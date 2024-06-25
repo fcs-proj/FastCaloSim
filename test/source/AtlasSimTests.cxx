@@ -7,6 +7,7 @@
 #include "TestConfig/AtlasSimTestsConfig.h"
 #include "TestHelpers/Event.h"
 #include "TestHelpers/IOManager.h"
+#include "TestHelpers/SimStateContainer.h"
 
 TEST_P(AtlasSimTests, AtlasSimulation)
 {
@@ -62,7 +63,10 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   G4RunTests::run_manager->BeamOn(1);
 
   // Retrieve the vector of simulation states
-  std::vector<TFCSSimulationState> states = model->GetSimulationStates();
+  TestHelpers::SimStateContainer states = model->GetSimulationStates();
+
+  // Save simulation states to json file
+  states.serialize(AtlasSimTestConfig::simulation_output_path());
 
   // Total simulated energy
   ASSERT_NE(states.at(0).E(), 32070.4);

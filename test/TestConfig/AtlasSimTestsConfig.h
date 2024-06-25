@@ -42,6 +42,12 @@ public:
     output_dir = dir;
   }
 
+  // Path to the serialized simulation data
+  inline static auto simulation_output_path() -> std::string
+  {
+    return output_dir + "sim_state_data.json";
+  }
+
 private:
   inline static std::string output_dir;
 };
