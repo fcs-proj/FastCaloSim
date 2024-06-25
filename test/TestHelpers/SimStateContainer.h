@@ -26,9 +26,9 @@ struct SimStateContainerData
                     // described
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(SimStateContainerData,
+                                 state_id,
                                  cell_id,
                                  cell_energy,
-                                 state_id,
                                  layer_id,
                                  eta,
                                  phi,
@@ -51,7 +51,6 @@ struct SimStateContainerData
 class SimStateContainer
     : public Container<TFCSSimulationState, SimStateContainerData>
 {
-protected:
   auto flatten() const -> std::vector<SimStateContainerData> override
   {
     std::vector<SimStateContainerData> data;

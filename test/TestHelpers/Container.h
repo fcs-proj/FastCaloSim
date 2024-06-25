@@ -37,6 +37,10 @@ public:
   {
     return m_container.at(index);
   }
+  /**
+   * @brief Access size of container
+   */
+  auto size() const -> std::size_t { return m_container.size(); }
 
   /**
    * @brief Serialize the container to a JSON file
@@ -44,6 +48,9 @@ public:
   void serialize(const std::string& filename) const
   {
     nlohmann::json j = flatten();
+    if (j.empty()) {
+      throw std::runtime_error("JSON serialization failed. Object is empty!");
+    }
     std::ofstream ofs(filename);
     ofs << j.dump();
     ofs.close();

@@ -26,7 +26,6 @@ struct ExtrapStateContainerData
 class ExtrapStateContainer
     : public Container<TFCSExtrapolationState, ExtrapStateContainerData>
 {
-protected:
   auto flatten() const -> std::vector<ExtrapStateContainerData> override
   {
     std::vector<ExtrapStateContainerData> data;
