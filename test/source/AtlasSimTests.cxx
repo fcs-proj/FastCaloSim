@@ -65,7 +65,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   // Retrieve the vector of simulation states
   TestHelpers::SimStateContainer states = model->GetSimulationStates();
 
-  // Save simulation sates to json file
+  // Save simulation states to json file
   states.serialize(AtlasSimTestConfig::simulation_output_path());
 
   // Total simulated energy
