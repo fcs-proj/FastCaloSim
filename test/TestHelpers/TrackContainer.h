@@ -29,12 +29,12 @@ class TrackContainer : public Container<Track, TrackContainerData>
     for (const auto& track : m_container) {
       for (const auto& point : track) {
         data.push_back({track_id,
-                             point.x() / CLHEP::m,
-                             point.y() / CLHEP::m,
-                             point.z() / CLHEP::m,
-                             point.rho() / CLHEP::m,
-                             point.eta(),
-                             point.phi()});
+                        point.x() / CLHEP::m,
+                        point.y() / CLHEP::m,
+                        point.z() / CLHEP::m,
+                        point.rho() / CLHEP::m,
+                        point.eta(),
+                        point.phi()});
       }
       ++track_id;
     }
