@@ -68,7 +68,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   // Serialize simulation states to json file
   states.serialize(AtlasSimTestConfig::sim_output_path());
 
-  // Plot the cells containing energy and colour according to the energy
+  // Plot the cells containing energy and color according to the energy
   std::string sim_plot_exec = AtlasSimTestConfig::py_sim_exec(evt.get_label());
 
   ASSERT_TRUE(system(sim_plot_exec.c_str()) == 0);

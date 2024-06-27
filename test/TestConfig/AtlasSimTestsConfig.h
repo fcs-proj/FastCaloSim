@@ -51,7 +51,7 @@ public:
 
     // Loop over the parameters and create the events
     for (const auto& param : params) {
-      // Creat photon with speficfic PID, EKIN, and ETA
+      // Create photon with speficfic PID, EKIN, and ETA
       TestHelpers::Particle particle = sampler.generate(
           std::get<PID>(param), std::get<EKIN>(param), std::get<ETA>(param));
 
@@ -70,7 +70,7 @@ public:
     return events;
   }();
 
-  // The location of the python script to plot the coloured cells containing
+  // The location of the python script to plot the colored cells containing
   // energy
   inline static const std::string PYTHON_SCRIPT =
       std::string(TEST_BASE_DIR) + "/python/plot_simulation.py";

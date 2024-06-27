@@ -13,7 +13,7 @@ def main(args):
     pgs.set_coordinate_branch("EtaPhiR", "isCylindrical")
     pgs.set_coordinate_branch("EtaPhiZ", "isECCylindrical")
     
-    # Plot the cells colored according to theri enegy
+    # Plot the cells colored according to their enegy
     pgs.plot_geometry(
         df,
         cell_energy_col="cell_energy",
