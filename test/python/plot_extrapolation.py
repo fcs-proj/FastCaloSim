@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
-import numpy as np
 
 from plot_helpers import plotATLASCaloBoundary, plotEtaGuidingLines, atlas_calo_layers
 
