@@ -14,10 +14,10 @@ namespace TestHelpers
 
 struct SimStateContainerData
 {
-  int state_id;  // The simulation state to which the cell bellongs
+  int state_id;  // The simulation state to which the cell belongs
   unsigned long long cell_id;  // The unique cell identifier
   float cell_energy;  // The deposited energy in that cell
-  int layer_id;  // The layer ID to which the cell belons
+  int layer;  // The layer ID to which the cell belons
   float eta, phi, r, x, y, z;  // The center positions of the cell
   float deta, dphi, dr, dx, dy, dz;  // The dimensions of the cell
   bool isBarrel;  // Whether the cell belongs to a barrel or endcap layer
@@ -29,7 +29,7 @@ struct SimStateContainerData
                                  state_id,
                                  cell_id,
                                  cell_energy,
-                                 layer_id,
+                                 layer,
                                  eta,
                                  phi,
                                  r,
@@ -62,34 +62,30 @@ class SimStateContainer
         const CaloDetDescrElement* cell = cell_map_element.first;
         const float cell_energy = cell_map_element.second;
 
-        // Only support hard-coded layer 1 for now
-        if (cell->getSampling() != 1)
-          continue;
-
-        data.push_back({
-            state_id,
-            cell->calo_hash(),
-            cell_energy,
-            cell->getSampling(),
-            cell->eta(),
-            cell->phi(),
-            cell->r(),
-            cell->x(),
-            cell->y(),
-            cell->z(),
-            cell->deta(),
-            cell->dphi(),
-            cell->dr(),
-            cell->dx(),
-            cell->dy(),
-            cell->dz(),
-            // TODO: the following is currently hardcoded for layer 1
-            // should be adapted once we load the geometry with the exp-ind file
-            1,  // cell->isBarrel(),
-            1,  // cell->isCylindrical(),
-            0,  // cell->isECCylindrical(),
-            0  // cell->isCartesian()});
-        });
+        data.push_back(
+            {state_id,
+             cell->calo_hash(),
+             cell_energy,
+             cell->getSampling(),
+             cell->eta(),
+             cell->phi(),
+             cell->r(),
+             cell->x(),
+             cell->y(),
+             cell->z(),
+             cell->deta(),
+             cell->dphi(),
+             cell->dr(),
+             cell->dx(),
+             cell->dy(),
+             cell->dz(),
+             // TODO: the following is currently hardcoded for ATLAS
+             // should be adapted once we load the geometry with the exp-ind
+             // file
+             is_layer_type(cell->getSampling(), LayerType::BARREL),
+             is_layer_type(cell->getSampling(), LayerType::CYLINDRICAL),
+             is_layer_type(cell->getSampling(), LayerType::ECCYLINDRICAL),
+             is_layer_type(cell->getSampling(), LayerType::CARTESIAN)});
 
         ++state_id;
       }
@@ -97,6 +93,32 @@ class SimStateContainer
 
     return data;
   };
+
+  // hardcoded for now, this can be removed and adapted once we load the
+  // geometry with the exp-ind file
+  enum LayerType
+  {
+    BARREL,
+    CYLINDRICAL,
+    ECCYLINDRICAL,
+    CARTESIAN
+  };
+
+  static auto is_layer_type(int sampling, LayerType type) -> bool
+  {
+    static const std::unordered_map<LayerType, std::vector<int>> layer_map = {
+        {BARREL, {0, 1, 2, 3, 12, 13, 14, 15, 16, 17, 18, 19, 20}},
+        {CYLINDRICAL, {0, 1, 2, 3, 12, 13, 14, 15, 16, 17, 18, 19, 20}},
+        {ECCYLINDRICAL, {4, 5, 6, 7, 8, 9, 10, 11}},
+        {CARTESIAN, {21, 22, 23}}};
+
+    auto it = layer_map.find(type);
+    if (it != layer_map.end()) {
+      const std::vector<int>& layers = it->second;
+      return std::find(layers.begin(), layers.end(), sampling) != layers.end();
+    }
+    return false;
+  }
 };
 
 }  // namespace TestHelpers

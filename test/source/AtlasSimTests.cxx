@@ -65,8 +65,13 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   // Retrieve the vector of simulation states
   TestHelpers::SimStateContainer states = model->GetSimulationStates();
 
-  // Save simulation states to json file
-  states.serialize(AtlasSimTestConfig::simulation_output_path());
+  // Serialize simulation states to json file
+  states.serialize(AtlasSimTestConfig::sim_output_path());
+
+  // Plot the cells containing energy and colour according to the energy
+  std::string sim_plot_exec = AtlasSimTestConfig::py_sim_exec(evt.get_label());
+
+  ASSERT_TRUE(system(sim_plot_exec.c_str()) == 0);
 
   // Total simulated energy
   ASSERT_NE(states.at(0).E(), 32070.4);
