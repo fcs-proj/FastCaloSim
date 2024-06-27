@@ -85,7 +85,7 @@ public:
     ParticleContainer particles;
     for (const auto& eta : etas) {
       Particle particle = generate(pid, ekin, eta);
-      particles.addParticle(particle);
+      particles.add(particle);
     }
     return particles;
   };
