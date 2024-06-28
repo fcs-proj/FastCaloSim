@@ -62,10 +62,12 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   // Start a run
   G4RunTests::run_manager->BeamOn(1);
 
-  // Retrieve the vector of simulation states
-  TestHelpers::SimStateContainer states = model->GetSimulationStates();
+  // Retrieve the transportation tracks and serialize to json file
+  TestHelpers::TrackContainer tracks = model->GetTransportTracks();
+  tracks.serialize(AtlasSimTestConfig::transport_output_path());
 
-  // Serialize simulation states to json file
+  // Retrieve the simulation states and serialize to json file
+  TestHelpers::SimStateContainer states = model->GetSimulationStates();
   states.serialize(AtlasSimTestConfig::sim_output_path());
 
   // Plot the cells containing energy and color according to the energy
