@@ -5,7 +5,7 @@
     // Activate vs code extensions and set cmake path
     "customizations": {
         "vscode": {
-          "extensions": ["ms-python.python", "ms-toolsai.jupyter", "ms-vscode.cpptools", "llvm-vs-code-extensions.vscode-clangd", "ms-vscode.cmake-tools", "ibm.output-colorizer"],
+          "extensions": ["ms-python.python", "ms-toolsai.jupyter", "ms-vscode.cpptools", "llvm-vs-code-extensions.vscode-clangd", "ms-vscode.cmake-tools", "ibm.output-colorizer", "charliermarsh.ruf"],
           "settings": {
             "cmake.cmakePath": "/usr/bin/cmake"
           }
