@@ -15,7 +15,6 @@ protected:
 
   // Set up the test suite
   // Called before the first test in this test suite.
-  // Note: This does not work if incurred via ctest
   static void SetUpTestSuite()
   {
     geo = new CaloGeometryFromFile();

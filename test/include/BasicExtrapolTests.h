@@ -11,7 +11,6 @@ protected:
   static FastCaloSimCaloExtrapolation extrapolator;
   // Per-test-suite set-up.
   // Called before the first test in this test suite.
-  // Note: this does not work if incurred via ctest
   static void SetUpTestSuite()
   {
     // Call the base setup that sets up the geometry
@@ -24,7 +23,6 @@ protected:
 
   // Per-test-suite tear-down.
   // Called after the last test in this test suite.
-  // Note: this does not work if incurred via ctest
   static void TearDownTestSuite()
   {
     // Call the base tear down that deletes the geometry
