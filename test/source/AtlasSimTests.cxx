@@ -41,7 +41,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   // Set the extrapolation tool
   BasicExtrapolTests::extrapolator.setLevel(
       AtlasSimTestConfig::EXTRAPOLATION_MSG_LEVEL);
-  model->setExtrapolationTool(extrapolator);
+  model->setExtrapolationTool(BasicExtrapolTests::extrapolator);
 
   // Activate the simulation for this test
   model->doSimulation(true);

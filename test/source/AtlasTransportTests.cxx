@@ -38,11 +38,10 @@ TEST_P(AtlasTransportTests, AtlasTransport)
   // Deactivate the simulation for this test
   model->doSimulation(false);
 
-  // Set the already initialized extrapolation tool
-  //   FastCaloSimCaloExtrapolation extrapolator =
-  //       BasicExtrapolTests::GetExtrapolator();
-  extrapolator.setLevel(AtlasTransportTestConfig::EXTRAPOLATION_MSG_LEVEL);
-  model->setExtrapolationTool(extrapolator);
+  // Set the extrapolation tool
+  BasicExtrapolTests::extrapolator.setLevel(
+      AtlasTransportTestConfig::EXTRAPOLATION_MSG_LEVEL);
+  model->setExtrapolationTool(BasicExtrapolTests::extrapolator);
 
   // Start a run
   run_manager->BeamOn(1);
