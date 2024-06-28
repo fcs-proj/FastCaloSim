@@ -75,6 +75,12 @@ public:
   inline static const std::string PYTHON_SCRIPT =
       std::string(TEST_BASE_DIR) + "/python/plot_simulation.py";
 
+  // Path to the serialized transportation data
+  inline static auto transport_output_path() -> std::string
+  {
+    return output_dir + "transport_data.json";
+  }
+
   // Path to the serialized simulation data
   inline static auto sim_output_path() -> std::string
   {
@@ -87,12 +93,19 @@ public:
     return output_dir + "simulated_cell_energy.png";
   }
 
+  // Path to the output simulation animation
+  inline static auto plot_output_sim_animation() -> std::string
+  {
+    return output_dir + "simulated_cell_energy.gif";
+  }
+
   // String of the python command to plot simulation output
   inline static auto py_sim_exec(std::string label) -> std::string
   {
-    std::string command = "python3 " + PYTHON_SCRIPT + " --input "
-        + sim_output_path() + " --output " + plot_output_sim_path()
-        + " --label \"" + label + "\"";
+    std::string command = "python3 " + PYTHON_SCRIPT + " --sim_input "
+        + sim_output_path() + " --output_png " + plot_output_sim_path()
+        + " --output_gif " + plot_output_sim_animation() + " --transport_input "
+        + transport_output_path() + " --label \"" + label + "\"";
 
     return command;
   }
