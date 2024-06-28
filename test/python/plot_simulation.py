@@ -23,6 +23,17 @@ def main(args):
     # Read the input simulation json data
     sim_df = pd.read_json(args.sim_input)
 
+    # Merge energies if cell_id is not unique
+    # This is only relevant if more than one particle is simulated
+    if not sim_df.cell_id.is_unique:
+        agg_fcts = {
+            col: "first"
+            for col in sim_df.columns
+            if col != "cell_energy" and col != "cell_id"
+        }
+        agg_fcts["cell_energy"] = "sum"
+        sim_df = sim_df.groupby("cell_id").agg(agg_fcts).reset_index()
+
     # Set the coordinate system branches for pygeosimplify
     pgs.set_coordinate_branch("XYZ", "isCartesian")
     pgs.set_coordinate_branch("EtaPhiR", "isCylindrical")
@@ -40,11 +51,11 @@ def main(args):
     )
 
     # Hide the cells first to only plot transport first
-    set_cell_visibliity(ax, False)
+    set_cell_visibility(ax, False)
 
     # Loop over tracks
     for track_id in trans_df.track_id.unique():
-        track_df = trans_df[trans_df.track_id == track_id]
+        track_df = trans_df[trans_df.track_id == track_id].reset_index()
 
         # Initialize the first point
         previous_step = np.array([track_df.x[0], track_df.y[0], track_df.z[0]])
@@ -58,7 +69,9 @@ def main(args):
             alpha=0.5,
         )
         plt.gca().text2D(0.01, 0.95, rf"{args.label}", transform=plt.gca().transAxes)
-        plt.savefig(f"{tmp_dir.name}/figure_0.png", dpi=300, bbox_inches="tight")
+        plt.savefig(
+            f"{tmp_dir.name}/figure_{track_id}_0.png", dpi=300, bbox_inches="tight"
+        )
 
         # Iterate over the DataFrame from the second point onwards
         for i in range(1, len(track_df)):
@@ -78,18 +91,22 @@ def main(args):
                     alpha=0.5,
                 )
                 plt.savefig(
-                    f"{tmp_dir.name}/figure_{i}.png", dpi=300, bbox_inches="tight"
+                    f"{tmp_dir.name}/figure_{track_id}_{i}.png",
+                    dpi=300,
+                    bbox_inches="tight",
                 )
-
                 # Update previous step
                 previous_step = current_step
+                last_iter = i
 
     # Finally show the cells
-    set_cell_visibliity(ax, True)
+    set_cell_visibility(ax, True)
 
     # Save for the animation
     plt.savefig(
-        f"{tmp_dir.name}/figure_{len(trans_df)}.png", dpi=300, bbox_inches="tight"
+        f"{tmp_dir.name}/figure_{trans_df.track_id.max()}_{last_iter}.png",
+        dpi=300,
+        bbox_inches="tight",
     )
     # Save for final resultt
     plt.savefig(args.output_png, dpi=300, bbox_inches="tight")
@@ -101,7 +118,7 @@ def main(args):
     tmp_dir.cleanup()
 
 
-def set_cell_visibliity(ax, visible):
+def set_cell_visibility(ax, visible):
     for collection in ax.collections:
         if isinstance(collection, Poly3DCollection):
             collection.set_visible(visible)
@@ -110,9 +127,11 @@ def set_cell_visibliity(ax, visible):
 def make_gif(dir, output_path, duration=100, fade_steps=30):
     # Get all the PNG files in the specified folder
     images = [img for img in os.listdir(dir) if img.endswith(".png")]
-    # Sort the images
-    images = sorted(images, key=lambda x: int(x.split("_")[1].split(".")[0]))
-
+    # Sort the images according to 0_0, 0_1, 0_2, 1_0, 1_1, 1_2, ...
+    images = sorted(
+        images,
+        key=lambda s: (int(s.split("_")[1]), int(s.split("_")[2].replace(".png", ""))),
+    )
     # Load images into a list
     frames = [Image.open(os.path.join(dir, img)) for img in images]
 
