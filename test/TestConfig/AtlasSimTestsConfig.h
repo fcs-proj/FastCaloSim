@@ -39,15 +39,20 @@ public:
                          R"($ E_{\gamma}=16\,\text{GeV},\, \eta=0.20$)",
                          "pid22_E16_eta20"),
          std::make_tuple(22,
-                         65536,
-                         0.2,
-                         R"($ E_{\gamma}=65\,\text{GeV},\, \eta=0.20$)",
-                         "pid22_E65_eta20"),
-         std::make_tuple(22,
                          131072,
                          0.2,
                          R"($ E_{\gamma}=131\,\text{GeV},\, \eta=0.20$)",
-                         "pid22_E131_eta20")};
+                         "pid22_E131_eta20"),
+         std::make_tuple(211,
+                         16384,
+                         0.2,
+                         R"($ E_{\pi}=16\,\text{GeV},\, \eta=0.20$)",
+                         "pid211_E16_eta20"),
+         std::make_tuple(211,
+                         131072,
+                         0.2,
+                         R"($ E_{\pi}=131\,\text{GeV},\, \eta=0.20$)",
+                         "pid211_E131_eta20")};
 
     // Loop over the parameters and create the events
     for (const auto& param : params) {

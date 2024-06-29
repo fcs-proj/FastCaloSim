@@ -11,7 +11,7 @@
 TEST_F(BasicSimTests, ReadParamFile)
 {
   Long64_t bytes_read = param_file->GetBytesRead();
-  EXPECT_EQ(bytes_read, 9213);
+  EXPECT_EQ(bytes_read, 10097);
 }
 
 TEST_F(BasicSimTests, CheckParamObject)
