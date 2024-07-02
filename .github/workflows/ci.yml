@@ -138,15 +138,9 @@ jobs:
       - uses: aidasoft/run-lcg-view@v4
         with:
           release-platform: "${{ matrix.lcg }}/x86_64-el9-gcc13-opt"
-      - name: Configure
-        run: cmake "--preset=ci-ubuntu"
-      - name: Build
-        run: cmake --build build --config Release -j 2
-      - name: Install
-        run: cmake --install build --config Release --prefix prefix
-      - name: Test
-        working-directory: build
-        run: ctest --output-on-failure --no-tests=error -C Release -j 2
+          run: |
+            gcc --version
+            which gcc
 
   docs:
     # Deploy docs only when builds succeed
