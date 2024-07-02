@@ -10,6 +10,8 @@
             "cmake.cmakePath": "/usr/bin/cmake"
           }
         }
-    }
+    },
+    // Commands to run after the container is created
+    // Install pre-commit hooks
+    "postCreateCommand": "pre-commit install"
 }
-
