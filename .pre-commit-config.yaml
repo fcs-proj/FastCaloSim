@@ -1,0 +1,17 @@
+repos:
+  - repo: local
+    hooks:
+      - id: spell-fix
+        name: Spell fix
+        language: system
+        entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/dev" ./.hooks/spell-fix.sh'
+        verbose: true
+        stages: [commit]
+  - repo: local
+    hooks:
+      - id: format-fix
+        name: Format fix
+        language: system
+        entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/dev" ./.hooks/format-fix.sh'
+        verbose: true
+        stages: [commit]
