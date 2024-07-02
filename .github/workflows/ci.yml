@@ -139,8 +139,11 @@ jobs:
         with:
           release-platform: "${{ matrix.lcg }}/x86_64-el9-gcc13-opt"
           run: |
-            root --version
-            which root
+            cmake "--preset=ci-ubuntu"
+            cmake --build build --config Release -j 2
+            cmake --install build --config Release --prefix prefix
+            ctest --output-on-failure --no-tests=error -C Release -j 2
+
 
   # docs:
   #   # Deploy docs only when builds succeed
