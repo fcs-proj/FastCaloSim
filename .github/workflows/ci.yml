@@ -127,7 +127,7 @@ jobs:
     # Deploy docs only when builds succeed
     needs: [sanitize, test]
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     if: github.ref == 'refs/heads/main'
       && github.event_name == 'push'
