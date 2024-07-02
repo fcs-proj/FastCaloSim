@@ -7,6 +7,7 @@ repos:
         entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/dev" ./.hooks/spell-fix.sh'
         verbose: true
         stages: [commit]
+
   - repo: local
     hooks:
       - id: format-fix
@@ -15,6 +16,15 @@ repos:
         entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/dev" ./.hooks/format-fix.sh'
         verbose: true
         stages: [commit]
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: "v0.5.0"
+    hooks:
+      # Run the linter.
+      - id: ruff
+        args: [ --fix ]
+      # Run the formatter.
+      - id: ruff-format
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: "v4.6.0"
@@ -25,14 +35,6 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
-
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.5.0"
-    hooks:
-      # Run the linter.
-      - id: ruff
-      # Run the formatter.
-      - id: ruff-format
 
   - repo: https://github.com/psf/black
     rev: "24.4.2"
