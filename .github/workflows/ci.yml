@@ -139,8 +139,8 @@ jobs:
         with:
           release-platform: "${{ matrix.lcg }}/x86_64-el9-gcc13-opt"
           run: |
-            gcc --version
-            which gcc
+            root --version
+            which root
 
   docs:
     # Deploy docs only when builds succeed
