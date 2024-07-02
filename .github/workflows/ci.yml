@@ -139,7 +139,7 @@ jobs:
         with:
           release-platform: "${{ matrix.lcg }}/x86_64-el9-gcc13-opt"
           run: |
-            source /cvmfs/geant4.cern.ch/geant4/11.2.p02/x86_64-el9-gcc13-optdeb/CMake-setup.sh
+            source /cvmfs/sft.cern.ch/lcg/views/${{ matrix.lcg }}/x86_64-el9-gcc13-opt/setup.sh
             cmake "--preset=ci-ubuntu"
             cmake --build build --config Release -j 2
             cmake --install build --config Release --prefix prefix
