@@ -91,38 +91,63 @@ jobs:
       run: ctest --output-on-failure --no-tests=error -j 2 || true # For now we ignore sanitizer errors
 
   test:
-      needs: [lint]
-      runs-on: ubuntu-24.04
+    needs: [lint]
+    runs-on: ubuntu-24.04
 
-      strategy:
-        matrix:
-          os: [alma9, ubuntu24]
+    strategy:
+      matrix:
+        os: [alma9, ubuntu24]
 
-      container:
-        image: jbeirer/${{ matrix.os }}-fastcalosim:latest
+    container:
+      image: jbeirer/${{ matrix.os }}-fastcalosim:latest
 
-      steps:
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure
+      run: cmake "--preset=ci-ubuntu"
+
+    - name: Build
+      run: cmake --build build --config Release -j 2
+
+    - name: Install
+      run: cmake --install build --config Release --prefix prefix
+
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure --no-tests=error -C Release -j 2
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: artifacts-${{ matrix.os }}
+        path: test/output
+        if-no-files-found: error
+        retention-days: 90
+
+  # Test against LCG releases
+  # See https://lcginfo.cern.ch/ for more info
+  test_lcg:
+    needs: [lint]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        lcg: [LCG_106, LCG_106_ATLAS_3]
+    steps:
       - uses: actions/checkout@v4
-
+      - uses: cvmfs-contrib/github-action-cvmfs@v4
+      - uses: aidasoft/run-lcg-view@v4
+        with:
+          release-platform: "${{ matrix.lcg }}/x86_64-el9-gcc13-opt"
       - name: Configure
         run: cmake "--preset=ci-ubuntu"
-
       - name: Build
         run: cmake --build build --config Release -j 2
-
       - name: Install
         run: cmake --install build --config Release --prefix prefix
-
       - name: Test
         working-directory: build
         run: ctest --output-on-failure --no-tests=error -C Release -j 2
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: artifacts-${{ matrix.os }}
-          path: test/output
-          if-no-files-found: error
-          retention-days: 90
   docs:
     # Deploy docs only when builds succeed
     needs: [sanitize, test]
