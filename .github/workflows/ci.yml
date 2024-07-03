@@ -134,7 +134,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        lcg: [LCG_106, LCG_106_ATLAS_3]
+        lcg: [LCG_106]
     steps:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v4
