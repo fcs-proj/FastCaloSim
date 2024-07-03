@@ -145,7 +145,6 @@ jobs:
             source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
       - name: Configure
         run: |
-          source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
           cmake "--preset=ci-lcg"
       - name: Build
         run: |
