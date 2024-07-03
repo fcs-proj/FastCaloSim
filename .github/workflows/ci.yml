@@ -143,22 +143,10 @@ jobs:
           release-platform: "${{matrix.lcg}}/${{env.platform}}"
           run: |
             source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
-      - name: Configure
-        run: |
-          cmake "--preset=ci-lcg"
-      - name: Build
-        run: |
-          source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
-          cmake --build build --config Release -j 2
-      - name: Install
-        run: |
-          source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
-          cmake --install build --config Release --prefix prefix
-      - name: Test
-        working-directory: build
-        run: |
-          source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
-          ctest --output-on-failure --no-tests=error -C Release -j 2
+            cmake "--preset=ci-lcg"
+            cmake --build build --config Release -j 2
+            cmake --install build --config Release --prefix prefix
+            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 2
 
 
   # docs:
