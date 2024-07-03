@@ -144,7 +144,7 @@ jobs:
           run: |
             python3 -m venv venv && source venv/bin/activate
             pip3 install pipreqs
-            pipreqs test/python
+            pipreqs test/python --mode no-pin
             pip3 install -r test/python/requirements.txt
             source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
             cmake "--preset=ci-lcg"
