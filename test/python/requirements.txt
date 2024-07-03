@@ -1,5 +1,0 @@
-matplotlib==3.9.0
-numpy==2.0.0
-pandas==2.2.2
-Pillow==10.4.0
-pygeosimplify==0.0.7
