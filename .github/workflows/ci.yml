@@ -140,9 +140,9 @@ jobs:
       - uses: cvmfs-contrib/github-action-cvmfs@v4
       - uses: aidasoft/run-lcg-view@v4
         with:
-          release-platform: "${{matrix.lcg}} / ${PLATFORM}"
+          release-platform: "${{matrix.lcg}} / ${{PLATFORM}}"
           run: |
-            source ${VIEWS_PATH} / ${{matrix.lcg}} / ${PLATFORM} / setup.sh
+            source ${{VIEWS_PATH}} / ${{matrix.lcg}} / ${{PLATFORM}} / setup.sh
             source
             cmake "--preset=ci-ubuntu"
             cmake --build build --config Release -j 2
