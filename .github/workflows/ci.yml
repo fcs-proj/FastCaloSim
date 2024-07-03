@@ -142,18 +142,28 @@ jobs:
         with:
           release-platform: "${{matrix.lcg}}/${{env.platform}}"
           run: |
+            echo "::group::Set-up Python environment"
             mkdir -p ~/.local/bin
             export PATH=~/.local/bin:"${PATH}"
             curl -sL https://raw.githubusercontent.com/matthewfeickert/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
             chmod +x ~/.local/bin/cvmfs-venv
             cvmfs-venv lcg-venv && . lcg-venv/bin/activate
+
+            echo "::group::Install Python test dependencies"
             pip install --user pipreqs
             pipreqs test/python --mode no-pin
             pip install --user -r test/python/requirements.txt
-            source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
+
+            echo "::group::Configure"
             cmake "--preset=ci-lcg"
+
+            echo "::group::Build"
             cmake --build build --config Release -j 2
+
+            echo "::group::Install"
             cmake --install build --config Release --prefix prefix
+
+            echo "::group::Test"
             ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 2
 
 
