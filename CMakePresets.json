@@ -148,8 +148,8 @@
       "inherits": ["ci-build", "ci-linux", "clang-tidy", "cppcheck", "dev-mode"]
     },
     {
-      "name": "ci-windows",
-      "inherits": ["ci-build", "ci-win64", "dev-mode"]
+      "name": "ci-lcg",
+      "inherits": ["ci-build", "ci-linux", "dev-mode"]
     }
   ]
 }

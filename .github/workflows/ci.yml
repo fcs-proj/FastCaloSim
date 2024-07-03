@@ -143,7 +143,7 @@ jobs:
           release-platform: "${{matrix.lcg}}/${{env.platform}}"
           run: |
             source ${{env.views_path}}/${{matrix.lcg}}/${{env.platform}}/setup.sh
-            cmake "--preset=ci-ubuntu"
+            cmake "--preset=ci-lcg"
             cmake --build build --config Release -j 2
             cmake --install build --config Release --prefix prefix
             ctest --output-on-failure --no-tests=error -C Release -j 2
