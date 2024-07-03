@@ -91,38 +91,88 @@ jobs:
       run: ctest --output-on-failure --no-tests=error -j 2 || true # For now we ignore sanitizer errors
 
   test:
-      needs: [lint]
-      runs-on: ubuntu-24.04
+    needs: [lint]
+    runs-on: ubuntu-24.04
 
-      strategy:
-        matrix:
-          os: [alma9, ubuntu24]
+    strategy:
+      matrix:
+        os: [alma9, ubuntu24]
 
-      container:
-        image: jbeirer/${{ matrix.os }}-fastcalosim:latest
+    container:
+      image: jbeirer/${{ matrix.os }}-fastcalosim:latest
 
-      steps:
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure
+      run: cmake "--preset=ci-ubuntu"
+
+    - name: Build
+      run: cmake --build build --config Release -j 2
+
+    - name: Install
+      run: cmake --install build --config Release --prefix prefix
+
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure --no-tests=error -C Release -j 2
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: artifacts-${{ matrix.os }}
+        path: test/output
+        if-no-files-found: error
+        retention-days: 90
+
+  # Test against LCG releases
+  test_lcg:
+    needs: [lint]
+    env:
+      views_path: /cvmfs/sft.cern.ch/lcg/views
+      platform: x86_64-el9-gcc13-opt
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        # See https://lcginfo.cern.ch/ for info on available LCG releases
+        lcg: [LCG_106]
+    steps:
       - uses: actions/checkout@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v4
+      - uses: aidasoft/run-lcg-view@v4
+        with:
+          release-platform: "${{matrix.lcg}}/${{env.platform}}"
+          run: |
+            echo "::group::Set-up Python environment"
+            mkdir -p ~/.local/bin
+            export PATH=~/.local/bin:"${PATH}"
+            curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
+            chmod +x ~/.local/bin/cvmfs-venv
+            cvmfs-venv lcg-venv && . lcg-venv/bin/activate
 
-      - name: Configure
-        run: cmake "--preset=ci-ubuntu"
+            echo "::group::Install Python test dependencies"
+            pip install --user pipreqs
+            pipreqs test/python --mode no-pin
+            pip install --user -r test/python/requirements.txt
 
-      - name: Build
-        run: cmake --build build --config Release -j 2
+            echo "::group::Configure"
+            cmake "--preset=ci-lcg"
 
-      - name: Install
-        run: cmake --install build --config Release --prefix prefix
+            echo "::group::Build"
+            cmake --build build --config Release -j 2
 
-      - name: Test
-        working-directory: build
-        run: ctest --output-on-failure --no-tests=error -C Release -j 2
+            echo "::group::Install"
+            cmake --install build --config Release --prefix prefix
+
+            echo "::group::Test"
+            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 2
 
       - uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.os }}
+          name: artifacts-${{ matrix.lcg }}
           path: test/output
           if-no-files-found: error
           retention-days: 90
+
   docs:
     # Deploy docs only when builds succeed
     needs: [sanitize, test]
