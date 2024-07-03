@@ -128,6 +128,9 @@ jobs:
   # See https://lcginfo.cern.ch/ for more info
   test_lcg:
     #needs: [lint]
+    env:
+      VIEWS_PATH: /cvmfs/sft.cern.ch/lcg/views
+      PLATFORM: x86_64-el9-gcc13-opt
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -137,9 +140,10 @@ jobs:
       - uses: cvmfs-contrib/github-action-cvmfs@v4
       - uses: aidasoft/run-lcg-view@v4
         with:
-          release-platform: "${{ matrix.lcg }}/x86_64-el9-gcc13-opt"
+          release-platform: "${{matrix.lcg}} / ${PLATFORM}"
           run: |
-            source /cvmfs/sft.cern.ch/lcg/views/${{ matrix.lcg }}/x86_64-el9-gcc13-opt/setup.sh
+            source ${VIEWS_PATH} / ${{matrix.lcg}} / ${PLATFORM} / setup.sh
+            source
             cmake "--preset=ci-ubuntu"
             cmake --build build --config Release -j 2
             cmake --install build --config Release --prefix prefix
