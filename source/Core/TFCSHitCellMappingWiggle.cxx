@@ -15,7 +15,6 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "TH1.h"
-#include "TMath.h"
 #include "TVector2.h"
 
 //=============================================
@@ -219,56 +218,6 @@ bool TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
   }
 
   return true;
-}
-
-void TFCSHitCellMappingWiggle::unit_test(TFCSSimulationState* simulstate,
-                                         TFCSTruthState* truth,
-                                         TFCSExtrapolationState* extrapol)
-{
-  if (!simulstate)
-    simulstate = new TFCSSimulationState();
-  if (!truth)
-    truth = new TFCSTruthState();
-  if (!extrapol)
-    extrapol = new TFCSExtrapolationState();
-
-  int nbin = 10;
-  float maxeta = 5.0;
-  std::vector<const TFCS1DFunction*> functions;
-  std::vector<float> bin_low_edges;
-
-  TFCSHitCellMappingWiggle wiggle_test("WiggleTest", "WiggleTest");
-
-  for (float eta = 0; eta < maxeta; eta += maxeta / nbin) {
-    TH1* hist = TFCS1DFunction::generate_histogram_random_gauss(
-        16, 100000, -0.0125, 0.0125, 0, 0.005);
-    bin_low_edges.push_back(eta);
-    functions.push_back(new TFCS1DFunctionInt32Histogram(hist));
-    delete hist;
-  }
-  bin_low_edges.push_back(100);
-  wiggle_test.initialize(functions, bin_low_edges);
-  wiggle_test.set_calosample(2);
-  wiggle_test.setLevel(MSG::DEBUG);
-  wiggle_test.Print();
-
-#if 0  // defined(__FastCaloSimStandAlone__)
-  CaloGeometryFromFile* geo = new CaloGeometryFromFile();
-
-// * load geometry files
-  geo->LoadGeometryFromFile("/afs/cern.ch/atlas/groups/Simulation/FastCaloSimV2/Geometry-ATLAS-R2-2016-01-00-01.root", "ATLAS-R2-2016-01-00-01");
-  TString path_to_fcal_geo_files = "/afs/cern.ch/atlas/groups/Simulation/FastCaloSimV2/";
-  geo->LoadFCalGeometryFromFiles(path_to_fcal_geo_files + "FCal1-electrodes.sorted.HV.09Nov2007.dat", path_to_fcal_geo_files + "FCal2-electrodes.sorted.HV.April2011.dat", path_to_fcal_geo_files + "FCal3-electrodes.sorted.HV.09Nov2007.dat");
-
-  wiggle_test.set_geometry(geo);
-  for(float eta=-maxeta+0.01;eta<maxeta;eta+=maxeta/nbin) {
-    Hit hit;
-    hit.eta()=eta;
-    hit.phi()=0;
-    hit.E()=1;
-    wiggle_test.simulate_hit(hit,*simulstate,truth,extrapol);
-  }
-#endif
 }
 
 #pragma GCC diagnostic pop

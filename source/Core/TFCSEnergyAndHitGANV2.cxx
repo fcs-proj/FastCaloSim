@@ -2,7 +2,6 @@
   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
 */
 
-#include <fstream>
 #include <iostream>
 #include <limits>
 
@@ -11,17 +10,12 @@
 #include <CLHEP/Random/RanluxEngine.h>
 
 #include "CLHEP/Random/RandFlat.h"
-#include "CLHEP/Random/RandGauss.h"
-#include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "HepPDT/ParticleData.hh"
-#include "HepPDT/ParticleDataTable.hh"
 #include "TF1.h"
-#include "TFile.h"
-#include "TH2D.h"
 
 //=============================================
 //======= TFCSEnergyAndHitGANV2 =========
@@ -587,114 +581,6 @@ void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
     }
     chain()[ichain]->Print(opt + prefix);
   }
-}
-
-void TFCSEnergyAndHitGANV2::unit_test(TFCSSimulationState* simulstate,
-                                      const TFCSTruthState* truth,
-                                      const TFCSExtrapolationState* extrapol)
-{
-  ISF_FCS::MLogging logger;
-  ATH_MSG_NOCLASS(logger, "Start lwtnn test" << std::endl);
-  std::string path =
-      "/eos/atlas/atlascerngroupdisk/proj-simul/AF3_Run3/"
-      "InputsToBigParamFiles/FastCaloGANWeightsVer02/";
-  test_path(path, simulstate, truth, extrapol, "lwtnn");
-
-  ATH_MSG_NOCLASS(logger, "Start onnx test" << std::endl);
-  path =
-      "/eos/atlas/atlascerngroupdisk/proj-simul/AF3_Run3/"
-      "InputsToBigParamFiles/FastCaloGANWeightsONNXVer08/";
-  test_path(path, simulstate, truth, extrapol, "onnx");
-  ATH_MSG_NOCLASS(logger, "Finish all tests" << std::endl);
-}
-
-void TFCSEnergyAndHitGANV2::test_path(const std::string& path,
-                                      TFCSSimulationState* simulstate,
-                                      const TFCSTruthState* truth,
-                                      const TFCSExtrapolationState* extrapol,
-                                      const std::string& outputname,
-                                      int pid)
-{
-  ISF_FCS::MLogging logger;
-  ATH_MSG_NOCLASS(logger, "Running test on " << path << std::endl);
-  if (!simulstate) {
-    simulstate = new TFCSSimulationState();
-    simulstate->setRandomEngine(new CLHEP::RanluxEngine());
-  }
-  if (!truth) {
-    ATH_MSG_NOCLASS(logger, "New particle");
-    TFCSTruthState* t = new TFCSTruthState();
-    t->SetPtEtaPhiM(65536, 0, 0, 139.6);
-    t->set_pdgid(pid);
-    truth = t;
-  }
-  if (!extrapol) {
-    TFCSExtrapolationState* e = new TFCSExtrapolationState();
-    e->set_IDCaloBoundary_eta(truth->Eta());
-    for (int i = 0; i < 24; ++i) {
-      e->set_eta(i, TFCSExtrapolationState::SUBPOS_ENT, truth->Eta());
-      e->set_eta(i, TFCSExtrapolationState::SUBPOS_EXT, truth->Eta());
-      e->set_eta(i, TFCSExtrapolationState::SUBPOS_MID, truth->Eta());
-      e->set_phi(i, TFCSExtrapolationState::SUBPOS_ENT, 0);
-      e->set_phi(i, TFCSExtrapolationState::SUBPOS_EXT, 0);
-      e->set_phi(i, TFCSExtrapolationState::SUBPOS_MID, 0);
-      e->set_r(i, TFCSExtrapolationState::SUBPOS_ENT, 1500 + i * 10);
-      e->set_r(i, TFCSExtrapolationState::SUBPOS_EXT, 1510 + i * 10);
-      e->set_r(i, TFCSExtrapolationState::SUBPOS_MID, 1505 + i * 10);
-      e->set_z(i, TFCSExtrapolationState::SUBPOS_ENT, 3500 + i * 10);
-      e->set_z(i, TFCSExtrapolationState::SUBPOS_EXT, 3510 + i * 10);
-      e->set_z(i, TFCSExtrapolationState::SUBPOS_MID, 3505 + i * 10);
-    }
-    extrapol = e;
-  }
-
-  TFCSEnergyAndHitGANV2 GAN("GAN", "GAN");
-  GAN.setLevel(MSG::INFO);
-  const int etaMin = 20;
-  const int etaMax = etaMin + 5;
-  ATH_MSG_NOCLASS(logger, "Initialize Networks");
-  GAN.initializeNetwork(pid, etaMin, path);
-  for (int i = 0; i < 24; ++i)
-    if (GAN.is_match_calosample(i)) {
-      TFCSCenterPositionCalculation* c = new TFCSCenterPositionCalculation(
-          Form("center%d", i), Form("center layer %d", i));
-      c->set_calosample(i);
-      c->setExtrapWeight(0.5);
-      c->setLevel(MSG::INFO);
-      c->set_pdgid(pid);
-      if (pid == 11)
-        c->add_pdgid(-pid);
-      if (pid == 211)
-        c->add_pdgid(-pid);
-      c->set_eta_min(etaMin / 100.0);
-      c->set_eta_max(etaMax / 100.0);
-      c->set_eta_nominal((etaMin + etaMax) / 200.0);
-
-      GAN.push_back_in_bin(c, i);
-      GAN.set_nr_of_init(i, 1);
-    }
-
-  GAN.Print();
-
-  ATH_MSG_NOCLASS(logger, "Writing GAN to " << outputname);
-  const std::string outname = "FCSGANtest_" + outputname + ".root";
-  TFile* fGAN = TFile::Open(outname.c_str(), "recreate");
-  fGAN->cd();
-  // GAN.Write();
-  fGAN->WriteObjectAny(&GAN, "TFCSEnergyAndHitGANV2", "GAN");
-
-  fGAN->ls();
-  fGAN->Close();
-
-  ATH_MSG_NOCLASS(logger, "Open " << outname);
-  fGAN = TFile::Open(outname.c_str());
-  TFCSEnergyAndHitGANV2* GAN2 = (TFCSEnergyAndHitGANV2*)(fGAN->Get("GAN"));
-  GAN2->setLevel(MSG::INFO);
-  GAN2->Print();
-
-  ATH_MSG_NOCLASS(logger, "Before running GAN2->simulate()");
-  GAN2->simulate(*simulstate, truth, extrapol);
-  simulstate->Print();
 }
 
 int TFCSEnergyAndHitGANV2::GetBinsInFours(double const& bins)

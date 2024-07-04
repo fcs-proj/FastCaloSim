@@ -30,10 +30,6 @@ public:
       const TFCSTruthState*,
       const TFCSExtrapolationState*) const override;
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        const TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
-
 private:
   ClassDefOverride(TFCSParametrizationEbinChain,
                    1)  // TFCSParametrizationEbinChain

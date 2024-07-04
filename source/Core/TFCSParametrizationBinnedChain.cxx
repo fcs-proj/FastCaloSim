@@ -2,14 +2,11 @@
   Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
 */
 
-#include <algorithm>
 #include <iostream>
-#include <iterator>
 
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
-#include "FastCaloSim/Core/TFCSInvisibleParametrization.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
@@ -194,77 +191,4 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
     }
     chain()[ichain]->Print(opt + prefix);
   }
-}
-
-void TFCSParametrizationBinnedChain::unit_test(
-    TFCSSimulationState* simulstate,
-    const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol)
-{
-  ISF_FCS::MLogging logger;
-  if (!simulstate)
-    simulstate = new TFCSSimulationState();
-  if (!truth)
-    truth = new TFCSTruthState();
-  if (!extrapol)
-    extrapol = new TFCSExtrapolationState();
-
-  TFCSParametrizationBinnedChain chain("chain", "chain");
-  chain.setLevel(MSG::DEBUG);
-
-  ATH_MSG_NOCLASS(logger, "====         Chain setup       ====");
-  chain.Print();
-  ATH_MSG_NOCLASS(logger, "==== Simulate with empty chain ====");
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger, "===================================" << std::endl);
-
-  TFCSParametrizationBase* param;
-  param = new TFCSInvisibleParametrization("A begin all", "A begin all");
-  param->setLevel(MSG::VERBOSE);
-  chain.push_before_first_bin(param);
-  param = new TFCSParametrization("A end all", "A end all");
-  param->setLevel(MSG::DEBUG);
-  chain.push_back(param);
-
-  ATH_MSG_NOCLASS(logger, "====         Chain setup       ====");
-  chain.Print();
-  ATH_MSG_NOCLASS(logger, "==== Simulate only begin/end all ====");
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger,
-                  "==== Simulate only begin/end all with chain retry====");
-  chain.set_RetryChainFromStart();
-  chain.simulate(*simulstate, truth, extrapol);
-  chain.reset_RetryChainFromStart();
-  ATH_MSG_NOCLASS(logger, "===================================" << std::endl);
-
-  for (int i = 0; i < 3; ++i) {
-    TFCSParametrizationBase* param =
-        new TFCSInvisibleParametrization(Form("A%d", i), Form("A %d", i));
-    param->setLevel(MSG::DEBUG);
-    chain.push_back_in_bin(param, i);
-  }
-
-  for (int i = 3; i > 0; --i) {
-    TFCSParametrizationBase* param =
-        new TFCSInvisibleParametrization(Form("B%d", i), Form("B %d", i));
-    param->setLevel(MSG::DEBUG);
-    chain.push_back_in_bin(param, i);
-  }
-  param = new TFCSParametrization("B end all", "B end all");
-  param->setLevel(MSG::DEBUG);
-  chain.push_back(param);
-  param = new TFCSInvisibleParametrization("B begin all", "B begin all");
-  param->setLevel(MSG::VERBOSE);
-  chain.push_before_first_bin(param);
-
-  ATH_MSG_NOCLASS(logger, "====         Chain setup       ====");
-  chain.Print();
-  ATH_MSG_NOCLASS(logger, "==== Simulate with full chain  ====");
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger,
-                  "==== Simulate with full chain with chain retry ====");
-  chain.set_RetryChainFromStart();
-  chain.simulate(*simulstate, truth, extrapol);
-  chain.reset_RetryChainFromStart();
-  ATH_MSG_NOCLASS(logger, "===================================" << std::endl);
 }

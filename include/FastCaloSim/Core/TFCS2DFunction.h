@@ -30,16 +30,6 @@ public:
                                              int& first,
                                              int& last);
 
-  static void unit_test(
-      TH2* hist = nullptr,
-      TFCS2DFunction* rtof = nullptr,
-      const char* outfilename = "TFCS2DFunction_unit_test.root",
-      int nrnd = 10000000);
-  static void unit_tests(
-      TH2* hist = nullptr,
-      const char* outfilename = "TFCS2DFunction_unit_test.root",
-      int nrnd = 10000000);
-
 private:
   ClassDef(TFCS2DFunction, 1)  // TFCS2DFunction
 };

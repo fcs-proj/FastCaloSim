@@ -8,7 +8,6 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
-#include "FastCaloSim/Core/TFCSInvisibleParametrization.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
@@ -150,87 +149,4 @@ const std::string TFCSParametrizationEkinSelectChain::get_bin_text(
                           bin,
                           m_bin_low_edge[bin],
                           m_bin_low_edge[bin + 1]));
-}
-
-void TFCSParametrizationEkinSelectChain::unit_test(
-    TFCSSimulationState* simulstate,
-    TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol)
-{
-  ISF_FCS::MLogging logger;
-  if (!simulstate)
-    simulstate = new TFCSSimulationState();
-  if (!truth)
-    truth = new TFCSTruthState();
-  if (!extrapol)
-    extrapol = new TFCSExtrapolationState();
-
-  TFCSParametrizationEkinSelectChain chain("chain", "chain");
-  chain.setLevel(MSG::DEBUG);
-
-  TFCSParametrization* param;
-  param = new TFCSInvisibleParametrization("A begin all", "A begin all");
-  param->setLevel(MSG::DEBUG);
-  param->set_Ekin_nominal(2);
-  param->set_Ekin_min(2);
-  param->set_Ekin_max(5);
-  chain.push_before_first_bin(param);
-  param = new TFCSInvisibleParametrization("A end all", "A end all");
-  param->setLevel(MSG::DEBUG);
-  param->set_Ekin_nominal(2);
-  param->set_Ekin_min(2);
-  param->set_Ekin_max(5);
-  chain.push_back(param);
-
-  const int n_params = 5;
-  for (int i = 2; i < n_params; ++i) {
-    param = new TFCSInvisibleParametrization(Form("A%d", i), Form("A %d", i));
-    param->setLevel(MSG::DEBUG);
-    param->set_Ekin_nominal(TMath::Power(2.0, i));
-    param->set_Ekin_min(TMath::Power(2.0, i - 0.5));
-    param->set_Ekin_max(TMath::Power(2.0, i + 0.5));
-    chain.push_back_in_bin(param);
-  }
-  for (int i = n_params; i >= 1; --i) {
-    param = new TFCSInvisibleParametrization(Form("B%d", i), Form("B %d", i));
-    param->setLevel(MSG::DEBUG);
-    param->set_Ekin_nominal(TMath::Power(2.0, i));
-    param->set_Ekin_min(TMath::Power(2.0, i - 0.5));
-    param->set_Ekin_max(TMath::Power(2.0, i + 0.5));
-    chain.push_back_in_bin(param);
-  }
-
-  ATH_MSG_NOCLASS(logger, "====         Chain setup       ====");
-  chain.Print();
-
-  param = new TFCSInvisibleParametrization("B end all", "B end all");
-  param->setLevel(MSG::DEBUG);
-  chain.push_back(param);
-  param = new TFCSInvisibleParametrization("B begin all", "B begin all");
-  param->setLevel(MSG::DEBUG);
-  chain.push_before_first_bin(param);
-
-  ATH_MSG_NOCLASS(logger, "====         Chain setup       ====");
-  chain.Print();
-  ATH_MSG_NOCLASS(logger, "==== Simulate with E=0.3      ====");
-  truth->SetPtEtaPhiM(0.3, 0, 0, 0);
-  chain.simulate(*simulstate, truth, extrapol);
-  for (double E = 1; E < 10.1; E += 1) {
-    ATH_MSG_NOCLASS(logger, "==== Simulate with E=" << E << "      ====");
-    truth->SetPtEtaPhiM(E, 0, 0, 0);
-    chain.simulate(*simulstate, truth, extrapol);
-  }
-  ATH_MSG_NOCLASS(logger, "==== Simulate with E=100      ====");
-  truth->SetPtEtaPhiM(100, 0, 0, 0);
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger, "===================================" << std::endl);
-  ATH_MSG_NOCLASS(logger, "====== now with random bin ========" << std::endl);
-  chain.set_DoRandomInterpolation();
-  for (double E = 15; E < 35.1; E += 4) {
-    ATH_MSG_NOCLASS(logger, "==== Simulate with E=" << E << "      ====");
-    truth->SetPtEtaPhiM(E, 0, 0, 0);
-    for (int i = 0; i < 10; ++i)
-      chain.simulate(*simulstate, truth, extrapol);
-  }
-  ATH_MSG_NOCLASS(logger, "===================================" << std::endl);
 }

@@ -12,8 +12,7 @@
 /*Particle data includes*/
 #include "HepPDT/ParticleData.hh"
 #include "HepPDT/ParticleDataTable.hh"
-/*TFile include*/
-#include <TFile.h>
+
 /*Pieciewise linear interpolation class include*/
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 

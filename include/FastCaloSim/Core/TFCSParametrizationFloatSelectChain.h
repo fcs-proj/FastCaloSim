@@ -39,10 +39,6 @@ public:
     return m_bin_low_edge[bin + 1];
   };
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
-
 protected:
   std::vector<float> m_bin_low_edge;
 

@@ -9,19 +9,12 @@
 
 #include <CLHEP/Random/RanluxEngine.h>
 
-#include "CLHEP/Random/RandFlat.h"
-#include "CLHEP/Random/RandGauss.h"
-#include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
-#include "HepPDT/ParticleData.hh"
-#include "HepPDT/ParticleDataTable.hh"
+#include "TBuffer.h"
 #include "TClass.h"
-#include "TFile.h"
-
 // LWTNN
-#include "lwtnn/LightweightGraph.hh"
 #include "lwtnn/LightweightNeuralNetwork.hh"
 #include "lwtnn/parse_json.hh"
 
@@ -373,146 +366,6 @@ void TFCSPredictExtrapWeights::Streamer(TBuffer& R__b)
   } else {
     R__b.WriteClassBuffer(TFCSPredictExtrapWeights::Class(), this);
   }
-}
-
-// unit_test()
-// Function for testing
-void TFCSPredictExtrapWeights::unit_test(TFCSSimulationState* simulstate,
-                                         const TFCSTruthState* truth,
-                                         const TFCSExtrapolationState* extrapol)
-{
-  const std::string this_file = __FILE__;
-  const std::string parent_dir = this_file.substr(0, this_file.find("/src/"));
-  const std::string norm_path = parent_dir + "/share/NormPredExtrapSample/";
-  std::string net_path =
-      "/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/"
-      "FastCaloSim/LWTNNPredExtrapSample/";
-  test_path(net_path, norm_path, simulstate, truth, extrapol);
-  // net_path = "/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/FastCaloSim/"
-  //            "ONNXPredExtrapSample/";
-  // test_path(net_path, norm_path, simulstate, truth, extrapol);
-}
-
-// test_path()
-// Function for testing
-void TFCSPredictExtrapWeights::test_path(std::string& net_path,
-                                         std::string const& norm_path,
-                                         TFCSSimulationState* simulstate,
-                                         const TFCSTruthState* truth,
-                                         const TFCSExtrapolationState* extrapol)
-{
-  ISF_FCS::MLogging logger;
-  ATH_MSG_NOCLASS(logger,
-                  "Testing net path ..."
-                      << net_path.substr(net_path.length() - 20)
-                      << " and norm path ..."
-                      << norm_path.substr(norm_path.length() - 20));
-  if (!simulstate) {
-    simulstate = new TFCSSimulationState();
-    simulstate->setRandomEngine(new CLHEP::RanluxEngine());
-  }
-  if (!truth) {
-    TFCSTruthState* t = new TFCSTruthState();
-    t->SetPtEtaPhiM(524288000, 0, 0, 130);  // 524288 GeV
-    t->set_pdgid(22);  // photon
-    truth = t;
-  }
-  if (!extrapol) {
-    TFCSExtrapolationState* e = new TFCSExtrapolationState();
-    e->set_IDCaloBoundary_eta(truth->Eta());
-    for (int i = 0; i < 24; ++i) {
-      e->set_eta(i, TFCSExtrapolationState::SUBPOS_ENT, truth->Eta());
-      e->set_eta(i, TFCSExtrapolationState::SUBPOS_EXT, truth->Eta());
-      e->set_eta(i, TFCSExtrapolationState::SUBPOS_MID, truth->Eta());
-      e->set_phi(i, TFCSExtrapolationState::SUBPOS_ENT, 0);
-      e->set_phi(i, TFCSExtrapolationState::SUBPOS_EXT, 0);
-      e->set_phi(i, TFCSExtrapolationState::SUBPOS_MID, 0);
-      e->set_r(i, TFCSExtrapolationState::SUBPOS_ENT, 1500 + i * 10);
-      e->set_r(i, TFCSExtrapolationState::SUBPOS_EXT, 1510 + i * 10);
-      e->set_r(i, TFCSExtrapolationState::SUBPOS_MID, 1505 + i * 10);
-      e->set_z(i, TFCSExtrapolationState::SUBPOS_ENT, 3500 + i * 10);
-      e->set_z(i, TFCSExtrapolationState::SUBPOS_EXT, 3510 + i * 10);
-      e->set_z(i, TFCSExtrapolationState::SUBPOS_MID, 3505 + i * 10);
-    }
-    extrapol = e;
-  }
-
-  // Set energy in layers which then will be retrieved in simulate_hit()
-  simulstate->set_E(0, 1028.77124023);
-  simulstate->set_E(1, 68199.0625);
-  simulstate->set_E(2, 438270.78125);
-  simulstate->set_E(3, 3024.02929688);
-  simulstate->set_E(12, 1330.10131836);
-  simulstate->set_E(1028.77124023 + 68199.0625 + 438270.78125 + 3024.02929688
-                    + 1330.10131836);
-  simulstate->set_Efrac(0, simulstate->E(0) / simulstate->E());
-  simulstate->set_Efrac(1, simulstate->E(1) / simulstate->E());
-  simulstate->set_Efrac(2, simulstate->E(2) / simulstate->E());
-  simulstate->set_Efrac(3, simulstate->E(3) / simulstate->E());
-  simulstate->set_Efrac(12, simulstate->E(12) / simulstate->E());
-
-  const int pdgId = truth->pdgid();
-  const float Ekin = truth->Ekin();
-  const float eta = truth->Eta();
-
-  ATH_MSG_NOCLASS(
-      logger, "True energy " << Ekin << " pdgId " << pdgId << " eta " << eta);
-
-  // Find eta bin
-  const int Eta = eta * 10;
-  std::string etaBin = "";
-  for (int i = 0; i <= 25; ++i) {
-    int etaTmp = i * 5;
-    if (Eta >= etaTmp && Eta < (etaTmp + 5)) {
-      etaBin = std::to_string(i * 5) + "_" + std::to_string((i + 1) * 5);
-    }
-  }
-
-  ATH_MSG_NOCLASS(logger, "etaBin = " << etaBin);
-
-  TFCSPredictExtrapWeights NN("NN", "NN");
-  NN.setLevel(MSG::INFO);
-  const int pid = truth->pdgid();
-  NN.initializeNetwork(pid, etaBin, net_path);
-  NN.getNormInputs(etaBin, norm_path);
-
-  // Get extrapWeights and save them as AuxInfo in simulstate
-
-  // Get inputs to Neural Network
-  std::map<std::string, double> inputVariables =
-      NN.prepareInputs(*simulstate, truth->E() * 0.001);
-
-  // Get predicted extrapolation weights
-  ATH_MSG_NOCLASS(logger, "computing with m_nn");
-  auto outputs = NN.m_nn->compute(inputVariables);
-  const std::vector<int> layers = {0, 1, 2, 3, 12};
-  for (int ilayer : layers) {
-    simulstate->setAuxInfo<float>(
-        ilayer, outputs["extrapWeight_" + std::to_string(ilayer)]);
-  }
-
-  // Simulate
-  const int layer = 0;
-  NN.set_calosample(layer);
-  TFCSLateralShapeParametrizationHitBase::Hit hit;
-  NN.simulate_hit(hit, *simulstate, truth, extrapol);
-
-  // Write
-  TFile* fNN = new TFile("FCSNNtest.root", "RECREATE");
-  NN.Write();
-  fNN->ls();
-  fNN->Close();
-  delete fNN;
-
-  // Open
-  fNN = TFile::Open("FCSNNtest.root");
-  TFCSPredictExtrapWeights* NN2 = (TFCSPredictExtrapWeights*)(fNN->Get("NN"));
-
-  NN2->setLevel(MSG::INFO);
-  NN2->simulate_hit(hit, *simulstate, truth, extrapol);
-  // simulstate->Print();
-
-  return;
 }
 
 void TFCSPredictExtrapWeights::Print(Option_t* option) const

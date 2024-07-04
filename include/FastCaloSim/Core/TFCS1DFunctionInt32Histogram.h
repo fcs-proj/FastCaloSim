@@ -45,8 +45,6 @@ public:
   };
   std::vector<HistoContent_t>& get_HistoContents() { return m_HistoContents; };
 
-  static void unit_test(TH1* hist = nullptr);
-
 protected:
   std::vector<float> m_HistoBorders;
   std::vector<HistoContent_t> m_HistoContents;

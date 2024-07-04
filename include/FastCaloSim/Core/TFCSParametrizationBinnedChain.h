@@ -44,12 +44,7 @@ public:
       TFCSSimulationState& simulstate,
       const TFCSTruthState* truth,
       const TFCSExtrapolationState* extrapol) const override;
-
   void Print(Option_t* option = "") const override;
-
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        const TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
 
 protected:
   /// Contains the index where the TFCSParametrizationBase* instances to run for

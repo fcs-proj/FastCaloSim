@@ -9,10 +9,6 @@
 #include "FastCaloSim/Core/TFCSParametrization.h"
 // interpolator include
 #include <Math/Interpolator.h>
-// graphic includes for unit_test
-#include "TAxis.h"
-#include "TCanvas.h"
-#include "TGraph.h"
 // TBuffer include required for custom class streamer
 #include "TBuffer.h"
 
@@ -57,11 +53,6 @@ public:
   double evaluate(const double& Ekin) const;
 
   void Print(Option_t* option = "") const override;
-
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr,
-                        TGraph* grlinear = nullptr);
 
 private:
   ROOT::Math::Interpolator m_linInterpol;  //! Do not persistify

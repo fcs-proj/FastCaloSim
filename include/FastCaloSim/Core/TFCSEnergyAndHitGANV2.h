@@ -95,17 +95,6 @@ public:
 
   virtual void Print(Option_t* option = "") const override;
 
-  static void test_path(const std::string& path,
-                        TFCSSimulationState* simulstate = nullptr,
-                        const TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr,
-                        const std::string& outputname = "unnamed",
-                        int pid = 211);
-
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        const TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
-
 protected:
   void SetRegionAndSliceFromXML(int pid,
                                 int etaMax,

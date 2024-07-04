@@ -40,10 +40,6 @@ public:
       const TFCSTruthState* truth,
       const TFCSExtrapolationState* extrapol) const override;
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        TFCSTruthState* truth = nullptr,
-                        TFCSExtrapolationState* extrapol = nullptr);
-
 protected:
   virtual void recalc() override;
 

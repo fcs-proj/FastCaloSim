@@ -54,10 +54,6 @@ public:
                                               double xmax = 5,
                                               double xpeak = 1.5,
                                               double sigma = 0.6);
-  static void unit_test(TH1* hist,
-                        TFCS1DFunction* rtof,
-                        int nrnd = 1000000,
-                        TH1* histfine = nullptr);
 
 private:
   ClassDef(TFCS1DFunction, 2)  // TFCS1DFunction
