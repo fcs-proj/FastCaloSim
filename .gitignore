@@ -13,3 +13,6 @@ env.bat
 env.ps1
 Testing
 test/output
+__pycache__/
+*.py[cod]
+*$py.class
