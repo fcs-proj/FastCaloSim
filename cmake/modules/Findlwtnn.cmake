@@ -30,4 +30,4 @@ find_package_handle_standard_args( lwtnn
   lwtnn_LIBRARIES)
 
 mark_as_advanced(LWTNN_FOUND lwtnn_INCLUDE_DIRS
- lwtnn_LIBRARIES)'
+ lwtnn_LIBRARIES)
