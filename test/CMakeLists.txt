@@ -13,6 +13,8 @@ add_definitions(-DTEST_BASE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/")
 # ---- Create test output Location ----
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/output)
 add_definitions(-DTEST_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output/")
+# ---- Location to store test references ----
+add_definitions(-DTEST_REFS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/refs/")
 
 # ---- Dependencies ----
 
@@ -34,14 +36,14 @@ FetchContent_MakeAvailable(googletest)
 # Deactivate compiler warnings and static analyzers
 # Note: test should be linked with gtest_main unless
 # you want to write your own main function
-deactivate_checks(gtest gtest_main 
+deactivate_checks(gtest gtest_main
                   gmock gmock_main
                   FastCaloSim_FastCaloSim
                   FastCaloSim_dict)
 
 # Build a simple geant4 application
 # - Used to test the particle transport
-# - Uses simplified geometry 
+# - Uses simplified geometry
 add_subdirectory(g4app)
 deactivate_checks(g4app)
 

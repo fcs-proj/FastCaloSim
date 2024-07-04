@@ -7,6 +7,7 @@
 #include "TestConfig/AtlasTransportTestsConfig.h"
 #include "TestHelpers/Event.h"
 #include "TestHelpers/IOManager.h"
+#include "TestHelpers/JsonComparer.h"
 
 TEST_P(AtlasTransportTests, AtlasTransport)
 {
@@ -68,6 +69,19 @@ TEST_P(AtlasTransportTests, AtlasTransport)
 
   // Plot the extrapolation
   ASSERT_TRUE(system(extrapol_exec.c_str()) == 0);
+
+  // Now compare results with references with a tolerance of 0.1 percent
+  const double tol = 1e-3;
+  JsonComparer json(tol);
+
+  // Compare the transport data to references
+  ASSERT_TRUE(
+      json.compare(AtlasTransportTestConfig::transport_output_path(),
+                   AtlasTransportTestConfig::transport_output_ref_path()));
+  // Compare the extrapolation data to references
+  ASSERT_TRUE(
+      json.compare(AtlasTransportTestConfig::extrapolation_output_path(),
+                   AtlasTransportTestConfig::extrapolation_output_ref_path()));
 }
 
 INSTANTIATE_TEST_SUITE_P(AtlasTransport,

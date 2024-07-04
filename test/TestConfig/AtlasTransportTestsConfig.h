@@ -4,6 +4,7 @@
 
 #include "FastCaloSim/Core/MLogging.h"
 #include "TestHelpers/Event.h"
+#include "TestHelpers/IOManager.h"
 #include "TestHelpers/ParticleContainer.h"
 #include "TestHelpers/ParticleSampler.h"
 #include "TestHelpers/ParticleTypes.h"
@@ -79,28 +80,50 @@ public:
   inline static const std::string CALO_LAYER_DATA =
       std::string(TEST_BASE_DIR) + "/python/calo_layers.csv";
 
+  // Set the name of the output files
+  inline static const std::string TRANSPORT_DATA_FILE_NAME =
+      "transported_tracks.json";
+  inline static const std::string EXTRAPOLATION_DATA_FILE_NAME =
+      "extrapolation.json";
+  inline static const std::string TRANSPORT_PLOT_NAME =
+      "particle_transport.png";
+  inline static const std::string EXTRAPOLATION_PLOT_NAME =
+      "particle_extrapolation.png";
+
   // Path to the serialized transport data
   inline static auto transport_output_path() -> std::string
   {
-    return output_dir + "transported_tracks.json";
+    return output_dir + TRANSPORT_DATA_FILE_NAME;
+  }
+
+  // Path to the reference transport data
+  inline static auto transport_output_ref_path() -> std::string
+  {
+    return TestHelpers::IOManager::ref_dir() + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the serialized extrapolation data
   inline static auto extrapolation_output_path() -> std::string
   {
-    return output_dir + "extrapolation.json";
+    return output_dir + EXTRAPOLATION_DATA_FILE_NAME;
+  }
+
+  // Path to the reference extrapolation data
+  inline static auto extrapolation_output_ref_path() -> std::string
+  {
+    return TestHelpers::IOManager::ref_dir() + EXTRAPOLATION_DATA_FILE_NAME;
   }
 
   // Path to the output plot of the transport
   inline static auto plot_output_transport_path() -> std::string
   {
-    return output_dir + "particle_transport.png";
+    return output_dir + TRANSPORT_PLOT_NAME;
   }
 
   // Path to the output plot of the extrapolation
   inline static auto plot_output_extrapol_path() -> std::string
   {
-    return output_dir + "particle_extrapolation.png";
+    return output_dir + EXTRAPOLATION_PLOT_NAME;
   }
 
   // String of the python command to plot transportation

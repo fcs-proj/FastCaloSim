@@ -4,6 +4,7 @@
 
 #include "FastCaloSim/Core/MLogging.h"
 #include "TestHelpers/Event.h"
+#include "TestHelpers/IOManager.h"
 #include "TestHelpers/ParticleContainer.h"
 #include "TestHelpers/ParticleSampler.h"
 
@@ -80,28 +81,49 @@ public:
   inline static const std::string PYTHON_SCRIPT =
       std::string(TEST_BASE_DIR) + "/python/plot_simulation.py";
 
+  // Set the name of the output files
+  inline static const std::string TRANSPORT_DATA_FILE_NAME =
+      "transport_data.json";
+  inline static const std::string SIM_DATA_FILE_NAME = "sim_state_data.json";
+  inline static const std::string SIM_PLOT_FILE_NAME =
+      "simulated_cell_energy.png";
+  inline static const std::string SIM_GIF_FILE_NAME =
+      "simulated_cell_energy.gif";
+
   // Path to the serialized transportation data
   inline static auto transport_output_path() -> std::string
   {
-    return output_dir + "transport_data.json";
+    return output_dir + TRANSPORT_DATA_FILE_NAME;
+  }
+
+  // Path to the reference transportation data
+  inline static auto transport_output_ref_path() -> std::string
+  {
+    return TestHelpers::IOManager::ref_dir() + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the serialized simulation data
   inline static auto sim_output_path() -> std::string
   {
-    return output_dir + "sim_state_data.json";
+    return output_dir + SIM_DATA_FILE_NAME;
+  }
+
+  // Path to the reference simulation data
+  inline static auto sim_output_ref_path() -> std::string
+  {
+    return TestHelpers::IOManager::ref_dir() + SIM_DATA_FILE_NAME;
   }
 
   // Path to the output plot of the simulation plot
   inline static auto plot_output_sim_path() -> std::string
   {
-    return output_dir + "simulated_cell_energy.png";
+    return output_dir + SIM_PLOT_FILE_NAME;
   }
 
   // Path to the output simulation animation
   inline static auto plot_output_sim_animation() -> std::string
   {
-    return output_dir + "simulated_cell_energy.gif";
+    return output_dir + SIM_GIF_FILE_NAME;
   }
 
   // String of the python command to plot simulation output

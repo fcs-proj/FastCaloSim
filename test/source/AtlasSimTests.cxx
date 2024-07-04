@@ -7,6 +7,7 @@
 #include "TestConfig/AtlasSimTestsConfig.h"
 #include "TestHelpers/Event.h"
 #include "TestHelpers/IOManager.h"
+#include "TestHelpers/JsonComparer.h"
 #include "TestHelpers/SimStateContainer.h"
 
 TEST_P(AtlasSimTests, AtlasSimulation)
@@ -75,10 +76,16 @@ TEST_P(AtlasSimTests, AtlasSimulation)
 
   ASSERT_TRUE(system(sim_plot_exec.c_str()) == 0);
 
-  // Total simulated energy
-  ASSERT_NE(states.at(0).E(), 32070.4);
-  // Simulated energy in sampling 1
-  ASSERT_NE(states.at(0).E(1), 11161.9);
+  // Now compare results with references with a tolerance of 0.1 percent
+  const double tol = 1e-3;
+  JsonComparer json(tol);
+
+  // Compare the transport data to references
+  ASSERT_TRUE(json.compare(AtlasSimTestConfig::transport_output_path(),
+                           AtlasSimTestConfig::transport_output_ref_path()));
+  // Compare the simulation data to references
+  ASSERT_TRUE(json.compare(AtlasSimTestConfig::sim_output_path(),
+                           AtlasSimTestConfig::sim_output_ref_path()));
 }
 
 INSTANTIATE_TEST_SUITE_P(AtlasSimulation,
