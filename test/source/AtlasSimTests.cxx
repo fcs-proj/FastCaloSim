@@ -91,3 +91,4 @@ TEST_P(AtlasSimTests, AtlasSimulation)
 INSTANTIATE_TEST_SUITE_P(AtlasSimulation,
                          AtlasSimTests,
                          ::testing::ValuesIn(AtlasSimTestConfig::EVENTS),
+                         testing::PrintToStringParamName());
