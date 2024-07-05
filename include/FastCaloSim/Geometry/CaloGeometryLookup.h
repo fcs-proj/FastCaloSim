@@ -48,14 +48,6 @@ public:
   float minphi_raw() const { return m_minphi_raw; };
   float maxphi_raw() const { return m_maxphi_raw; };
 
-#ifdef USE_GPU
-  // the geometry for GPU EDM are constructed with following functions
-  float mineta_correction() const { return m_mineta_correction; };
-  float maxeta_correction() const { return m_maxeta_correction; };
-  float minphi_correction() const { return m_minphi_correction; };
-  float maxphi_correction() const { return m_maxphi_correction; };
-#endif
-
   float minx() const { return m_mineta; };
   float maxx() const { return m_maxeta; };
   float miny() const { return m_minphi; };
@@ -91,20 +83,6 @@ public:
                                             float phi,
                                             float* distance = 0,
                                             int* steps = 0);
-
-#ifdef USE_GPU
-  // used by FCS-GPU
-  float xy_grid_adjustment_factor() const
-  {
-    return m_xy_grid_adjustment_factor;
-  };
-  float deta_double() const { return m_deta_double; };
-  float dphi_double() const { return m_dphi_double; };
-  const std::vector<std::vector<const CaloDetDescrElement*> >* cell_grid()
-  {
-    return &m_cell_grid;
-  };
-#endif
 
 protected:
   float neta_double() { return (maxeta_raw() - mineta_raw()) / deta().mean(); };

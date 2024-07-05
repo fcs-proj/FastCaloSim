@@ -96,30 +96,6 @@ public:
   virtual bool checkFCalGeometryConsistency();
   virtual void PrintMapInfo(int i, int j);
 
-#ifdef USE_GPU
-  // needed by the FCS-GPU
-  t_cellmap* get_cells() { return &m_cells; };
-  size_t get_n_regions(int sample)
-  {
-    return m_cells_in_regions[sample].size();
-  };
-  size_t get_region_size(int sample, int region)
-  {
-    return m_cells_in_regions[sample][region]->size();
-  };
-  int get_tot_regions()
-  {
-    int n = 0;
-    for (int s = 0; s < MAX_SAMPLING; ++s)
-      n += m_cells_in_regions[s].size();
-    return n;
-  }
-  CaloGeometryLookup* get_region(int sample, int region)
-  {
-    return m_cells_in_regions[sample][region];
-  };
-#endif
-
 protected:
   virtual void addcell(const CaloDetDescrElement* cell);
 
