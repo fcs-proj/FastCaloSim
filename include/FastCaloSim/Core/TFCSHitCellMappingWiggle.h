@@ -57,10 +57,6 @@ public:
 
   void Print(Option_t* option = "") const override;
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        TFCSTruthState* truth = nullptr,
-                        TFCSExtrapolationState* extrapol = nullptr);
-
 protected:
   bool compare(const TFCSParametrizationBase& ref) const;
 

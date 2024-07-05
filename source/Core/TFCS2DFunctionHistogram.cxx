@@ -7,11 +7,7 @@
 
 #include "FastCaloSim/Core/TFCS2DFunctionHistogram.h"
 
-#include "TCanvas.h"
-#include "TFile.h"
-#include "TH2F.h"
-#include "TMath.h"
-#include "TRandom.h"
+#include "TH2.h"
 
 //=============================================
 //======= TFCS2DFunctionHistogram =========
@@ -103,90 +99,4 @@ void TFCS2DFunctionHistogram::rnd_to_fct(float& valuex,
   }
   valuey = m_HistoBordersy[biny]
       + (m_HistoBordersy[biny + 1] - m_HistoBordersy[biny]) * rnd1;
-}
-
-void TFCS2DFunctionHistogram::unit_test(TH2* hist)
-{
-  ISF_FCS::MLogging logger;
-  int nbinsx;
-  int nbinsy;
-  if (hist == nullptr) {
-    //    hist=new TH2F("test2D","test2D",5,0,5,5,0,10);
-    nbinsx = 64;
-    nbinsy = 64;
-    hist = new TH2F("test2D", "test2D", nbinsx, 0, 1, nbinsy, 0, 1);
-    hist->Sumw2();
-    for (int ix = 1; ix <= nbinsx; ++ix) {
-      for (int iy = 1; iy <= nbinsy; ++iy) {
-        hist->SetBinContent(ix,
-                            iy,
-                            (0.5 + gRandom->Rndm()) * (nbinsx + ix)
-                                * (nbinsy * nbinsy / 2 + iy * iy));
-        if (gRandom->Rndm() < 0.1)
-          hist->SetBinContent(ix, iy, 0);
-        hist->SetBinError(ix, iy, 0);
-      }
-    }
-  }
-  TFCS2DFunctionHistogram rtof(hist);
-  nbinsx = hist->GetNbinsX();
-  nbinsy = hist->GetNbinsY();
-
-  float value[2];
-  float rnd[2];
-  // cppcheck-suppress uninitvar
-  for (rnd[0] = 0; rnd[0] < 0.9999; rnd[0] += 0.25) {
-    for (rnd[1] = 0; rnd[1] < 0.9999; rnd[1] += 0.25) {
-      rtof.rnd_to_fct(value, rnd);
-      ATH_MSG_NOCLASS(logger,
-                      "rnd0=" << rnd[0] << " rnd1=" << rnd[1]
-                              << " -> x=" << value[0] << " y=" << value[1]);
-    }
-  }
-
-  //  TH2F* hist_val=new
-  //  TH2F("val2D","val2D",16,hist->GetXaxis()->GetXmin(),hist->GetXaxis()->GetXmax(),
-  //                                          16,hist->GetYaxis()->GetXmin(),hist->GetYaxis()->GetXmax());
-  TH2F* hist_val = (TH2F*)hist->Clone("hist_val");
-  hist_val->Reset();
-  int nrnd = 100000000;
-  float weight = hist->Integral() / nrnd;
-  hist_val->Sumw2();
-  for (int i = 0; i < nrnd; ++i) {
-    rnd[0] = gRandom->Rndm();
-    rnd[1] = gRandom->Rndm();
-    rtof.rnd_to_fct(value, rnd);
-    hist_val->Fill(value[0], value[1], weight);
-  }
-  hist_val->Add(hist, -1);
-
-  TH1F* hist_pull = new TH1F("pull", "pull", 80, -4, 4);
-  for (int ix = 1; ix <= nbinsx; ++ix) {
-    for (int iy = 1; iy <= nbinsy; ++iy) {
-      float val = hist_val->GetBinContent(ix, iy);
-      float err = hist_val->GetBinError(ix, iy);
-      if (err > 0)
-        hist_pull->Fill(val / err);
-      ATH_MSG_NOCLASS(logger, "val=" << val << " err=" << err);
-    }
-  }
-
-  std::unique_ptr<TFile> outputfile(
-      TFile::Open("TFCS2DFunctionHistogram_unit_test.root", "RECREATE"));
-  if (outputfile != nullptr) {
-    hist->Write();
-    hist_val->Write();
-    hist_pull->Write();
-    outputfile->ls();
-    outputfile->Close();
-  }
-
-  new TCanvas("input", "Input");
-  hist->Draw("colz");
-
-  new TCanvas("validation", "Validation");
-  hist_val->Draw("colz");
-
-  new TCanvas("pull", "Pull");
-  hist_pull->Draw();
 }

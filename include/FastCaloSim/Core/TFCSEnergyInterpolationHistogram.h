@@ -48,11 +48,6 @@ public:
       const TFCSExtrapolationState* extrapol) const override;
   void Print(Option_t* option = "") const override;
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr,
-                        TH1F* hist = nullptr);
-
 private:
   TH1F m_hist;
 

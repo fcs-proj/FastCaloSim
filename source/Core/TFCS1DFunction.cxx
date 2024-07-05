@@ -5,11 +5,9 @@
 */
 
 #include <iostream>
-#include <string>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 
-#include "TCanvas.h"
 #include "TH1.h"
 #include "TRandom.h"
 
@@ -126,94 +124,6 @@ TH1* TFCS1DFunction::generate_histogram_random_gauss(
       hist->Fill(x);
   }
   return hist;
-}
-
-void TFCS1DFunction::unit_test(TH1* hist,
-                               TFCS1DFunction* rtof,
-                               int nrnd,
-                               TH1* histfine)
-{
-  ISF_FCS::MLogging logger;
-  ATH_MSG_NOCLASS(logger,
-                  "========= " << hist->GetName() << " funcsize="
-                               << rtof->MemorySize() << " ========");
-  int nbinsx = hist->GetNbinsX();
-  double integral = hist->Integral();
-
-  float value[2];
-  float rnd[2];
-  // cppcheck-suppress uninitvar
-  for (rnd[0] = 0; rnd[0] < 0.9999; rnd[0] += 0.25) {
-    rtof->rnd_to_fct(value, rnd);
-    ATH_MSG_NOCLASS(logger, "rnd0=" << rnd[0] << " -> x=" << value[0]);
-  }
-
-  TH1* hist_val = nullptr;
-  if (histfine)
-    hist_val = (TH1*)histfine->Clone(TString(hist->GetName()) + "hist_val");
-  else
-    hist_val = (TH1*)hist->Clone(TString(hist->GetName()) + "hist_val");
-  double weightfine = hist_val->Integral() / nrnd;
-  hist_val->SetTitle("toy simulation");
-  hist_val->Reset();
-  hist_val->SetLineColor(2);
-  hist_val->Sumw2();
-
-  TH1* hist_diff = (TH1*)hist->Clone(TString(hist->GetName()) + "_difference");
-  hist_diff->SetTitle("cut efficiency difference");
-  hist_diff->Reset();
-  hist_diff->Sumw2();
-
-  double weight = integral / nrnd;
-  for (int i = 0; i < nrnd; ++i) {
-    rnd[0] = gRandom->Rndm();
-    rtof->rnd_to_fct(value, rnd);
-    hist_val->Fill(value[0], weightfine);
-    hist_diff->Fill(value[0], weight);
-  }
-  hist_diff->Add(hist, -1);
-  hist_diff->Scale(1.0 / integral);
-
-  TH1F* hist_pull =
-      new TH1F(TString(hist->GetName()) + "_pull", "pull", 200, -10, 10);
-  for (int ix = 1; ix <= nbinsx; ++ix) {
-    float val = hist_diff->GetBinContent(ix);
-    float err = hist_diff->GetBinError(ix);
-    if (err > 0)
-      hist_pull->Fill(val / err);
-  }
-
-  TCanvas* c = new TCanvas(hist->GetName(), hist->GetName());
-  c->Divide(2, 2);
-
-  c->cd(1);
-  if (histfine) {
-    histfine->SetLineColor(kGray);
-    histfine->DrawClone("hist");
-    hist->DrawClone("same");
-  } else {
-    hist->DrawClone();
-  }
-  hist_val->DrawClone("sameshist");
-
-  c->cd(2);
-  if (histfine) {
-    histfine->SetLineColor(kGray);
-    histfine->DrawClone("hist");
-    hist->DrawClone("same");
-  } else {
-    hist->DrawClone();
-  }
-  hist_val->DrawClone("sameshist");
-  gPad->SetLogy();
-
-  c->cd(3);
-  hist_diff->Draw();
-
-  c->cd(4);
-  hist_pull->Draw();
-
-  c->SaveAs(".png");
 }
 
 #pragma GCC diagnostic pop

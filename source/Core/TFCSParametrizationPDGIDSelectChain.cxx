@@ -7,7 +7,6 @@
 #include "FastCaloSim/Core/TFCSParametrizationPDGIDSelectChain.h"
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
-#include "FastCaloSim/Core/TFCSInvisibleParametrization.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
@@ -84,84 +83,4 @@ FCSReturnCode TFCSParametrizationPDGIDSelectChain::simulate(
   }
 
   return FCSSuccess;
-}
-
-void TFCSParametrizationPDGIDSelectChain::unit_test(
-    TFCSSimulationState* simulstate,
-    TFCSTruthState* truth,
-    TFCSExtrapolationState* extrapol)
-{
-  ISF_FCS::MLogging logger;
-  if (!simulstate)
-    simulstate = new TFCSSimulationState();
-  if (!truth)
-    truth = new TFCSTruthState();
-  if (!extrapol)
-    extrapol = new TFCSExtrapolationState();
-
-  TFCSParametrizationPDGIDSelectChain chain("chain", "chain");
-  chain.setLevel(MSG::DEBUG);
-
-  TFCSParametrization* param;
-  param = new TFCSInvisibleParametrization("A begin all", "A begin all");
-  param->setLevel(MSG::VERBOSE);
-  param->set_pdgid(0);
-  chain.push_back(param);
-  param = new TFCSInvisibleParametrization("A end all", "A end all");
-  param->setLevel(MSG::VERBOSE);
-  param->set_pdgid(0);
-  chain.push_back(param);
-
-  for (int i = 0; i < 3; ++i) {
-    param = new TFCSInvisibleParametrization(Form("A%d", i), Form("A %d", i));
-    param->setLevel(MSG::VERBOSE);
-    param->set_pdgid(i);
-    chain.push_back(param);
-  }
-
-  for (int i = 3; i > 0; --i) {
-    param = new TFCSParametrization(Form("B%d", i), Form("B %d", i));
-    param->setLevel(MSG::VERBOSE);
-    param->set_pdgid(i);
-    chain.push_back(param);
-  }
-  param = new TFCSInvisibleParametrization("B end all", "B end all");
-  param->setLevel(MSG::VERBOSE);
-  param->set_match_all_pdgid();
-  chain.push_back(param);
-  param = new TFCSInvisibleParametrization("B begin all", "B begin all");
-  param->setLevel(MSG::VERBOSE);
-  param->set_pdgid(1);
-  chain.push_back(param);
-
-  ATH_MSG_NOCLASS(logger, "====         Chain setup       ====");
-  chain.Print();
-  ATH_MSG_NOCLASS(logger, "==== Simulate with pdgid=0      ====");
-  truth->set_pdgid(0);
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger, "==== Simulate with pdgid=1      ====");
-  truth->set_pdgid(1);
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger, "==== Simulate with pdgid=2      ====");
-  truth->set_pdgid(2);
-  chain.set_RetryChainFromStart();
-  chain.simulate(*simulstate, truth, extrapol);
-  chain.reset_RetryChainFromStart();
-  ATH_MSG_NOCLASS(logger, "=====================================" << std::endl);
-
-  ATH_MSG_NOCLASS(logger, "=====================================");
-  ATH_MSG_NOCLASS(logger, "= Now only one simul for each PDGID =");
-  ATH_MSG_NOCLASS(logger, "=====================================");
-  chain.set_SimulateOnlyOnePDGID();
-  ATH_MSG_NOCLASS(logger, "==== Simulate with pdgid=0      ====");
-  truth->set_pdgid(0);
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger, "==== Simulate with pdgid=1      ====");
-  truth->set_pdgid(1);
-  chain.simulate(*simulstate, truth, extrapol);
-  ATH_MSG_NOCLASS(logger, "==== Simulate with pdgid=2      ====");
-  truth->set_pdgid(2);
-  chain.set_RetryChainFromStart();
-  chain.simulate(*simulstate, truth, extrapol);
-  chain.reset_RetryChainFromStart();
 }

@@ -10,10 +10,6 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
-#include "TAxis.h"
-#include "TCanvas.h"
-#include "TFile.h"
-#include "TGraph.h"
 
 namespace Gaudi
 {
@@ -116,83 +112,4 @@ void TFCSEnergyInterpolationSpline::Print(Option_t* option) const
                           << "<=log(Ekin)<=" << m_spline.GetXmax() << " "
                           << TMath::Exp(m_spline.GetXmin())
                           << "<=Ekin<=" << TMath::Exp(m_spline.GetXmax()));
-}
-
-void TFCSEnergyInterpolationSpline::unit_test(
-    TFCSSimulationState* simulstate,
-    TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol,
-    TGraph* grspline)
-{
-  if (!simulstate)
-    simulstate = new TFCSSimulationState();
-  if (!truth)
-    truth = new TFCSTruthState();
-  if (!extrapol)
-    extrapol = new TFCSExtrapolationState();
-
-  if (!grspline) {
-    const int Graph0_n = 9;
-    Double_t Graph0_fx1001[Graph0_n] = {
-        1.024, 2.048, 4.094, 8.192, 16.384, 32.768, 65.536, 131.072, 262.144};
-    for (int i = 0; i < Graph0_n; ++i)
-      Graph0_fx1001[i] *= 1000;
-
-    Double_t Graph0_fy1001[Graph0_n] = {0.6535402,
-                                        0.6571529,
-                                        0.6843001,
-                                        0.7172835,
-                                        0.7708416,
-                                        0.798819,
-                                        0.8187628,
-                                        0.8332745,
-                                        0.8443931};
-    grspline = new TGraph(Graph0_n, Graph0_fx1001, Graph0_fy1001);
-  }
-
-  TGraph* grdraw = (TGraph*)grspline->Clone();
-  grdraw->SetMarkerColor(46);
-  grdraw->SetMarkerStyle(8);
-
-  TFCSEnergyInterpolationSpline test("testTFCSEnergyInterpolationSpline",
-                                     "test TFCSEnergyInterpolationSpline");
-  test.set_pdgid(22);
-  test.set_Ekin_nominal(
-      0.5 * (grdraw->GetX()[0] + grdraw->GetX()[grdraw->GetN() - 1]));
-  test.set_Ekin_min(grdraw->GetX()[0]);
-  test.set_Ekin_max(grdraw->GetX()[grdraw->GetN() - 1]);
-  test.set_eta_nominal(0.225);
-  test.set_eta_min(0.2);
-  test.set_eta_max(0.25);
-  test.InitFromArrayInEkin(
-      grspline->GetN(), grspline->GetX(), grspline->GetY(), "b2e2", 0, 0);
-  // test.set_OnlyScaleEnergy();
-  test.Print();
-
-  truth->set_pdgid(22);
-
-  TGraph* gr = new TGraph();
-  gr->SetNameTitle("testTFCSEnergyInterpolationSplineLogX",
-                   "test TFCSEnergyInterpolationSpline log x-axis");
-  gr->GetXaxis()->SetTitle("Ekin [MeV]");
-  gr->GetYaxis()->SetTitle("<E(reco)>/Ekin(true)");
-
-  int ip = 0;
-  for (float Ekin = test.Ekin_min() * 0.25; Ekin <= test.Ekin_max() * 4;
-       Ekin *= 1.05)
-  {
-    // Init LorentzVector for truth. For photon Ekin=E
-    truth->SetPxPyPzE(Ekin, 0, 0, Ekin);
-    simulstate->set_E(Ekin);
-    if (test.simulate(*simulstate, truth, extrapol) != FCSSuccess) {
-      return;
-    }
-    gr->SetPoint(ip, Ekin, simulstate->E() / Ekin);
-    ++ip;
-  }
-
-  TCanvas* c = new TCanvas(gr->GetName(), gr->GetTitle());
-  gr->Draw("APL");
-  grdraw->Draw("Psame");
-  c->SetLogx();
 }

@@ -34,10 +34,6 @@ public:
 
   void Print(Option_t* option = "") const override;
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
-
 private:
   float m_slope;
   float m_offset;

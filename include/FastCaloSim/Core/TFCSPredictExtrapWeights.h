@@ -9,7 +9,6 @@
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "TH2D.h"
 
 // forward declare lwtnn dependencies
 namespace lwt
@@ -56,16 +55,6 @@ public:
   // Get inputs needed to normalize data
   bool getNormInputs(const std::string& etaBin,
                      const std::string& FastCaloTXTInputFolderName);
-
-  // Test function
-  static void test_path(std::string& net_path,
-                        std::string const& norm_path,
-                        TFCSSimulationState* simulstate = nullptr,
-                        const TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        const TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
 
   // Prepare inputs to the Neural Network
   std::map<std::string, double> prepareInputs(TFCSSimulationState& simulstate,

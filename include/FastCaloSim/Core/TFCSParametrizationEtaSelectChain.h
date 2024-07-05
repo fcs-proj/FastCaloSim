@@ -31,10 +31,6 @@ public:
       const TFCSExtrapolationState*) const override;
   virtual const std::string get_bin_text(int bin) const override;
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        TFCSTruthState* truth = nullptr,
-                        TFCSExtrapolationState* extrapol = nullptr);
-
 protected:
   virtual void recalc() override;
 

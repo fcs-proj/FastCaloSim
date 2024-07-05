@@ -114,23 +114,4 @@ int TFCSParametrizationFloatSelectChain::val_to_bin(float val) const
   return dist;
 }
 
-void TFCSParametrizationFloatSelectChain::unit_test(
-    TFCSSimulationState*, TFCSTruthState*, const TFCSExtrapolationState*)
-{
-  ISF_FCS::MLogging logger;
-  ATH_MSG_NOCLASS(
-      logger,
-      "==================================================================");
-  ATH_MSG_NOCLASS(
-      logger,
-      "= Please call TFCSParametrizationEkinSelectChain::unit_test(...) =");
-  ATH_MSG_NOCLASS(
-      logger,
-      "= or          TFCSParametrizationEtaSelectChain ::unit_test(...) =");
-  ATH_MSG_NOCLASS(
-      logger,
-      "=================================================================="
-          << std::endl);
-}
-
 #pragma GCC diagnostic pop

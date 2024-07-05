@@ -5,6 +5,8 @@
 #include "FastCaloSim/Core/TFCSLateralShapeTuning.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "TFile.h"
+#include "TGraph.h"
 
 //=============================================
 //======= TFCSLateralShapeTuning ==============

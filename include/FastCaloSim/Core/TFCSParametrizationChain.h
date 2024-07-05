@@ -73,10 +73,6 @@ public:
 
   void Print(Option_t* option = "") const override;
 
-  static void unit_test(TFCSSimulationState* simulstate = nullptr,
-                        const TFCSTruthState* truth = nullptr,
-                        const TFCSExtrapolationState* extrapol = nullptr);
-
   // THIS CLASS HAS A CUSTOM STREAMER! CHANGES IN THE VERSIONING OR DATA TYPES
   // NEED TO BE IMPLEMENTED BY HAND! void
   // TFCSParametrizationChain::Streamer(TBuffer &R__b)

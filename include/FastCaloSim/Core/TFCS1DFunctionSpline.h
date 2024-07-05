@@ -62,8 +62,6 @@ public:
   const TSpline3& spline() const { return m_spline; };
   TSpline3& spline() { return m_spline; };
 
-  static void unit_test(TH1* hist = nullptr);
-
 protected:
   static double optimize(TSpline3& sp_best,
                          std::vector<double>& nprop,
