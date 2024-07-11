@@ -13,7 +13,7 @@ project(
 )
 
 # Set the path for CMake to loook for any custom modules, e.g. Findlwtnn.cmake
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)  
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
@@ -22,11 +22,11 @@ include(cmake/variables.cmake)
 
 # ROOT is a required dependency for FastCaloSim
 find_package(ROOT 6.28 REQUIRED)
-# Geant4 (with gdml activated) is a required dependency for FastCaloSim 
+# Geant4 (with gdml activated) is a required dependency for FastCaloSim
 find_package(Geant4 10.6 REQUIRED gdml)
 # lwtnn for neural network inference
 find_package(lwtnn 2.13 CONFIG REQUIRED)
-# OnnxRuntime for neural network inference  
+# OnnxRuntime for neural network inference
 find_package(ONNXRuntime 1.15 REQUIRED)
 # LibXml2 for reading XML files
 find_package(PkgConfig REQUIRED)
@@ -55,11 +55,11 @@ add_subdirectory(source/Extrapolation)
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
-target_link_libraries(FastCaloSim_FastCaloSim PUBLIC  ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore 
+target_link_libraries(FastCaloSim_FastCaloSim PUBLIC  ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
                                                       CLHEP::CLHEP
-                                                      HepPDT 
+                                                      HepPDT
                                                       lwtnn::lwtnn
-                                                      ONNXRuntime::ONNXRuntime 
+                                                      ONNXRuntime::ONNXRuntime
                                                       ${LibXml2_LIBRARIES}
                                                       ${Geant4_LIBRARIES})
 
