@@ -2,10 +2,10 @@
 
 #include <gtest/gtest.h>
 
-#include "AtlasGeoTests.h"
+#include "AtlasDeprecatedGeoTests.h"
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
 
-class BasicExtrapolTests : public virtual AtlasGeoTests
+class BasicExtrapolTests : public virtual AtlasDeprecatedGeoTests
 {
 protected:
   static FastCaloSimCaloExtrapolation extrapolator;
@@ -14,7 +14,7 @@ protected:
   static void SetUpTestSuite()
   {
     // Call the base setup that sets up the geometry
-    AtlasGeoTests::SetUpTestSuite();
+    AtlasDeprecatedGeoTests::SetUpTestSuite();
     // Set the geometry of the extrapolator
     extrapolator.set_geometry(geo);
     // Set the verbosity level
@@ -26,7 +26,7 @@ protected:
   static void TearDownTestSuite()
   {
     // Call the base tear down that deletes the geometry
-    AtlasGeoTests::TearDownTestSuite();
+    AtlasDeprecatedGeoTests::TearDownTestSuite();
   }
 };
 
