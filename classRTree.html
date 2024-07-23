@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FastCaloSim/Geometry/ directory | FastCaloSim</title>
+  <title>RTree class | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,7 +49,8 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <span class="m-breadcrumb"><a href="dir_3f8fcdf21b7927755143f31ae66e124e.html">FastCaloSim</a>/</span>Geometry<span class="m-breadcrumb">/</span> <span class="m-thin">directory</span>
+          RTree <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="RTree_8h.html">&lt;RTree.h&gt;</a></div>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -58,41 +59,30 @@
             <li>
               Reference
               <ul>
-                <li><a href="#files">Files</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="files">
-          <h2><a href="#files">Files</a></h2>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt>file <a href="CaloCellLookup_8h.html" class="m-doc">CaloCellLookup.h</a></dt>
+            <dt id="a79d5b4e7c9a65106e26f61f2580683a5">
+              <span class="m-doc-wrap-bumper">void <a href="#a79d5b4e7c9a65106e26f61f2580683a5" class="m-doc-self">insert_cell</a>(</span><span class="m-doc-wrap">const <a href="Cell_8h.html#ab748a6b2cc35fa8496d5109b1ff06002" class="m-doc">Cell</a>&amp; cell)</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="CaloDetDescrElement_8h.html" class="m-doc">CaloDetDescrElement.h</a></dt>
+            <dt id="a479a90d5f0219ccc7ea25c731b765ef7">
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a479a90d5f0219ccc7ea25c731b765ef7" class="m-doc-self">query_point</a>(</span><span class="m-doc-wrap">const T&amp; hit) const -&gt; Cell</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="CaloGeometry_8h.html" class="m-doc">CaloGeometry.h</a></dt>
+            <dt id="ae4381c447e04c9f71bc7e2fa3b151e01">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae4381c447e04c9f71bc7e2fa3b151e01" class="m-doc-self">size</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="CaloGeometryFromFile_8h.html" class="m-doc">CaloGeometryFromFile.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="CaloGeometryLookup_8h.html" class="m-doc">CaloGeometryLookup.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="CaloSampling_8h.html" class="m-doc">CaloSampling.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="Cell_8h.html" class="m-doc">Cell.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="FastCaloSim__CaloCell__ID_8h.html" class="m-doc">FastCaloSim_CaloCell_ID.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="FCAL__ChannelMap_8h.html" class="m-doc">FCAL_ChannelMap.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="FSmap_8h.html" class="m-doc">FSmap.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="ICaloGeometry_8h.html" class="m-doc">ICaloGeometry.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="Identifier_8h.html" class="m-doc">Identifier.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="MeanAndRMS_8h.html" class="m-doc">MeanAndRMS.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="RTree_8h.html" class="m-doc">RTree.h</a></dt>
+            <dt id="af04d8c267acaa76379fb01de936307b4">
+              <span class="m-doc-wrap-bumper">auto <a href="#af04d8c267acaa76379fb01de936307b4" class="m-doc-self">at</a>(</span><span class="m-doc-wrap">std::size_t idx) const -&gt; const <a href="Cell_8h.html#ab748a6b2cc35fa8496d5109b1ff06002" class="m-doc">Cell</a>&amp;</span>
+            </dt>
             <dd><span></span></dd>
           </dl>
         </section>
