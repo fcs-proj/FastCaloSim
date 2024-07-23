@@ -3,41 +3,32 @@
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
-#include "FastCaloSim/Geometry/CaloGeometryFromFile.h"
+#include "FastCaloSim/Geometry/CaloCellLookup.h"
+#include "ROOT/RDataFrame.hxx"
 #include "TestConfig/AtlasGeoTestsConfig.h"
 #include "TestHelpers/Event.h"
 
+// Test suite for GeoTests
 class AtlasGeoTests
     : public virtual ::testing::TestWithParam<TestHelpers::Event>
 {
 protected:
-  static CaloGeometryFromFile* geo;
+  static CaloCellLookup* lookup;
 
-  // Set up the test suite
-  // Called before the first test in this test suite.
+  // Sets up the test suite
+  // Called before the first test in this test suite
   static void SetUpTestSuite()
   {
-    geo = new CaloGeometryFromFile();
-
-    // Load geometry
-    geo->LoadGeometryFromFile(AtlasGeoTestsConfig::GEO_PATH,
-                              AtlasGeoTestsConfig::GEO_TAG,
-                              AtlasGeoTestsConfig::HASH_FILE_PATH);
-
-    // Load FCal geometry from files
-    geo->LoadFCalGeometryFromFiles({AtlasGeoTestsConfig::FCAL1_GEO_PATH,
-                                    AtlasGeoTestsConfig::FCAL2_GEO_PATH,
-                                    AtlasGeoTestsConfig::FCAL3_GEO_PATH});
+    ROOT::RDataFrame df =
+        ROOT::RDataFrame(AtlasGeoTestsConfig::ATLAS_CALO_CELL_TREE_NAME,
+                         AtlasGeoTestsConfig::ATLAS_CALO_CELL_PATH);
+    lookup = new CaloCellLookup(df);
   }
 
-  // Tear down the test suite
-  // Called after the last test in this test suite.
-  static void TearDownTestSuite()
-  {
-    // Do not delete geo here, as it will lead to crashes when using with
-    // AtlasSimTests
-  }
+  // Tears down the test suite
+  // Called after the last test in this test suite
+  static void TearDownTestSuite() { delete lookup; }
 };
 
-// Initialize the static members
-CaloGeometryFromFile* AtlasGeoTests::geo = nullptr;
+// Initialize the static member
+CaloCellLookup* AtlasGeoTests::lookup = nullptr;

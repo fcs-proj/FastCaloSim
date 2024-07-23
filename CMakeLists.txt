@@ -74,7 +74,7 @@ ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict HepPDT FastCaloSim_FastCaloSim)
+deactivate_checks(FastCaloSim_dict HepPDT FastCaloSim_FastCaloSim fmt)
 
 include(GenerateExportHeader)
 generate_export_header(

@@ -29,7 +29,7 @@ TEST_F(BasicSimTests, DoDummySimulation)
       param_file->Get(paramsObject.c_str()));
 
   // Set up the geometry
-  param->set_geometry(geo);
+  param->set_geometry(AtlasDeprecatedGeoTests::geo);
   // Set logging level
   param->setLevel(MSG::Level::VERBOSE);
 
