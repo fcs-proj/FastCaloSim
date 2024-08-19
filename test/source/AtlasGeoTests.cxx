@@ -2,19 +2,19 @@
 
 #include <gtest/gtest.h>
 
-#include "FastCaloSim/Geometry/CaloCellLookup.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 
 TEST_F(AtlasGeoTests, PreSamplerBLookup)
 {
   constexpr int layer = 0;
 
   // Loop over all cells in the layer
-  for (int i = 0; i < AtlasGeoTests::lookup->get_num_cells(layer); ++i) {
-    const auto& cell = AtlasGeoTests::lookup->get_cell_at_index(layer, i);
+  for (int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
+    const auto& cell = AtlasGeoTests::geo->get_cell_at_idx(layer, i);
 
     // Loop over random points within the cell
     for (int irnd = 0; irnd < AtlasGeoTestsConfig::N_RANDOM_POINTS; ++irnd) {
-      AtlasGeoTestsConfig::HitPos hit {};
+      CaloPos hit {};
       hit.m_eta = AtlasGeoTestsConfig::sample(
           cell->eta() - 0.49 * cell->deta(), cell->eta() + 0.49 * cell->deta());
       hit.m_phi = AtlasGeoTestsConfig::normalize_angle(
@@ -24,7 +24,7 @@ TEST_F(AtlasGeoTests, PreSamplerBLookup)
                                             cell->r() + 0.49 * cell->dr());
 
       // Retrieve the cell closest to the hit position
-      const auto& best_cell = AtlasGeoTests::lookup->get_cell(layer, hit);
+      const auto& best_cell = AtlasGeoTests::geo->get_cell(layer, hit);
 
       // Check if the hit position is inside the cell
       ASSERT_NEAR(hit.m_eta, best_cell->eta(), 0.5 * best_cell->deta());
@@ -42,12 +42,12 @@ TEST_F(AtlasGeoTests, EME1Lookup)
   constexpr int layer = 5;
 
   // Loop over all cells in the layer
-  for (int i = 0; i < AtlasGeoTests::lookup->get_num_cells(layer); ++i) {
-    const auto& cell = AtlasGeoTests::lookup->get_cell_at_index(layer, i);
+  for (int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
+    const auto& cell = AtlasGeoTests::geo->get_cell_at_idx(layer, i);
 
     // Loop over random points within the cell
     for (int irnd = 0; irnd < AtlasGeoTestsConfig::N_RANDOM_POINTS; ++irnd) {
-      AtlasGeoTestsConfig::HitPos hit {};
+      CaloPos hit {};
       hit.m_eta = AtlasGeoTestsConfig::sample(
           cell->eta() - 0.49 * cell->deta(), cell->eta() + 0.49 * cell->deta());
       hit.m_phi = AtlasGeoTestsConfig::normalize_angle(
@@ -57,7 +57,7 @@ TEST_F(AtlasGeoTests, EME1Lookup)
                                             cell->z() + 0.49 * cell->dz());
 
       // Retrieve the cell closest to the hit position
-      const auto& best_cell = AtlasGeoTests::lookup->get_cell(layer, hit);
+      const auto& best_cell = AtlasGeoTests::geo->get_cell(layer, hit);
 
       // Check if the hit position is inside the cell
       ASSERT_NEAR(hit.m_eta, best_cell->eta(), 0.5 * best_cell->deta());
@@ -76,12 +76,12 @@ TEST_F(AtlasGeoTests, FCAL0Lookup)
   constexpr int layer = 21;
 
   // Loop over all cells in the layer
-  for (int i = 0; i < AtlasGeoTests::lookup->get_num_cells(layer); ++i) {
-    const auto& cell = AtlasGeoTests::lookup->get_cell_at_index(layer, i);
+  for (int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
+    const auto& cell = AtlasGeoTests::geo->get_cell_at_idx(layer, i);
 
     // Loop over random points within the cell
     for (int irnd = 0; irnd < AtlasGeoTestsConfig::N_RANDOM_POINTS; ++irnd) {
-      AtlasGeoTestsConfig::HitPos hit {};
+      CaloPos hit {};
       hit.m_x = AtlasGeoTestsConfig::sample(cell->x() - 0.49 * cell->dx(),
                                             cell->x() + 0.49 * cell->dx());
       hit.m_y = AtlasGeoTestsConfig::sample(cell->y() - 0.49 * cell->dy(),
@@ -90,7 +90,7 @@ TEST_F(AtlasGeoTests, FCAL0Lookup)
                                             cell->z() + 0.49 * cell->dz());
 
       // Retrieve the cell closest to the hit position
-      const auto& best_cell = AtlasGeoTests::lookup->get_cell(layer, hit);
+      const auto& best_cell = AtlasGeoTests::geo->get_cell(layer, hit);
 
       // Check if the hit position is inside the cell
       ASSERT_NEAR(hit.m_x, best_cell->x(), 0.5 * best_cell->dx());

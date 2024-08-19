@@ -9,8 +9,8 @@
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
-#include "FastCaloSim/Geometry/ICaloGeometry.h"
 
 /* G4FieldTrack used to store transportation steps */
 #include "G4FieldTrack.hh"
@@ -63,6 +63,8 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
   result.set_IDCaloBoundary_eta(-999.);
   result.set_IDCaloBoundary_phi(-999.);
   result.set_IDCaloBoundary_r(0);
+  result.set_IDCaloBoundary_x(0);
+  result.set_IDCaloBoundary_y(0);
   result.set_IDCaloBoundary_z(0);
   result.set_IDCaloBoundary_AngleEta(-999.);
   result.set_IDCaloBoundary_Angle3D(-999.);
@@ -113,6 +115,8 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
     result.set_IDCaloBoundary_eta(extPos.eta());
     result.set_IDCaloBoundary_phi(extPos.phi());
     result.set_IDCaloBoundary_r(extPos.perp());
+    result.set_IDCaloBoundary_x(extPos.x());
+    result.set_IDCaloBoundary_y(extPos.y());
     result.set_IDCaloBoundary_z(extPos.z());
 
     ATH_MSG_DEBUG("[ExtrapolateToID] Setting IDCaloBoundary to eta="
@@ -168,31 +172,42 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
     {
       for (int subpos = SUBPOS_MID; subpos <= SUBPOS_EXT; ++subpos) {
         float cylR, cylZ;
-        if (m_geo->isCaloBarrel(sample)) {
-          cylR = std::abs(
-              m_geo->rpos(sample, result.IDCaloBoundary_eta(), subpos));
+        if (m_geo->is_barrel(sample)) {
+          cylR =
+              std::abs(m_geo->rpos(sample,
+                                   result.IDCaloBoundary_eta(),
+                                   static_cast<CaloGeo::CaloSubPos>(subpos)));
           // EMB0 - EMB3 use z position of EME1 front end surface for
           // extrapolation else extrapolate to cylinder with symmetrized maximum
           // Z bounds set eta to a dummy value of 1000 and -1000 to force
           // detector side
           if (sample < 4)
             cylZ = result.IDCaloBoundary_eta() > 0
-                ? std::abs(m_geo->zpos(5, 1000, 1))
-                : std::abs(m_geo->zpos(5, -1000, 1));
+                ? std::abs(m_geo->zpos(
+                    5, 1000, static_cast<CaloGeo::CaloSubPos>(subpos)))
+                : std::abs(m_geo->zpos(
+                    5, -1000, static_cast<CaloGeo::CaloSubPos>(subpos)));
           else
             cylZ = 0.5
-                * (std::abs(m_geo->zpos(sample, 1000, subpos))
-                   + std::abs(m_geo->zpos(sample, -1000, subpos)));
+                * (std::abs(m_geo->zpos(
+                       sample, 1000, static_cast<CaloGeo::CaloSubPos>(subpos)))
+                   + std::abs(
+                       m_geo->zpos(sample,
+                                   -1000,
+                                   static_cast<CaloGeo::CaloSubPos>(subpos))));
         } else {
           // if we are not at barrel surface, extrapolate to cylinder with
           // maximum R to reduce extrapolation length
-          cylZ = std::abs(
-              m_geo->zpos(sample, result.IDCaloBoundary_eta(), subpos));
-          // calculate radius of cylinder we will extrapolate to
-          double mineta, maxeta, eta;
-          m_geo->minmaxeta(sample, result.IDCaloBoundary_eta(), mineta, maxeta);
+          cylZ =
+              std::abs(m_geo->zpos(sample,
+                                   result.IDCaloBoundary_eta(),
+                                   static_cast<CaloGeo::CaloSubPos>(subpos)));
+
+          double min_eta = m_geo->min_eta(sample, result.IDCaloBoundary_eta());
+          double max_eta = m_geo->max_eta(sample, result.IDCaloBoundary_eta());
+
           // get eta where we will look up the layer radius
-          eta = result.IDCaloBoundary_eta() > 0 ? mineta : maxeta;
+          double eta = result.IDCaloBoundary_eta() > 0 ? min_eta : max_eta;
           // calculate azimuthal angle from pseudorapidity
           double theta = 2 * std::atan(std::exp(-eta));
           // calculate maximum R of last cell of layer from z and theta
@@ -209,9 +224,9 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
           // to cover for endcaps this will keep phi, eta intact and only scale
           // r and z to fit a sensible position on the cylinder
           double scale = 1;
-          if (m_geo->isCaloBarrel(sample) && std::abs(extPos.perp()) > 1e-6)
+          if (m_geo->is_barrel(sample) && std::abs(extPos.perp()) > 1e-6)
             scale = cylR / extPos.perp();
-          else if (!m_geo->isCaloBarrel(sample) && std::abs(extPos.z()) > 1e-6)
+          else if (!m_geo->is_barrel(sample) && std::abs(extPos.z()) > 1e-6)
             scale = cylZ / std::abs(extPos.z());
           // scale extrapolated position accordingly
           extPos = scale * extPos;

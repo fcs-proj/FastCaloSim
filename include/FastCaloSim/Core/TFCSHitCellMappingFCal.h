@@ -7,14 +7,14 @@
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
-class ICaloGeometry;
+class CaloGeo;
 
 class TFCSHitCellMappingFCal : public TFCSHitCellMapping
 {
 public:
   TFCSHitCellMappingFCal(const char* name = nullptr,
                          const char* title = nullptr,
-                         ICaloGeometry* geo = nullptr)
+                         CaloGeo* geo = nullptr)
       : TFCSHitCellMapping(name, title, geo)
   {
   }

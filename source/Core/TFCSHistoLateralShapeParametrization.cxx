@@ -10,7 +10,6 @@
 #include "CLHEP/Random/RandPoisson.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 #include "HepPDT/ParticleData.hh"
 #include "HepPDT/ParticleDataTable.hh"
 #include "TFile.h"
@@ -33,7 +32,7 @@ TFCSHistoLateralShapeParametrization::TFCSHistoLateralShapeParametrization(
 
 TFCSHistoLateralShapeParametrization::~TFCSHistoLateralShapeParametrization() {}
 
-void TFCSHistoLateralShapeParametrization::set_geometry(ICaloGeometry* geo)
+void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
 {
   TFCSLateralShapeParametrizationHitBase::set_geometry(geo);
   if (!m_hist.get_HistoContents().empty()) {

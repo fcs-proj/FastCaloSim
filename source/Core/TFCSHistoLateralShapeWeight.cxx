@@ -78,7 +78,7 @@ FCSReturnCode TFCSHistoLateralShapeWeight::simulate_hit(
     weight =
         CLHEP::RandGaussZiggurat::shoot(simulstate.randomEngine(), weight, RMS);
   }
-  hit.E() *= weight;
+  hit.set_E(weight * hit.E());
 
   ATH_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
                           << " weight=" << weight);

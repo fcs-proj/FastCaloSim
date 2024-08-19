@@ -2,11 +2,11 @@
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
-#include "AtlasDeprecatedGeoTests.h"
+#include "AtlasGeoTests.h"
 #include "TFile.h"
 #include "TestConfig/BasicSimTestsConfig.h"
 
-class BasicSimTests : public AtlasDeprecatedGeoTests
+class BasicSimTests : public AtlasGeoTests
 {
 protected:
   static TFile* param_file;
@@ -16,7 +16,7 @@ protected:
   static void SetUpTestSuite()
   {
     // Call the base setup that sets up the geometry
-    AtlasDeprecatedGeoTests::SetUpTestSuite();
+    AtlasGeoTests::SetUpTestSuite();
 
     // Load parametrization file
     param_file =
@@ -28,7 +28,7 @@ protected:
   static void TearDownTestSuite()
   {
     // Call the base tear down that deletes the geometry
-    AtlasDeprecatedGeoTests::TearDownTestSuite();
+    AtlasGeoTests::TearDownTestSuite();
 
     param_file->Close();
     delete param_file;

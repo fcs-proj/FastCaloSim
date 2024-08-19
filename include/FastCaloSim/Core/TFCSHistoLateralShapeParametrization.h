@@ -10,7 +10,6 @@
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
 class TH2;
-class ICaloGeometry;
 
 class TFCSHistoLateralShapeParametrization
     : public TFCSLateralShapeParametrizationHitBase
@@ -29,7 +28,7 @@ public:
 
   /// will actually not store the geometry information, but rather used to check
   /// the validity of the 2D shape histogram
-  virtual void set_geometry(ICaloGeometry* geo) override;
+  virtual void set_geometry(CaloGeo* geo) override;
 
   bool is_phi_symmetric() const { return TestBit(k_phi_symmetric); };
   virtual void set_phi_symmetric() { SetBit(k_phi_symmetric); };

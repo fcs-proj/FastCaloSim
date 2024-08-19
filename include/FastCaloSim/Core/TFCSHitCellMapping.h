@@ -7,17 +7,17 @@
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
-class ICaloGeometry;
+class CaloGeo;
 
 class TFCSHitCellMapping : public TFCSLateralShapeParametrizationHitBase
 {
 public:
   TFCSHitCellMapping(const char* name = nullptr,
                      const char* title = nullptr,
-                     ICaloGeometry* geo = nullptr);
+                     CaloGeo* geo = nullptr);
 
-  virtual void set_geometry(ICaloGeometry* geo) override { m_geo = geo; };
-  ICaloGeometry* get_geometry() { return m_geo; };
+  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  CaloGeo* get_geometry() { return m_geo; };
 
   /// fills all hits into calorimeter cells
   virtual FCSReturnCode simulate_hit(
@@ -31,7 +31,7 @@ public:
   void Print(Option_t* option) const override;
 
 protected:
-  ICaloGeometry* m_geo;  //! do not persistify
+  CaloGeo* m_geo;  //! do not persistify
 
 private:
   ClassDefOverride(TFCSHitCellMapping, 1)  // TFCSHitCellMapping

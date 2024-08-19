@@ -30,17 +30,4 @@ public:
   {
     return a + (b - a) * gRandom->Rndm();
   }
-
-  // Helper struct to store the hit position
-  struct HitPos
-  {
-    float m_eta, m_phi, m_r, m_x, m_y, m_z;
-
-    auto eta() const -> float { return m_eta; }
-    auto phi() const -> float { return m_phi; }
-    auto r() const -> float { return m_r; }
-    auto x() const -> float { return m_x; }
-    auto y() const -> float { return m_y; }
-    auto z() const -> float { return m_z; }
-  };
 };

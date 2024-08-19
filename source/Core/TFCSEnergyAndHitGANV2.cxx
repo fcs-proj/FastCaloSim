@@ -408,7 +408,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
             }
 
             hit.reset();
-            hit.E() = Einit * energyInVoxel / (nHitsAlpha * nHitsR);
+            hit.set_E(Einit * energyInVoxel / (nHitsAlpha * nHitsR));
 
             if (layer <= 20) {
               float delta_eta_mm = r * cos(alpha);
@@ -433,8 +433,8 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
               const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
               const float delta_phi = delta_phi_mm / center_r;
 
-              hit.eta() = center_eta + delta_eta;
-              hit.phi() = TVector2::Phi_mpi_pi(center_phi + delta_phi);
+              hit.set_eta_x(center_eta + delta_eta);
+              hit.set_phi_y(TVector2::Phi_mpi_pi(center_phi + delta_phi));
 
               ATH_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                           << " layer " << layer);
@@ -449,9 +449,9 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                 delta_phi = -delta_phi;
               const float hit_phi =
                   TVector2::Phi_mpi_pi(center_phi + delta_phi);
-              hit.x() = hit_r * cos(hit_phi);
-              hit.y() = hit_r * sin(hit_phi);
-              hit.z() = center_z;
+              hit.set_eta_x(hit_r * cos(hit_phi));
+              hit.set_phi_y(hit_r * sin(hit_phi));
+              hit.set_z(center_z);
               ATH_MSG_VERBOSE(" Hit x " << hit.x() << " y " << hit.y()
                                         << " layer " << layer);
             }

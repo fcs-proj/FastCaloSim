@@ -4,7 +4,8 @@
 #include <gtest/gtest.h>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/CaloDetDescrElement.h"
+#include "FastCaloSim/Geometry/Cell.h"
+#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 TEST_F(TFCSSimulationStateTest, Initialization)
 {
@@ -45,16 +46,19 @@ TEST_F(TFCSSimulationStateTest, ClearFunction)
 TEST_F(TFCSSimulationStateTest, DepositEnergy)
 {
   TFCSSimulationState sim_state;
-  // Define a new cell
-  std::unique_ptr<CaloDetDescrElement> element(new CaloDetDescrElement());
+  // Define a new dummy cell
+  XYZCell dummy(0, CaloPos {0, 0, 0, 0, 0, 0}, 0, true, 0.0, 0.0, 0.0);
+  Cell cell = dummy;
+
   // Deposit 10 MeV in that cell
-  sim_state.deposit(element.get(), 10.0);
+  sim_state.deposit(cell->id(), 10.0);
   // Retrieve the cell map of the simulation state
   auto& cells = sim_state.cells();
+
   // Check that the cell is in the map
-  ASSERT_TRUE(cells.find(element.get()) != cells.end());
+  ASSERT_TRUE(cells.find(cell->id()) != cells.end());
   // Check that the energy deposited in the cell is correct
-  EXPECT_FLOAT_EQ(cells[element.get()], 10.0);
+  EXPECT_FLOAT_EQ(cells[cell->id()], 10.0);
 }
 
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)

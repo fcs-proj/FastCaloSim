@@ -23,7 +23,7 @@
 
 TFCSHitCellMappingWiggle::TFCSHitCellMappingWiggle(const char* name,
                                                    const char* title,
-                                                   ICaloGeometry* geo)
+                                                   CaloGeo* geo)
     : TFCSHitCellMapping(name, title, geo)
 {
 }
@@ -140,7 +140,7 @@ FCSReturnCode TFCSHitCellMappingWiggle::simulate_hit(
                             << get_bin_up_edge(bin) << "] func=" << func);
 
     double hit_phi_shifted = hit.phi() + wiggle;
-    hit.phi() = TVector2::Phi_mpi_pi(hit_phi_shifted);
+    hit.set_phi_y(TVector2::Phi_mpi_pi(hit_phi_shifted));
   }
 
   return TFCSHitCellMapping::simulate_hit(hit, simulstate, truth, extrapol);

@@ -10,7 +10,6 @@
 #include <TClass.h>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 #include "TMath.h"
 
 //=============================================
@@ -278,7 +277,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
     int retry = 0;
     do {
       hit.reset();
-      hit.E() = Ehit;
+      hit.set_E(Ehit);
       bool failed = false;
       if (debug)
         if (ihit == 2)
