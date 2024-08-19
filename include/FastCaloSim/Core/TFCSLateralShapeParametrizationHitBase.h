@@ -7,8 +7,6 @@
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 
-class CaloGeometry;
-
 class TFCSLateralShapeParametrizationHitBase
     : public TFCSLateralShapeParametrization
 {
