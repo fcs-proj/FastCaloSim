@@ -102,7 +102,6 @@ public:
           cell.dx(),
           cell.dy(),
           cell.dz());
-      return os;
     }
 
     if (cell.m_isEtaPhiR) {
@@ -115,7 +114,6 @@ public:
           cell.dphi(),
           cell.deta(),
           cell.dr());
-      return os;
     }
 
     if (cell.m_isEtaPhiZ) {
@@ -128,8 +126,8 @@ public:
           cell.dphi(),
           cell.deta(),
           cell.dz());
-      return os;
     }
+    return os;
   }
 };
 

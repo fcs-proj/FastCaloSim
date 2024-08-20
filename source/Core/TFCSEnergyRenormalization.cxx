@@ -6,8 +6,6 @@
 
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
 
-#include <pv/polymorphic_variant.hpp>
-
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/Cell.h"
