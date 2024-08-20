@@ -1,15 +1,16 @@
 #pragma once
 
+#include <cassert>
+
 #include <fmt/core.h>
 #include <fmt/format.h>
-#include <pv/polymorphic_variant.hpp>
 
 #include "CLHEP/Vector/ThreeVector.h"
 
 using Vector3D = CLHEP::Hep3Vector;
 
 // Base class for cells
-class CellBase
+class Cell
 {
 private:
   /// @brief Unique identifier for the cell
@@ -22,15 +23,24 @@ private:
   bool m_isBarrel;
   /// @brief Flags to indicate the coordinate system of the (cuboid) cell
   bool m_isXYZ, m_isEtaPhiR, m_isEtaPhiZ;
+  /// @brief Cell sizes
+  double m_dx, m_dy, m_dz, m_deta, m_dphi, m_dr;
 
 public:
-  CellBase(long long id,
-           Vector3D pos,
-           int layer,
-           bool isBarrel,
-           bool isXYZ,
-           bool isEtaPhiR,
-           bool isEtaPhiZ)
+  Cell(long long id,
+       Vector3D pos,
+       long long layer,
+       bool isBarrel,
+       bool isXYZ,
+       bool isEtaPhiR,
+       bool isEtaPhiZ,
+       double dx,
+       double dy,
+       double dz,
+       double deta,
+       double dphi,
+       double dr)
+
       : m_id(id)
       , m_pos(std::move(pos))
       , m_layer(layer)
@@ -38,6 +48,12 @@ public:
       , m_isXYZ(isXYZ)
       , m_isEtaPhiR(isEtaPhiR)
       , m_isEtaPhiZ(isEtaPhiZ)
+      , m_dx(dx)
+      , m_dy(dy)
+      , m_dz(dz)
+      , m_deta(deta)
+      , m_dphi(dphi)
+      , m_dr(dr)
   {
   }
 
@@ -56,20 +72,51 @@ public:
   auto inline isEtaPhiR() const -> bool { return m_isEtaPhiR; }
   auto inline isEtaPhiZ() const -> bool { return m_isEtaPhiZ; }
 
-  // Virtual accessors to be implemented by the daughter classes
-  virtual auto dx() const -> double = 0;
-  virtual auto dy() const -> double = 0;
-  virtual auto dz() const -> double = 0;
-  virtual auto deta() const -> double = 0;
-  virtual auto dphi() const -> double = 0;
-  virtual auto dr() const -> double = 0;
+  auto inline dx() const -> double
+  {
+    assert(m_isXYZ && "Cell is not in XYZ coordinate system");
+    return m_dx;
+  }
+  auto inline dy() const -> double
+  {
+    assert(m_isXYZ && "Cell is not in XYZ coordinate system");
+    return m_dy;
+  }
 
-  virtual ~CellBase() = default;
+  auto inline dz() const -> double
+  {
+    assert(m_isXYZ
+           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
+    return m_dz;
+  }
+
+  auto inline deta() const -> double
+  {
+    assert(m_isEtaPhiR
+           || m_isEtaPhiZ
+               && "Cell is not in EtaPhiR or EtaPhiZ coordinate system");
+    return m_deta;
+  }
+
+  auto inline dphi() const -> double
+  {
+    assert(m_isEtaPhiR
+           || m_isEtaPhiZ
+               && "Cell is not in EtaPhiR or EtaPhiZ coordinate system");
+    return m_dphi;
+  }
+
+  auto inline dr() const -> double
+  {
+    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
+    return m_dr;
+  }
+
+  virtual ~Cell() = default;
 
   // Overload the << operator to allow direct cell printout
   // with std::cout<<cell<<std::endl;
-  friend auto operator<<(std::ostream& os, const CellBase& cell)
-      -> std::ostream&
+  friend auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&
   {
     os << fmt::format(
         "Cell details:\n"
@@ -130,127 +177,3 @@ public:
     return os;
   }
 };
-
-// Derived class for Cartesian cells (dx, dy, dz)
-class XYZCell : public CellBase
-{
-private:
-  double m_dx, m_dy, m_dz;
-
-public:
-  XYZCell(long long id,
-          Vector3D pos,
-          long long layer,
-          bool isBarrel,
-          double dx,
-          double dy,
-          double dz)
-      : CellBase(id, pos, layer, isBarrel, true, false, false)
-      , m_dx(dx)
-      , m_dy(dy)
-      , m_dz(dz)
-  {
-  }
-
-  auto inline dx() const -> double override { return m_dx; }
-  auto inline dy() const -> double override { return m_dy; }
-  auto inline dz() const -> double override { return m_dz; }
-
-  auto inline deta() const -> double override
-  {
-    throw std::runtime_error("Cannot call deta on XYZ cell");
-  }
-  auto inline dphi() const -> double override
-  {
-    throw std::runtime_error("Cannot call dphi on XYZ cell");
-  }
-  auto inline dr() const -> double override
-  {
-    throw std::runtime_error("Cannot call dr on XYZ cell");
-  }
-};
-
-// Derived class for Cylindrical cells (deta, dphi, dr)
-class EtaPhiRCell : public CellBase
-{
-private:
-  double m_deta, m_dphi, m_dr;
-
-public:
-  EtaPhiRCell(long long id,
-              Vector3D pos,
-              long long layer,
-              bool isBarrel,
-              double deta,
-              double dphi,
-              double dr)
-      : CellBase(id, pos, layer, isBarrel, false, true, false)
-      , m_deta(deta)
-      , m_dphi(dphi)
-      , m_dr(dr)
-  {
-  }
-
-  auto inline deta() const -> double override { return m_deta; }
-  auto inline dphi() const -> double override { return m_dphi; }
-  auto inline dr() const -> double override { return m_dr; }
-
-  auto inline dx() const -> double override
-  {
-    throw std::runtime_error("Cannot call dx on EtaPhiR cell");
-  }
-  auto inline dy() const -> double override
-  {
-    throw std::runtime_error("Cannot call dy on EtaPhiR cell");
-  }
-  auto inline dz() const -> double override
-  {
-    throw std::runtime_error("Cannot call dz on EtaPhiR cell");
-  }
-};
-
-// Derived class for Cylindrical cells with z dimension (deta, dphi, dz)
-class EtaPhiZCell : public CellBase
-{
-private:
-  double m_deta, m_dphi, m_dz;
-
-public:
-  EtaPhiZCell(long long id,
-              Vector3D pos,
-              long long layer,
-              bool isBarrel,
-              double deta,
-              double dphi,
-              double dz)
-      : CellBase(id, pos, layer, isBarrel, false, false, true)
-      , m_deta(deta)
-      , m_dphi(dphi)
-      , m_dz(dz)
-  {
-  }
-
-  auto inline deta() const -> double override { return m_deta; }
-  auto inline dphi() const -> double override { return m_dphi; }
-  auto inline dz() const -> double override { return m_dz; }
-
-  auto inline dx() const -> double override
-  {
-    throw std::runtime_error("Cannot call dx on EtaPhiZ cell");
-  }
-  auto inline dy() const -> double override
-  {
-    throw std::runtime_error("Cannot call dy on EtaPhiZ cell");
-  }
-  auto inline dr() const -> double override
-  {
-    throw std::runtime_error("Cannot call dr on EtaPhiZ cell");
-  }
-};
-
-// A cell is any variant of XYZCell, EtaPhiRCell, EtaPhiZCell
-// Instead of std::variant, we use a polymorphic variant to get easy access of
-// base class methods for variants See
-// https://github.com/Krzmbrzl/polymorphic_variant for more information
-using Cell =
-    pv::polymorphic_variant<CellBase, XYZCell, EtaPhiRCell, EtaPhiZCell>;

@@ -114,8 +114,8 @@ private:
 
   void record_cell(const Cell& cell)
   {
-    m_layer_tree_map[cell->layer()].insert_cell(cell);
-    m_cell_id_map.emplace(cell->id(), cell);
+    m_layer_tree_map[cell.layer()].insert_cell(cell);
+    m_cell_id_map.emplace(cell.id(), cell);
   }
 
   void build(ROOT::RDataFrame& geo)
@@ -148,31 +148,20 @@ private:
       // to determine the position of all cells
       // Eta, phi, r could be used directly but this should be redund
       Vector3D pos {x->at(i), y->at(i), z->at(i)};
-      if (isCartesian->at(i)) {
-        record_cell(XYZCell {id->at(i),
-                             pos,
-                             layer->at(i),
-                             static_cast<bool>(isBarrel->at(i)),
-                             dx->at(i),
-                             dy->at(i),
-                             dz->at(i)});
-      } else if (isCylindrical->at(i)) {
-        record_cell(EtaPhiRCell {id->at(i),
-                                 pos,
-                                 layer->at(i),
-                                 static_cast<bool>(isBarrel->at(i)),
-                                 deta->at(i),
-                                 dphi->at(i),
-                                 dr->at(i)});
-      } else if (isECCylindrical->at(i)) {
-        record_cell(EtaPhiZCell {id->at(i),
-                                 pos,
-                                 layer->at(i),
-                                 static_cast<bool>(isBarrel->at(i)),
-                                 deta->at(i),
-                                 dphi->at(i),
-                                 dz->at(i)});
-      }
+
+      record_cell(Cell {id->at(i),
+                        pos,
+                        layer->at(i),
+                        static_cast<bool>(isBarrel->at(i)),
+                        static_cast<bool>(isCartesian->at(i)),
+                        static_cast<bool>(isCylindrical->at(i)),
+                        static_cast<bool>(isECCylindrical->at(i)),
+                        dx->at(i),
+                        dy->at(i),
+                        dz->at(i),
+                        deta->at(i),
+                        dphi->at(i),
+                        dr->at(i)});
     }
 
     init_rz_maps();
@@ -235,32 +224,32 @@ private:
     for (const auto& [layer, cells] : m_layer_tree_map) {
       for (size_t i = 0; i < cells.size(); ++i) {
         const auto& cell = cells.at(i);
-        int side = (cell->eta() > 0) ? 1 : 0;
+        int side = (cell.eta() > 0) ? 1 : 0;
         int sign_side = (side == 1) ? +1 : -1;
-        double eta = cell->eta();
+        double eta = cell.eta();
 
-        double deta = cell->isXYZ() ? 0 : cell->deta();
+        double deta = cell.isXYZ() ? 0 : cell.deta();
 
-        double min_eta = cell->eta() - deta / 2;
-        double max_eta = cell->eta() + deta / 2;
+        double min_eta = cell.eta() - deta / 2;
+        double max_eta = cell.eta() + deta / 2;
 
         m_min_eta_layer[side][layer] =
             std::min(m_min_eta_layer[side][layer], min_eta);
         m_max_eta_layer[side][layer] =
             std::max(m_max_eta_layer[side][layer], max_eta);
 
-        rz_map_eta[side][layer][eta] += cell->eta();
-        rz_map_rmid[side][layer][eta] += cell->r();
-        rz_map_zmid[side][layer][eta] += cell->z();
+        rz_map_eta[side][layer][eta] += cell.eta();
+        rz_map_rmid[side][layer][eta] += cell.r();
+        rz_map_zmid[side][layer][eta] += cell.z();
 
-        double dz = cell->isEtaPhiR() ? 0 : cell->dz();
-        double dr = cell->isEtaPhiR() ? cell->dr() : 0;
+        double dz = cell.isEtaPhiR() ? 0 : cell.dz();
+        double dr = cell.isEtaPhiR() ? cell.dr() : 0;
 
-        rz_map_zent[side][layer][eta] += cell->z() - dz / 2 * sign_side;
-        rz_map_zext[side][layer][eta] += cell->z() + dz / 2 * sign_side;
+        rz_map_zent[side][layer][eta] += cell.z() - dz / 2 * sign_side;
+        rz_map_zext[side][layer][eta] += cell.z() + dz / 2 * sign_side;
 
-        rz_map_rent[side][layer][eta] += cell->r() - dr / 2;
-        rz_map_rext[side][layer][eta] += cell->r() + dr / 2;
+        rz_map_rent[side][layer][eta] += cell.r() - dr / 2;
+        rz_map_rext[side][layer][eta] += cell.r() + dr / 2;
 
         rz_map_n[side][layer][eta]++;
       }

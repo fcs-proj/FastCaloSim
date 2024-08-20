@@ -40,7 +40,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     Cell cell = m_geo->get_cell(cell_id);
 
     // Add the energy to the corresponding layer
-    int layer = cell->layer();
+    int layer = cell.layer();
     energies[layer] += cell_energy;
   }
 
@@ -81,7 +81,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     long long cell_id = cell_iter.first;
     double cell_energy = cell_iter.second;
     Cell cell = m_geo->get_cell(cell_id);
-    int layer = cell->layer();
+    int layer = cell.layer();
     cell_iter.second *= scalefactor[layer];
   }
 

@@ -48,18 +48,29 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
 {
   TFCSSimulationState sim_state;
   // Define a new dummy cell
-  XYZCell dummy(0, CLHEP::Hep3Vector {0, 0, 0}, 0, true, 0.0, 0.0, 0.0);
-  Cell cell = dummy;
+  Cell cell(0,
+            CLHEP::Hep3Vector {0, 0, 0},
+            0,
+            /*isBarrel=*/true,
+            /*isXYZ=*/false,
+            /*isEtaPhiR=*/true,
+            /*isEtaPhiZ=*/false,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0);
 
   // Deposit 10 MeV in that cell
-  sim_state.deposit(cell->id(), 10.0);
+  sim_state.deposit(cell.id(), 10.0);
   // Retrieve the cell map of the simulation state
   auto& cells = sim_state.cells();
 
   // Check that the cell is in the map
-  ASSERT_TRUE(cells.find(cell->id()) != cells.end());
+  ASSERT_TRUE(cells.find(cell.id()) != cells.end());
   // Check that the energy deposited in the cell is correct
-  EXPECT_FLOAT_EQ(cells[cell->id()], 10.0);
+  EXPECT_FLOAT_EQ(cells[cell.id()], 10.0);
 }
 
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)

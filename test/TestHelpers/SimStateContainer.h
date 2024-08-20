@@ -66,33 +66,33 @@ class SimStateContainer
         const Cell cell = m_geo->get_cell(cell_id);
 
         // Get the cell dimensions where they make sense
-        double dx = cell->isXYZ() ? cell->dx() : 0;
-        double dy = cell->isXYZ() ? cell->dy() : 0;
-        double dz = cell->isXYZ() || cell->isEtaPhiZ() ? cell->dz() : 0;
-        double deta = cell->isEtaPhiR() || cell->isEtaPhiZ() ? cell->deta() : 0;
-        double dphi = cell->isEtaPhiR() || cell->isEtaPhiZ() ? cell->dphi() : 0;
-        double dr = cell->isEtaPhiR() ? cell->dr() : 0;
+        double dx = cell.isXYZ() ? cell.dx() : 0;
+        double dy = cell.isXYZ() ? cell.dy() : 0;
+        double dz = cell.isXYZ() || cell.isEtaPhiZ() ? cell.dz() : 0;
+        double deta = cell.isEtaPhiR() || cell.isEtaPhiZ() ? cell.deta() : 0;
+        double dphi = cell.isEtaPhiR() || cell.isEtaPhiZ() ? cell.dphi() : 0;
+        double dr = cell.isEtaPhiR() ? cell.dr() : 0;
 
         data.push_back({state_id,
-                        cell->id(),
+                        cell.id(),
                         cell_energy,
-                        cell->layer(),
-                        cell->eta(),
-                        cell->phi(),
-                        cell->r(),
-                        cell->x(),
-                        cell->y(),
-                        cell->z(),
+                        cell.layer(),
+                        cell.eta(),
+                        cell.phi(),
+                        cell.r(),
+                        cell.x(),
+                        cell.y(),
+                        cell.z(),
                         deta,
                         dphi,
                         dr,
                         dx,
                         dy,
                         dz,
-                        cell->isBarrel(),
-                        cell->isEtaPhiR(),
-                        cell->isEtaPhiZ(),
-                        cell->isXYZ()});
+                        cell.isBarrel(),
+                        cell.isEtaPhiR(),
+                        cell.isEtaPhiZ(),
+                        cell.isXYZ()});
 
         ++state_id;
       }

@@ -28,7 +28,7 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
   ATH_MSG_DEBUG("HIT: cell=" << cell << " E=" << hit.E() << " cs=" << cs
                              << " x=" << hit.x() << " y=" << hit.y()
                              << " z=" << hit.z());
-  simulstate.deposit(cell->id(), hit.E());
+  simulstate.deposit(cell.id(), hit.E());
 
   /// protection against cases where hits cannot be matched to a FCal cell
   if ((hit.x() == 0 && hit.y() == 0) || &cell == nullptr) {

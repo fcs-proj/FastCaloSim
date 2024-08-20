@@ -50,7 +50,7 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
   // for FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
   if (distance < 0.005) {
-    simulstate.deposit(cell->id(), hit.E());
+    simulstate.deposit(cell.id(), hit.E());
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }
@@ -66,11 +66,11 @@ auto TFCSHitCellMapping::mod_diff(double angle1, double angle2) -> double
 auto TFCSHitCellMapping::dist(const Cell& cell, const Hit& hit) -> double
 {
   // Calculate the distances in eta and phi directions
-  double delta_eta = std::abs(hit.eta() - cell->eta());
-  double delta_phi = mod_diff(hit.phi(), cell->phi());
+  double delta_eta = std::abs(hit.eta() - cell.eta());
+  double delta_phi = mod_diff(hit.phi(), cell.phi());
 
   // Closest distance to a boundary
-  return std::min(delta_eta - cell->deta(), delta_phi - cell->dphi());
+  return std::min(delta_eta - cell.deta(), delta_phi - cell.dphi());
 }
 
 bool TFCSHitCellMapping::operator==(const TFCSParametrizationBase& ref) const

@@ -66,11 +66,11 @@ private:
 
   static auto determine_coordinate_system(const Cell& cell) -> CoordinateSystem
   {
-    if (cell->isXYZ())
+    if (cell.isXYZ())
       return CoordinateSystem::XYZ;
-    if (cell->isEtaPhiR())
+    if (cell.isEtaPhiR())
       return CoordinateSystem::EtaPhiR;
-    if (cell->isEtaPhiZ())
+    if (cell.isEtaPhiZ())
       return CoordinateSystem::EtaPhiZ;
     return CoordinateSystem::Undefined;
   }
@@ -105,26 +105,26 @@ private:
 
     const float half = 0.5;
     std::vector<Box> boxes;
-    if (cell->isXYZ()) {
-      double xmin = cell->x() - cell->dx() * half;
-      double xmax = cell->x() + cell->dx() * half;
-      double ymin = cell->y() - cell->dy() * half;
-      double ymax = cell->y() + cell->dy() * half;
-      double zmin = cell->z() - cell->dz() * half;
-      double zmax = cell->z() + cell->dz() * half;
+    if (cell.isXYZ()) {
+      double xmin = cell.x() - cell.dx() * half;
+      double xmax = cell.x() + cell.dx() * half;
+      double ymin = cell.y() - cell.dy() * half;
+      double ymax = cell.y() + cell.dy() * half;
+      double zmin = cell.z() - cell.dz() * half;
+      double zmax = cell.z() + cell.dz() * half;
       boxes.emplace_back(Point(xmin, ymin, zmin), Point(xmax, ymax, zmax));
       insert_boxes(cell, boxes);
       return;
     }
 
-    double etamin = cell->eta() - cell->deta() * half;
-    double etamax = cell->eta() + cell->deta() * half;
-    double phimin = normalize_angle(cell->phi() - cell->dphi() * half);
-    double phimax = normalize_angle(cell->phi() + cell->dphi() * half);
+    double etamin = cell.eta() - cell.deta() * half;
+    double etamax = cell.eta() + cell.deta() * half;
+    double phimin = normalize_angle(cell.phi() - cell.dphi() * half);
+    double phimax = normalize_angle(cell.phi() + cell.dphi() * half);
 
-    if (cell->isEtaPhiR()) {
-      double rmin = cell->r() - cell->dr() * half;
-      double rmax = cell->r() + cell->dr() * half;
+    if (cell.isEtaPhiR()) {
+      double rmin = cell.r() - cell.dr() * half;
+      double rmax = cell.r() + cell.dr() * half;
       if (phimin > phimax) {
         boxes.emplace_back(Point(etamin, -M_PI, rmin),
                            Point(etamax, phimax, rmax));
@@ -134,9 +134,9 @@ private:
         boxes.emplace_back(Point(etamin, phimin, rmin),
                            Point(etamax, phimax, rmax));
       }
-    } else if (cell->isEtaPhiZ()) {
-      double zmin = cell->z() - cell->dz() * half;
-      double zmax = cell->z() + cell->dz() * half;
+    } else if (cell.isEtaPhiZ()) {
+      double zmin = cell.z() - cell.dz() * half;
+      double zmax = cell.z() + cell.dz() * half;
       if (phimin > phimax) {
         boxes.emplace_back(Point(etamin, -M_PI, zmin),
                            Point(etamax, phimax, zmax));

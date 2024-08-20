@@ -31,8 +31,6 @@ find_package(ONNXRuntime 1.15 REQUIRED)
 find_package(libxml REQUIRED)
 # Fmt for formatting
 find_package(fmt REQUIRED)
-# polymorphic_variant to add polymorphism to std::variant
-find_package(PV REQUIRED)
 # CLHEP for random number generation
 find_package(CLHEP REQUIRED)
 # Eigen for extrapolation
@@ -57,7 +55,6 @@ target_link_libraries(
     FastCaloSim_FastCaloSim PUBLIC
     ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
     fmt::fmt
-    polymorphic_variant
     CLHEP::CLHEP
     HepPDT
     lwtnn::lwtnn
