@@ -1,5 +1,0 @@
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LibXml2 REQUIRED libxml-2.0)
-include_directories(${LibXml2_INCLUDE_DIRS})
-link_directories(${LibXml2_LIBRARY_DIRS})
-add_definitions(${LibXml2_CFLAGS_OTHER})

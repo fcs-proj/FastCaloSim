@@ -1,8 +1,0 @@
-matplotlib==3.9.0
-pandas==2.2.2
-ipykernel==6.29.4
-codespell==2.2.6
-numpy==1.26.4
-uproot==5.3.7
-pygeosimplify==0.0.7
-pre-commit==3.7.1
