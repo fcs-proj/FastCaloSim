@@ -1,0 +1,17 @@
+{
+    // AlmaLinux9 container that already contains all project dependencies
+    "image": "jbeirer/alma9-fastcalosim:latest",
+
+    // Activate vs code extensions and set cmake path
+    "customizations": {
+        "vscode": {
+          "extensions": ["ms-python.python", "ms-toolsai.jupyter", "ms-vscode.cpptools", "llvm-vs-code-extensions.vscode-clangd", "ms-vscode.cmake-tools", "ibm.output-colorizer", "charliermarsh.ruff"],
+          "settings": {
+            "cmake.cmakePath": "/usr/bin/cmake"
+          }
+        }
+    },
+    // Commands to run after the container is created
+    // Install pre-commit hooks
+    "postCreateCommand": "pre-commit install"
+}
