@@ -4,6 +4,20 @@
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
+TEST_F(AtlasGeoTests, GeometryHealth)
+{
+  // Check that the barrel layers are indeed barrel layers
+  std::vector<int> barrel_layers = {0, 1, 2, 3, 12, 13, 14, 15, 16, 18, 19, 20};
+  for (int layer : barrel_layers) {
+    ASSERT_TRUE(AtlasGeoTests::geo->is_barrel(layer));
+  }
+  // Check that the endcap layers are indeed endcap layers
+  std::vector<int> endcap_layers = {4, 5, 6, 7, 8, 9, 10, 11, 17, 21, 22, 23};
+  for (int layer : endcap_layers) {
+    ASSERT_FALSE(AtlasGeoTests::geo->is_barrel(layer));
+  }
+}
+
 struct Hit
 {
   auto x() const -> double { return m_x; }
