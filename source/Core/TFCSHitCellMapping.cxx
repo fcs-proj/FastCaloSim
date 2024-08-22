@@ -36,12 +36,12 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
   const auto& cell = m_geo->get_cell(calosample(), hit);
   ATH_MSG_DEBUG(cell);
 
-  // Get hit-cell distance
+  // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
-  double distance = dist(cell, hit);
+  double proximity = cell.boundary_proximity(hit);
 
-  ATH_MSG_DEBUG("Hit-cell distance in eta-phi is: " << distance << " mm");
+  ATH_MSG_DEBUG("Hit-cell distance in eta-phi is: " << proximity);
 
   // If the distance is positive then we are using the nearest cell rather
   // than are inside a cell If we are more than 0.005mm from the nearest cell
@@ -49,28 +49,12 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
   // For FCSV2 another hit can be created but with a cutoff to avoid looping,
   // for FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
-  if (distance < 0.005) {
+  if (proximity < 0.005) {
     simulstate.deposit(cell.id(), hit.E());
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }
   return FCSSuccess;
-}
-
-auto TFCSHitCellMapping::mod_diff(double angle1, double angle2) -> double
-{
-  double difference = std::fmod(std::abs(angle1 - angle2), 2 * M_PI);
-  return difference > M_PI ? 2 * M_PI - difference : difference;
-}
-
-auto TFCSHitCellMapping::dist(const Cell& cell, const Hit& hit) -> double
-{
-  // Calculate the distances in eta and phi directions
-  double delta_eta = std::abs(hit.eta() - cell.eta());
-  double delta_phi = mod_diff(hit.phi(), cell.phi());
-
-  // Closest distance to a boundary
-  return std::min(delta_eta - cell.deta(), delta_phi - cell.dphi());
 }
 
 bool TFCSHitCellMapping::operator==(const TFCSParametrizationBase& ref) const

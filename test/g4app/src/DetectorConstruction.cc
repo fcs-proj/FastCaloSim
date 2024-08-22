@@ -94,6 +94,7 @@ void DetectorConstruction::ConstructSDandField()
   // Create the fast simulation model
   auto triggerRegion =
       G4RegionStore::GetInstance()->GetRegion(fFastSimTriggerRegionName);
+  // TODO: probably should assign FCS here so that each G4 thread gets it
   auto fastSimModel = new FastSimModel("model", triggerRegion);
 }
 

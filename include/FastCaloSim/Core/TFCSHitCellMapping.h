@@ -27,9 +27,6 @@ public:
       const TFCSTruthState* truth,
       const TFCSExtrapolationState* extrapol) override;
 
-  auto mod_diff(double angle1, double angle2) -> double;
-  auto dist(const Cell& cell, const Hit& hit) -> double;
-
   virtual bool operator==(const TFCSParametrizationBase& ref) const override;
 
   void Print(Option_t* option) const override;

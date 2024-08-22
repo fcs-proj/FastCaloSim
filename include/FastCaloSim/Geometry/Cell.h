@@ -57,6 +57,8 @@ public:
   {
   }
 
+  virtual ~Cell() = default;
+
   // Direct accessors
   auto inline id() const -> long long { return m_id; }
   auto inline x() const -> double { return m_pos.x(); }
@@ -112,7 +114,48 @@ public:
     return m_dr;
   }
 
-  virtual ~Cell() = default;
+  static auto norm_angle(double angle) -> double
+  {
+    angle = std::fmod(angle + M_PI, 2.0 * M_PI);
+    if (angle < 0) {
+      angle += 2.0 * M_PI;
+    }
+    return angle - M_PI;
+  }
+
+  /// @brief Calculates the 2D proximity between a hit and the boundary of a
+  /// cell.
+  ///
+  /// This method returns the signed distance between the given hit and the cell
+  /// boundary:
+  /// - A negative value indicates that the hit is inside the cell, with the
+  /// magnitude representing how deep within the cell the hit is.
+  /// - A positive value indicates that the hit is outside the cell, with the
+  /// magnitude representing the distance from the cell boundary.
+  ///
+  template<typename T>
+  auto inline boundary_proximity(const T& hit) const -> double
+  {
+    if (m_isXYZ) {
+      double delta_x = std::abs(hit.x() - m_pos.x());
+      double delta_y = std::abs(hit.y() - m_pos.y());
+
+      return std::max(delta_x - m_dx, delta_y - m_dy);
+    }
+
+    if (m_isEtaPhiR || m_isEtaPhiZ) {
+      double delta_eta = std::abs(hit.eta() - m_pos.eta());
+      double delta_phi = std::abs(norm_angle(hit.phi() - m_pos.phi()));
+
+      return std::max(delta_eta - m_deta, delta_phi - m_dphi);
+    }
+  }
+
+  template<typename T>
+  auto inline is_inside(const T& hit) const -> bool
+  {
+    return boundary_proximity(hit) < 0;
+  }
 
   // Overload the << operator to allow direct cell printout
   // with std::cout<<cell<<std::endl;
