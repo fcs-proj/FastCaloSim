@@ -49,7 +49,7 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
   TFCSSimulationState sim_state;
   // Define a new dummy cell
   Cell cell(0,
-            CLHEP::Hep3Vector {0, 0, 0},
+            Position {0, 0, 0, 0, 0, 0},
             0,
             /*isBarrel=*/true,
             /*isXYZ=*/false,

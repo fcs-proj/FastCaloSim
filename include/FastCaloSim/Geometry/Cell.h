@@ -5,9 +5,17 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 
-#include "CLHEP/Vector/ThreeVector.h"
-
-using Vector3D = CLHEP::Hep3Vector;
+struct Position
+{
+  double m_x, m_y, m_z;
+  double m_eta, m_phi, m_r;
+  auto x() const -> double { return m_x; }
+  auto y() const -> double { return m_y; }
+  auto z() const -> double { return m_z; }
+  auto eta() const -> double { return m_eta; }
+  auto phi() const -> double { return m_phi; }
+  auto r() const -> double { return m_r; }
+};
 
 // Base class for cells
 class Cell
@@ -16,7 +24,7 @@ private:
   /// @brief Unique identifier for the cell
   long long m_id;
   /// @brief Position of the cell in 3D space (x, y, z, eta, phi, r)
-  Vector3D m_pos;
+  Position m_pos;
   /// @brief Layer of the cell
   long long m_layer;
   /// @brief Flag to indicate if the cell is in the barrel
@@ -27,8 +35,15 @@ private:
   double m_dx, m_dy, m_dz, m_deta, m_dphi, m_dr;
 
 public:
+  enum SubPos
+  {
+    MID = 0,  // middle
+    ENT = 1,  // entrance
+    EXT = 2  // exit
+  };
+
   Cell(long long id,
-       Vector3D pos,
+       Position pos,
        long long layer,
        bool isBarrel,
        bool isXYZ,
@@ -66,7 +81,7 @@ public:
   auto inline z() const -> double { return m_pos.z(); }
   auto inline eta() const -> double { return m_pos.eta(); }
   auto inline phi() const -> double { return m_pos.phi(); }
-  auto inline r() const -> double { return m_pos.perp(); }
+  auto inline r() const -> double { return m_pos.r(); }
   auto inline layer() const -> long long { return m_layer; }
   auto inline isBarrel() const -> bool { return m_isBarrel; }
 
@@ -114,6 +129,63 @@ public:
     return m_dr;
   }
 
+  auto inline rent() const -> double
+  {
+    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
+    return r() - m_dr * 0.5;
+  }
+
+  auto inline rext() const -> double
+  {
+    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
+    return r() + m_dr * 0.5;
+  }
+
+  auto inline zent() const -> double
+  {
+    assert(m_isXYZ
+           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
+    return z() < 0 ? z() + m_dz * 0.5 : z() - m_dz * 0.5;
+  }
+
+  auto inline zext() const -> double
+  {
+    assert(m_isXYZ
+           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
+    return z() < 0 ? z() - m_dz * 0.5 : z() + m_dz * 0.5;
+  }
+
+  // only makes ense for barrel
+  auto inline r(SubPos subpos) const -> double
+  {
+    if (m_isXYZ || m_isEtaPhiZ)
+      return r();
+
+    switch (subpos) {
+      case SubPos::ENT:
+        return rent();
+      case SubPos::MID:
+        return r();
+      case SubPos::EXT:
+        return rext();
+    }
+  }
+
+  auto inline z(SubPos subpos) const -> double
+  {
+    if (m_isEtaPhiR)
+      return z();
+
+    switch (subpos) {
+      case SubPos::ENT:
+        return zent();
+      case SubPos::MID:
+        return z();
+      case SubPos::EXT:
+        return zext();
+    }
+  }
+
   static auto norm_angle(double angle) -> double
   {
     angle = std::fmod(angle + M_PI, 2.0 * M_PI);
@@ -126,8 +198,8 @@ public:
   /// @brief Calculates the 2D proximity between a hit and the boundary of a
   /// cell.
   ///
-  /// This method returns the signed distance between the given hit and the cell
-  /// boundary:
+  /// This method returns the signed distance between the given hit and the
+  /// cell boundary:
   /// - A negative value indicates that the hit is inside the cell, with the
   /// magnitude representing how deep within the cell the hit is.
   /// - A positive value indicates that the hit is outside the cell, with the
@@ -180,7 +252,7 @@ public:
         cell.m_pos.z(),
         cell.m_pos.phi(),
         cell.m_pos.eta(),
-        cell.m_pos.perp());
+        cell.m_pos.r());
 
     if (cell.m_isXYZ) {
       os << fmt::format(

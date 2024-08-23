@@ -40,7 +40,11 @@ public:
 
     insert(cell);
   }
-
+  ///
+  /// @brief Returns the nearest cell (bounding box) for a given hit
+  /// Note: The hit must have the same coordinate system as the cells in the
+  /// tree
+  ///
   template<typename T>
   auto query_point(const T& hit) const -> Cell
   {
