@@ -10,7 +10,7 @@ class G4ParticleDefinition;
 class ActionInitialization : public G4VUserActionInitialization
 {
 
-
+    
 public:
     ActionInitialization();
     virtual ~ActionInitialization() override;
@@ -22,7 +22,7 @@ public:
     void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;};
 
     private:
-
+    
     const TestHelpers::ParticleContainer *fParticleContainer;
 
 };

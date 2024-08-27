@@ -11,3 +11,4 @@ target_include_directories(g4app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${PR
 
 # Link against Geant4 and FastCaloSim (for G4 transpot tool)
 target_link_libraries(g4app PUBLIC ${Geant4_LIBRARIES} FastCaloSim::FastCaloSim)
+

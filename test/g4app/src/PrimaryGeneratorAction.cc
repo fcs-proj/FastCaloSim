@@ -24,8 +24,8 @@ void PrimaryGeneratorAction::configure_gun(const TestHelpers::Particle* particle
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
-{
-
+{   
+    
     if (fParticleContainer == nullptr)
     {
         G4Exception("PrimaryGeneratorAction::GeneratePrimaries()", "PrimaryGeneratorAction", FatalException, "Particle container not set");
