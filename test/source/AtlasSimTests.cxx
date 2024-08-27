@@ -50,7 +50,8 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   // Set the param file path
   std::string paramsObject {"SelPDGID"};
   TFCSParametrizationBase* param = static_cast<TFCSParametrizationBase*>(
-      BasicSimTests::param_file->Get(paramsObject.c_str()));
+      BasicSimTests::param_files[evt.get_param_file_key()]->Get(
+          paramsObject.c_str()));
 
   // Set up the geometry
   param->set_geometry(AtlasDeprecatedGeoTests::geo);
