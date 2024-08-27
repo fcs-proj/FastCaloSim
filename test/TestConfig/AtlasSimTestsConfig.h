@@ -7,15 +7,7 @@
 #include "TestHelpers/IOManager.h"
 #include "TestHelpers/ParticleContainer.h"
 #include "TestHelpers/ParticleSampler.h"
-
-enum PARAM
-{
-  PID,
-  EKIN,
-  ETA,
-  LATEX_LABEL,
-  PRINT_LABEL
-};
+#include "TestHelpers/ParticleSimParams.h"
 
 class AtlasSimTestConfig : public ::testing::Environment
 {
@@ -33,41 +25,52 @@ public:
     TestHelpers::IDCaloBoundarySampler sampler;
 
     // Define the properties of the particles you want to test
-    std::vector<std::tuple<int, int, double, std::string, std::string>> params =
-        {std::make_tuple(22,
-                         16384,
-                         0.2,
-                         R"($ E_{\gamma}=16\,\text{GeV},\, \eta=0.20$)",
-                         "pid22_E16_eta20"),
-         std::make_tuple(22,
-                         131072,
-                         0.2,
-                         R"($ E_{\gamma}=131\,\text{GeV},\, \eta=0.20$)",
-                         "pid22_E131_eta20"),
-         std::make_tuple(211,
-                         16384,
-                         0.2,
-                         R"($ E_{\pi}=16\,\text{GeV},\, \eta=0.20$)",
-                         "pid211_E16_eta20"),
-         std::make_tuple(211,
-                         131072,
-                         0.2,
-                         R"($ E_{\pi}=131\,\text{GeV},\, \eta=0.20$)",
-                         "pid211_E131_eta20")};
+    // Alias for a vector of ParticleParams
+    using ParticleParamsList = std::vector<ParticleSimParams>;
+
+    // Define the properties of the particles you want to test
+    ParticleParamsList params = {
+        // Barrel (eta = 0.2)
+        {22, 16384, 0.2, "barrel"},
+        {22, 131072, 0.2, "barrel"},
+        {211, 16384, 0.2, "barrel"},
+        {211, 131072, 0.2, "barrel"},
+        // Endcap (eta = 2.0)
+        {22, 16384, 2.0, "endcap"},
+        {22, 131072, 2.0, "endcap"},
+        {211, 16384, 2.0, "endcap"},
+        {211, 131072, 2.0, "endcap"},
+        // FCal (eta = 3.5)
+        {22, 16384, 3.5, "fcal"},
+        {22, 131072, 3.5, "fcal"},
+        {211, 16384, 3.5, "fcal"},
+        {211, 131072, 3.5, "fcal"},
+        // Barrel-Endcap Transition (eta = 1.45)
+        {22, 16384, 1.45, "barrel_endcap_transition"},
+        {22, 131072, 1.45, "barrel_endcap_transition"},
+        {211, 16384, 1.45, "barrel_endcap_transition"},
+        {211, 131072, 1.45, "barrel_endcap_transition"},
+        // Endcap-FCal Transition (eta = 3.2)
+        {22, 16384, 3.2, "endcap_fcal_transition"},
+        {22, 131072, 3.2, "endcap_fcal_transition"},
+        {211, 16384, 3.2, "endcap_fcal_transition"},
+        {211, 131072, 3.2, "endcap_fcal_transition"}};
 
     // Loop over the parameters and create the events
-    for (const auto& param : params) {
+    for (const auto& ptcl : params) {
       // Create photon with speficfic PID, EKIN, and ETA
-      TestHelpers::Particle particle = sampler.generate(
-          std::get<PID>(param), std::get<EKIN>(param), std::get<ETA>(param));
+      TestHelpers::Particle particle =
+          sampler.generate(ptcl.pid, ptcl.ekin, ptcl.eta);
 
       // Create a particle container and add the particle
       TestHelpers::ParticleContainer particles;
       particles.add(particle);
 
       // Construct the event with the particle container and event label
-      TestHelpers::Event evt(particles, std::get<LATEX_LABEL>(param));
-      evt.set_print_string(std::get<PRINT_LABEL>(param));
+      TestHelpers::Event evt(particles, ptcl.latex_label);
+      // Set the name of the param file used to simulate the particle
+      evt.set_param_file_key(ptcl.param_file_key);
+      evt.set_print_string(ptcl.print_label);
 
       // Add the event to the list of events
       events.emplace_back(evt);

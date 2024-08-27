@@ -9,7 +9,7 @@
 class BasicSimTests : public AtlasGeoTests
 {
 protected:
-  static TFile* param_file;
+  static std::map<std::string, TFile*> param_files;
 
   // Per-test-suite set-up.
   // Called before the first test in this test suite.
@@ -18,9 +18,10 @@ protected:
     // Call the base setup that sets up the geometry
     AtlasGeoTests::SetUpTestSuite();
 
-    // Load parametrization file
-    param_file =
-        new TFile((BasicSimTestsConfig::PARAM_FILE_PATH).c_str(), "READ");
+    // Load the parametrization files for the different regions
+    for (const auto& [region, path] : BasicSimTestsConfig::PARAM_FILE_PATHS) {
+      param_files[region] = new TFile(path.c_str(), "READ");
+    }
   }
 
   // Per-test-suite tear-down.
@@ -30,10 +31,13 @@ protected:
     // Call the base tear down that deletes the geometry
     AtlasGeoTests::TearDownTestSuite();
 
-    param_file->Close();
-    delete param_file;
+    // Close and delete the parametrization files
+    for (const auto& [region, file] : param_files) {
+      file->Close();
+      delete file;
+    }
   }
 };
 
 // Initialize the static members
-TFile* BasicSimTests::param_file = nullptr;
+std::map<std::string, TFile*> BasicSimTests::param_files;

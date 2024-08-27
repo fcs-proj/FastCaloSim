@@ -10,7 +10,7 @@
 
 TEST_F(BasicSimTests, ReadParamFile)
 {
-  Long64_t bytes_read = param_file->GetBytesRead();
+  Long64_t bytes_read = param_files["barrel"]->GetBytesRead();
   EXPECT_EQ(bytes_read, 10097);
 }
 
@@ -18,7 +18,7 @@ TEST_F(BasicSimTests, CheckParamObject)
 {
   const std::string paramsObject {"SelPDGID"};
   TFCSParametrizationBase* param = static_cast<TFCSParametrizationBase*>(
-      param_file->Get(paramsObject.c_str()));
+      param_files["barrel"]->Get(paramsObject.c_str()));
   EXPECT_NE(param, nullptr);
 }
 
@@ -26,7 +26,7 @@ TEST_F(BasicSimTests, DoDummySimulation)
 {
   std::string paramsObject {"SelPDGID"};
   TFCSParametrizationBase* param = static_cast<TFCSParametrizationBase*>(
-      param_file->Get(paramsObject.c_str()));
+      param_files["barrel"]->Get(paramsObject.c_str()));
 
   // Set up the geometry
   param->set_geometry(AtlasGeoTests::geo);
