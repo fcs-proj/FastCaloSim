@@ -23,7 +23,6 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   const TestHelpers::Event evt = GetParam();
 
   // Tell the action initialization to set the particles
-  // TODO: move the param file here so that potentially each g4 thread gets it
   G4RunTests::actionInitialization->set_particle_container(
       &evt.get_container());
   G4RunTests::run_manager->SetUserInitialization(
