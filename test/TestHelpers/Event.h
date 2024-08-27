@@ -52,11 +52,29 @@ public:
     return m_ptcl_container;
   }
 
+  // Set the param file name used to simulate the event
+  inline auto set_param_file_key(const std::string& param_file_key) -> void
+  {
+    m_param_file_key = param_file_key;
+  }
+
+  // Get the param file name used to simulate the event
+  inline auto get_param_file_key() const -> std::string
+  {
+    return m_param_file_key;
+  }
+
 private:
+  // @brief Container holding the particles
   ParticleContainer m_ptcl_container;
+  // @brief Label of the event
   std::string m_label;
+  // @brief Identifier of the event
   int m_event_id;
+  // @brief String used by gtest to name event
   std::string m_print_string;
+  // @brief Key of the param file used to simulate the event
+  std::string m_param_file_key;
 
   // Friend method to let google test know how to label a test parametrized by
   // If event_id is set, the print string will be the label + "_" + event_id
