@@ -72,7 +72,7 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
     // if meanweight<=1, give lower energy to hit.
     // TFCSLateralShapeParametrizationHitChain needs to be able to generate more
     // hits in this case
-    hit.E() *= weight;
+    hit.set_E(weight * hit.E());
   } else {
     // if meanweight>1, accept only 1/meanweight events, but give them a higher
     // energy increased by weight. This leads to larger fluctuations, while
@@ -80,9 +80,9 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
     float prob = 1.0 / meanweight;
     float rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
     if (rnd < prob)
-      hit.E() *= weight;
+      hit.set_E(weight * hit.E());
     else
-      hit.E() = 0;
+      hit.set_E(0);
   }
 
   ATH_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm

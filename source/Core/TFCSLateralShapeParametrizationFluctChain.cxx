@@ -109,8 +109,8 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
     hit.reset();
     // hit.E()=Eavghit;
     do {
-      hit.E() = CLHEP::RandGaussZiggurat::shoot(
-          simulstate.randomEngine(), Eavghit, m_RMS * Eavghit);
+      hit.set_E(CLHEP::RandGaussZiggurat::shoot(
+          simulstate.randomEngine(), Eavghit, m_RMS * Eavghit));
     } while (std::abs(hit.E()) < absEavghit_tenth);
     bool failed = false;
     if (debug)

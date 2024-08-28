@@ -64,12 +64,12 @@ FCSReturnCode TFCSLateralShapeParametrizationHitBase::simulate_hit(
     const TFCSExtrapolationState* extrapol)
 {
   int cs = calosample();
-  hit.eta() = 0.5
-      * (extrapol->eta(cs, CaloSubPos::SUBPOS_ENT)
-         + extrapol->eta(cs, CaloSubPos::SUBPOS_EXT));
-  hit.phi() = 0.5
-      * (extrapol->phi(cs, CaloSubPos::SUBPOS_ENT)
-         + extrapol->phi(cs, CaloSubPos::SUBPOS_EXT));
+  hit.set_eta_x(0.5
+                * (extrapol->eta(cs, CaloSubPos::SUBPOS_ENT)
+                   + extrapol->eta(cs, CaloSubPos::SUBPOS_EXT)));
+  hit.set_phi_y(0.5
+                * (extrapol->phi(cs, CaloSubPos::SUBPOS_ENT)
+                   + extrapol->phi(cs, CaloSubPos::SUBPOS_EXT)));
 
   return FCSSuccess;
 }

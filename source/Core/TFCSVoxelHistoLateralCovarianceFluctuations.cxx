@@ -390,7 +390,7 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     }
   }
 
-  hit.E() *= weight;
+  hit.set_E(hit.E() * weight);
 
   ATH_MSG_DEBUG("HIT: E=" << hit.E() << ", alpha = " << alpha_mm
                           << ", r = " << center_r << ", ix = " << ix

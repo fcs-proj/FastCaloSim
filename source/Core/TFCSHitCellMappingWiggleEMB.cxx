@@ -113,7 +113,7 @@ FCSReturnCode TFCSHitCellMappingWiggleEMB::simulate_hit(
                           << " phi=" << hit.phi() << " wiggle=" << wiggle);
 
   double hit_phi_shifted = hit.phi() - wiggle;
-  hit.phi() = TVector2::Phi_mpi_pi(hit_phi_shifted);
+  hit.set_phi_y(TVector2::Phi_mpi_pi(hit_phi_shifted));
 
   return TFCSHitCellMapping::simulate_hit(hit, simulstate, truth, extrapol);
 }

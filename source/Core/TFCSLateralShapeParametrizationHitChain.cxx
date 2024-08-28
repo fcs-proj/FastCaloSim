@@ -278,7 +278,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
     int retry = 0;
     do {
       hit.reset();
-      hit.E() = Ehit;
+      hit.set_E(Ehit);
       bool failed = false;
       if (debug)
         if (ihit == 2)

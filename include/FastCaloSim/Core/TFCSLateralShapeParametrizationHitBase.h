@@ -108,27 +108,31 @@ public:
       m_useXYZ = false;
     }
 
-    inline float& eta() { return m_eta_x; };
-    inline float& phi() { return m_phi_y; };
-    inline float& x() { return m_eta_x; };
-    inline float& y() { return m_phi_y; };
-    inline float& E() { return m_E; };
-    inline float& z() { return m_z; }
-    inline float r()
+    inline const auto& eta() const { return m_eta_x; };
+    inline const auto& phi() const { return m_phi_y; };
+    inline const auto& x() const { return m_eta_x; };
+    inline const auto& y() const { return m_phi_y; };
+    inline const auto& E() const { return m_E; };
+    inline const auto& z() const { return m_z; }
+    inline const auto r() const
     {
       if (m_useXYZ)
         return sqrt(m_eta_x * m_eta_x + m_phi_y * m_phi_y);
       else
         return m_z / sinh(m_eta_x);
     }
-    inline float& center_r() { return m_center_r; }
-    inline float& center_z() { return m_center_z; }
-    inline float& center_eta() { return m_center_eta; }
-    inline float& center_phi() { return m_center_phi; }
+    inline const auto& center_r() const { return m_center_r; }
+    inline const auto& center_z() const { return m_center_z; }
+    inline const auto& center_eta() const { return m_center_eta; }
+    inline const auto& center_phi() const { return m_center_phi; }
     inline void setCenter_r(float r) { m_center_r = r; }
     inline void setCenter_z(float z) { m_center_z = z; }
     inline void setCenter_eta(float eta) { m_center_eta = eta; }
     inline void setCenter_phi(float phi) { m_center_phi = phi; }
+    inline void set_eta_x(float eta_x) { m_eta_x = eta_x; }
+    inline void set_phi_y(float phi_y) { m_phi_y = phi_y; }
+    inline void set_z(float z) { m_z = z; }
+    inline void set_E(float E) { m_E = E; }
 
   private:
     float m_eta_x;  // eta for barrel and end-cap, x for FCal

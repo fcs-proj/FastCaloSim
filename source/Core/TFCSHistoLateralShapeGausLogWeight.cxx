@@ -63,7 +63,7 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeight::simulate_hit(
         simulstate.randomEngine(), -0.5 * RMS * RMS, RMS);
     weight *= TMath::Exp(logweight);
   }
-  hit.E() *= weight;
+  hit.set_E(weight * hit.E());
 
   ATH_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
                           << " weight=" << weight);

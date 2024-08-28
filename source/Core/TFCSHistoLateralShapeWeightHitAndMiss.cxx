@@ -92,7 +92,7 @@ FCSReturnCode TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
       weight = 0.;
   }
 
-  hit.E() *= weight;
+  hit.set_E(weight * hit.E());
   ATH_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
                           << " meanweight=" << meanweight
                           << " weight=" << weight);
