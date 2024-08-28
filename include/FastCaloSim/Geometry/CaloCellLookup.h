@@ -29,14 +29,16 @@ public:
 private:
   void record_cell(const Cell& cell)
   {
-    m_tree_map[cell->layer()].insert_cell(cell);
+    m_tree_map[cell.layer()].insert_cell(cell);
   }
 
   void build(ROOT::RDataFrame& geo)
   {
     auto numEntries = *geo.Count();
 
+    // Record the cell information
     auto layer = geo.Take<long long>("layer");
+    auto isBarrel = geo.Take<long long>("isBarrel");
     auto id = geo.Take<long long>("id");
     auto x = geo.Take<double>("x");
     auto y = geo.Take<double>("y");
@@ -54,51 +56,28 @@ private:
     auto isCylindrical = geo.Take<long long>("isCylindrical");
     auto isECCylindrical = geo.Take<long long>("isECCylindrical");
 
-    // Loop over cells and build RTree
     for (size_t i = 0; i < numEntries; ++i) {
-      if (isCartesian->at(i)) {
-        XYZCell cell = {id->at(i),
-                        x->at(i),
-                        y->at(i),
-                        z->at(i),
-                        phi->at(i),
-                        eta->at(i),
-                        r->at(i),
+      // Position of the center of the cell
+      Position pos = Position {.m_x = x->at(i),
+                               .m_y = y->at(i),
+                               .m_z = z->at(i),
+                               .m_eta = eta->at(i),
+                               .m_phi = phi->at(i),
+                               .m_r = r->at(i)};
+
+      record_cell(Cell {id->at(i),
+                        pos,
                         layer->at(i),
+                        static_cast<bool>(isBarrel->at(i)),
+                        static_cast<bool>(isCartesian->at(i)),
+                        static_cast<bool>(isCylindrical->at(i)),
+                        static_cast<bool>(isECCylindrical->at(i)),
                         dx->at(i),
                         dy->at(i),
-                        dz->at(i)};
-
-        record_cell(cell);
-
-      } else if (isCylindrical->at(i)) {
-        EtaPhiRCell cell = {id->at(i),
-                            x->at(i),
-                            y->at(i),
-                            z->at(i),
-                            phi->at(i),
-                            eta->at(i),
-                            r->at(i),
-                            layer->at(i),
-                            deta->at(i),
-                            dphi->at(i),
-                            dr->at(i)};
-
-        record_cell(cell);
-      } else if (isECCylindrical->at(i)) {
-        EtaPhiZCell cell = {id->at(i),
-                            x->at(i),
-                            y->at(i),
-                            z->at(i),
-                            phi->at(i),
-                            eta->at(i),
-                            r->at(i),
-                            layer->at(i),
-                            deta->at(i),
-                            dphi->at(i),
-                            dz->at(i)};
-        record_cell(cell);
-      }
+                        dz->at(i),
+                        deta->at(i),
+                        dphi->at(i),
+                        dr->at(i)});
     }
   }
 
