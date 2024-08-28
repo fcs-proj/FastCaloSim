@@ -17,7 +17,7 @@ public:
   auto n_cells(int layer) const { return m_layer_tree_map.at(layer).size(); }
 
   /// @brief Returns the total number of cells in the detector
-  auto n_cells() const { return m_n_cells; }
+  auto n_cells() const { return m_n_total_cells; }
 
   /// @brief Returns the total number of layers in the detector
   auto n_layers() const { return m_n_layers; }
@@ -41,7 +41,7 @@ public:
   }
 
   // @brief Returns a boolean indicating if a layer is a barrel or endcap
-  auto is_barrel(int layer) const { return m_layer_flags.at(layer).is_barrel; }
+  auto is_barrel(int layer) const { return m_is_layer_barrel_map.at(layer); }
 
   /// @brief Z position of the entrance, middle, or exit of a layer for
   // the cell closest to a hit (either in x,y or in eta, phi space)
@@ -117,12 +117,6 @@ public:
   }
 
 private:
-  struct LayerFlags
-  {
-    bool is_barrel;
-    bool is_xyz, is_EtaPhiR, is_EtaPhiZ;
-  };
-
   struct EdgeCellIds
   {
     long long rmin, rmax;
@@ -131,61 +125,52 @@ private:
   };
 
   int m_n_layers {};
-  int m_n_cells {};
+  int m_n_total_cells {};
   std::map<int, RTree> m_layer_tree_map;
   std::map<long long, Cell> m_cell_id_map;
-  std::unordered_map<int, LayerFlags> m_layer_flags;
+  std::unordered_map<int, bool> m_is_layer_barrel_map;
   std::unordered_map<int, EdgeCellIds> m_edge_cells_ids;
 
-  // @Brief Returns the edge cells of a layer with maximum and minimum r and z
-  static auto record_edge_cell_ids(ROOT::RDataFrame& df, int layer)
-      -> EdgeCellIds
-  {
-    // Filter the DataFrame to include only the specified layer
-    auto layer_df =
-        df.Filter([layer](long long l) { return l == layer; }, {"layer"});
-
-    // Lambda to get the id of the cell with a specific extreme value in a
-    // column
-    auto get_id_for_extreme = [&](const std::string& col, double extreme_value)
-    {
-      return layer_df
-          .Filter([extreme_value](double val) { return val == extreme_value; },
-                  {col})
-          .Take<long long>("id")
-          ->front();
-    };
-
-    // Find the min and max values for r and z
-    auto [rmin, rmax] = std::make_tuple(*layer_df.Min("r"), *layer_df.Max("r"));
-    auto [zmin, zmax] = std::make_tuple(*layer_df.Min("z"), *layer_df.Max("z"));
-    auto [etamin, etamax] =
-        std::make_tuple(*layer_df.Min("eta"), *layer_df.Max("eta"));
-
-    // Get the corresponding ids for the min/max values
-    return {get_id_for_extreme("r", rmin),
-            get_id_for_extreme("r", rmax),
-            get_id_for_extreme("z", zmin),
-            get_id_for_extreme("z", zmax),
-            get_id_for_extreme("eta", etamin),
-            get_id_for_extreme("eta", etamax)};
-  }
-
+  // @brief Record the cell in the geometry
   void record_cell(const Cell& cell)
   {
     m_layer_tree_map[cell.layer()].insert_cell(cell);
     m_cell_id_map.emplace(cell.id(), cell);
   }
 
+  // @brief Update the edge cells for a layer
+  void update_edge_cells(int layer, const Cell& cell)
+  {
+    // Initialize for first cell in a layer
+    if (m_edge_cells_ids.find(layer) == m_edge_cells_ids.end()) {
+      m_edge_cells_ids[layer] = EdgeCellIds {
+          cell.id(), cell.id(), cell.id(), cell.id(), cell.id(), cell.id()};
+    }
+    auto& ext = m_edge_cells_ids.at(layer);
+
+    const auto& rmax_cell = get_cell(ext.rmax);
+    const auto& rmin_cell = get_cell(ext.rmin);
+    const auto& zmax_cell = get_cell(ext.zmax);
+    const auto& zmin_cell = get_cell(ext.zmin);
+    const auto& etamax_cell = get_cell(ext.etamax);
+    const auto& etamin_cell = get_cell(ext.etamin);
+
+    ext.rmax = cell.r() > rmax_cell.r() ? cell.id() : ext.rmax;
+    ext.rmin = cell.r() < rmin_cell.r() ? cell.id() : ext.rmin;
+    ext.zmax = cell.z() > zmax_cell.z() ? cell.id() : ext.zmax;
+    ext.zmin = cell.z() < zmin_cell.z() ? cell.id() : ext.zmin;
+    ext.etamax = cell.eta() > etamax_cell.eta() ? cell.id() : ext.etamax;
+    ext.etamin = cell.eta() < etamin_cell.eta() ? cell.id() : ext.etamin;
+  }
+
+  // @brief Build the geometry from the RDataFrame
   void build(ROOT::RDataFrame& geo)
   {
-    std::cout << "Building RTree geometry..." << '\n';
-
     // Record number of layers
     m_n_layers = geo.Max<long long>("layer").GetValue();
 
-    // Record number of cells
-    m_n_cells = *geo.Count();
+    // Record number of total cells
+    m_n_total_cells = *geo.Count();
 
     // Record the cell information
     auto layer = geo.Take<long long>("layer");
@@ -207,13 +192,18 @@ private:
     auto isCylindrical = geo.Take<long long>("isCylindrical");
     auto isECCylindrical = geo.Take<long long>("isECCylindrical");
 
-    for (size_t i = 0; i < m_n_cells; ++i) {
-      m_layer_flags.emplace(
-          layer->at(i),
-          LayerFlags {static_cast<bool>(isBarrel->at(i)),
-                      static_cast<bool>(isCartesian->at(i)),
-                      static_cast<bool>(isCylindrical->at(i)),
-                      static_cast<bool>(isECCylindrical->at(i))});
+    // TODO: Currently layer, isBarrel, isCartesian, isCylindrical, and
+    // isECCylindrical are recorded by ROOT as long long and require casting We
+    // should likely change how the types are written in the future
+
+    // Loop over all cells in the detector
+    for (size_t i = 0; i < m_n_total_cells; ++i) {
+      bool is_barrel = static_cast<bool>(isBarrel->at(i));
+      bool is_XYZ = static_cast<bool>(isCartesian->at(i));
+      bool is_EtaPhiR = static_cast<bool>(isCylindrical->at(i));
+      bool is_EtaPhiZ = static_cast<bool>(isECCylindrical->at(i));
+
+      m_is_layer_barrel_map.emplace(layer->at(i), is_barrel);
 
       // Position of the center of the cell
       Position pos = Position {.m_x = x->at(i),
@@ -222,28 +212,25 @@ private:
                                .m_eta = eta->at(i),
                                .m_phi = phi->at(i),
                                .m_r = r->at(i)};
-
-      record_cell(Cell {id->at(i),
+      // Construct the cell
+      Cell cell = Cell {id->at(i),
                         pos,
                         layer->at(i),
-                        m_layer_flags.at(layer->at(i)).is_barrel,
-                        m_layer_flags.at(layer->at(i)).is_xyz,
-                        m_layer_flags.at(layer->at(i)).is_EtaPhiR,
-                        m_layer_flags.at(layer->at(i)).is_EtaPhiZ,
+                        is_barrel,
+                        is_XYZ,
+                        is_EtaPhiR,
+                        is_EtaPhiZ,
                         dx->at(i),
                         dy->at(i),
                         dz->at(i),
                         deta->at(i),
                         dphi->at(i),
-                        dr->at(i)});
-    }
+                        dr->at(i)};
 
-    // Record the cells at the edge of each layer (with maximum r and z center
-    // positions)
-    for (int layer = 0; layer <= m_n_layers; ++layer) {
-      m_edge_cells_ids[layer] = record_edge_cell_ids(geo, layer);
+      // Record the cell in the geometry
+      record_cell(cell);
+      // Update the edge cells
+      update_edge_cells(layer->at(i), cell);
     }
-
-    std::cout << "Building geometry completed!" << '\n';
   }
 };
