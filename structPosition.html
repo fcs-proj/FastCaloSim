@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>EtaPhiZCell class | FastCaloSim</title>
+  <title>Position struct | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,7 +49,7 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          EtaPhiZCell <span class="m-thin">class</span>
+          Position <span class="m-thin">struct</span>
           <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="Cell_8h.html">&lt;Cell.h&gt;</a></div>
         </h1>
         <p><span></span></p>
@@ -59,70 +59,66 @@
             <li>
               Reference
               <ul>
-                <li><a href="#base-classes">Base classes</a></li>
-                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pub-attribs">Public variables</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="base-classes">
-          <h2><a href="#base-classes">Base classes</a></h2>
-          <dl class="m-doc">
-            <dt>
-              class <a href="classCellBase.html" class="m-doc">CellBase</a>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section id="typeless-methods">
-          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
-          <dl class="m-doc">
-            <dt id="a352355b3918239f648615cce01947b78">
-              <span class="m-doc-wrap-bumper"><a href="#a352355b3918239f648615cce01947b78" class="m-doc-self">EtaPhiZCell</a>(</span><span class="m-doc-wrap">long long id,
-              double x,
-              double y,
-              double z,
-              double phi,
-              double eta,
-              double r,
-              long long layer,
-              double deta,
-              double dphi,
-              double dz)</span>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="a20d3afac1bf4039ce99f2065d166fcfa">
-              <span class="m-doc-wrap-bumper">auto <a href="#a20d3afac1bf4039ce99f2065d166fcfa" class="m-doc-self">deta</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a03e3062b750f76d24acd0a410739aa71">
+              <span class="m-doc-wrap-bumper">auto <a href="#a03e3062b750f76d24acd0a410739aa71" class="m-doc-self">x</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a0ceaae31ecbe01d2747ab4ac75d6bd48">
-              <span class="m-doc-wrap-bumper">auto <a href="#a0ceaae31ecbe01d2747ab4ac75d6bd48" class="m-doc-self">dphi</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a60c930b6f07a8ba65acd9e039dac842d">
+              <span class="m-doc-wrap-bumper">auto <a href="#a60c930b6f07a8ba65acd9e039dac842d" class="m-doc-self">y</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ad779803f0d445d39902694c4370b95c5">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad779803f0d445d39902694c4370b95c5" class="m-doc-self">dz</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a2b09b2e088e4be0ea62680025d6ef557">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2b09b2e088e4be0ea62680025d6ef557" class="m-doc-self">z</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aaa1f5266de1bfcf8c46b6dd35f73575b">
-              <span class="m-doc-wrap-bumper">auto <a href="#aaa1f5266de1bfcf8c46b6dd35f73575b" class="m-doc-self">dx</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a2a775461da5527df5930c70cfa60aadb">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2a775461da5527df5930c70cfa60aadb" class="m-doc-self">eta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a75ec08575429569dbdb79bfc51454fbe">
-              <span class="m-doc-wrap-bumper">auto <a href="#a75ec08575429569dbdb79bfc51454fbe" class="m-doc-self">dy</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="ac9324d2f4ef15e7d0e8b637aee320602">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac9324d2f4ef15e7d0e8b637aee320602" class="m-doc-self">phi</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a76191fffe7b10007c3dcb822bfdf805b">
-              <span class="m-doc-wrap-bumper">auto <a href="#a76191fffe7b10007c3dcb822bfdf805b" class="m-doc-self">dr</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="abef7786f161b9536ae55604ef30c6b4e">
+              <span class="m-doc-wrap-bumper">auto <a href="#abef7786f161b9536ae55604ef30c6b4e" class="m-doc-self">r</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ad70e0e6981abdd7267cc4c5ec5e55068">
-              <span class="m-doc-wrap-bumper">void <a href="#ad70e0e6981abdd7267cc4c5ec5e55068" class="m-doc-self">print</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">override</span></span>
+          </dl>
+        </section>
+        <section id="pub-attribs">
+          <h2><a href="#pub-attribs">Public variables</a></h2>
+          <dl class="m-doc">
+            <dt id="a5823d40037f3d5b349029b9697805c8b">
+              double <a href="#a5823d40037f3d5b349029b9697805c8b" class="m-doc-self">m_x</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad5219ec5af5ba8bfec084ff38663a151">
+              double <a href="#ad5219ec5af5ba8bfec084ff38663a151" class="m-doc-self">m_y</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a33d69a7fdd01e1d8a3528a05b4814004">
+              double <a href="#a33d69a7fdd01e1d8a3528a05b4814004" class="m-doc-self">m_z</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9eccf0d144c98521f92045d1c885bce3">
+              double <a href="#a9eccf0d144c98521f92045d1c885bce3" class="m-doc-self">m_eta</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="adc35aee3a8afb3df30c58943a02cc76c">
+              double <a href="#adc35aee3a8afb3df30c58943a02cc76c" class="m-doc-self">m_phi</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac13688572def85c572ff709ff866f525">
+              double <a href="#ac13688572def85c572ff709ff866f525" class="m-doc-self">m_r</a>
             </dt>
             <dd><span></span></dd>
           </dl>

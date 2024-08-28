@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cell class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          Cell <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="Cell_8h.html">&lt;Cell.h&gt;</a></div>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#friends">Friends</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt id="ac848db07efd3827fa2c4a7029b8bd7ae">
+              <span class="m-doc-wrap-bumper">enum <a href="#ac848db07efd3827fa2c4a7029b8bd7ae" class="m-doc-self">SubPos</a> { </span><span class="m-doc-wrap"><a href="#ac848db07efd3827fa2c4a7029b8bd7aea35baa45d7caf229ee17dd58fc15461fb" class="m-doc">MID</a> = 0,
+              <a href="#ac848db07efd3827fa2c4a7029b8bd7aea0190074d0bbe55f7d25b549df41254c3" class="m-doc">ENT</a> = 1,
+              <a href="#ac848db07efd3827fa2c4a7029b8bd7aea09598fee8dc645b9d9d15a852e12029f" class="m-doc">EXT</a> = 2 }</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-static-methods">
+          <h2><a href="#pub-static-methods">Public static functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a43952791f20cdc1a183f21f7b7588dc8">
+              <span class="m-doc-wrap-bumper">static auto <a href="#a43952791f20cdc1a183f21f7b7588dc8" class="m-doc-self">norm_angle</a>(</span><span class="m-doc-wrap">double angle) -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="ac28cf2affecbb756fb9e6c30d8e04b69">
+              <span class="m-doc-wrap-bumper"><a href="#ac28cf2affecbb756fb9e6c30d8e04b69" class="m-doc-self">Cell</a>(</span><span class="m-doc-wrap">long long id,
+              <a href="structPosition.html" class="m-doc">Position</a> pos,
+              long long layer,
+              bool isBarrel,
+              bool isXYZ,
+              bool isEtaPhiR,
+              bool isEtaPhiZ,
+              double dx,
+              double dy,
+              double dz,
+              double deta,
+              double dphi,
+              double dr)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a246d54ef2e569f97000fe94f5524e7ba">
+              <span class="m-doc-wrap-bumper"><a href="#a246d54ef2e569f97000fe94f5524e7ba" class="m-doc-self">~Cell</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a241dca8a6f492e9fc534be6564be9706">
+              <span class="m-doc-wrap-bumper">auto <a href="#a241dca8a6f492e9fc534be6564be9706" class="m-doc-self">id</a>(</span><span class="m-doc-wrap">) const -&gt; long long</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac34b24f88bad0860d10ac5b73de28db3">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac34b24f88bad0860d10ac5b73de28db3" class="m-doc-self">x</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa3143a5615d8a6e83eff264bfe7f78f8">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa3143a5615d8a6e83eff264bfe7f78f8" class="m-doc-self">y</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a907d4ad5940c45f202e13b260002e2ad">
+              <span class="m-doc-wrap-bumper">auto <a href="#a907d4ad5940c45f202e13b260002e2ad" class="m-doc-self">z</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a46ddf2ea7cb7092a41abc469e04d8680">
+              <span class="m-doc-wrap-bumper">auto <a href="#a46ddf2ea7cb7092a41abc469e04d8680" class="m-doc-self">eta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae2d943d271d404715934ea6746d7a5b8">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae2d943d271d404715934ea6746d7a5b8" class="m-doc-self">phi</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5d448922a6074c75c50243a7a65441d0">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5d448922a6074c75c50243a7a65441d0" class="m-doc-self">r</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9bc75e164d3e6bc73c718ae51c43e06a">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9bc75e164d3e6bc73c718ae51c43e06a" class="m-doc-self">layer</a>(</span><span class="m-doc-wrap">) const -&gt; long long</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac277a4792f1839eba9bec12d853b2c56">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac277a4792f1839eba9bec12d853b2c56" class="m-doc-self">isBarrel</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6913b829c0533a2e867fbbc1d6e5145c">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6913b829c0533a2e867fbbc1d6e5145c" class="m-doc-self">isXYZ</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa971deadeef04cb3bd32611f7f947d84">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa971deadeef04cb3bd32611f7f947d84" class="m-doc-self">isEtaPhiR</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6743e6cb9978b7bb2e605721402a1f26">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6743e6cb9978b7bb2e605721402a1f26" class="m-doc-self">isEtaPhiZ</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac441cde10a4676e25a925f837c881bf0">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac441cde10a4676e25a925f837c881bf0" class="m-doc-self">dx</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a22ffa634ae49a346510e9417b9eacaeb">
+              <span class="m-doc-wrap-bumper">auto <a href="#a22ffa634ae49a346510e9417b9eacaeb" class="m-doc-self">dy</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a29fe5c520522e938e8c7ca2fbb7e8219">
+              <span class="m-doc-wrap-bumper">auto <a href="#a29fe5c520522e938e8c7ca2fbb7e8219" class="m-doc-self">dz</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a4975aff070497e570c4e3dd71e1dfa9f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a4975aff070497e570c4e3dd71e1dfa9f" class="m-doc-self">deta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a7323783722325330e52e3161ab9a4045">
+              <span class="m-doc-wrap-bumper">auto <a href="#a7323783722325330e52e3161ab9a4045" class="m-doc-self">dphi</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aea86c0770844b843cfb3606090a27b3c">
+              <span class="m-doc-wrap-bumper">auto <a href="#aea86c0770844b843cfb3606090a27b3c" class="m-doc-self">dr</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af0ba890218fa70ee75502fea44d997de">
+              <span class="m-doc-wrap-bumper">auto <a href="#af0ba890218fa70ee75502fea44d997de" class="m-doc-self">rent</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9c84942f830cd093cc99b36f39434233">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9c84942f830cd093cc99b36f39434233" class="m-doc-self">rext</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aeb16cd2d053fc94e5f1d29c5624f6ed5">
+              <span class="m-doc-wrap-bumper">auto <a href="#aeb16cd2d053fc94e5f1d29c5624f6ed5" class="m-doc-self">zent</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab5ad6a07a67001bee8c9b52dfaa5cbec">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab5ad6a07a67001bee8c9b52dfaa5cbec" class="m-doc-self">zext</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a68ff696ee3a9579d16b2078defb577cc">
+              <span class="m-doc-wrap-bumper">auto <a href="#a68ff696ee3a9579d16b2078defb577cc" class="m-doc-self">r</a>(</span><span class="m-doc-wrap"><a href="classCell.html#ac848db07efd3827fa2c4a7029b8bd7ae" class="m-doc">SubPos</a> subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a01b7d840b832a369cc6e234017d8c26d">
+              <span class="m-doc-wrap-bumper">auto <a href="#a01b7d840b832a369cc6e234017d8c26d" class="m-doc-self">z</a>(</span><span class="m-doc-wrap"><a href="classCell.html#ac848db07efd3827fa2c4a7029b8bd7ae" class="m-doc">SubPos</a> subpos) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a58a5357dcdb3c0fe0dbc68b68bce48dd" class="m-doc">boundary_proximity</a>(</span><span class="m-doc-wrap">const T&amp; hit) const -&gt; double</span>
+            </dt>
+            <dd>Calculates the 2D proximity between a hit and the boundary of a cell.</dd>
+            <dt id="a3653f0e6260021ae91400bd0727f4cfa">
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a3653f0e6260021ae91400bd0727f4cfa" class="m-doc-self">is_inside</a>(</span><span class="m-doc-wrap">const T&amp; hit) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="friends">
+          <h2><a href="#friends">Friends</a></h2>
+          <dl class="m-doc">
+            <dt id="ad4a7251ccc3c3e04418f9f9780fe3659">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad4a7251ccc3c3e04418f9f9780fe3659" class="m-doc-self">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp; os,
+              const <a href="classCell.html" class="m-doc">Cell</a>&amp; cell) -&gt; std::ostream &amp;</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a58a5357dcdb3c0fe0dbc68b68bce48dd"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename T&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">auto Cell::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a58a5357dcdb3c0fe0dbc68b68bce48dd" class="m-doc-self">boundary_proximity</a>(</span><span class="m-doc-wrap">const T&amp; hit) const -&gt; double</span></span>
+            </h3>
+            <p>Calculates the 2D proximity between a hit and the boundary of a cell.</p>
+<p>This method returns the signed distance between the given hit and the cell boundary:</p><ul><li>A negative value indicates that the hit is inside the cell, with the magnitude representing how deep within the cell the hit is.</li><li>A positive value indicates that the hit is outside the cell, with the magnitude representing the distance from the cell boundary.</li></ul>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>
