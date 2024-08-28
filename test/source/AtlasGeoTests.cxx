@@ -2,16 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "FastCaloSim/Geometry/CaloCellLookup.h"
-
 struct Hit2D
 {
   auto x() const -> double { return m_x; }
   auto y() const -> double { return m_y; }
   auto eta() const -> double { return m_eta; }
   auto phi() const -> double { return m_phi; }
-  auto z() const -> double { return m_z; }
-  auto r() const -> double { return m_r; }
   double m_x, m_y, m_z, m_eta, m_phi, m_r;
 };
 
@@ -30,8 +26,6 @@ TEST_F(AtlasGeoTests, PreSamplerBLookup)
                                               cell.eta() + 0.49 * cell.deta());
       hit.m_phi = Cell::norm_angle(AtlasGeoTestsConfig::sample(
           cell.phi() - 0.49 * cell.dphi(), cell.phi() + 0.49 * cell.dphi()));
-      hit.m_r = AtlasGeoTestsConfig::sample(cell.r() - 0.49 * cell.dr(),
-                                            cell.r() + 0.49 * cell.dr());
 
       // Retrieve the cell closest to the hit position
       const auto& best_cell = AtlasGeoTests::lookup->get_cell(layer, hit);
@@ -41,7 +35,6 @@ TEST_F(AtlasGeoTests, PreSamplerBLookup)
       ASSERT_NEAR(Cell::norm_angle(hit.m_phi - best_cell.phi()),
                   0.0,
                   0.5 * best_cell.dphi());
-      ASSERT_NEAR(hit.m_r, best_cell.r(), 0.5 * best_cell.dr());
     }
   }
 }
@@ -61,8 +54,6 @@ TEST_F(AtlasGeoTests, EME1Lookup)
                                               cell.eta() + 0.49 * cell.deta());
       hit.m_phi = Cell::norm_angle(AtlasGeoTestsConfig::sample(
           cell.phi() - 0.49 * cell.dphi(), cell.phi() + 0.49 * cell.dphi()));
-      hit.m_z = AtlasGeoTestsConfig::sample(cell.z() - 0.49 * cell.dz(),
-                                            cell.z() + 0.49 * cell.dz());
 
       // Retrieve the cell closest to the hit position
       const auto& best_cell = AtlasGeoTests::lookup->get_cell(layer, hit);
@@ -72,7 +63,6 @@ TEST_F(AtlasGeoTests, EME1Lookup)
       ASSERT_NEAR(Cell::norm_angle(hit.m_phi - best_cell.phi()),
                   0.0,
                   0.5 * best_cell.dphi());
-      ASSERT_NEAR(hit.m_z, best_cell.z(), 0.5 * best_cell.dz());
     }
   }
 }
@@ -93,8 +83,6 @@ TEST_F(AtlasGeoTests, FCAL0Lookup)
                                             cell.x() + 0.49 * cell.dx());
       hit.m_y = AtlasGeoTestsConfig::sample(cell.y() - 0.49 * cell.dy(),
                                             cell.y() + 0.49 * cell.dy());
-      hit.m_z = AtlasGeoTestsConfig::sample(cell.z() - 0.49 * cell.dz(),
-                                            cell.z() + 0.49 * cell.dz());
 
       // Retrieve the cell closest to the hit position
       const auto& best_cell = AtlasGeoTests::lookup->get_cell(layer, hit);
@@ -102,7 +90,6 @@ TEST_F(AtlasGeoTests, FCAL0Lookup)
       // Check if the hit position is inside the cell
       ASSERT_NEAR(hit.m_x, best_cell.x(), 0.5 * best_cell.dx());
       ASSERT_NEAR(hit.m_y, best_cell.y(), 0.5 * best_cell.dy());
-      ASSERT_NEAR(hit.m_z, best_cell.z(), 0.5 * best_cell.dz());
     }
   }
 }

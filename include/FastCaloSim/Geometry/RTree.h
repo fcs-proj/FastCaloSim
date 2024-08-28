@@ -13,7 +13,7 @@ namespace bgi = boost::geometry::index;
 
 class RTree
 {
-  using Point = bg::model::point<double, 3, bg::cs::cartesian>;
+  using Point = bg::model::point<double, 2, bg::cs::cartesian>;
   using Box = bg::model::box<Point>;
   using Value = std::pair<Box, Cell>;
   static constexpr int rtree_quadratic = 16;
@@ -40,7 +40,11 @@ public:
 
     insert(cell);
   }
-
+  ///
+  /// @brief Returns the nearest cell (bounding box) for a given hit
+  /// Note: The hit must have the same coordinate system as the cells in the
+  /// tree
+  ///
   template<typename T>
   auto query_point(const T& hit) const -> Cell
   {
@@ -56,8 +60,8 @@ public:
     throw std::invalid_argument("No cell found for query point");
   }
 
-  std::size_t size() const { return m_cells.size(); }
-  const Cell& at(std::size_t idx) const { return m_cells.at(idx); }
+  auto size() const -> std::size_t { return m_cells.size(); }
+  auto at(std::size_t idx) const -> const Cell& { return m_cells.at(idx); }
 
 private:
   bgi::rtree<Value, bgi::quadratic<rtree_quadratic>> m_rtree;
@@ -66,13 +70,10 @@ private:
 
   static auto determine_coordinate_system(const Cell& cell) -> CoordinateSystem
   {
-    if (cell.isXYZ())
-      return CoordinateSystem::XYZ;
-    if (cell.isEtaPhiR())
-      return CoordinateSystem::EtaPhiR;
-    if (cell.isEtaPhiZ())
-      return CoordinateSystem::EtaPhiZ;
-    return CoordinateSystem::Undefined;
+    return cell.isXYZ()    ? CoordinateSystem::XYZ
+        : cell.isEtaPhiR() ? CoordinateSystem::EtaPhiR
+        : cell.isEtaPhiZ() ? CoordinateSystem::EtaPhiZ
+                           : CoordinateSystem::Undefined;
   }
 
   template<typename T>
@@ -80,23 +81,13 @@ private:
   {
     switch (m_coordinate_system) {
       case CoordinateSystem::EtaPhiR:
-        return Point(hit.eta(), hit.phi(), hit.r());
       case CoordinateSystem::EtaPhiZ:
-        return Point(hit.eta(), hit.phi(), hit.z());
+        return {hit.eta(), hit.phi()};
       case CoordinateSystem::XYZ:
-        return Point(hit.x(), hit.y(), hit.z());
+        return {hit.x(), hit.y()};
       default:
         throw std::logic_error("Undefined coordinate system");
     }
-  }
-
-  static auto normalize_angle(double angle) -> double
-  {
-    angle = std::fmod(angle + M_PI, 2.0 * M_PI);
-    if (angle < 0) {
-      angle += 2.0 * M_PI;
-    }
-    return angle - M_PI;
   }
 
   void insert(const Cell& cell)
@@ -110,41 +101,30 @@ private:
       double xmax = cell.x() + cell.dx() * half;
       double ymin = cell.y() - cell.dy() * half;
       double ymax = cell.y() + cell.dy() * half;
-      double zmin = cell.z() - cell.dz() * half;
-      double zmax = cell.z() + cell.dz() * half;
-      boxes.emplace_back(Point(xmin, ymin, zmin), Point(xmax, ymax, zmax));
+
+      boxes.emplace_back(Point(xmin, ymin), Point(xmax, ymax));
       insert_boxes(cell, boxes);
       return;
     }
 
     double etamin = cell.eta() - cell.deta() * half;
     double etamax = cell.eta() + cell.deta() * half;
-    double phimin = normalize_angle(cell.phi() - cell.dphi() * half);
-    double phimax = normalize_angle(cell.phi() + cell.dphi() * half);
+    double phimin = Cell::norm_angle(cell.phi() - cell.dphi() * half);
+    double phimax = Cell::norm_angle(cell.phi() + cell.dphi() * half);
 
     if (cell.isEtaPhiR()) {
-      double rmin = cell.r() - cell.dr() * half;
-      double rmax = cell.r() + cell.dr() * half;
       if (phimin > phimax) {
-        boxes.emplace_back(Point(etamin, -M_PI, rmin),
-                           Point(etamax, phimax, rmax));
-        boxes.emplace_back(Point(etamin, phimin, rmin),
-                           Point(etamax, M_PI, rmax));
+        boxes.emplace_back(Point(etamin, -M_PI), Point(etamax, phimax));
+        boxes.emplace_back(Point(etamin, phimin), Point(etamax, M_PI));
       } else {
-        boxes.emplace_back(Point(etamin, phimin, rmin),
-                           Point(etamax, phimax, rmax));
+        boxes.emplace_back(Point(etamin, phimin), Point(etamax, phimax));
       }
     } else if (cell.isEtaPhiZ()) {
-      double zmin = cell.z() - cell.dz() * half;
-      double zmax = cell.z() + cell.dz() * half;
       if (phimin > phimax) {
-        boxes.emplace_back(Point(etamin, -M_PI, zmin),
-                           Point(etamax, phimax, zmax));
-        boxes.emplace_back(Point(etamin, phimin, zmin),
-                           Point(etamax, M_PI, zmax));
+        boxes.emplace_back(Point(etamin, -M_PI), Point(etamax, phimax));
+        boxes.emplace_back(Point(etamin, phimin), Point(etamax, M_PI));
       } else {
-        boxes.emplace_back(Point(etamin, phimin, zmin),
-                           Point(etamax, phimax, zmax));
+        boxes.emplace_back(Point(etamin, phimin), Point(etamax, phimax));
       }
     }
     insert_boxes(cell, boxes);
