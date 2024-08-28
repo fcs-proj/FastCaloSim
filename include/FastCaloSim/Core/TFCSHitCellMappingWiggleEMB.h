@@ -12,7 +12,7 @@ class TFCSHitCellMappingWiggleEMB : public TFCSHitCellMapping
 public:
   TFCSHitCellMappingWiggleEMB(const char* name = nullptr,
                               const char* title = nullptr,
-                              ICaloGeometry* geo = nullptr);
+                              CaloGeo* geo = nullptr);
 
   /// modify one hit position to emulate the LAr accordion shape
   /// and then fills all hits into calorimeter cells

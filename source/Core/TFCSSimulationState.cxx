@@ -34,14 +34,9 @@ void TFCSSimulationState::clear()
   }
 }
 
-void TFCSSimulationState::deposit(const CaloDetDescrElement* cellele, float E)
+void TFCSSimulationState::deposit(const long long cell_id, float E)
 {
-  auto mele = m_cells.find(cellele);
-  if (mele == m_cells.end()) {
-    m_cells.emplace(cellele, 0);
-    mele = m_cells.find(cellele);
-  }
-  m_cells[cellele] += E;
+  m_cells[cell_id] += E;
 }
 
 void TFCSSimulationState::Print(Option_t*) const

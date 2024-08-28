@@ -1,3 +1,4 @@
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(FMT_HEADERS "")
 include(FetchContent)
 FetchContent_Declare(

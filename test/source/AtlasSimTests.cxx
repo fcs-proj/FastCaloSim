@@ -54,7 +54,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
           paramsObject.c_str()));
 
   // Set up the geometry
-  param->set_geometry(AtlasDeprecatedGeoTests::geo);
+  param->set_geometry(AtlasGeoTests::geo);
   // Set logging level
   param->setLevel(MSG::Level::VERBOSE);
 
@@ -70,6 +70,8 @@ TEST_P(AtlasSimTests, AtlasSimulation)
 
   // Retrieve the simulation states and serialize to json file
   TestHelpers::SimStateContainer states = model->GetSimulationStates();
+  states.set_geometry(AtlasGeoTests::geo);
+
   states.serialize(AtlasSimTestConfig::sim_output_path());
 
   // Plot the cells containing energy and color according to the energy

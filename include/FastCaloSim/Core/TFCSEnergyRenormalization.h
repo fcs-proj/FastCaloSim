@@ -7,6 +7,8 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+class CaloGeo;
+
 /** The class TFCSEnergyRenormalization ensures that the sum of cell energies in
    every calorimeter layer matches the output of energy simulation
 */
@@ -15,7 +17,10 @@ class TFCSEnergyRenormalization : public TFCSParametrization
 {
 public:
   TFCSEnergyRenormalization(const char* name = nullptr,
-                            const char* title = nullptr);
+                            const char* title = nullptr,
+                            CaloGeo* geo = nullptr);
+
+  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
   virtual ~TFCSEnergyRenormalization();
 
   virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override;
@@ -25,6 +30,9 @@ public:
       TFCSSimulationState& simulstate,
       const TFCSTruthState* /*truth*/,
       const TFCSExtrapolationState* /*extrapol*/) const override;
+
+protected:
+  CaloGeo* m_geo;  //! do not persistify
 
 private:
   ClassDefOverride(TFCSEnergyRenormalization, 1)  // TFCSEnergyRenormalization

@@ -4,6 +4,7 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TClass.h"
 
 //=============================================
@@ -16,7 +17,7 @@ TFCSParametrizationBase::TFCSParametrizationBase(const char* name,
 {
 }
 
-void TFCSParametrizationBase::set_geometry(ICaloGeometry* geo)
+void TFCSParametrizationBase::set_geometry(CaloGeo* geo)
 {
   for (unsigned int i = 0; i < size(); ++i)
     (*this)[i]->set_geometry(geo);

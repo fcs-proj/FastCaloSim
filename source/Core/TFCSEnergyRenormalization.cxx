@@ -7,7 +7,8 @@
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/CaloDetDescrElement.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
+#include "FastCaloSim/Geometry/Cell.h"
 #include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 //=============================================
@@ -15,8 +16,10 @@
 //=============================================
 
 TFCSEnergyRenormalization::TFCSEnergyRenormalization(const char* name,
-                                                     const char* title)
+                                                     const char* title,
+                                                     CaloGeo* geo)
     : TFCSParametrization(name, title)
+    , m_geo(geo)
 {
 }
 
@@ -29,11 +32,16 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
 {
   std::vector<double> energies(CaloCell_ID_FCS::MaxSample, 0);
 
-  // Loop over all cells and sum up energies
-  for (const auto& iter : simulstate.cells()) {
-    const CaloDetDescrElement* theDDE = iter.first;
-    int layer = theDDE->getSampling();
-    energies[layer] += iter.second;
+  // Loop over all cells containing energy and sum up energies
+  for (const auto& cell_iter : simulstate.cells()) {
+    long long cell_id = cell_iter.first;
+    double cell_energy = cell_iter.second;
+    // Retrieve the cell from the geometry by its identifier
+    Cell cell = m_geo->get_cell(cell_id);
+
+    // Add the energy to the corresponding layer
+    int layer = cell.layer();
+    energies[layer] += cell_energy;
   }
 
   std::vector<float> scalefactor(CaloCell_ID_FCS::MaxSample, 1);
@@ -69,10 +77,12 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
   }
 
   // Loop over all cells and apply the scalefactor
-  for (auto& iter : simulstate.cells()) {
-    const CaloDetDescrElement* theDDE = iter.first;
-    int layer = theDDE->getSampling();
-    iter.second *= scalefactor[layer];
+  for (auto& cell_iter : simulstate.cells()) {
+    long long cell_id = cell_iter.first;
+    double cell_energy = cell_iter.second;
+    Cell cell = m_geo->get_cell(cell_id);
+    int layer = cell.layer();
+    cell_iter.second *= scalefactor[layer];
   }
 
   if (msgLvl(MSG::DEBUG)) {

@@ -15,7 +15,7 @@
 
 TFCSHitCellMappingWiggleEMB::TFCSHitCellMappingWiggleEMB(const char* name,
                                                          const char* title,
-                                                         ICaloGeometry* geo)
+                                                         CaloGeo* geo)
     : TFCSHitCellMapping(name, title, geo)
 {
   double wiggleLayer1[] = {

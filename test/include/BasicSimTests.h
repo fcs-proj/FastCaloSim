@@ -2,11 +2,11 @@
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
-#include "AtlasDeprecatedGeoTests.h"
+#include "AtlasGeoTests.h"
 #include "TFile.h"
 #include "TestConfig/BasicSimTestsConfig.h"
 
-class BasicSimTests : public AtlasDeprecatedGeoTests
+class BasicSimTests : public AtlasGeoTests
 {
 protected:
   static std::map<std::string, TFile*> param_files;
@@ -16,7 +16,7 @@ protected:
   static void SetUpTestSuite()
   {
     // Call the base setup that sets up the geometry
-    AtlasDeprecatedGeoTests::SetUpTestSuite();
+    AtlasGeoTests::SetUpTestSuite();
 
     // Load the parametrization files for the different regions
     for (const auto& [region, path] : BasicSimTestsConfig::PARAM_FILE_PATHS) {
@@ -29,7 +29,7 @@ protected:
   static void TearDownTestSuite()
   {
     // Call the base tear down that deletes the geometry
-    AtlasDeprecatedGeoTests::TearDownTestSuite();
+    AtlasGeoTests::TearDownTestSuite();
 
     // Close and delete the parametrization files
     for (const auto& [region, file] : param_files) {

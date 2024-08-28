@@ -10,7 +10,6 @@
 #include <TClass.h>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 #include "TMath.h"
 
 //=============================================
