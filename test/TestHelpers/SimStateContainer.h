@@ -75,10 +75,13 @@ class SimStateContainer
              cell->z(),
              cell->deta(),
              cell->dphi(),
-             cell->dr(),
+             cell->getSampling() < 4
+                 ? cell->dr() * 2
+                 : cell->dr(),  // dr saved here is only half cell size for
+                                // barrel layers 0-3
              cell->dx(),
              cell->dy(),
-             cell->dz(),
+             cell->dz() * 2,  // dz saved here is only half cell size
              // TODO: the following is currently hardcoded for ATLAS
              // should be adapted once we load the geometry with the exp-ind
              // file
