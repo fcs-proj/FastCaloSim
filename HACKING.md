@@ -26,56 +26,6 @@ additions.
 You have a few options to pass `FastCaloSim_DEVELOPER_MODE` to the configure
 command, but this project prefers to use presets.
 
-As a developer, you should create a `CMakeUserPresets.json` file at the root of
-the project:
-
-```json
-{
-  "version": 2,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 14,
-    "patch": 0
-  },
-  "configurePresets": [
-    {
-      "name": "dev",
-      "binaryDir": "${sourceDir}/build/dev",
-      "inherits": ["dev-mode", "ci-<os>"],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "dev",
-      "configurePreset": "dev",
-      "configuration": "Debug"
-    }
-  ],
-  "testPresets": [
-    {
-      "name": "dev",
-      "configurePreset": "dev",
-      "configuration": "Debug",
-      "output": {
-        "outputOnFailure": true
-      }
-    }
-  ]
-}
-```
-
-You should replace `<os>` in your newly created presets file with the name of
-the operating system you have, which may be `win64`, `linux` or `darwin`. You
-can see what these correspond to in the
-[`CMakePresets.json`](CMakePresets.json) file.
-
-`CMakeUserPresets.json` is also the perfect place in which you can put all
-sorts of things that you would otherwise want to pass to the configure command
-in the terminal.
-
 > **Note**
 > Some editors are pretty greedy with how they open projects with presets.
 > Some just randomly pick a preset and start configuring without your consent,
@@ -144,31 +94,6 @@ Runs all the examples created by the `add_example` command.
 These targets run the codespell tool on the codebase to check errors and to fix
 them respectively. Customization available using the `SPELL_COMMAND` cache
 variable.
-
-## Running tests on Windows with `BUILD_SHARED_LIBS=ON`
-
-If you are building a shared library on Windows, you must add the path to the
-DLL file to `PATH` when you want to run tests. One way you could do that is by
-using PowerShell and writing a script for it, e.g. `env.ps1` at the project
-root:
-
-```powershell
-$oldPrompt = (Get-Command prompt).ScriptBlock
-
-function prompt() { "(Debug) $(& $oldPrompt)" }
-
-$VsInstallPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -Property InstallationPath
-$Env:Path += ";$VsInstallPath\Common7\IDE;$Pwd\build\dev\Debug"
-```
-
-Then you can source this script by running `. env.ps1`. This particular
-example will only work for Debug builds.
-
-### Passing `PATH` to editors
-
-Make sure you launch your editor of choice from the console with the above
-script sourced. Look for `(Debug)` in the prompt to confirm, then run e.g.
-`code .` for VScode or `devenv .` for Visual Studio.
 
 [1]: https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
 [2]: https://cmake.org/download/
