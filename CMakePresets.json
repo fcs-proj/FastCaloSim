@@ -132,16 +132,6 @@
         "linux",
         "dev-mode"
       ]
-    },
-    {
-      "name": "dev",
-      "binaryDir": "${sourceDir}/build",
-      "description": "Preset for development",
-      "displayName": "dev",
-      "inherits": [
-        "linux",
-        "dev-mode"
-      ]
     }
   ]
 }
