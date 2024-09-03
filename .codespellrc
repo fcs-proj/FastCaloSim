@@ -4,4 +4,4 @@ check-filenames =
 check-hidden =
 skip = */.git,*/build,*/prefix,*/thirdparty,*test/data,*/.vscode
 quiet-level = 2
-ignore-words-list = hist,gaus,stdio,jupyter
+ignore-words-list = hist,gaus,stdio,jupyter,cancelled

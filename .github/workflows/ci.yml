@@ -34,8 +34,6 @@ jobs:
     container:
       image: jbeirer/alma9-fastcalosim:latest
 
-    if: github.repository_owner == 'jbeirer'
-
     steps:
     - uses: actions/checkout@v4
 
@@ -47,15 +45,21 @@ jobs:
 
     - name: Test
       working-directory: build/coverage
-      run: ctest --output-on-failure --no-tests=error -j 2
+      run: ctest --output-on-failure --no-tests=error --output-junit junit.xml  -j 2
 
     - name: Process coverage info
       run: cmake --build build/coverage -t coverage
 
-    - name: Submit to codecov.io
+    - name: Upload coverage to codecov
       uses: codecov/codecov-action@v4
       with:
         file: build/coverage/coverage.info
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
