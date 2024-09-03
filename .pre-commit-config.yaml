@@ -4,7 +4,7 @@ repos:
       - id: spell-fix
         name: check for C++ spelling errors
         language: system
-        entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/" ./.hooks/spell-fix.sh'
+        entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/dev" ./.hooks/spell-fix.sh'
         verbose: true
         stages: [commit]
 
@@ -13,7 +13,7 @@ repos:
       - id: format-fix
         name: check for C++ formatting errors
         language: system
-        entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/" ./.hooks/format-fix.sh'
+        entry: bash -c 'exec env PROJ_ROOT_DIR="$PWD" BUILD_DIR="$PWD/build/dev" ./.hooks/format-fix.sh'
         verbose: true
         stages: [commit]
 

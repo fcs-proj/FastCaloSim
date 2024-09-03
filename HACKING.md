@@ -26,6 +26,51 @@ additions.
 You have a few options to pass `FastCaloSim_DEVELOPER_MODE` to the configure
 command, but this project prefers to use presets.
 
+For developers a `CMakeUserPresets.json` file is provided at the root of
+the project that defines a preset for local development `dev`:
+
+```json
+{
+  "version": 2,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 14,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "dev",
+      "binaryDir": "${sourceDir}/build/dev",
+      "inherits": ["dev-mode", "linux"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "configuration": "Debug"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
+```
+
+`CMakeUserPresets.json` is also the perfect place in which you can put all
+sorts of things that you would otherwise want to pass to the configure command
+in the terminal.
+
 > **Note**
 > Some editors are pretty greedy with how they open projects with presets.
 > Some just randomly pick a preset and start configuring without your consent,
@@ -94,6 +139,7 @@ Runs all the examples created by the `add_example` command.
 These targets run the codespell tool on the codebase to check errors and to fix
 them respectively. Customization available using the `SPELL_COMMAND` cache
 variable.
+
 
 [1]: https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
 [2]: https://cmake.org/download/
