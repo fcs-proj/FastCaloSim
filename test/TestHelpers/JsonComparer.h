@@ -23,13 +23,16 @@ using json = nlohmann::json;
 class JsonComparer
 {
 public:
-  JsonComparer(double tolerance = 0.0)
-      : tolerance(tolerance)
+  JsonComparer(double tolerance = 0.0, int print_limit = 50)
+      : m_tolerance(tolerance)
+      , m_print_limit(print_limit)
   {
   }
 
-  auto compare(const std::string& file1, const std::string& file2) const -> bool
+  auto compare(const std::string& file1, const std::string& file2) -> bool
   {
+    m_print_count = 0, m_output_suppressed = false;
+
     json json1, json2;
 
     if (!read_json(file1, json1) || !read_json(file2, json2)) {
@@ -45,7 +48,9 @@ public:
   }
 
 private:
-  double tolerance;
+  int m_print_limit, m_print_count;
+  bool m_output_suppressed;
+  double m_tolerance;
 
   static auto read_json(const std::string& file_path, json& json_obj) -> bool
   {
@@ -70,7 +75,7 @@ private:
 
   auto compare_json(const json& json1,
                     const json& json2,
-                    const std::string& path) const -> bool
+                    const std::string& path) -> bool
   {
     if (json1.type() != json2.type()) {
       print_difference(
@@ -100,7 +105,7 @@ private:
 
   auto compare_objects(const json& json1,
                        const json& json2,
-                       const std::string& path) const -> bool
+                       const std::string& path) -> bool
   {
     bool are_equal = true;
     for (auto it = json1.begin(); it != json1.end(); ++it) {
@@ -127,7 +132,7 @@ private:
 
   auto compare_arrays(const json& json1,
                       const json& json2,
-                      const std::string& path) const -> bool
+                      const std::string& path) -> bool
   {
     bool are_equal = true;
     size_t min_size = std::min(json1.size(), json2.size());
@@ -160,25 +165,34 @@ private:
 
   auto compare_numbers(const json& json1,
                        const json& json2,
-                       const std::string& path) const -> bool
+                       const std::string& path) -> bool
   {
     double val1 = json1.get<double>();
     double val2 = json2.get<double>();
     double percent_diff =
         std::fabs(val1 - val2) / std::max(std::fabs(val1), std::fabs(val2));
-    if (percent_diff > tolerance) {
+    if (percent_diff > m_tolerance) {
       print_difference("Value mismatch", val1, val2, path, percent_diff * 100);
       return false;
     }
     return true;
   }
 
-  static void print_difference(const std::string& message,
-                               const json& json1,
-                               const json& json2,
-                               const std::string& path,
-                               double percent_diff = 0.0)
+  void print_difference(const std::string& message,
+                        const json& json1,
+                        const json& json2,
+                        const std::string& path,
+                        double percent_diff = 0.0)
   {
+    if (m_print_count >= m_print_limit) {
+      if (!m_output_suppressed) {
+        std::cout << "Suppressing further output after reaching the limit of "
+                  << m_print_limit << " differences\n";
+      }
+      m_output_suppressed = true;
+      return;
+    }
+
     if (json1.is_null() && json2.is_null()) {
       std::cout << message << " at " << path << ": both values are null\n";
     } else if (json1.is_null() || json2.is_null()) {
@@ -192,5 +206,6 @@ private:
       }
       std::cout << "\n";
     }
+    m_print_count++;
   }
 };
