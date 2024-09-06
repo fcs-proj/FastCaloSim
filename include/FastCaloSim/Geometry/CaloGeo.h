@@ -11,6 +11,13 @@
 class CaloGeo
 {
 public:
+  /// @brief Enum to indicate the side of the detector η > 0 or η < 0
+  enum DetectorSide
+  {
+    kEtaPositive,
+    kEtaNegative
+  };
+
   explicit CaloGeo(ROOT::RDataFrame& geo) { build(geo); }
 
   /// @brief Returns the number of cells in a layer
@@ -31,7 +38,7 @@ public:
     return m_layer_tree_map.at(layer).at(idx);
   }
 
-  // @brief Returns the best matching cell for a hit in a specific layer
+  /// @brief Returns the best matching cell for a hit in a specific layer
   // Note that the hit must have the same coordinate system as the cells in the
   // tree
   template<typename T>
@@ -40,8 +47,23 @@ public:
     return m_layer_tree_map.at(layer).query_point(hit);
   }
 
-  // @brief Returns a boolean indicating if a layer is a barrel or endcap
-  auto is_barrel(int layer) const { return m_is_layer_barrel_map.at(layer); }
+  /// @brief Returns a boolean indicating if a layer is a barrel or endcap
+  auto is_barrel(int layer) const { return m_layer_flags.at(layer).is_barrel; };
+
+  /// @brief Returns a boolean indicating if a layer is in XYZ coordinates
+  auto is_xyz(int layer) const { return m_layer_flags.at(layer).ix_xyz; };
+
+  /// @brief Returns a boolean indicating if a layer is in EtaPhiR coordinates
+  auto is_eta_phi_r(int layer) const
+  {
+    return m_layer_flags.at(layer).is_eta_phi_r;
+  };
+
+  /// @brief Returns a boolean indicating if a layer is in EtaPhiZ coordinates
+  auto is_eta_phi_z(int layer) const
+  {
+    return m_layer_flags.at(layer).is_eta_phi_z;
+  };
 
   /// @brief Z position of the entrance, middle, or exit of a layer for
   // the cell closest to a hit (either in x,y or in eta, phi space)
@@ -63,111 +85,98 @@ public:
     return cell.r(subpos);
   }
 
-  // @brief returns the r of the cell with maximum r
-  // For endcap layers, subpos will be ignored and the center position returned
-  auto rmax(int layer, Cell::SubPos subpos) const -> double
+  /// @brief Returns the minmax eta extension of a layer for a side of the
+  // detector
+  auto min_eta(int layer, DetectorSide side) const
   {
-    auto cell = get_cell(m_edge_cells_ids.at(layer).rmax);
-    return cell.r(subpos);
-  }
-  // @brief returns the r of the cell with minimum r
-  // For endcap layers, subpos will be ignored and the center position returned
-  auto rmin(int layer, Cell::SubPos subpos) const -> double
-  {
-    auto cell = get_cell(m_edge_cells_ids.at(layer).rmin);
-    return cell.r(subpos);
+    return m_layer_flags.at(layer).eta_extensions.at(side).eta_min;
   }
 
-  // @brief returns the z of the cell with maximum z
-  // For barrel layers, subpos will be ignored and the center position returned
-  auto zmax(int layer, Cell::SubPos subpos) const -> double
+  /// @brief Returns the max eta extension of a layer for a side of the detector
+  auto max_eta(int layer, DetectorSide side) const
   {
-    auto cell = get_cell(m_edge_cells_ids.at(layer).zmax);
-    return cell.z(subpos);
-  }
-  // @brief returns the z of the cell with minimum z
-  // For barrel layers, subpos will be ignored and the center position returned
-  auto zmin(int layer, Cell::SubPos subpos) const -> double
-  {
-    auto cell = get_cell(m_edge_cells_ids.at(layer).zmin);
-    return cell.z(subpos);
-  }
-  // @brief returns the eta of the edge of the cell cell with minimum eta in a
-  // layer For cells in xzy coordinates, this will return the center position
-  auto etamin(int layer) const -> double
-  {
-    auto cell = get_cell(m_edge_cells_ids.at(layer).etamin);
-
-    if (cell.eta() > 0)
-      std::runtime_error("Minimum cell eta should not be positive");
-
-    return cell.isXYZ() ? cell.eta() : cell.eta() + cell.deta() * 0.5;
-  }
-
-  // @brief returns the eta of the cell with maximum eta in a layer
-  // For cells in xzy coordinates, this will return the center position
-  auto etamax(int layer) const -> double
-  {
-    auto cell = get_cell(m_edge_cells_ids.at(layer).etamax);
-
-    if (cell.eta() < 0)
-      std::runtime_error("Maximum cell eta should not be negative");
-
-    return cell.isXYZ() ? cell.eta() : cell.eta() - cell.deta() * 0.5;
+    return m_layer_flags.at(layer).eta_extensions.at(side).eta_max;
   }
 
 private:
-  struct EdgeCellIds
+  /// @brief Struct to store the minimum and maximum eta extensions of a layer
+  struct EtaExtremes
   {
-    long long rmin, rmax;
-    long long zmin, zmax;
-    long long etamin, etamax;
+    double eta_min, eta_max;
+  };
+
+  /// @brief Struct to store properties  of a layer
+  struct LayerFlags
+  {
+    bool is_barrel {false};
+    bool ix_xyz {false};
+    bool is_eta_phi_r {false};
+    bool is_eta_phi_z {false};
+    /// @brief The eta extensions for the positive and negative detector half
+    // spaces
+    std::map<DetectorSide, EtaExtremes> eta_extensions;
+
+    // Define default values for the eta extensions of the layers
+    LayerFlags()
+    {
+      eta_extensions[DetectorSide::kEtaPositive] = EtaExtremes {1000, -1000};
+      eta_extensions[DetectorSide::kEtaNegative] = EtaExtremes {1000, -1000};
+    }
   };
 
   int m_n_layers {};
   int m_n_total_cells {};
   std::map<int, RTree> m_layer_tree_map;
   std::map<long long, Cell> m_cell_id_map;
-  std::unordered_map<int, bool> m_is_layer_barrel_map;
-  std::unordered_map<int, EdgeCellIds> m_edge_cells_ids;
+  std::unordered_map<int, LayerFlags> m_layer_flags;
 
-  // @brief Record the cell in the geometry
+  /// @brief Record the cell in the geometry
   void record_cell(const Cell& cell)
   {
-    m_layer_tree_map[cell.layer()].insert_cell(cell);
+    // Insert cell RTree
+    auto layer = cell.layer();
+    m_layer_tree_map[layer].insert_cell(cell);
+    // Insert cell in cell ID -> cell map
     m_cell_id_map.emplace(cell.id(), cell);
   }
 
-  // @brief Update the edge cells for a layer
-  void update_edge_cells(int layer, const Cell& cell)
+  /// @brief For each layer, we pre-compute the maximum
+  // and minimum eta extensions of the layers for
+  // the positive (η > 0) and negative (η < 0) detector half spaces
+  void update_eta_extremes(int layer, const Cell& cell)
   {
-    // Initialize for first cell in a layer
-    if (m_edge_cells_ids.find(layer) == m_edge_cells_ids.end()) {
-      m_edge_cells_ids[layer] = EdgeCellIds {
-          cell.id(), cell.id(), cell.id(), cell.id(), cell.id(), cell.id()};
+    // Choose detector side
+    DetectorSide side = cell.eta() > 0 ? kEtaPositive : kEtaNegative;
+
+    // Cell half width
+    // for FCAL we don't take into account the half width
+    double half_width = cell.isXYZ() ? 0 : cell.deta() / 2;
+
+    // Compute eta extremes for the side
+    double min_eta = cell.eta() - half_width;
+    double max_eta = cell.eta() + half_width;
+
+    auto& eta_extremes = m_layer_flags.at(layer).eta_extensions.at(side);
+
+    // Update the eta extremes
+    if (max_eta > eta_extremes.eta_max) {
+      eta_extremes.eta_max = max_eta;
     }
-    auto& ext = m_edge_cells_ids.at(layer);
-
-    const auto& rmax_cell = get_cell(ext.rmax);
-    const auto& rmin_cell = get_cell(ext.rmin);
-    const auto& zmax_cell = get_cell(ext.zmax);
-    const auto& zmin_cell = get_cell(ext.zmin);
-    const auto& etamax_cell = get_cell(ext.etamax);
-    const auto& etamin_cell = get_cell(ext.etamin);
-
-    ext.rmax = cell.r() > rmax_cell.r() ? cell.id() : ext.rmax;
-    ext.rmin = cell.r() < rmin_cell.r() ? cell.id() : ext.rmin;
-    ext.zmax = cell.z() > zmax_cell.z() ? cell.id() : ext.zmax;
-    ext.zmin = cell.z() < zmin_cell.z() ? cell.id() : ext.zmin;
-    ext.etamax = cell.eta() > etamax_cell.eta() ? cell.id() : ext.etamax;
-    ext.etamin = cell.eta() < etamin_cell.eta() ? cell.id() : ext.etamin;
+    if (min_eta < eta_extremes.eta_min) {
+      eta_extremes.eta_min = min_eta;
+    }
   }
 
-  // @brief Build the geometry from the RDataFrame
+  /// @brief Build the geometry from the RDataFrame
   void build(ROOT::RDataFrame& geo)
   {
     // Record number of layers
     m_n_layers = geo.Max<long long>("layer").GetValue();
+
+    // Initialize maximum and minimum eta extensions of the layers
+    for (int i = 0; i < m_n_layers + 1; ++i) {
+      m_layer_flags.emplace(i, LayerFlags {});
+    }
 
     // Record number of total cells
     m_n_total_cells = *geo.Count();
@@ -203,7 +212,10 @@ private:
       bool is_EtaPhiR = static_cast<bool>(isCylindrical->at(i));
       bool is_EtaPhiZ = static_cast<bool>(isECCylindrical->at(i));
 
-      m_is_layer_barrel_map.emplace(layer->at(i), is_barrel);
+      m_layer_flags.at(layer->at(i)).is_barrel = is_barrel;
+      m_layer_flags.at(layer->at(i)).ix_xyz = is_XYZ;
+      m_layer_flags.at(layer->at(i)).is_eta_phi_r = is_EtaPhiR;
+      m_layer_flags.at(layer->at(i)).is_eta_phi_z = is_EtaPhiZ;
 
       // Position of the center of the cell
       Position pos = Position {.m_x = x->at(i),
@@ -230,7 +242,7 @@ private:
       // Record the cell in the geometry
       record_cell(cell);
       // Update the edge cells
-      update_edge_cells(layer->at(i), cell);
+      update_eta_extremes(layer->at(i), cell);
     }
   }
 };
