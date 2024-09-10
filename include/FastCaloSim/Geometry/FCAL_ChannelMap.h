@@ -19,10 +19,12 @@
 #include <string>
 #include <vector>
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 /** This class contains the tube and tile maps for the FCAL <br>
  * A tile is of a set of FCAL tubes
  */
-class FCAL_ChannelMap
+class FASTCALOSIM_EXPORT FCAL_ChannelMap
 {
 public:
   //

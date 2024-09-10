@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
-#include "FastCaloSim/Geometry/FCAL.h"
+#include "FastCaloSim/Geometry/FCal.h"
 #include "ROOT/RDataFrame.hxx"
 #include "TestConfig/AtlasGeoTestsConfig.h"
 #include "TestHelpers/Event.h"
@@ -26,7 +26,7 @@ protected:
     geo = new CaloGeo(df);
 
     // Create alternative geometry handler for FCal
-    std::shared_ptr<FCAL> fcal_geo = std::make_shared<FCAL>();
+    std::shared_ptr<FCal> fcal_geo = std::make_shared<FCal>();
     // Load the FCal geometry from the files
     fcal_geo->load(AtlasGeoTestsConfig::FCAL_ELECTRODE_FILES);
     // Cast the FCal geometry handler to the geo interface

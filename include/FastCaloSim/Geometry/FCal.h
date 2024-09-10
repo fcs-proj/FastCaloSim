@@ -9,20 +9,21 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <FastCaloSim/FastCaloSim_export.h>
 #include <RtypesCore.h>
 #include <TString.h>
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/FCAL_ChannelMap.h"
 
-class FCAL : public CaloGeo
+class FASTCALOSIM_EXPORT FCal : public CaloGeo
 {
 public:
   /// @brief Default constructor
-  FCAL() = default;
+  FCal() = default;
 
   // Virtual destructor to ensure proper cleanup
-  virtual ~FCAL() = default;
+  virtual ~FCal() = default;
 
   /// @brief Get the cell at a specific position
   auto get_cell_id(int layer, const Position& pos) const -> long long override
