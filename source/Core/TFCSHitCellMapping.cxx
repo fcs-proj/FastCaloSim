@@ -32,14 +32,17 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
   ATH_MSG_DEBUG("Got hit with E=" << hit.E() << " eta=" << hit.eta()
                                   << " phi=" << hit.phi());
 
+  // Position where we will perform the lookup
+  Position lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
+
   // Get the best matching cell
-  const auto& cell = m_geo->get_cell(calosample(), hit);
+  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
   ATH_MSG_DEBUG(cell);
 
   // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
-  double proximity = cell.boundary_proximity(hit);
+  double proximity = cell.boundary_proximity(lookup_pos);
 
   ATH_MSG_DEBUG("Hit-cell distance in eta-phi is: " << proximity);
 

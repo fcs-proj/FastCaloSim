@@ -60,7 +60,7 @@ public:
   void set_IDCaloBoundary_eta(double val) { m_IDCaloBoundary_eta = val; };
   void set_IDCaloBoundary_phi(double val) { m_IDCaloBoundary_phi = val; };
   void set_IDCaloBoundary_r(double val) { m_IDCaloBoundary_r = val; };
-  void set_IDCaloBoundary_x(double val) { m_IDCaloBoundary_y = val; };
+  void set_IDCaloBoundary_x(double val) { m_IDCaloBoundary_x = val; };
   void set_IDCaloBoundary_y(double val) { m_IDCaloBoundary_y = val; };
   void set_IDCaloBoundary_z(double val) { m_IDCaloBoundary_z = val; };
 
@@ -78,7 +78,7 @@ public:
   double IDCaloBoundary_eta() const { return m_IDCaloBoundary_eta; };
   double IDCaloBoundary_phi() const { return m_IDCaloBoundary_phi; };
   double IDCaloBoundary_r() const { return m_IDCaloBoundary_r; };
-  double IDCaloBoundary_x() const { return m_IDCaloBoundary_y; };
+  double IDCaloBoundary_x() const { return m_IDCaloBoundary_x; };
   double IDCaloBoundary_y() const { return m_IDCaloBoundary_y; };
   double IDCaloBoundary_z() const { return m_IDCaloBoundary_z; };
 

@@ -121,7 +121,8 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
 
     ATH_MSG_DEBUG("[ExtrapolateToID] Setting IDCaloBoundary to eta="
                   << extPos.eta() << " phi=" << extPos.phi()
-                  << " r=" << extPos.perp() << " z=" << extPos.z());
+                  << " r=" << extPos.perp() << " x=" << extPos.x()
+                  << " y=" << extPos.y() << " z=" << extPos.z());
 
     // compute angle between extrapolated position vector and momentum at
     // IDCaloBoundary can be used to correct shower shapes for particles which
@@ -290,7 +291,6 @@ bool FastCaloSimCaloExtrapolation::extrapolateToCylinder(
     momDir = caloSteps.at(0).GetMomentumDir();
     return true;
   }
-  int a = 0;
 
   // if we do not find any good intersections, extrapolate to closest point on
   // surface

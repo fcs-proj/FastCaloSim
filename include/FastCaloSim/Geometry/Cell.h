@@ -33,6 +33,8 @@ private:
   bool m_isXYZ, m_isEtaPhiR, m_isEtaPhiZ;
   /// @brief Cell sizes
   double m_dx, m_dy, m_dz, m_deta, m_dphi, m_dr;
+  /// @brief Flag to invalidate cell
+  bool m_is_valid = true;
 
 public:
   enum SubPos
@@ -72,7 +74,30 @@ public:
   {
   }
 
+  // Allow easy creation of an invalid cell
+  Cell()
+      : m_id(-1)
+      , m_pos(Position {0, 0, 0, 0, 0, 0})
+      , m_layer(-1)
+      , m_isBarrel(false)
+      , m_isXYZ(false)
+      , m_isEtaPhiR(false)
+      , m_isEtaPhiZ(false)
+      , m_dx(0)
+      , m_dy(0)
+      , m_dz(0)
+      , m_deta(0)
+      , m_dphi(0)
+      , m_dr(0)
+      , m_is_valid(false)
+  {
+  }
+
   virtual ~Cell() = default;
+
+  // Cell validity
+  auto inline is_valid() const -> bool { return m_is_valid; }
+  auto inline invalidate() -> void { m_is_valid = false; }
 
   // Direct accessors
   auto inline id() const -> long long { return m_id; }
@@ -205,28 +230,26 @@ public:
   /// - A positive value indicates that the hit is outside the cell, with the
   /// magnitude representing the distance from the cell boundary.
   ///
-  template<typename T>
-  auto inline boundary_proximity(const T& hit) const -> double
+  auto inline boundary_proximity(const Position& pos) const -> double
   {
     if (m_isXYZ) {
-      double delta_x = std::abs(hit.x() - m_pos.x());
-      double delta_y = std::abs(hit.y() - m_pos.y());
+      double delta_x = std::abs(pos.x() - m_pos.x());
+      double delta_y = std::abs(pos.y() - m_pos.y());
 
       return std::max(delta_x - m_dx, delta_y - m_dy);
     }
 
     if (m_isEtaPhiR || m_isEtaPhiZ) {
-      double delta_eta = std::abs(hit.eta() - m_pos.eta());
-      double delta_phi = std::abs(norm_angle(hit.phi() - m_pos.phi()));
+      double delta_eta = std::abs(pos.eta() - m_pos.eta());
+      double delta_phi = std::abs(norm_angle(pos.phi() - m_pos.phi()));
 
       return std::max(delta_eta - m_deta, delta_phi - m_dphi);
     }
   }
 
-  template<typename T>
-  auto inline is_inside(const T& hit) const -> bool
+  auto inline is_inside(const Position& pos) const -> bool
   {
-    return boundary_proximity(hit) < 0;
+    return boundary_proximity(pos) < 0;
   }
 
   // Overload the << operator to allow direct cell printout

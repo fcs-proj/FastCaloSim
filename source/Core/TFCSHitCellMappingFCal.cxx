@@ -23,15 +23,31 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
   ATH_MSG_DEBUG("Got hit with E=" << hit.E() << " x=" << hit.x()
                                   << " y=" << hit.y());
 
+  // Position where we perform the lookup
+  // The z position here is used to determine the side
+  // in the custom FCAL geo handler
+  Position lookup_pos {hit.x(), hit.y(), hit.z(), 0, 0, 0};
+
+  /// No match possible, retry simulation
+  if ((hit.x() == 0 && hit.y() == 0)) {
+    return (FCSReturnCode)(FCSRetry + 5);
+  }
   // Get the best matching cell
-  // TODO: implement proper cell matching for FCAL
-  const auto& cell = m_geo->get_cell(calosample(), hit);
+  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
   ATH_MSG_DEBUG(cell);
+
+  /// Could not find a cell, retry simulation up to 5 times
+  if (!cell.is_valid()) {
+    ATH_MSG_WARNING("Hit in layer " << calosample() << " with E = " << hit.E()
+                                    << " x = " << hit.x() << " y = " << hit.y()
+                                    << " could not be matched to a cell");
+    return (FCSReturnCode)(FCSRetry + 5);
+  }
 
   // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
-  double proximity = cell.boundary_proximity(hit);
+  double proximity = cell.boundary_proximity(lookup_pos);
 
   ATH_MSG_DEBUG("Hit-cell distance in x-y is: " << proximity);
 
