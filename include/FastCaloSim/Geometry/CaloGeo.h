@@ -112,7 +112,7 @@ private:
   /// Allows to implement custom geo handling for specific layers
   /// This is especially useful if the geometry is not well described
   /// by cuboid cells and you want to implement your own cell lookup
-  std::map<int, std::shared_ptr<CaloGeo>> m_alt_geo_handlers;
+  std::unordered_map<int, std::shared_ptr<CaloGeo>> m_alt_geo_handlers;
 
   /// @brief Maps layer id -> layer properties
   std::map<int, LayerFlags> m_layer_flags;

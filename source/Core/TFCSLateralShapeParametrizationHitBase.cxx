@@ -6,7 +6,7 @@
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
+#include "FastCaloSim/Geometry/Cell.h"
 
 //=============================================
 //======= TFCSLateralShapeParametrization =========
@@ -65,11 +65,11 @@ FCSReturnCode TFCSLateralShapeParametrizationHitBase::simulate_hit(
 {
   int cs = calosample();
   hit.set_eta_x(0.5
-                * (extrapol->eta(cs, CaloSubPos::SUBPOS_ENT)
-                   + extrapol->eta(cs, CaloSubPos::SUBPOS_EXT)));
+                * (extrapol->eta(cs, Cell::SubPos::ENT)
+                   + extrapol->eta(cs, Cell::SubPos::EXT)));
   hit.set_phi_y(0.5
-                * (extrapol->phi(cs, CaloSubPos::SUBPOS_ENT)
-                   + extrapol->phi(cs, CaloSubPos::SUBPOS_EXT)));
+                * (extrapol->phi(cs, Cell::SubPos::ENT)
+                   + extrapol->phi(cs, Cell::SubPos::EXT)));
 
   return FCSSuccess;
 }

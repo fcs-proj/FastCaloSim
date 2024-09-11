@@ -1,7 +1,3 @@
-/*
-  Copyright (C) 2002-2017 CERN for the benefit of the ATLAS collaboration
-*/
-
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
@@ -17,33 +13,41 @@ TFCSExtrapolationState::TFCSExtrapolationState()
 
 void TFCSExtrapolationState::Print(Option_t*) const
 {
+  // Print the IDCaloBoundary information
   ATH_MSG_INFO("IDCalo: eta="
                << m_IDCaloBoundary_eta << " phi=" << m_IDCaloBoundary_phi
                << " r=" << m_IDCaloBoundary_r << " z=" << m_IDCaloBoundary_z);
-  for (int i = 0; i < CaloCell_ID_FCS::MaxSample; ++i) {
-    if (m_CaloOK[i][SUBPOS_MID]) {
-      ATH_MSG_INFO("  layer " << i << " MID eta=" << m_etaCalo[i][SUBPOS_MID]
-                              << " phi=" << m_phiCalo[i][SUBPOS_MID]
-                              << " r=" << m_rCalo[i][SUBPOS_MID]
-                              << " z=" << m_zCalo[i][SUBPOS_MID]);
+
+  // Iterate over the unordered_map to print layer/subpos info
+  for (const auto& [key, ok] : m_CaloOK) {
+    int layer = key.first;
+    int subpos = key.second;
+    if (ok) {
+      ATH_MSG_INFO("  layer " << layer << " subpos " << subpos
+                              << " MID eta=" << m_etaCalo.at({layer, subpos})
+                              << " phi=" << m_phiCalo.at({layer, subpos})
+                              << " r=" << m_rCalo.at({layer, subpos})
+                              << " z=" << m_zCalo.at({layer, subpos}));
     }
   }
 }
 
 void TFCSExtrapolationState::clear()
 {
-  for (int i = 0; i < CaloCell_ID_FCS::MaxSample; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      m_CaloOK[i][j] = false;
-      m_etaCalo[i][j] = -999;
-      m_phiCalo[i][j] = -999;
-      m_rCalo[i][j] = 0;
-      m_zCalo[i][j] = 0;
-      m_dCalo[i][j] = 0;
-      m_distetaCaloBorder[i][j] = 0;
+  // Clear all unordered_maps and reset with default values
+  for (int layer = 0; layer < m_CaloOK.size(); ++layer) {
+    for (int subpos = 0; subpos < NumSubPos; ++subpos) {
+      m_CaloOK[{layer, subpos}] = false;
+      m_etaCalo[{layer, subpos}] = -999;
+      m_phiCalo[{layer, subpos}] = -999;
+      m_rCalo[{layer, subpos}] = 0;
+      m_zCalo[{layer, subpos}] = 0;
+      m_dCalo[{layer, subpos}] = 0;
+      m_distetaCaloBorder[{layer, subpos}] = 0;
     }
   }
 
+  // Reset IDCaloBoundary variables
   m_IDCaloBoundary_eta = -999;
   m_IDCaloBoundary_phi = -999;
   m_IDCaloBoundary_r = 0;

@@ -14,7 +14,6 @@
 #include <TObject.h>
 
 #include "FastCaloSim/Core/MLogging.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 class TFCSParametrizationBase;
 
 namespace CLHEP
@@ -39,8 +38,9 @@ public:
 
   bool is_valid() const { return m_Ebin >= 0; };
   double E() const { return m_Etot; };
-  double E(int sample) const { return m_E[sample]; };
-  double Efrac(int sample) const { return m_Efrac[sample]; };
+  // NOTE: in the current implementation layers without energy are not stored
+  double E(int sample) const { return m_E.at(sample); };
+  double Efrac(int sample) const { return m_Efrac.at(sample); };
   int Ebin() const { return m_Ebin; };
 
   void set_Ebin(int bin) { m_Ebin = bin; };
@@ -80,8 +80,8 @@ private:
   int m_Ebin;
   double m_Etot;
   // TO BE CLEANED UP! SHOULD ONLY STORE EITHER E OR EFRAC!!!
-  double m_E[CaloCell_ID_FCS::MaxSample];
-  double m_Efrac[CaloCell_ID_FCS::MaxSample];
+  std::unordered_map<int, double> m_E;
+  std::unordered_map<int, double> m_Efrac;
 
   Cellmap_t m_cells;
 

@@ -10,7 +10,6 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 /* G4FieldTrack used to store transportation steps */
 #include "G4FieldTrack.hh"
@@ -173,11 +172,10 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
                         result.IDCaloBoundary_r()};
 
     // now try to extrapolate to all calo layers that contain energy
-    for (int sample = CaloCell_ID_FCS::FirstSample;
-         sample < CaloCell_ID_FCS::MaxSample;
-         ++sample)
-    {
-      for (int subpos = SUBPOS_MID; subpos <= SUBPOS_EXT; ++subpos) {
+    for (int sample = 0; sample < m_geo->n_layers(); ++sample) {
+      for (int subpos = Cell::SubPos::MID; subpos <= Cell::SubPos::EXT;
+           ++subpos)
+      {
         float cylR, cylZ;
         if (m_geo->is_barrel(sample)) {
           cylR = std::abs(m_geo->rpos(

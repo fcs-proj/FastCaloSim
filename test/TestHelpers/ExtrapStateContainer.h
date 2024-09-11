@@ -41,10 +41,10 @@ class ExtrapStateContainer
                       state.IDCaloBoundary_z() / CLHEP::m});
 
       // Define subpositions
-      const std::vector<std::pair<std::string, TFCSExtrapolationState::SUBPOS>>
-          subpositions = {{"ENT", TFCSExtrapolationState::SUBPOS::SUBPOS_ENT},
-                          {"MID", TFCSExtrapolationState::SUBPOS::SUBPOS_MID},
-                          {"EXT", TFCSExtrapolationState::SUBPOS::SUBPOS_EXT}};
+      const std::vector<std::pair<std::string, Cell::SubPos>> subpositions = {
+          {"ENT", Cell::SubPos::ENT},
+          {"MID", Cell::SubPos::MID},
+          {"EXT", Cell::SubPos::EXT}};
 
       // Serialize each layer for each subposition
       for (int layer = 0; layer <= 23; ++layer) {

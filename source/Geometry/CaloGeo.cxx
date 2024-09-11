@@ -137,13 +137,19 @@ void CaloGeo::update_eta_extremes(int layer, const Cell& cell)
 
 void CaloGeo::build(ROOT::RDataFrame& geo)
 {
-  m_n_layers = geo.Max<long long>("layer").GetValue();
-  for (int i = 0; i < m_n_layers + 1; ++i) {
+  // Layer information of cells
+  auto layer = geo.Take<long long>("layer");
+
+  // Number of layers from unique layer values
+  m_n_layers = std::set<long long>(layer->begin(), layer->end()).size();
+
+  // Initialize layer flags
+  for (int i = 0; i < m_n_layers; ++i) {
     m_layer_flags.emplace(i, LayerFlags {});
   }
+  // Count the total number of cells
   m_n_total_cells = *geo.Count();
 
-  auto layer = geo.Take<long long>("layer");
   auto isBarrel = geo.Take<long long>("isBarrel");
   auto id = geo.Take<long long>("id");
   auto x = geo.Take<double>("x");

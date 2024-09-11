@@ -12,6 +12,7 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TBuffer.h"
 #include "TClass.h"
 // LWTNN
@@ -31,8 +32,10 @@
 //=============================================
 
 TFCSPredictExtrapWeights::TFCSPredictExtrapWeights(const char* name,
-                                                   const char* title)
+                                                   const char* title,
+                                                   CaloGeo* geo)
     : TFCSLateralShapeParametrizationHitBase(name, title)
+    , m_geo(geo)
 {
   set_freemem();
   set_UseHardcodedWeight();
@@ -147,7 +150,7 @@ std::map<std::string, double> TFCSPredictExtrapWeights::prepareInputs(
     TFCSSimulationState& simulstate, const float truthE) const
 {
   std::map<std::string, double> inputVariables;
-  for (int ilayer = 0; ilayer < CaloCell_ID_FCS::MaxSample; ++ilayer) {
+  for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
         != m_relevantLayers->cend())
     {
@@ -192,7 +195,7 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate(
 
   // Get predicted extrapolation weights
   auto outputs = m_nn->compute(inputVariables);
-  for (int ilayer = 0; ilayer < CaloCell_ID_FCS::MaxSample; ++ilayer) {
+  for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
         != m_relevantLayers->cend())
     {
@@ -236,10 +239,10 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
     return FCSFatal;
   }
 
-  double eta = (1. - extrapWeight) * extrapol->eta(cs, SUBPOS_ENT)
-      + extrapWeight * extrapol->eta(cs, SUBPOS_EXT);
-  double phi = (1. - extrapWeight) * extrapol->phi(cs, SUBPOS_ENT)
-      + extrapWeight * extrapol->phi(cs, SUBPOS_EXT);
+  double eta = (1. - extrapWeight) * extrapol->eta(cs, Cell::SubPos::ENT)
+      + extrapWeight * extrapol->eta(cs, Cell::SubPos::EXT);
+  double phi = (1. - extrapWeight) * extrapol->phi(cs, Cell::SubPos::ENT)
+      + extrapWeight * extrapol->phi(cs, Cell::SubPos::EXT);
   float extrapWeight_for_r_z = extrapWeight;
   if (UseHardcodedWeight()) {
     extrapWeight_for_r_z = 0.5;
@@ -250,10 +253,10 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
         "Will use predicted extrapWeight also for r and z when "
         "constructing a hit");
   }
-  double r = (1. - extrapWeight_for_r_z) * extrapol->r(cs, SUBPOS_ENT)
-      + extrapWeight_for_r_z * extrapol->r(cs, SUBPOS_EXT);
-  double z = (1. - extrapWeight_for_r_z) * extrapol->z(cs, SUBPOS_ENT)
-      + extrapWeight_for_r_z * extrapol->z(cs, SUBPOS_EXT);
+  double r = (1. - extrapWeight_for_r_z) * extrapol->r(cs, Cell::SubPos::ENT)
+      + extrapWeight_for_r_z * extrapol->r(cs, Cell::SubPos::EXT);
+  double z = (1. - extrapWeight_for_r_z) * extrapol->z(cs, Cell::SubPos::ENT)
+      + extrapWeight_for_r_z * extrapol->z(cs, Cell::SubPos::EXT);
 
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))

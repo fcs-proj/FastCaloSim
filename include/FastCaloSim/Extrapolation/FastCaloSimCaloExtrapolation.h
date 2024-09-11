@@ -32,15 +32,6 @@ public:
 
   void set_geometry(CaloGeo* geo) { m_geo = geo; };
 
-  enum SUBPOS
-  {
-    SUBPOS_MID = TFCSExtrapolationState::SUBPOS_MID,  // MID=middle of calo
-                                                      // layer
-    SUBPOS_ENT =
-        TFCSExtrapolationState::SUBPOS_ENT,  // ENT=entrance of calo layer
-    SUBPOS_EXT = TFCSExtrapolationState::SUBPOS_EXT  // EXT=exit of calo layer
-  };
-
   enum HITPOSITION
   {
     INSIDE,  // hit position is inside cylinder bounds

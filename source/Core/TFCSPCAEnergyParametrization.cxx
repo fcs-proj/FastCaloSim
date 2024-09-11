@@ -8,7 +8,7 @@
 #include "CLHEP/Random/RandGaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TClass.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -22,8 +22,10 @@
 //=============================================
 
 TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char* name,
-                                                           const char* title)
+                                                           const char* title,
+                                                           CaloGeo* geo)
     : TFCSEnergyParametrization(name, title)
+    , m_geo(geo)
 {
   m_numberpcabins = 1;
   do_rescale = 1;
@@ -134,7 +136,7 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
 
   if (pcabin == 0) {
     simulstate.set_E(0);
-    for (int s = 0; s < CaloCell_ID_FCS::MaxSample; s++) {
+    for (int s = 0; s < m_geo->n_layers(); s++) {
       simulstate.set_E(s, 0.0);
       simulstate.set_Efrac(s, 0.0);
     }
@@ -220,7 +222,7 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
     simulstate.set_E(total_energy);
     ATH_MSG_DEBUG("set E to total_energy=" << total_energy);
 
-    for (int s = 0; s < CaloCell_ID_FCS::MaxSample; s++) {
+    for (int s = 0; s < m_geo->n_layers(); s++) {
       double energyfrac = 0.0;
       for (unsigned int l = 0; l < layerNr.size(); l++) {
         if (layerNr[l] == s)

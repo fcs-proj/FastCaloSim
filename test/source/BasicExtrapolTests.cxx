@@ -58,22 +58,10 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   // Helper lambda to test layer values
   auto test_layer = [&](int layer, double eta, double phi, double r, double z)
   {
-    ASSERT_NEAR(
-        extrapol_state.eta(layer, TFCSExtrapolationState::SUBPOS::SUBPOS_MID),
-        eta,
-        1e-1);
-    ASSERT_NEAR(
-        extrapol_state.phi(layer, TFCSExtrapolationState::SUBPOS::SUBPOS_MID),
-        phi,
-        1e-1);
-    ASSERT_NEAR(
-        extrapol_state.r(layer, TFCSExtrapolationState::SUBPOS::SUBPOS_MID),
-        r,
-        1e-1);
-    ASSERT_NEAR(
-        extrapol_state.z(layer, TFCSExtrapolationState::SUBPOS::SUBPOS_MID),
-        z,
-        1e-1);
+    ASSERT_NEAR(extrapol_state.eta(layer, Cell::SubPos::MID), eta, 1e-1);
+    ASSERT_NEAR(extrapol_state.phi(layer, Cell::SubPos::MID), phi, 1e-1);
+    ASSERT_NEAR(extrapol_state.r(layer, Cell::SubPos::MID), r, 1e-1);
+    ASSERT_NEAR(extrapol_state.z(layer, Cell::SubPos::MID), z, 1e-1);
   };
 
   // Test each layer

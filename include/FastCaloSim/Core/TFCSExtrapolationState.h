@@ -5,11 +5,13 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
 #define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
 
+#include <map>
+#include <utility>
+
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
 
 #include "FastCaloSim/Core/MLogging.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 class FASTCALOSIM_EXPORT TFCSExtrapolationState
     : public TObject
@@ -20,90 +22,123 @@ public:
 
   void clear();
 
-  enum SUBPOS
-  {
-    SUBPOS_MID = 0,
-    SUBPOS_ENT = 1,
-    SUBPOS_EXT = 2
-  };  // MID=middle, ENT=entrance, EXT=exit of cal layer
+  static constexpr int NumSubPos = 3;
 
   void set_OK(int layer, int subpos, bool val = true)
   {
-    m_CaloOK[layer][subpos] = val;
-  };
+    m_CaloOK[{layer, subpos}] = val;
+  }
 
   void set_eta(int layer, int subpos, double val)
   {
-    m_etaCalo[layer][subpos] = val;
-  };
+    m_etaCalo[{layer, subpos}] = val;
+  }
+
   void set_phi(int layer, int subpos, double val)
   {
-    m_phiCalo[layer][subpos] = val;
-  };
+    m_phiCalo[{layer, subpos}] = val;
+  }
+
   void set_r(int layer, int subpos, double val)
   {
-    m_rCalo[layer][subpos] = val;
-  };
+    m_rCalo[{layer, subpos}] = val;
+  }
+
   void set_z(int layer, int subpos, double val)
   {
-    m_zCalo[layer][subpos] = val;
-  };
+    m_zCalo[{layer, subpos}] = val;
+  }
+
   void set_d(int layer, int subpos, double val)
   {
-    m_dCalo[layer][subpos] = val;
-  };
+    m_dCalo[{layer, subpos}] = val;
+  }
+
   void set_detaBorder(int layer, int subpos, double val)
   {
-    m_distetaCaloBorder[layer][subpos] = val;
-  };
+    m_distetaCaloBorder[{layer, subpos}] = val;
+  }
 
-  void set_IDCaloBoundary_eta(double val) { m_IDCaloBoundary_eta = val; };
-  void set_IDCaloBoundary_phi(double val) { m_IDCaloBoundary_phi = val; };
-  void set_IDCaloBoundary_r(double val) { m_IDCaloBoundary_r = val; };
-  void set_IDCaloBoundary_x(double val) { m_IDCaloBoundary_x = val; };
-  void set_IDCaloBoundary_y(double val) { m_IDCaloBoundary_y = val; };
-  void set_IDCaloBoundary_z(double val) { m_IDCaloBoundary_z = val; };
+  void set_IDCaloBoundary_eta(double val) { m_IDCaloBoundary_eta = val; }
+  void set_IDCaloBoundary_phi(double val) { m_IDCaloBoundary_phi = val; }
+  void set_IDCaloBoundary_r(double val) { m_IDCaloBoundary_r = val; }
+  void set_IDCaloBoundary_x(double val) { m_IDCaloBoundary_x = val; }
+  void set_IDCaloBoundary_y(double val) { m_IDCaloBoundary_y = val; }
+  void set_IDCaloBoundary_z(double val) { m_IDCaloBoundary_z = val; }
 
-  bool OK(int layer, int subpos) const { return m_CaloOK[layer][subpos]; };
-  double eta(int layer, int subpos) const { return m_etaCalo[layer][subpos]; };
-  double phi(int layer, int subpos) const { return m_phiCalo[layer][subpos]; };
-  double r(int layer, int subpos) const { return m_rCalo[layer][subpos]; };
-  double z(int layer, int subpos) const { return m_zCalo[layer][subpos]; };
-  double d(int layer, int subpos) const { return m_dCalo[layer][subpos]; };
-  double detaBorder(int layer, int subpos) const
+  auto OK(int layer, int subpos) const -> bool
   {
-    return m_distetaCaloBorder[layer][subpos];
-  };
+    return m_CaloOK.at({layer, subpos});
+  }
 
-  double IDCaloBoundary_eta() const { return m_IDCaloBoundary_eta; };
-  double IDCaloBoundary_phi() const { return m_IDCaloBoundary_phi; };
-  double IDCaloBoundary_r() const { return m_IDCaloBoundary_r; };
-  double IDCaloBoundary_x() const { return m_IDCaloBoundary_x; };
-  double IDCaloBoundary_y() const { return m_IDCaloBoundary_y; };
-  double IDCaloBoundary_z() const { return m_IDCaloBoundary_z; };
+  auto eta(int layer, int subpos) const -> double
+  {
+    return m_etaCalo.at({layer, subpos});
+  }
 
-  double IDCaloBoundary_AngleEta() const { return m_IDCaloBoundary_AngleEta; };
-  double IDCaloBoundary_Angle3D() const { return m_IDCaloBoundary_Angle3D; };
+  auto phi(int layer, int subpos) const -> double
+  {
+    return m_phiCalo.at({layer, subpos});
+  }
 
+  auto r(int layer, int subpos) const -> double
+  {
+    return m_rCalo.at({layer, subpos});
+  }
+
+  auto z(int layer, int subpos) const -> double
+  {
+    return m_zCalo.at({layer, subpos});
+  }
+
+  auto d(int layer, int subpos) const -> double
+  {
+    return m_dCalo.at({layer, subpos});
+  }
+
+  auto detaBorder(int layer, int subpos) const -> double
+  {
+    return m_distetaCaloBorder.at({layer, subpos});
+  }
+
+  // Boundary getters
+  auto IDCaloBoundary_eta() const -> double { return m_IDCaloBoundary_eta; }
+  auto IDCaloBoundary_phi() const -> double { return m_IDCaloBoundary_phi; }
+  auto IDCaloBoundary_r() const -> double { return m_IDCaloBoundary_r; }
+  auto IDCaloBoundary_x() const -> double { return m_IDCaloBoundary_x; }
+  auto IDCaloBoundary_y() const -> double { return m_IDCaloBoundary_y; }
+  auto IDCaloBoundary_z() const -> double { return m_IDCaloBoundary_z; }
+
+  auto IDCaloBoundary_AngleEta() const -> double
+  {
+    return m_IDCaloBoundary_AngleEta;
+  }
+  auto IDCaloBoundary_Angle3D() const -> double
+  {
+    return m_IDCaloBoundary_Angle3D;
+  }
+
+  // Simplified setting for angles
   void set_IDCaloBoundary_AngleEta(double val)
   {
     m_IDCaloBoundary_AngleEta = val;
-  };
+  }
+
   void set_IDCaloBoundary_Angle3D(double val)
   {
     m_IDCaloBoundary_Angle3D = val;
-  };
-
+  }
   void Print(Option_t* option = "") const;
 
 private:
-  bool m_CaloOK[CaloCell_ID_FCS::MaxSample][3];
-  double m_etaCalo[CaloCell_ID_FCS::MaxSample][3];
-  double m_phiCalo[CaloCell_ID_FCS::MaxSample][3];
-  double m_rCalo[CaloCell_ID_FCS::MaxSample][3];
-  double m_zCalo[CaloCell_ID_FCS::MaxSample][3];
-  double m_dCalo[CaloCell_ID_FCS::MaxSample][3];
-  double m_distetaCaloBorder[CaloCell_ID_FCS::MaxSample][3];
+  // 2D Map: (layer, subpos) -> extrapolated position
+  std::map<std::pair<int, int>, bool> m_CaloOK;
+  std::map<std::pair<int, int>, double> m_etaCalo;
+  std::map<std::pair<int, int>, double> m_phiCalo;
+  std::map<std::pair<int, int>, double> m_rCalo;
+  std::map<std::pair<int, int>, double> m_zCalo;
+  std::map<std::pair<int, int>, double> m_dCalo;
+  std::map<std::pair<int, int>, double> m_distetaCaloBorder;
 
   double m_IDCaloBoundary_eta;
   double m_IDCaloBoundary_phi;

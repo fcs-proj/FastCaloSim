@@ -6,7 +6,7 @@
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
+#include "FastCaloSim/Geometry/Cell.h"
 
 //=============================================
 //======= TFCSCenterPositionCalculation =========
@@ -27,14 +27,14 @@ FCSReturnCode TFCSCenterPositionCalculation::simulate_hit(
 {
   const int cs = calosample();
 
-  double r = (1. - m_extrapWeight) * extrapol->r(cs, SUBPOS_ENT)
-      + m_extrapWeight * extrapol->r(cs, SUBPOS_EXT);
-  double z = (1. - m_extrapWeight) * extrapol->z(cs, SUBPOS_ENT)
-      + m_extrapWeight * extrapol->z(cs, SUBPOS_EXT);
-  double eta = (1. - m_extrapWeight) * extrapol->eta(cs, SUBPOS_ENT)
-      + m_extrapWeight * extrapol->eta(cs, SUBPOS_EXT);
-  double phi = (1. - m_extrapWeight) * extrapol->phi(cs, SUBPOS_ENT)
-      + m_extrapWeight * extrapol->phi(cs, SUBPOS_EXT);
+  double r = (1. - m_extrapWeight) * extrapol->r(cs, Cell::SubPos::ENT)
+      + m_extrapWeight * extrapol->r(cs, Cell::SubPos::EXT);
+  double z = (1. - m_extrapWeight) * extrapol->z(cs, Cell::SubPos::ENT)
+      + m_extrapWeight * extrapol->z(cs, Cell::SubPos::EXT);
+  double eta = (1. - m_extrapWeight) * extrapol->eta(cs, Cell::SubPos::ENT)
+      + m_extrapWeight * extrapol->eta(cs, Cell::SubPos::EXT);
+  double phi = (1. - m_extrapWeight) * extrapol->phi(cs, Cell::SubPos::ENT)
+      + m_extrapWeight * extrapol->phi(cs, Cell::SubPos::EXT);
 
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))

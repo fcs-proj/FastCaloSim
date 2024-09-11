@@ -5,7 +5,6 @@
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/Cell.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 TEST_F(TFCSSimulationStateTest, Initialization)
 {
@@ -37,10 +36,8 @@ TEST_F(TFCSSimulationStateTest, ClearFunction)
 
   EXPECT_EQ(sim_state.Ebin(), -1);
   EXPECT_EQ(sim_state.E(), 0);
-  for (int i = 0; i < CaloCell_ID_FCS::MaxSample; ++i) {
-    EXPECT_EQ(sim_state.E(i), 0);
-    EXPECT_EQ(sim_state.Efrac(i), 0);
-  }
+  EXPECT_EQ(sim_state.E(0), 0);
+  EXPECT_EQ(sim_state.Efrac(0), 0);
 }
 
 TEST_F(TFCSSimulationStateTest, DepositEnergy)

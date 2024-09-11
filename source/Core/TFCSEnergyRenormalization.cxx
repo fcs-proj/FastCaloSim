@@ -9,7 +9,6 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/Cell.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
 
 //=============================================
 //======= TFCSEnergyRenormalization =========
@@ -30,7 +29,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const
 {
-  std::vector<double> energies(CaloCell_ID_FCS::MaxSample, 0);
+  std::vector<double> energies(m_geo->n_layers(), 0);
 
   // Loop over all cells containing energy and sum up energies
   for (const auto& cell_iter : simulstate.cells()) {
@@ -44,7 +43,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     energies[layer] += cell_energy;
   }
 
-  std::vector<float> scalefactor(CaloCell_ID_FCS::MaxSample, 1);
+  std::vector<float> scalefactor(m_geo->n_layers(), 1);
 
   const std::map<int, float> approxLayerNoise {
       {0, 150.0},  {1, 40.0},   {2, 80.0},   {3, 40.0},   {4, 150.0},
@@ -53,7 +52,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
       {15, 150.0}, {16, 40.0},  {17, 400.0}, {18, 300.0}, {19, 150.0},
       {20, 40.0},  {21, 400.0}, {22, 400.0}, {23, 400.0}};
 
-  for (int layer = 0; layer < CaloCell_ID_FCS::MaxSample; ++layer) {
+  for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
     if (energies[layer] == 0 && simulstate.E(layer) != 0) {
@@ -87,7 +86,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
 
   if (msgLvl(MSG::DEBUG)) {
     ATH_MSG_DEBUG("Apply scale factors : ");
-    for (int layer = 0; layer < CaloCell_ID_FCS::MaxSample; ++layer) {
+    for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
       ATH_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
                          << energies[layer] << " -> " << simulstate.E(layer));
     }
