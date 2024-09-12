@@ -114,78 +114,55 @@ public:
   auto inline isEtaPhiR() const -> bool { return m_isEtaPhiR; }
   auto inline isEtaPhiZ() const -> bool { return m_isEtaPhiZ; }
 
-  auto inline dx() const -> double
-  {
-    assert(m_isXYZ && "Cell is not in XYZ coordinate system");
-    return m_dx;
-  }
-  auto inline dy() const -> double
-  {
-    assert(m_isXYZ && "Cell is not in XYZ coordinate system");
-    return m_dy;
-  }
+  /// @brief Cell size accessors
+  /// Note: For the hit->cell matching, only the cell sizes
+  /// for the coordinate system of the cell are used
+  /// (e.g. for x,y,z cells, only dx, dy, dz are needed)
+  /// However: for the extrapolation we currently also take into account
+  /// the half width of the cell in the other coordinate systems
+  /// e.g. for TileBar0 (eta,phi,r) we also use dz which is stored in the ROOT
+  /// file In essence: if you call e.g. zent() on any cell it will add whatever
+  /// dz is stored We might want to revisit the logic in the future
+  /// to prevent misuse for now, we assert that stored cell widths are non-zero
+  /// in the case e.g. zent() or zext() is called
+  auto inline dx() const -> double { return m_dx; }
+  auto inline dy() const -> double { return m_dy; }
 
-  auto inline dz() const -> double
-  {
-    assert(m_isXYZ
-           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
-    return m_dz;
-  }
+  auto inline dz() const -> double { return m_dz; }
 
-  auto inline deta() const -> double
-  {
-    assert(m_isEtaPhiR
-           || m_isEtaPhiZ
-               && "Cell is not in EtaPhiR or EtaPhiZ coordinate system");
-    return m_deta;
-  }
+  auto inline deta() const -> double { return m_deta; }
 
-  auto inline dphi() const -> double
-  {
-    assert(m_isEtaPhiR
-           || m_isEtaPhiZ
-               && "Cell is not in EtaPhiR or EtaPhiZ coordinate system");
-    return m_dphi;
-  }
+  auto inline dphi() const -> double { return m_dphi; }
 
-  auto inline dr() const -> double
-  {
-    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
-    return m_dr;
-  }
+  auto inline dr() const -> double { return m_dr; }
 
   auto inline rent() const -> double
   {
-    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
+    assert(m_dr > 0 && "rent() called on cell with dr <= 0. The half-width of the cell seems undefined.");
     return r() - m_dr * 0.5;
   }
 
   auto inline rext() const -> double
   {
-    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
+    assert(m_dr > 0 && "rext() called on cell with dr <= 0.  The half-width of the cell seems undefined.");
     return r() + m_dr * 0.5;
   }
 
   auto inline zent() const -> double
   {
-    assert(m_isXYZ
-           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
+    assert(m_dz > 0 && "zent() called on cell with dz <= 0. The half-width of the cell seems undefined.");
     return z() < 0 ? z() + m_dz * 0.5 : z() - m_dz * 0.5;
   }
 
   auto inline zext() const -> double
   {
-    assert(m_isXYZ
-           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
+    assert(m_dz > 0 && "zext() called on cell with dz <= 0.  The half-width of the cell seems undefined.");
     return z() < 0 ? z() - m_dz * 0.5 : z() + m_dz * 0.5;
   }
 
   // only makes ense for barrel
   auto inline r(SubPos subpos) const -> double
   {
-    if (m_isXYZ || m_isEtaPhiZ)
-      return r();
-
     switch (subpos) {
       case SubPos::ENT:
         return rent();
@@ -198,9 +175,6 @@ public:
 
   auto inline z(SubPos subpos) const -> double
   {
-    if (m_isEtaPhiR)
-      return z();
-
     switch (subpos) {
       case SubPos::ENT:
         return zent();
@@ -245,6 +219,9 @@ public:
 
       return std::max(delta_eta - m_deta, delta_phi - m_dphi);
     }
+
+    std::runtime_error("Cell is not in a valid coordinate system");
+    return 0;
   }
 
   auto inline is_inside(const Position& pos) const -> bool

@@ -122,7 +122,7 @@ void CaloGeo::record_cell(const Cell& cell)
 void CaloGeo::update_eta_extremes(int layer, const Cell& cell)
 {
   DetectorSide side = cell.eta() > 0 ? kEtaPositive : kEtaNegative;
-  double half_width = cell.isXYZ() ? 0 : cell.deta() / 2;
+  double half_width = cell.deta() / 2;
   double min_eta = cell.eta() - half_width;
   double max_eta = cell.eta() + half_width;
 
