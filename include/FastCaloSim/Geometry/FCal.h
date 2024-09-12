@@ -32,7 +32,7 @@ public:
   }
 
   /// @brief Load the real FCal geometry from a file
-  auto load(const std::array<std::string, 3>& fileNames) -> bool
+  auto load(const std::array<std::string, 3>& fileNames) -> void
   {
     std::vector<std::unique_ptr<std::istream>> electrodes;
     std::vector<std::unique_ptr<std::streambuf>> electrodesBuf;
