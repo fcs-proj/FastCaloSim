@@ -210,14 +210,13 @@ public:
       double delta_x = std::abs(pos.x() - m_pos.x());
       double delta_y = std::abs(pos.y() - m_pos.y());
 
-      return std::max(delta_x - m_dx, delta_y - m_dy);
+      return std::max(delta_x - m_dx / 2, delta_y - m_dy / 2);
     }
 
     if (m_isEtaPhiR || m_isEtaPhiZ) {
       double delta_eta = std::abs(pos.eta() - m_pos.eta());
       double delta_phi = std::abs(norm_angle(pos.phi() - m_pos.phi()));
-
-      return std::max(delta_eta - m_deta, delta_phi - m_dphi);
+      return std::max(delta_eta / m_deta, delta_phi / m_dphi) - 0.5;
     }
 
     std::runtime_error("Cell is not in a valid coordinate system");
