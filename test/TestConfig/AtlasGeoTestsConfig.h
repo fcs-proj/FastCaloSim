@@ -8,7 +8,7 @@ class AtlasGeoTestsConfig : public ::testing::Environment
 public:
   // The location of the ATLAS calo geometry file
   inline static const std::string ATLAS_CALO_CELL_PATH =
-      std::string(TEST_BASE_DIR) + "/data/geometry/ATLASCaloCells.root";
+      std::string(TEST_BASE_DIR) + "/data/geometry/ATLAS/CaloCells.root";
   // The name of the tree in the ATLAS calo geometry file
   inline static const std::string ATLAS_CALO_CELL_TREE_NAME = "caloDetCells";
   // The number of random points that will be generated within a cell for
