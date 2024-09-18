@@ -78,7 +78,6 @@
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggle.h"
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggleEMB.h"
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
-#include "FastCaloSim/Core/TFCSVoxelHistoLateralCovarianceFluctuations.h"
 
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
@@ -637,7 +636,6 @@
 #pragma link C++ class TFCSHitCellMappingWiggle + ;
 #pragma link C++ class TFCSHitCellMappingWiggleEMB + ;
 #pragma link C++ class TFCSEnergyRenormalization + ;
-#pragma link C++ class TFCSVoxelHistoLateralCovarianceFluctuations + ;
 
 #pragma link C++ class TFCSTruthState + ;
 #pragma link C++ class TFCSExtrapolationState + ;
