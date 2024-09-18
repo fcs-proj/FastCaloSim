@@ -15,11 +15,11 @@ public:
   /// cuboids for the hit-cell matching, the geometry is stored in separate
   /// files
   inline static const std::string FCAL1_GEO_PATH = std::string(TEST_BASE_DIR)
-      + "/data/geometry/ATLAS/FCal/FCal1-electrodes.sorted.HV.09Nov2007.dat";
+      + "/data/geometry/ATLAS/FCal1-electrodes.sorted.HV.09Nov2007.dat";
   inline static const std::string FCAL2_GEO_PATH = std::string(TEST_BASE_DIR)
-      + "/data/geometry/ATLAS/FCal/FCal2-electrodes.sorted.HV.April2011.dat";
+      + "/data/geometry/ATLAS/FCal2-electrodes.sorted.HV.April2011.dat";
   inline static const std::string FCAL3_GEO_PATH = std::string(TEST_BASE_DIR)
-      + "/data/geometry/ATLAS/FCal/FCal3-electrodes.sorted.HV.09Nov2007.dat";
+      + "/data/geometry/ATLAS/FCal3-electrodes.sorted.HV.09Nov2007.dat";
 
   inline static const std::array<std::string, 3> FCAL_ELECTRODE_FILES = {
       FCAL1_GEO_PATH, FCAL2_GEO_PATH, FCAL3_GEO_PATH};
