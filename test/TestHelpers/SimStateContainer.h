@@ -64,7 +64,7 @@ class SimStateContainer
 
         data.push_back(
             {state_id,
-             cell->calo_hash(),
+             (unsigned long long)cell->identify(),
              cell_energy,
              cell->getSampling(),
              cell->eta(),
