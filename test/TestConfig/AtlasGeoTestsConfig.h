@@ -8,7 +8,8 @@ class AtlasGeoTestsConfig : public ::testing::Environment
 public:
   /// @brief The location of the ATLAS calo geometry file
   inline static const std::string ATLAS_CALO_CELL_PATH =
-      std::string(TEST_BASE_DIR) + "/data/geometry/ATLAS/CaloCells.root";
+      std::string(TEST_BASE_DIR)
+      + "/data/geometry/ATLAS/ATLAS-R2-2016-01-00-01/CaloCells.root";
 
   /// @brief The location of the ATLAS FCal files
   /// Note: as the FCal cells are irregular and cannot be described by simple

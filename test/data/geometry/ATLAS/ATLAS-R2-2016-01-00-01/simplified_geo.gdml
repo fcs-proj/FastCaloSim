@@ -6,7 +6,7 @@
 		<box name="World_Solid" x="40000" y="40000" z="80000" lunit="mm"/>
 		<tube name="Layer_10_POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="270.5498046875" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_11_POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="35.0498046875" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
-		<tube name="Layer_16_POS_Solid" rmin="3486.0" rmax="3635.0" z="3640.056693228652" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer_16_POS_Solid" rmin="3486.0" rmax="3635.0" z="3640.0566932286515" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_18_POS_Solid" rmin="2445.0" rmax="2600.0" z="3623.6769563859525" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_21_POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="282.2001037597656" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_22_POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="226.14999389648438" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
@@ -19,7 +19,7 @@
 		<tube name="Layer_9_POS_Solid" rmin="69.98501943859821" rmax="2444.0" z="272.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_10_NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="270.5498046875" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_11_NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="35.0498046875" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
-		<tube name="Layer_16_NEG_Solid" rmin="3486.0" rmax="3635.0" z="3640.056693228652" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer_16_NEG_Solid" rmin="3486.0" rmax="3635.0" z="3640.0566932286515" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_18_NEG_Solid" rmin="2445.0" rmax="2600.0" z="3623.6769563859525" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_21_NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="282.2001037597656" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_22_NEG_Solid" rmin="69.98501943859821" rmax="2444.0" z="226.14999389648438" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
@@ -34,7 +34,7 @@
 		<tube name="Layer_1_Solid" rmin="1505.2277221679688" rmax="1591.1990509033203" z="7326.0" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_12_Solid" rmin="2300.0" rmax="2600.0" z="6214.405795236224" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_13_Solid" rmin="2876.0" rmax="3209.0" z="13463.759708008129" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
-		<tube name="Layer_14_Solid" rmin="3486.0" rmax="3635.0" z="6181.646321550825" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
+		<tube name="Layer_14_Solid" rmin="3486.0" rmax="3635.0" z="6181.646321550826" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_15_Solid" rmin="3210.0" rmax="3440.0" z="13463.759708008129" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_19_Solid" rmin="2601.0" rmax="2875.0" z="13463.759708008129" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
 		<tube name="Layer_2_Solid" rmin="1727.2603759765625" rmax="1868.450047492981" z="7569.479873657227" startphi="0" deltaphi="6.283185307179586" lunit="mm" aunit="rad"/>
@@ -214,7 +214,7 @@
 			</physvol>
 			<physvol name="Layer_16_POS_Phys">
 				<volumeref ref="Layer_16_POS_Log"/>
-				<position name="Layer_16_POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4911.851507389737890" unit="mm"/>
+				<position name="Layer_16_POS_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="4911.851507389738799" unit="mm"/>
 			</physvol>
 			<physvol name="Layer_18_POS_Phys">
 				<volumeref ref="Layer_18_POS_Log"/>
@@ -266,7 +266,7 @@
 			</physvol>
 			<physvol name="Layer_16_NEG_Phys">
 				<volumeref ref="Layer_16_NEG_Log"/>
-				<position name="Layer_16_NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4911.851507389737890" unit="mm"/>
+				<position name="Layer_16_NEG_Phys_pos" x="0.000000000000000" y="0.000000000000000" z="-4911.851507389738799" unit="mm"/>
 			</physvol>
 			<physvol name="Layer_18_NEG_Phys">
 				<volumeref ref="Layer_18_NEG_Log"/>
