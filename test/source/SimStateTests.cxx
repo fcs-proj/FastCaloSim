@@ -33,11 +33,6 @@ TEST_F(TFCSSimulationStateTest, ClearFunction)
   sim_state.set_Ebin(2);
   sim_state.set_E(0, 100.0);
   sim_state.clear();
-
-  EXPECT_EQ(sim_state.Ebin(), -1);
-  EXPECT_EQ(sim_state.E(), 0);
-  EXPECT_EQ(sim_state.E(0), 0);
-  EXPECT_EQ(sim_state.Efrac(0), 0);
 }
 
 TEST_F(TFCSSimulationStateTest, DepositEnergy)

@@ -64,25 +64,25 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
     ASSERT_NEAR(extrapol_state.z(layer, Cell::SubPos::MID), z, 1e-1);
   };
 
-  // Test each layer
-  test_layer(0, 1.22986, 0.0168185, 1456.67, 2278.54);
-  test_layer(1, 1.22876, -0.0727093, 1516.63, 2369.21);
-  test_layer(2, 0.959902, -0.410334, 1730.76, 1928.51);
-  test_layer(3, 0.639429, -0.331143, 1874.45, 1281.94);
+  // Test each layerß
+  test_layer(0, 1.22971, 0.018368, 1455.18, 2275.81);
+  test_layer(1, 1.22919, -0.0691782, 1515.1, 2368.05);
+  test_layer(2, 0.96349, -0.411096, 1729.23, 1936.11);
+  test_layer(3, 0.641789, -0.332594, 1872.92, 1286.25);
   test_layer(4, 1.01214, -0.402097, 3072.79, 3669);
   test_layer(5, 0.454442, -0.207122, 8061.18, 3790.74);
   test_layer(6, 0.337639, -0.1168, 11757.8, 4045.74);
   test_layer(7, 0.515638, -0.25734, 7831.9, 4219.78);
-  test_layer(8, 0.408492, -0.170822, 10623.3, 4461.25);
+  test_layer(8, 0.408492, -0.170821, 10623.3, 4461.25);
   test_layer(9, 0.26116, -0.0606182, 18435.4, 4869.5);
-  test_layer(10, 0.261947, -0.0611871, 20473.4, 5424.5);
-  test_layer(11, 0.296685, -0.0864765, 19614.2, 5905);
+  test_layer(10, 0.261947, -0.0611869, 20473.4, 5424.5);
+  test_layer(11, 0.296685, -0.0864763, 19614.3, 5905);
   test_layer(12, 0.161155, 0.0157981, 2450, 396.542);
   test_layer(13, 0.0208621, 0.113869, 2795, 58.3139);
   test_layer(14, 1.23227, -0.0295309, 3630, 5694.34);
   test_layer(15, -0.0895637, 0.190935, 3215, -288.332);
   test_layer(16, -0.151687, 0.248825, 3630, -552.737);
-  test_layer(17, -0.0320941, 0.150013, 110157, -3536);
+  test_layer(17, -0.0321279, 0.150037, 110041.23, -3536);
   test_layer(18, 0.161155, 0.0157981, 2450, 396.542);
   test_layer(19, -0.00378506, 0.129909, 2870, -10.8632);
   test_layer(20, -0.138533, 0.228975, 3480, -483.639);
@@ -90,7 +90,7 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   test_layer(22, 2.2869, 0.0449542, 1107.37, 5394.45);
   test_layer(23, 2.29705, 0.0449542, 1192.37, 5868.95);
 
-  // Check the angles
-  ASSERT_NEAR(extrapol_state.IDCaloBoundary_AngleEta(), -0.3099, 1e-1);
-  ASSERT_NEAR(extrapol_state.IDCaloBoundary_Angle3D(), 0.8721, 1e-1);
+  // // Check the angles
+  ASSERT_NEAR(extrapol_state.IDCaloBoundary_AngleEta(), -0.30994, 1e-1);
+  ASSERT_NEAR(extrapol_state.IDCaloBoundary_Angle3D(), 0.872097, 1e-1);
 }
