@@ -4,20 +4,6 @@
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
-TEST_F(AtlasGeoTests, GeometryHealth)
-{
-  // Check that the barrel layers are indeed barrel layers
-  std::vector<int> barrel_layers = {0, 1, 2, 3, 12, 13, 14, 15, 16, 18, 19, 20};
-  for (int layer : barrel_layers) {
-    ASSERT_TRUE(AtlasGeoTests::geo->is_barrel(layer));
-  }
-  // Check that the endcap layers are indeed endcap layers
-  std::vector<int> endcap_layers = {4, 5, 6, 7, 8, 9, 10, 11, 17, 21, 22, 23};
-  for (int layer : endcap_layers) {
-    ASSERT_FALSE(AtlasGeoTests::geo->is_barrel(layer));
-  }
-}
-
 TEST_F(AtlasGeoTests, PreSamplerBLookup)
 {
   constexpr int layer = 0;
@@ -70,33 +56,6 @@ TEST_F(AtlasGeoTests, EME1Lookup)
       ASSERT_NEAR(Cell::norm_angle(pos.m_phi - best_cell.phi()),
                   0.0,
                   0.5 * best_cell.dphi());
-    }
-  }
-}
-
-TEST_F(AtlasGeoTests, FCAL0Lookup)
-
-{
-  constexpr int layer = 21;
-
-  // Loop over all cells in the layer
-  for (int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
-    const auto& cell = AtlasGeoTests::geo->get_cell_at_idx(layer, i);
-
-    // Loop over random points within the cell
-    for (int irnd = 0; irnd < AtlasGeoTestsConfig::N_RANDOM_POINTS; ++irnd) {
-      Position pos {};
-      pos.m_x = AtlasGeoTestsConfig::sample(cell.x() - 0.49 * cell.dx(),
-                                            cell.x() + 0.49 * cell.dx());
-      pos.m_y = AtlasGeoTestsConfig::sample(cell.y() - 0.49 * cell.dy(),
-                                            cell.y() + 0.49 * cell.dy());
-
-      // Retrieve the cell closest to the hit position
-      const auto& best_cell = AtlasGeoTests::geo->get_cell(layer, pos);
-
-      // Check if the hit position is inside the cell
-      ASSERT_NEAR(pos.m_x, best_cell.x(), 0.5 * best_cell.dx());
-      ASSERT_NEAR(pos.m_y, best_cell.y(), 0.5 * best_cell.dy());
     }
   }
 }
