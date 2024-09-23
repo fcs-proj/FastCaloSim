@@ -60,7 +60,7 @@
               Reference
               <ul>
                 <li><a href="#base-classes">Base classes</a></li>
-                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-static-attribs">Public static variables</a></li>
                 <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
               </ul>
@@ -76,13 +76,11 @@
             <dd><span></span></dd>
           </dl>
         </section>
-        <section id="pub-types">
-          <h2><a href="#pub-types">Public types</a></h2>
+        <section id="pub-static-attribs">
+          <h2><a href="#pub-static-attribs">Public static variables</a></h2>
           <dl class="m-doc">
-            <dt id="a77b192955ec76032531b4b869b6e2bb2">
-              <span class="m-doc-wrap-bumper">enum <a href="#a77b192955ec76032531b4b869b6e2bb2" class="m-doc-self">SUBPOS</a> { </span><span class="m-doc-wrap"><a href="#a77b192955ec76032531b4b869b6e2bb2abb3e7d91a00c8ce6e7a5ab57c0bbd6d4" class="m-doc">SUBPOS_MID</a> = 0,
-              <a href="#a77b192955ec76032531b4b869b6e2bb2a53a661802aa07d7536dc705b4f9b5300" class="m-doc">SUBPOS_ENT</a> = 1,
-              <a href="#a77b192955ec76032531b4b869b6e2bb2aab47adae04c7923bd9bf03e35e5b5f4c" class="m-doc">SUBPOS_EXT</a> = 2 }</span>
+            <dt id="a872aa8b2e9fba87b041a392346f80701">
+              static int <a href="#a872aa8b2e9fba87b041a392346f80701" class="m-doc-self">NumSubPos</a> <span class="m-label m-flat m-primary">constexpr</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -157,67 +155,83 @@
               <span class="m-doc-wrap-bumper">void <a href="#a41c7a22f4459ad36250a26b8495ec10e" class="m-doc-self">set_IDCaloBoundary_r</a>(</span><span class="m-doc-wrap">double val)</span>
             </dt>
             <dd><span></span></dd>
+            <dt id="a1077c2a86b2c85d5ed32661f0736c1c0">
+              <span class="m-doc-wrap-bumper">void <a href="#a1077c2a86b2c85d5ed32661f0736c1c0" class="m-doc-self">set_IDCaloBoundary_x</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a7666cfb9566e4cc537cf07846ae88064">
+              <span class="m-doc-wrap-bumper">void <a href="#a7666cfb9566e4cc537cf07846ae88064" class="m-doc-self">set_IDCaloBoundary_y</a>(</span><span class="m-doc-wrap">double val)</span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="aa95eb94cbd86587ba50f7055912a6c3f">
               <span class="m-doc-wrap-bumper">void <a href="#aa95eb94cbd86587ba50f7055912a6c3f" class="m-doc-self">set_IDCaloBoundary_z</a>(</span><span class="m-doc-wrap">double val)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a893408dcaec10a239d6fb71f4a3f6e49">
-              <span class="m-doc-wrap-bumper">auto <a href="#a893408dcaec10a239d6fb71f4a3f6e49" class="m-doc-self">OK</a>(</span><span class="m-doc-wrap">int layer,
+            <dt id="a314675714b8f3a3e005bafc42ee978cf">
+              <span class="m-doc-wrap-bumper">auto <a href="#a314675714b8f3a3e005bafc42ee978cf" class="m-doc-self">OK</a>(</span><span class="m-doc-wrap">int layer,
               int subpos) const -&gt; bool</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae0b0b820d58cfcf23a755e66b9b0860d">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae0b0b820d58cfcf23a755e66b9b0860d" class="m-doc-self">eta</a>(</span><span class="m-doc-wrap">int layer,
+            <dt id="a1199d86f5c64ed06ae3d7ee731cd0269">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1199d86f5c64ed06ae3d7ee731cd0269" class="m-doc-self">eta</a>(</span><span class="m-doc-wrap">int layer,
               int subpos) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a2bc9e9716ff4a86e828d152559a58468">
-              <span class="m-doc-wrap-bumper">auto <a href="#a2bc9e9716ff4a86e828d152559a58468" class="m-doc-self">phi</a>(</span><span class="m-doc-wrap">int layer,
+            <dt id="a3eabfe560bb771f70b19cbbee76e59e3">
+              <span class="m-doc-wrap-bumper">auto <a href="#a3eabfe560bb771f70b19cbbee76e59e3" class="m-doc-self">phi</a>(</span><span class="m-doc-wrap">int layer,
               int subpos) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a5bec25da9d07fcf7e765d1c73c3a393c">
-              <span class="m-doc-wrap-bumper">auto <a href="#a5bec25da9d07fcf7e765d1c73c3a393c" class="m-doc-self">r</a>(</span><span class="m-doc-wrap">int layer,
+            <dt id="a831e2e3d6b84f3a58dc4cfcb4eb011c7">
+              <span class="m-doc-wrap-bumper">auto <a href="#a831e2e3d6b84f3a58dc4cfcb4eb011c7" class="m-doc-self">r</a>(</span><span class="m-doc-wrap">int layer,
               int subpos) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a40232ccd494833305ed673e0d6eb971f">
-              <span class="m-doc-wrap-bumper">auto <a href="#a40232ccd494833305ed673e0d6eb971f" class="m-doc-self">z</a>(</span><span class="m-doc-wrap">int layer,
+            <dt id="a4e3371db41df1b5f2a02a38493141018">
+              <span class="m-doc-wrap-bumper">auto <a href="#a4e3371db41df1b5f2a02a38493141018" class="m-doc-self">z</a>(</span><span class="m-doc-wrap">int layer,
               int subpos) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aa7106cede9f8e303afff7ea9c7faff0a">
-              <span class="m-doc-wrap-bumper">auto <a href="#aa7106cede9f8e303afff7ea9c7faff0a" class="m-doc-self">d</a>(</span><span class="m-doc-wrap">int layer,
+            <dt id="aa179a9f486e199238b09541a1537f482">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa179a9f486e199238b09541a1537f482" class="m-doc-self">d</a>(</span><span class="m-doc-wrap">int layer,
               int subpos) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aad585a7f1b4f3372bf1b3d302dc19c7b">
-              <span class="m-doc-wrap-bumper">auto <a href="#aad585a7f1b4f3372bf1b3d302dc19c7b" class="m-doc-self">detaBorder</a>(</span><span class="m-doc-wrap">int layer,
+            <dt id="a884b15ce969784083a3874493fe753d1">
+              <span class="m-doc-wrap-bumper">auto <a href="#a884b15ce969784083a3874493fe753d1" class="m-doc-self">detaBorder</a>(</span><span class="m-doc-wrap">int layer,
               int subpos) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a5abc221d457156a0fd0414513c66035f">
-              <span class="m-doc-wrap-bumper">auto <a href="#a5abc221d457156a0fd0414513c66035f" class="m-doc-self">IDCaloBoundary_eta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            <dt id="ab3ad11adb89d7c7993e28906e3b6e82a">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab3ad11adb89d7c7993e28906e3b6e82a" class="m-doc-self">IDCaloBoundary_eta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a72a9165b5a5521a49ca7f21fe9188d1d">
-              <span class="m-doc-wrap-bumper">auto <a href="#a72a9165b5a5521a49ca7f21fe9188d1d" class="m-doc-self">IDCaloBoundary_phi</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            <dt id="a98c7485c78236f458c667b4f64785ddb">
+              <span class="m-doc-wrap-bumper">auto <a href="#a98c7485c78236f458c667b4f64785ddb" class="m-doc-self">IDCaloBoundary_phi</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae958df73be0831f3d58b692083ea9060">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae958df73be0831f3d58b692083ea9060" class="m-doc-self">IDCaloBoundary_r</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            <dt id="a2d45a1d058efd92ac5532deb8eeed530">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2d45a1d058efd92ac5532deb8eeed530" class="m-doc-self">IDCaloBoundary_r</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a4e6d6ffde60bd3fcaaceeb8a71969e13">
-              <span class="m-doc-wrap-bumper">auto <a href="#a4e6d6ffde60bd3fcaaceeb8a71969e13" class="m-doc-self">IDCaloBoundary_z</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            <dt id="a1a50f3639acd36f01e6317742b5bd337">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1a50f3639acd36f01e6317742b5bd337" class="m-doc-self">IDCaloBoundary_x</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ac0ea5260f83da75a75ece59fae7e9059">
-              <span class="m-doc-wrap-bumper">auto <a href="#ac0ea5260f83da75a75ece59fae7e9059" class="m-doc-self">IDCaloBoundary_AngleEta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            <dt id="a5fc740f826e453f5ec858f388d7e4f4f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5fc740f826e453f5ec858f388d7e4f4f" class="m-doc-self">IDCaloBoundary_y</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a8be974828fcf4480daf9b86b3ab2ec18">
-              <span class="m-doc-wrap-bumper">auto <a href="#a8be974828fcf4480daf9b86b3ab2ec18" class="m-doc-self">IDCaloBoundary_Angle3D</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            <dt id="a80a12186f5202c28c6805be5b5828f64">
+              <span class="m-doc-wrap-bumper">auto <a href="#a80a12186f5202c28c6805be5b5828f64" class="m-doc-self">IDCaloBoundary_z</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab12d90208b107ae0b1d2c3cd69e1b29d">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab12d90208b107ae0b1d2c3cd69e1b29d" class="m-doc-self">IDCaloBoundary_AngleEta</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6d807a4d493850f70d0afb2b1f1b1fda">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6d807a4d493850f70d0afb2b1f1b1fda" class="m-doc-self">IDCaloBoundary_Angle3D</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a40970ccf9fabc05737e1d72a8ae609ad">

@@ -63,6 +63,7 @@
                 <li><a href="#pub-types">Public types</a></li>
                 <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pro-attribs">Protected variables</a></li>
               </ul>
             </li>
           </ul>
@@ -92,9 +93,10 @@
         <section id="typeless-methods">
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
-            <dt id="a6ddb6c9869be3fff6f68ab720053527e">
-              <span class="m-doc-wrap-bumper"><a href="#a6ddb6c9869be3fff6f68ab720053527e" class="m-doc-self">TFCSPredictExtrapWeights</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+            <dt id="a119aaba2405221d28a9520e022437ec4">
+              <span class="m-doc-wrap-bumper"><a href="#a119aaba2405221d28a9520e022437ec4" class="m-doc-self">TFCSPredictExtrapWeights</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
+              const char* title = nullptr,
+              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a4efaaff416dd30d2e3a858ca7c9df859">
@@ -106,6 +108,10 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a45d177fd4253fde700dfac9469236ebc" class="m-doc">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd></dd>
             <dt>
               <span class="m-doc-wrap-bumper">auto <a href="#aa0033a8241ca5f275fa6c9605d4ed311" class="m-doc">operator==</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>&amp; ref) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
@@ -165,6 +171,15 @@
             <dd><span></span></dd>
           </dl>
         </section>
+        <section id="pro-attribs">
+          <h2><a href="#pro-attribs">Protected variables</a></h2>
+          <dl class="m-doc">
+            <dt id="a5db6d3f8cd3088c3ed34f4bd47610066">
+              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* <a href="#a5db6d3f8cd3088c3ed34f4bd47610066" class="m-doc-self">m_geo</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
         <section>
           <h2>Enum documentation</h2>
           <section class="m-doc-details" id="ab47a0c29f6cab62204a91cb8e7a40e40"><div>
@@ -187,6 +202,12 @@
         </section>
         <section>
           <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a45d177fd4253fde700dfac9469236ebc"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSPredictExtrapWeights::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a45d177fd4253fde700dfac9469236ebc" class="m-doc-self">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo) <span class="m-label m-warning">override</span></span></span>
+            </h3>
+<p>Method to set the geometry access pointer. Loops over daughter objects if present</p>
+          </div></section>
           <section class="m-doc-details" id="aa0033a8241ca5f275fa6c9605d4ed311"><div>
             <h3>
               <span class="m-doc-wrap-bumper">bool TFCSPredictExtrapWeights::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa0033a8241ca5f275fa6c9605d4ed311" class="m-doc-self">operator==</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>&amp; ref) const <span class="m-label m-warning">override</span></span></span>

@@ -65,6 +65,7 @@
                 <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
                 <li><a href="#pub-attribs">Public variables</a></li>
+                <li><a href="#pro-attribs">Protected variables</a></li>
               </ul>
             </li>
           </ul>
@@ -105,9 +106,10 @@
         <section id="typeless-methods">
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
-            <dt id="af9e739e5c49d025472e15c741239a38b">
-              <span class="m-doc-wrap-bumper"><a href="#af9e739e5c49d025472e15c741239a38b" class="m-doc-self">TFCSPCAEnergyParametrization</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+            <dt id="a575bcf9f70e00945de99b8c8c8eb5715">
+              <span class="m-doc-wrap-bumper"><a href="#a575bcf9f70e00945de99b8c8c8eb5715" class="m-doc-self">TFCSPCAEnergyParametrization</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
+              const char* title = nullptr,
+              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -115,6 +117,10 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a65df778c81a5aa2697b2ecf1add9100c" class="m-doc">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd></dd>
             <dt id="ab6b0e674f945ce82a99079d1aaf73683">
               <span class="m-doc-wrap-bumper">auto <a href="#ab6b0e674f945ce82a99079d1aaf73683" class="m-doc-self">simulate</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
@@ -193,6 +199,24 @@
             </dt>
             <dd><span></span></dd>
           </dl>
+        </section>
+        <section id="pro-attribs">
+          <h2><a href="#pro-attribs">Protected variables</a></h2>
+          <dl class="m-doc">
+            <dt id="a88daffbd691b264ccd6e6146b5892a71">
+              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* <a href="#a88daffbd691b264ccd6e6146b5892a71" class="m-doc-self">m_geo</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a65df778c81a5aa2697b2ecf1add9100c"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSPCAEnergyParametrization::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a65df778c81a5aa2697b2ecf1add9100c" class="m-doc-self">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo) <span class="m-label m-warning">override</span></span></span>
+            </h3>
+<p>Method to set the geometry access pointer. Loops over daughter objects if present</p>
+          </div></section>
         </section>
       </div>
     </div>
