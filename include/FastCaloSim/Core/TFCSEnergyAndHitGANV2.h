@@ -12,6 +12,8 @@
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
+class CaloGeo;
+
 // forward declare lwtnn dependencies
 namespace lwt
 {
@@ -22,7 +24,11 @@ class TFCSEnergyAndHitGANV2 : public TFCSParametrizationBinnedChain
 {
 public:
   TFCSEnergyAndHitGANV2(const char* name = nullptr,
-                        const char* title = nullptr);
+                        const char* title = nullptr,
+                        CaloGeo* geo = nullptr);
+
+  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+
   virtual ~TFCSEnergyAndHitGANV2();
 
   virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
@@ -96,6 +102,8 @@ public:
   virtual void Print(Option_t* option = "") const override;
 
 protected:
+  CaloGeo* m_geo;  //! do not persistify
+
   void SetRegionAndSliceFromXML(int pid,
                                 int etaMax,
                                 std::string FastCaloGANInputFolderName);

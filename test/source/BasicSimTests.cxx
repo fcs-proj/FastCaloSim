@@ -29,7 +29,7 @@ TEST_F(BasicSimTests, DoDummySimulation)
       param_files["barrel"]->Get(paramsObject.c_str()));
 
   // Set up the geometry
-  param->set_geometry(AtlasDeprecatedGeoTests::geo);
+  param->set_geometry(AtlasGeoTests::geo);
   // Set logging level
   param->setLevel(MSG::Level::VERBOSE);
 
@@ -51,24 +51,18 @@ TEST_F(BasicSimTests, DoDummySimulation)
   TFCSExtrapolationState extrapol_state;
   extrapol_state.set_IDCaloBoundary_eta(truth_state.Eta());
   for (int i = 0; i < 24; ++i) {
-    extrapol_state.set_eta(
-        i, TFCSExtrapolationState::SUBPOS_ENT, truth_state.Eta());
-    extrapol_state.set_eta(
-        i, TFCSExtrapolationState::SUBPOS_EXT, truth_state.Eta());
-    extrapol_state.set_eta(
-        i, TFCSExtrapolationState::SUBPOS_MID, truth_state.Eta());
-    extrapol_state.set_phi(
-        i, TFCSExtrapolationState::SUBPOS_ENT, truth_state.Phi());
-    extrapol_state.set_phi(
-        i, TFCSExtrapolationState::SUBPOS_EXT, truth_state.Phi());
-    extrapol_state.set_phi(
-        i, TFCSExtrapolationState::SUBPOS_MID, truth_state.Phi());
-    extrapol_state.set_r(i, TFCSExtrapolationState::SUBPOS_ENT, 1500 + i * 10);
-    extrapol_state.set_r(i, TFCSExtrapolationState::SUBPOS_EXT, 1510 + i * 10);
-    extrapol_state.set_r(i, TFCSExtrapolationState::SUBPOS_MID, 1505 + i * 10);
-    extrapol_state.set_z(i, TFCSExtrapolationState::SUBPOS_ENT, 3500 + i * 10);
-    extrapol_state.set_z(i, TFCSExtrapolationState::SUBPOS_EXT, 3510 + i * 10);
-    extrapol_state.set_z(i, TFCSExtrapolationState::SUBPOS_MID, 3505 + i * 10);
+    extrapol_state.set_eta(i, Cell::SubPos::ENT, truth_state.Eta());
+    extrapol_state.set_eta(i, Cell::SubPos::EXT, truth_state.Eta());
+    extrapol_state.set_eta(i, Cell::SubPos::MID, truth_state.Eta());
+    extrapol_state.set_phi(i, Cell::SubPos::ENT, truth_state.Phi());
+    extrapol_state.set_phi(i, Cell::SubPos::EXT, truth_state.Phi());
+    extrapol_state.set_phi(i, Cell::SubPos::MID, truth_state.Phi());
+    extrapol_state.set_r(i, Cell::SubPos::ENT, 1500 + i * 10);
+    extrapol_state.set_r(i, Cell::SubPos::EXT, 1510 + i * 10);
+    extrapol_state.set_r(i, Cell::SubPos::MID, 1505 + i * 10);
+    extrapol_state.set_z(i, Cell::SubPos::ENT, 3500 + i * 10);
+    extrapol_state.set_z(i, Cell::SubPos::EXT, 3510 + i * 10);
+    extrapol_state.set_z(i, Cell::SubPos::MID, 3505 + i * 10);
   }
 
   // Perform the simulation call

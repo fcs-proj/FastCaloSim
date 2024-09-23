@@ -20,7 +20,11 @@ class TFCSPredictExtrapWeights : public TFCSLateralShapeParametrizationHitBase
 {
 public:
   TFCSPredictExtrapWeights(const char* name = nullptr,
-                           const char* title = nullptr);
+                           const char* title = nullptr,
+                           CaloGeo* geo = nullptr);
+
+  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+
   virtual ~TFCSPredictExtrapWeights();
 
   virtual bool operator==(const TFCSParametrizationBase& ref) const override;
@@ -71,6 +75,9 @@ public:
   bool UseHardcodedWeight() const { return TestBit(kUseHardcodedWeight); };
   void set_UseHardcodedWeight() { SetBit(kUseHardcodedWeight); };
   void reset_UseHardcodedWeight() { ResetBit(kUseHardcodedWeight); };
+
+protected:
+  CaloGeo* m_geo;  //! do not persistify
 
 private:
   // Persistify configuration in string m_input. A custom Streamer(...) builds

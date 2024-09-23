@@ -8,7 +8,7 @@
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/ICaloGeometry.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 
 //=============================================
 //======= TFCSHitCellMapping =========
@@ -16,7 +16,7 @@
 
 TFCSHitCellMapping::TFCSHitCellMapping(const char* name,
                                        const char* title,
-                                       ICaloGeometry* geo)
+                                       CaloGeo* geo)
     : TFCSLateralShapeParametrizationHitBase(name, title)
     , m_geo(geo)
 {
@@ -29,33 +29,35 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/)
 {
-  int cs = calosample();
-  float distance;
-  const CaloDetDescrElement* cellele =
-      m_geo->getDDE(cs, hit.eta(), hit.phi(), &distance);
-  ATH_MSG_DEBUG("HIT: cellele=" << cellele << " E=" << hit.E() << " cs=" << cs
-                                << " eta=" << hit.eta()
-                                << " phi=" << hit.phi());
-  if (cellele) {
-    // If the distance is positive then we are using the nearest cell rather
-    // than are inside a cell If we are more than 0.005mm from the nearest cell
-    // we don't create a hit to avoid the build-up of energy in edge cells For
-    // FCSV2 another hit can be created but with a cutoff to avoid looping, for
-    // FastCaloGAN the rest of the hits in the layer will be scaled up by the
-    // energy renormalization step.
-    if (distance < 0.005) {
-      simulstate.deposit(cellele, hit.E());
-    } else {
-      hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
-    }
-    return FCSSuccess;
+  ATH_MSG_DEBUG("Got hit with E=" << hit.E() << " eta=" << hit.eta()
+                                  << " phi=" << hit.phi());
+
+  // Position where we will perform the lookup
+  Position lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
+
+  // Get the best matching cell
+  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
+  ATH_MSG_DEBUG(cell);
+
+  // Get hit-cell boundary proximity
+  // < 0 means we are inside the cell
+  // > 0 means we are outside the cell
+  double proximity = cell.boundary_proximity(lookup_pos);
+
+  ATH_MSG_DEBUG("Hit-cell distance in eta-phi is: " << proximity);
+
+  // If the distance is positive then we are using the nearest cell rather
+  // than are inside a cell If we are more than 0.005mm from the nearest cell
+  // we don't create a hit to avoid the build-up of energy in edge cells
+  // For FCSV2 another hit can be created but with a cutoff to avoid looping,
+  // for FastCaloGAN the rest of the hits in the layer will be scaled up by the
+  // energy renormalization step.
+  if (proximity < 0.005) {
+    simulstate.deposit(cell.id(), hit.E());
   } else {
-    ATH_MSG_ERROR(
-        "TFCSLateralShapeParametrizationHitCellMapping::simulate_hit: cellele="
-        << cellele << " E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
-        << " phi=" << hit.phi());
-    return FCSFatal;
+    hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }
+  return FCSSuccess;
 }
 
 bool TFCSHitCellMapping::operator==(const TFCSParametrizationBase& ref) const

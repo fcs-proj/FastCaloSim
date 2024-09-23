@@ -30,7 +30,10 @@ public:
   };
 
   TFCSPCAEnergyParametrization(const char* name = nullptr,
-                               const char* title = nullptr);
+                               const char* title = nullptr,
+                               CaloGeo* geo = nullptr);
+
+  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
 
   virtual FCSReturnCode simulate(
       TFCSSimulationState& simulstate,
@@ -68,6 +71,9 @@ public:
   TH1* get_totalE_probability_ratio(int Ekin_bin) const;
 
   int do_rescale;
+
+protected:
+  CaloGeo* m_geo;  //! do not persistify
 
 private:
   std::vector<int> m_RelevantLayers;

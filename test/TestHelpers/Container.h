@@ -6,6 +6,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "FastCaloSim/Geometry/CaloGeo.h"
+
 namespace TestHelpers
 {
 
@@ -43,6 +45,11 @@ public:
   auto size() const -> std::size_t { return m_container.size(); }
 
   /**
+   * @brief Retrieve the container
+   */
+  auto get() const -> const std::vector<ElementType>& { return m_container; }
+
+  /**
    * @brief Serialize the container to a JSON file
    */
   void serialize(const std::string& filename) const
@@ -56,6 +63,11 @@ public:
     ofs.close();
   }
 
+  /**
+   * @brief Set the geometry
+   */
+  void set_geometry(CaloGeo* geo) { m_geo = geo; };
+
 protected:
   /**
    * @brief Virtual method which needs to implement the flattening of the
@@ -64,6 +76,7 @@ protected:
   virtual auto flatten() const -> std::vector<SerializedType> = 0;
 
   std::vector<ElementType> m_container;
+  CaloGeo* m_geo;
 };
 
 }  // namespace TestHelpers

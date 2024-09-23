@@ -10,7 +10,7 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
-class ICaloGeometry;
+class CaloGeo;
 
 class TFCSLateralShapeParametrizationHitChain
     : public TFCSLateralShapeParametrization

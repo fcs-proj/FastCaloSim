@@ -33,6 +33,8 @@ private:
   bool m_isXYZ, m_isEtaPhiR, m_isEtaPhiZ;
   /// @brief Cell sizes
   double m_dx, m_dy, m_dz, m_deta, m_dphi, m_dr;
+  /// @brief Flag to invalidate cell
+  bool m_is_valid = true;
 
 public:
   enum SubPos
@@ -72,7 +74,30 @@ public:
   {
   }
 
+  // Allow easy creation of an invalid cell
+  Cell()
+      : m_id(-1)
+      , m_pos(Position {0, 0, 0, 0, 0, 0})
+      , m_layer(-1)
+      , m_isBarrel(false)
+      , m_isXYZ(false)
+      , m_isEtaPhiR(false)
+      , m_isEtaPhiZ(false)
+      , m_dx(0)
+      , m_dy(0)
+      , m_dz(0)
+      , m_deta(0)
+      , m_dphi(0)
+      , m_dr(0)
+      , m_is_valid(false)
+  {
+  }
+
   virtual ~Cell() = default;
+
+  // Cell validity
+  auto inline is_valid() const -> bool { return m_is_valid; }
+  auto inline invalidate() -> void { m_is_valid = false; }
 
   // Direct accessors
   auto inline id() const -> long long { return m_id; }
@@ -89,78 +114,55 @@ public:
   auto inline isEtaPhiR() const -> bool { return m_isEtaPhiR; }
   auto inline isEtaPhiZ() const -> bool { return m_isEtaPhiZ; }
 
-  auto inline dx() const -> double
-  {
-    assert(m_isXYZ && "Cell is not in XYZ coordinate system");
-    return m_dx;
-  }
-  auto inline dy() const -> double
-  {
-    assert(m_isXYZ && "Cell is not in XYZ coordinate system");
-    return m_dy;
-  }
+  /// @brief Cell size accessors
+  /// Note: For the hit->cell matching, only the cell sizes
+  /// for the coordinate system of the cell are used
+  /// (e.g. for x,y,z cells, only dx, dy, dz are needed)
+  /// However: for the extrapolation we currently also take into account
+  /// the half width of the cell in the other coordinate systems
+  /// e.g. for TileBar0 (eta,phi,r) we also use dz which is stored in the ROOT
+  /// file In essence: if you call e.g. zent() on any cell it will add whatever
+  /// dz is stored We might want to revisit the logic in the future
+  /// to prevent misuse for now, we assert that stored cell widths are non-zero
+  /// in the case e.g. zent() or zext() is called
+  auto inline dx() const -> double { return m_dx; }
+  auto inline dy() const -> double { return m_dy; }
 
-  auto inline dz() const -> double
-  {
-    assert(m_isXYZ
-           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
-    return m_dz;
-  }
+  auto inline dz() const -> double { return m_dz; }
 
-  auto inline deta() const -> double
-  {
-    assert(m_isEtaPhiR
-           || m_isEtaPhiZ
-               && "Cell is not in EtaPhiR or EtaPhiZ coordinate system");
-    return m_deta;
-  }
+  auto inline deta() const -> double { return m_deta; }
 
-  auto inline dphi() const -> double
-  {
-    assert(m_isEtaPhiR
-           || m_isEtaPhiZ
-               && "Cell is not in EtaPhiR or EtaPhiZ coordinate system");
-    return m_dphi;
-  }
+  auto inline dphi() const -> double { return m_dphi; }
 
-  auto inline dr() const -> double
-  {
-    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
-    return m_dr;
-  }
+  auto inline dr() const -> double { return m_dr; }
 
   auto inline rent() const -> double
   {
-    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
+    assert(m_dr > 0 && "rent() called on cell with dr <= 0. The half-width of the cell seems undefined.");
     return r() - m_dr * 0.5;
   }
 
   auto inline rext() const -> double
   {
-    assert(m_isEtaPhiR && "Cell is not in EtaPhiR coordinate system");
+    assert(m_dr > 0 && "rext() called on cell with dr <= 0.  The half-width of the cell seems undefined.");
     return r() + m_dr * 0.5;
   }
 
   auto inline zent() const -> double
   {
-    assert(m_isXYZ
-           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
+    assert(m_dz > 0 && "zent() called on cell with dz <= 0. The half-width of the cell seems undefined.");
     return z() < 0 ? z() + m_dz * 0.5 : z() - m_dz * 0.5;
   }
 
   auto inline zext() const -> double
   {
-    assert(m_isXYZ
-           || m_isEtaPhiZ && "Cell is not in XYZ or EtaPhiZ coordinate system");
+    assert(m_dz > 0 && "zext() called on cell with dz <= 0.  The half-width of the cell seems undefined.");
     return z() < 0 ? z() - m_dz * 0.5 : z() + m_dz * 0.5;
   }
 
   // only makes ense for barrel
   auto inline r(SubPos subpos) const -> double
   {
-    if (m_isXYZ || m_isEtaPhiZ)
-      return r();
-
     switch (subpos) {
       case SubPos::ENT:
         return rent();
@@ -173,9 +175,6 @@ public:
 
   auto inline z(SubPos subpos) const -> double
   {
-    if (m_isEtaPhiR)
-      return z();
-
     switch (subpos) {
       case SubPos::ENT:
         return zent();
@@ -205,28 +204,28 @@ public:
   /// - A positive value indicates that the hit is outside the cell, with the
   /// magnitude representing the distance from the cell boundary.
   ///
-  template<typename T>
-  auto inline boundary_proximity(const T& hit) const -> double
+  auto inline boundary_proximity(const Position& pos) const -> double
   {
     if (m_isXYZ) {
-      double delta_x = std::abs(hit.x() - m_pos.x());
-      double delta_y = std::abs(hit.y() - m_pos.y());
+      double delta_x = std::abs(pos.x() - m_pos.x());
+      double delta_y = std::abs(pos.y() - m_pos.y());
 
-      return std::max(delta_x - m_dx, delta_y - m_dy);
+      return std::max(delta_x - m_dx / 2, delta_y - m_dy / 2);
     }
 
     if (m_isEtaPhiR || m_isEtaPhiZ) {
-      double delta_eta = std::abs(hit.eta() - m_pos.eta());
-      double delta_phi = std::abs(norm_angle(hit.phi() - m_pos.phi()));
-
-      return std::max(delta_eta - m_deta, delta_phi - m_dphi);
+      double delta_eta = std::abs(pos.eta() - m_pos.eta());
+      double delta_phi = std::abs(norm_angle(pos.phi() - m_pos.phi()));
+      return std::max(delta_eta / m_deta, delta_phi / m_dphi) - 0.5;
     }
+
+    std::runtime_error("Cell is not in a valid coordinate system");
+    return 0;
   }
 
-  template<typename T>
-  auto inline is_inside(const T& hit) const -> bool
+  auto inline is_inside(const Position& pos) const -> bool
   {
-    return boundary_proximity(hit) < 0;
+    return boundary_proximity(pos) < 0;
   }
 
   // Overload the << operator to allow direct cell printout

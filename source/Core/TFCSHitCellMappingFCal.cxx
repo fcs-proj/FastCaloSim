@@ -8,7 +8,7 @@
 #include "FastCaloSim/Core/TFCSHitCellMappingFCal.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "FastCaloSim/Geometry/ICaloGeometry.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 
 //=============================================
 //======= TFCSHitCellMappingFCal =========
@@ -20,22 +20,36 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/)
 {
-  int cs = calosample();
-  float distance;
-  const CaloDetDescrElement* cellele =
-      m_geo->getFCalDDE(cs, hit.x(), hit.y(), hit.z(), &distance);
-  ATH_MSG_DEBUG("HIT: cellele=" << cellele << " E=" << hit.E() << " cs=" << cs
-                                << " x=" << hit.x() << " y=" << hit.y()
-                                << " z=" << hit.z());
+  ATH_MSG_DEBUG("Got hit with E=" << hit.E() << " x=" << hit.x()
+                                  << " y=" << hit.y());
 
-  /// protection against cases where hits cannot be matched to a FCal cell
-  if ((hit.x() == 0 && hit.y() == 0) || cellele == nullptr) {
-    ATH_MSG_WARNING(
-        "TFCSLateralShapeParametrizationHitCellMapping::simulate_hit: cellele="
-        << cellele << " E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
-        << " phi=" << hit.phi());
-    return (FCSReturnCode)(FCSRetry + 5);  // retry simulation up to 5 times
+  // Position where we perform the lookup
+  // The z position here is used to determine the side
+  // in the custom FCAL geo handler
+  Position lookup_pos {hit.x(), hit.y(), hit.z(), 0, 0, 0};
+
+  /// No match possible, retry simulation
+  if ((hit.x() == 0 && hit.y() == 0)) {
+    return (FCSReturnCode)(FCSRetry + 5);
   }
+  // Get the best matching cell
+  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
+  ATH_MSG_DEBUG(cell);
+
+  /// Could not find a cell, retry simulation up to 5 times
+  if (!cell.is_valid()) {
+    ATH_MSG_WARNING("Hit in layer " << calosample() << " with E = " << hit.E()
+                                    << " x = " << hit.x() << " y = " << hit.y()
+                                    << " could not be matched to a cell");
+    return (FCSReturnCode)(FCSRetry + 5);
+  }
+
+  // Get hit-cell boundary proximity
+  // < 0 means we are inside the cell
+  // > 0 means we are outside the cell
+  double proximity = cell.boundary_proximity(lookup_pos);
+
+  ATH_MSG_DEBUG("Hit-cell distance in x-y is: " << proximity);
 
   // If the distance is positive then we are using the nearest cell rather than
   // are inside a cell If we are more than 2.25mm from the nearest cell we don't
@@ -43,8 +57,8 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
   // another hit can be created but with a cutoff to avoid looping, for
   // FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
-  if (distance < 2.25) {
-    simulstate.deposit(cellele, hit.E());
+  if (proximity < 2.25) {
+    simulstate.deposit(cell.id(), hit.E());
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }

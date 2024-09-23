@@ -15,7 +15,7 @@ class TFCSHitCellMappingWiggle : public TFCSHitCellMapping
 public:
   TFCSHitCellMappingWiggle(const char* name = nullptr,
                            const char* title = nullptr,
-                           ICaloGeometry* geo = nullptr);
+                           CaloGeo* geo = nullptr);
   ~TFCSHitCellMappingWiggle();
 
   void initialize(TFCS1DFunction* func);

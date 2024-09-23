@@ -9,20 +9,11 @@
 #include <map>
 #include <set>
 #include <unordered_map>
-#include <vector>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
 
 #include "FastCaloSim/Core/MLogging.h"
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
-
-#undef FCS_USE_HASH_SORTED_CELLMAP
-#ifdef FCS_USE_HASH_SORTED_CELLMAP
-#  include "FastCaloSim/Geometry/CaloDetDescrElement.h"
-#else
-class CaloDetDescrElement;
-#endif
 class TFCSParametrizationBase;
 
 namespace CLHEP
@@ -47,8 +38,9 @@ public:
 
   bool is_valid() const { return m_Ebin >= 0; };
   double E() const { return m_Etot; };
-  double E(int sample) const { return m_E[sample]; };
-  double Efrac(int sample) const { return m_Efrac[sample]; };
+  // NOTE: in the current implementation layers without energy are not stored
+  double E(int sample) const { return m_E.at(sample); };
+  double Efrac(int sample) const { return m_Efrac.at(sample); };
   int Ebin() const { return m_Ebin; };
 
   void set_Ebin(int bin) { m_Ebin = bin; };
@@ -64,25 +56,13 @@ public:
     m_Etot += Esample;
   };
 
-#ifdef FCS_USE_HASH_SORTED_CELLMAP
-  struct hashesCmp
-  {
-    bool operator()(const CaloDetDescrElement* a,
-                    const CaloDetDescrElement* b) const
-    {
-      return a->calo_hash() < b->calo_hash();
-    }
-  };
-  // Being able to force the order iteration over the Cellmap_t is very useful
-  // when debugging small differences in output
-  typedef std::map<const CaloDetDescrElement*, float, hashesCmp> Cellmap_t;
-#else
-  typedef std::map<const CaloDetDescrElement*, float> Cellmap_t;
-#endif
+  // maps the cell id to the energy deposited in the cell
+  using Cellmap_t = std::map<long long, float>;
 
   Cellmap_t& cells() { return m_cells; };
   const Cellmap_t& cells() const { return m_cells; };
-  void deposit(const CaloDetDescrElement* cellele, float E);
+
+  void deposit(const long long cell_id, float E);
 
   void Print(Option_t* option = "") const;
 
@@ -100,8 +80,8 @@ private:
   int m_Ebin;
   double m_Etot;
   // TO BE CLEANED UP! SHOULD ONLY STORE EITHER E OR EFRAC!!!
-  double m_E[CaloCell_ID_FCS::MaxSample];
-  double m_Efrac[CaloCell_ID_FCS::MaxSample];
+  std::unordered_map<int, double> m_E;
+  std::unordered_map<int, double> m_Efrac;
 
   Cellmap_t m_cells;
 

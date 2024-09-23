@@ -45,10 +45,9 @@ public:
   /// Note: The hit must have the same coordinate system as the cells in the
   /// tree
   ///
-  template<typename T>
-  auto query_point(const T& hit) const -> Cell
+  auto query_point(const Position& pos) const -> Cell
   {
-    Point query_point = create_query_point(hit);
+    Point query_point = create_query_point(pos);
 
     std::vector<Value> result;
     m_rtree.query(bgi::nearest(query_point, 1), std::back_inserter(result));
@@ -76,15 +75,14 @@ private:
                            : CoordinateSystem::Undefined;
   }
 
-  template<typename T>
-  auto create_query_point(const T& hit) const -> Point
+  auto create_query_point(const Position& pos) const -> Point
   {
     switch (m_coordinate_system) {
       case CoordinateSystem::EtaPhiR:
       case CoordinateSystem::EtaPhiZ:
-        return {hit.eta(), hit.phi()};
+        return {pos.eta(), pos.phi()};
       case CoordinateSystem::XYZ:
-        return {hit.x(), hit.y()};
+        return {pos.x(), pos.y()};
       default:
         throw std::logic_error("Undefined coordinate system");
     }

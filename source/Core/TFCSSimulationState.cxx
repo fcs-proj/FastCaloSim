@@ -28,30 +28,22 @@ void TFCSSimulationState::clear()
   set_SF(1);
   m_Ebin = -1;
   m_Etot = 0;
-  for (int i = 0; i < CaloCell_ID_FCS::MaxSample; ++i) {
-    m_E[i] = 0;
-    m_Efrac[i] = 0;
-  }
+  m_E.clear();
+  m_Efrac.clear();
 }
 
-void TFCSSimulationState::deposit(const CaloDetDescrElement* cellele, float E)
+void TFCSSimulationState::deposit(const long long cell_id, float E)
 {
-  auto mele = m_cells.find(cellele);
-  if (mele == m_cells.end()) {
-    m_cells.emplace(cellele, 0);
-    mele = m_cells.find(cellele);
-  }
-  m_cells[cellele] += E;
+  m_cells[cell_id] += E;
 }
 
 void TFCSSimulationState::Print(Option_t*) const
 {
   ATH_MSG_INFO("Ebin=" << m_Ebin << " E=" << E()
                        << " #cells=" << m_cells.size());
-  for (int i = 0; i < CaloCell_ID_FCS::MaxSample; ++i)
+  for (int i = 0; i < m_E.size(); ++i)
     if (E(i) != 0) {
-      ATH_MSG_INFO("  E" << i << "(" << CaloSampling::getSamplingName(i)
-                         << ")=" << E(i) << " E" << i << "/E=" << Efrac(i));
+      ATH_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
     }
   if (!m_AuxInfo.empty()) {
     ATH_MSG_INFO("  AuxInfo has " << m_AuxInfo.size() << " elements");

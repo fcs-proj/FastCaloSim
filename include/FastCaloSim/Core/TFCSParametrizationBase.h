@@ -13,7 +13,7 @@
 
 #include "FastCaloSim/Core/MLogging.h"
 
-class ICaloGeometry;
+class CaloGeo;
 class TFCSSimulationState;
 class TFCSTruthState;
 class TFCSExtrapolationState;
@@ -96,7 +96,7 @@ public:
 
   /// Method to set the geometry access pointer. Loops over daughter objects if
   /// present
-  virtual void set_geometry(ICaloGeometry* geo);
+  virtual void set_geometry(CaloGeo* geo);
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these

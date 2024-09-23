@@ -6,8 +6,6 @@
 
 #include <TClass.h>
 
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
-
 //=============================================
 //======= TFCSLateralShapeParametrization =========
 //=============================================

@@ -12,7 +12,7 @@
 
 class TFCSTruthState;
 class G4FieldTrack;
-class ICaloGeometry;
+class CaloGeo;
 
 // use CLHEP vector
 using Vector3D = CLHEP::Hep3Vector;
@@ -30,16 +30,7 @@ public:
   FastCaloSimCaloExtrapolation();
   ~FastCaloSimCaloExtrapolation() = default;
 
-  void set_geometry(ICaloGeometry* geo) { m_geo = geo; };
-
-  enum SUBPOS
-  {
-    SUBPOS_MID = TFCSExtrapolationState::SUBPOS_MID,  // MID=middle of calo
-                                                      // layer
-    SUBPOS_ENT =
-        TFCSExtrapolationState::SUBPOS_ENT,  // ENT=entrance of calo layer
-    SUBPOS_EXT = TFCSExtrapolationState::SUBPOS_EXT  // EXT=exit of calo layer
-  };
+  void set_geometry(CaloGeo* geo) { m_geo = geo; };
 
   enum HITPOSITION
   {
@@ -178,7 +169,7 @@ private:
   std::vector<double> m_CaloBoundaryZ {3550.0, 4587.0, 4587.0};
 
   // FastCaloSim geometry helper
-  ICaloGeometry* m_geo;
+  CaloGeo* m_geo;
 
   /** calculates the distance between two point in 3D space */
   static inline auto distance(const Vector3D& p1, const Vector3D& p2) -> double

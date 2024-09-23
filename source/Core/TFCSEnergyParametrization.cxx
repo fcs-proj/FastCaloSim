@@ -4,8 +4,6 @@
 
 #include "FastCaloSim/Core/TFCSEnergyParametrization.h"
 
-#include "FastCaloSim/Geometry/FastCaloSim_CaloCell_ID.h"
-
 //=============================================
 //======= TFCSEnergyParametrization =========
 //=============================================

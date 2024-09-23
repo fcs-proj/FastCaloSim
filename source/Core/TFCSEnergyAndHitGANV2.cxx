@@ -14,6 +14,7 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "HepPDT/ParticleData.hh"
 #include "TF1.h"
 
@@ -22,8 +23,10 @@
 //=============================================
 
 TFCSEnergyAndHitGANV2::TFCSEnergyAndHitGANV2(const char* name,
-                                             const char* title)
+                                             const char* title,
+                                             CaloGeo* geo)
     : TFCSParametrizationBinnedChain(name, title)
+    , m_geo(geo)
 {
   set_GANfreemem();
 }
@@ -514,7 +517,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < CaloCell_ID_FCS::MaxSample; ++ilayer) {
+    for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }
