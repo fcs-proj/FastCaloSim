@@ -6,7 +6,6 @@
 #define ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
 
 #include <cstdint>
-#include <map>
 #include <set>
 #include <unordered_map>
 
