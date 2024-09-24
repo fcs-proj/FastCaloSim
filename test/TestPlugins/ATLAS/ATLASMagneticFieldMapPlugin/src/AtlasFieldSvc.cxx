@@ -198,7 +198,7 @@ bool MagField::AtlasFieldSvc::initialize()
   //            return false;
   //        }
   //        std::cout<< "Booked callback for " << folder << std::endl;
-  //        // actual initalization has to wait for the fist callback
+  //        // actual initialization has to wait for the fist callback
   //    } else {
   //        std::cout<< "Currents are set-up by jobOptions - delaying map
   //        initialization until BeginRun incident happens" << std::endl;
@@ -984,7 +984,7 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
       std::cout << "ERROR: " << myname << ": zone id " << idzone
                 << " != " << m_zone[izone].id() << std::endl;
       // return StatusCode(2);
-      return true;  // TO DO - it shoudl be recoverable - handle ! enum class
+      return true;  // TO DO - it should be recoverable - handle ! enum class
                     // ErrorCode : code_t { FAILURE = 0, SUCCESS = 1,
                     // RECOVERABLE = 2 };
     }
@@ -1863,7 +1863,7 @@ void MagField::AtlasFieldSvc::buildZR()
   m_meshZR = new BFieldMeshZR(
       solezone->zmin(), solezone->zmax(), 0.0, solezone->rmax());
 
-  // reserve the right amount of memroy
+  // reserve the right amount of memory
   unsigned nmeshz = solezone->nmesh(0);
   unsigned nmeshr = solezone->nmesh(1);
   if (solezone->rmin() > 0.0)

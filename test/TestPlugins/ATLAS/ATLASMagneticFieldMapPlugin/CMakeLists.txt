@@ -29,8 +29,8 @@ target_link_libraries ( ATLASMagneticFieldMapPlugin PUBLIC ${CMAKE_DL_LIBS} ${Ge
 set_target_properties( ATLASMagneticFieldMapPlugin PROPERTIES
 		       VERSION ${PROJECT_VERSION}
 		       SOVERSION ${PROJECT_VERSION_MAJOR} )
-			   
-			
+
+
 install( TARGETS ATLASMagneticFieldMapPlugin
 	 LIBRARY DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/MagneticFieldPlugins
 	 COMPONENT Runtime

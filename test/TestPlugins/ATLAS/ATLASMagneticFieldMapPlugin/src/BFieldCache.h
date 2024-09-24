@@ -5,7 +5,7 @@
 //
 // BFieldCache.h
 //
-// Cashe of one bin of the magnetic field map.
+// Cache of one bin of the magnetic field map.
 // Defined by ranges in z, r, phi, and the B vectors at the 8 corners of the
 // "bin".
 //

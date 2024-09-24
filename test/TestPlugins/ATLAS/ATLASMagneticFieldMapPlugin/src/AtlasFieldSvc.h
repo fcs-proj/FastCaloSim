@@ -257,7 +257,7 @@ const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
     return m_zoneLUT[(iz * m_nr + ir) * m_nphi + iphi];
   } else {
     // std::cout<<"z is :"<<z<<" and should be >= "<<m_zmin<<"  && z <=
-    // "<<m_zmax<< "  && r is "<<r <<" and shoud be <= "<<m_rmax<<std::endl;
+    // "<<m_zmax<< "  && r is "<<r <<" and should be <= "<<m_rmax<<std::endl;
     return 0;
   }
 }

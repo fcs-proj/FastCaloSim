@@ -79,7 +79,7 @@ bool MagField::H8FieldSvc::readMap(const std::string mapFile)
     // ATH_MSG_ERROR( "Field map file " << mapFile << " not found" );
     return false;
   }
-  // opne the map file
+  // open the map file
   std::ifstream input(resolvedMapFile.c_str());
   if (!input.good()) {
     // ATH_MSG_ERROR( "Failed to open the field map " << resolvedMapFile );

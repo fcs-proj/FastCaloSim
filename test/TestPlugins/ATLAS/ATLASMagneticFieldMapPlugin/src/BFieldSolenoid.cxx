@@ -113,7 +113,7 @@ int BFieldSolenoid::readMap(istream& input)
 //
 // wrire the map to a ROOT file
 // if tilted = true, write the moved-and-tilted map.
-// ohterwise, write the original map.
+// otherwise, write the original map.
 //
 // void
 // BFieldSolenoid::writeMap( TFile* rootfile, bool tilted )

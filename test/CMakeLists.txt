@@ -47,11 +47,15 @@ deactivate_checks(gtest gtest_main
 add_subdirectory(g4app)
 deactivate_checks(g4app)
 
+# Build the ATLAS geometry plugin
+add_subdirectory(TestPlugins/ATLAS/ATLASFCalGeoPlugin)
+deactivate_checks(ATLASFCalGeoPlugin)
+
 # Build the ATLAS magnetic field map plugin
 # - Used to transport particles through the simplified geometry
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/ATLASMagneticFieldMapPlugin ${CMAKE_CURRENT_BINARY_DIR}/ATLASMagneticFieldMapPlugin)
+add_subdirectory(TestPlugins/ATLAS/ATLASMagneticFieldMapPlugin)
 deactivate_checks(ATLASMagneticFieldMapPlugin)
-# Pass the path to the magnetic field shared library (ATLASMagneticFieldMapPlugin.so) to the g4app
+# Pass the path to the magnetic field shared library (MagneticFieldMapPlugin.so) to the g4app
 target_compile_definitions(g4app PRIVATE ATLASMagneticFieldMapPluginLib="$<TARGET_FILE:ATLASMagneticFieldMapPlugin>")
 
 # ---- Tests ----
@@ -72,9 +76,12 @@ endforeach()
 find_package(Boost REQUIRED COMPONENTS serialization)
 include_directories(${Boost_INCLUDE_DIRS})
 
-# Tests that are Geant4 dependent
-target_link_libraries(AtlasTransportTests PRIVATE g4app ${Boost_LIBRARIES})
-target_link_libraries(AtlasSimTests PRIVATE g4app)
+# Link tests against plugins and g4app
+target_link_libraries(BasicExtrapolTests PRIVATE ATLASFCalGeoPlugin)
+target_link_libraries(BasicSimTests PRIVATE ATLASFCalGeoPlugin)
+target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app ${Boost_LIBRARIES})
+target_link_libraries(AtlasSimTests PRIVATE ATLASFCalGeoPlugin g4app)
+target_link_libraries(AtlasGeoTests PRIVATE ATLASFCalGeoPlugin)
 
 
 # ---- End-of-file commands ----
