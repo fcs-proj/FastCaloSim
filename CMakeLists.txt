@@ -35,6 +35,10 @@ find_package(fmt REQUIRED)
 find_package(CLHEP REQUIRED)
 # Eigen for extrapolation
 find_package(Eigen3 REQUIRED)
+# Boost for geometry
+find_package(Boost REQUIRED)
+# tbb for Geant4 transport
+find_package(TBB REQUIRED)
 
 # ---- Declare library ----
 
