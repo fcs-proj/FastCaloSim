@@ -3,8 +3,8 @@
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
 
+#include "ATLASFCalGeoPlugin/FCal.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
-#include "FastCaloSim/Geometry/FCal.h"
 #include "ROOT/RDataFrame.hxx"
 #include "TestConfig/AtlasGeoTestsConfig.h"
 #include "TestHelpers/Event.h"

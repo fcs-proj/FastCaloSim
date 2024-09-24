@@ -9,14 +9,13 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <FastCaloSim/FastCaloSim_export.h>
 #include <RtypesCore.h>
 #include <TString.h>
 
+#include "FCAL_ChannelMap.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
-#include "FastCaloSim/Geometry/FCAL_ChannelMap.h"
 
-class FASTCALOSIM_EXPORT FCal : public CaloGeo
+class FCal : public CaloGeo
 {
 public:
   /// @brief Default constructor

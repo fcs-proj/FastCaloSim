@@ -18,7 +18,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "FastCaloSim/Geometry/FCAL_ChannelMap.h"
+#include "ATLASFCalGeoPlugin/FCAL_ChannelMap.h"
 
 #include <stdio.h>
 
