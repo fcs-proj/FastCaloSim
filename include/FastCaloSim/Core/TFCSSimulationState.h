@@ -57,10 +57,10 @@ public:
   };
 
   // maps the cell id to the energy deposited in the cell
-  using Cellmap_t = std::map<long long, float>;
+  using cellmap = std::unordered_map<long long, float>;
 
-  Cellmap_t& cells() { return m_cells; };
-  const Cellmap_t& cells() const { return m_cells; };
+  cellmap& cells() { return m_cells; };
+  const cellmap& cells() const { return m_cells; };
 
   void deposit(const long long cell_id, float E);
 
@@ -83,7 +83,7 @@ private:
   std::unordered_map<int, double> m_E;
   std::unordered_map<int, double> m_Efrac;
 
-  Cellmap_t m_cells;
+  cellmap m_cells;
 
 public:
   // Allow to store arbitrary type objects as auxiliary information
