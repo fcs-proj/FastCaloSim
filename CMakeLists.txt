@@ -11,8 +11,8 @@ project(
     LANGUAGES CXX
 )
 
-# Set the path for CMake to look for any custom modules, e.g. Findlwtnn.cmake
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+# Append the path for CMake to look for any custom modules, e.g. Findlwtnn.cmake
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
