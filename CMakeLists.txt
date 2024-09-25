@@ -30,11 +30,13 @@ find_package(ONNXRuntime 1.15 REQUIRED)
 # LibXml2 for reading XML files
 find_package(libxml REQUIRED)
 # Fmt for formatting
-find_package(fmt REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 # CLHEP for random number generation
 find_package(CLHEP REQUIRED)
 # Eigen for extrapolation
 find_package(Eigen3 REQUIRED)
+# TBB for Geant4 transport
+find_package(TBB REQUIRED)
 
 # Boost for geometry (headers only)
 find_package(Boost REQUIRED)
@@ -42,11 +44,6 @@ if(NOT Boost_FOUND)
   message(FATAL_ERROR "Boost not found")
 endif()
 
-# TBB for Geant4 transport (headers only)
-find_package(TBB REQUIRED)
-if(NOT TBB_FOUND)
-  message(FATAL_ERROR "TBB not found")
-endif()
 
 # ---- Declare library ----
 
@@ -63,27 +60,30 @@ add_subdirectory(thirdparty/HepPDT)
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
+# PUBLIC: propagated to consumers
+# PRIVATE: used only internally
 target_link_libraries(
     FastCaloSim_FastCaloSim PUBLIC
     ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
-    fmt::fmt
+    fmt::fmt-header-only
     CLHEP::CLHEP
     HepPDT
     lwtnn::lwtnn
     ONNXRuntime::ONNXRuntime
     ${LibXml2_LIBRARIES}
     ${Geant4_LIBRARIES}
+    TBB::tbb
 )
 
 # Add the include directory to the target
-target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim ${Boost_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
+target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim ${Boost_INCLUDE_DIRS})
 
 # Generate ROOT dictionary for custom classes when building a shared library
 ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict HepPDT FastCaloSim_FastCaloSim fmt)
+deactivate_checks(FastCaloSim_dict HepPDT FastCaloSim_FastCaloSim)
 
 include(GenerateExportHeader)
 generate_export_header(
