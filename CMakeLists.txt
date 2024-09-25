@@ -30,7 +30,7 @@ find_package(ONNXRuntime 1.15 REQUIRED)
 # LibXml2 for reading XML files
 find_package(libxml REQUIRED)
 # Fmt for formatting
-find_package(fmt CONFIG REQUIRED)
+find_package(fmt REQUIRED)
 # CLHEP for random number generation
 find_package(CLHEP REQUIRED)
 # Eigen for extrapolation
