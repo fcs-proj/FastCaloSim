@@ -10,8 +10,13 @@
 # The user can set LWTNN_ROOT to guide the script.
 #
 
+# Ensure LWTNN_ROOT is defined
+if(NOT DEFINED LWTNN_ROOT)
+   set(LWTNN_ROOT "")
+endif()
+
 # Allow user to specify LWTNN_ROOT
-if(DEFINED LWTNN_ROOT)
+if(LWTNN_ROOT)
    set(LWTNN_INCLUDE_DIR "${LWTNN_ROOT}/include")
    set(LWTNN_LIBRARY_DIR "${LWTNN_ROOT}/lib")
 else()
@@ -38,9 +43,13 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(lwtnn DEFAULT_MSG LWTNN_INCLUDE_DIRS LWTNN_LIBRARIES)
 mark_as_advanced(LWTNN_FOUND LWTNN_INCLUDE_DIR LWTNN_INCLUDE_DIRS LWTNN_LIBRARIES LWTNN_LIBRARY_DIR)
 
-get_filename_component(LWTNN_LIBRARY_DIR ${LWTNN_LIBRARY} DIRECTORY)
-set(LWTNN_LIBRARY_DIRS ${LWTNN_LIBRARY_DIR})
+# Get the directory of the library
+if(LWTNN_LIBRARY)
+   get_filename_component(LWTNN_LIBRARY_DIR ${LWTNN_LIBRARY} DIRECTORY)
+   set(LWTNN_LIBRARY_DIRS ${LWTNN_LIBRARY_DIR})
+endif()
 
+# Debug messages
 message(STATUS "LWTNN_ROOT: ${LWTNN_ROOT}")
 message(STATUS "LWTNN_INCLUDE_DIR: ${LWTNN_INCLUDE_DIR}")
 message(STATUS "LWTNN_LIBRARY_DIR: ${LWTNN_LIBRARY_DIR}")
