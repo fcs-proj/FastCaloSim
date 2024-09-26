@@ -14,8 +14,8 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
-#include "HepPDT/ParticleData.hh"
 #include "TF1.h"
 
 //=============================================
@@ -125,7 +125,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   const int pdgId = truth->pdgid();
-  const float charge = HepPDT::ParticleID(pdgId).charge();
+  const float charge = ParticleData::charge(pdgId);
 
   float Einit;
   const float Ekin = truth->Ekin();

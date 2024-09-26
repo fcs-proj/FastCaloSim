@@ -5,6 +5,7 @@
 #include "FastCaloSim/Core/TFCSLateralShapeTuning.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/ParticleData.h"
 #include "TFile.h"
 #include "TGraph.h"
 
@@ -105,7 +106,7 @@ FCSReturnCode TFCSLateralShapeTuning::simulate_hit(
 
   // retrieve particle data
   const int pdgId = truth->pdgid();
-  const double charge = HepPDT::ParticleID(pdgId).charge();
+  const double charge = ParticleData::charge(pdgId);
 
   // retrieve hit information
   const double centerEta = hit.center_eta();
