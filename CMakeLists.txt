@@ -69,7 +69,7 @@ target_link_libraries(
     fmt::fmt-header-only
     CLHEP::CLHEP
     ${LWTNN_LIBRARIES}
-    ${ONNXRuntime_LIBRARIES}
+    ONNXRuntime::ONNXRuntime
     ${LibXml2_LIBRARIES}
     ${Geant4_LIBRARIES}
     TBB::tbb
