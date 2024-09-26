@@ -68,7 +68,7 @@ target_link_libraries(
     ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
     fmt::fmt-header-only
     CLHEP::CLHEP
-    ONNXRuntime::ONNXRuntime
+    ${ONNXRuntime_LIBRARIES}
     ${LWTNN_LIBRARIES}
     ${LibXml2_LIBRARIES}
     ${Geant4_LIBRARIES}
