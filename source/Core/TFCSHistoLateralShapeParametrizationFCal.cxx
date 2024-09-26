@@ -8,8 +8,7 @@
 #include "CLHEP/Random/RandPoisson.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "HepPDT/ParticleData.hh"
-#include "HepPDT/ParticleDataTable.hh"
+#include "FastCaloSim/Definitions/ParticleData.h"
 #include "TMath.h"
 
 //=============================================
@@ -39,7 +38,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
   }
 
   const int pdgId = truth->pdgid();
-  const double charge = HepPDT::ParticleID(pdgId).charge();
+  const double charge = ParticleData::charge(pdgId);
 
   const int cs = calosample();
   // const double center_phi=0.5*( extrapol->phi(cs, CaloSubPos::SUBPOS_ENT) +

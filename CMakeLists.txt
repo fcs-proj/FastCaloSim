@@ -55,7 +55,6 @@ add_subdirectory(source/Core)
 add_subdirectory(source/Geometry)
 add_subdirectory(source/Transport)
 add_subdirectory(source/Extrapolation)
-add_subdirectory(thirdparty/HepPDT)
 
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
@@ -67,7 +66,6 @@ target_link_libraries(
     ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
     fmt::fmt-header-only
     CLHEP::CLHEP
-    HepPDT
     lwtnn::lwtnn
     ONNXRuntime::ONNXRuntime
     ${LibXml2_LIBRARIES}
@@ -83,7 +81,7 @@ ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict HepPDT FastCaloSim_FastCaloSim fmt)
+deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim fmt)
 
 include(GenerateExportHeader)
 generate_export_header(
