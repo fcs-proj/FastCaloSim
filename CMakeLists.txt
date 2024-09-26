@@ -68,8 +68,8 @@ target_link_libraries(
     ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
     fmt::fmt-header-only
     CLHEP::CLHEP
-    ${ONNXRuntime_LIBRARIES}
     ${LWTNN_LIBRARIES}
+    ${ONNXRuntime_LIBRARIES}
     ${LibXml2_LIBRARIES}
     ${Geant4_LIBRARIES}
     TBB::tbb
