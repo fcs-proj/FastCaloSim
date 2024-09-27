@@ -61,18 +61,20 @@ add_subdirectory(source/Extrapolation)
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
-# PUBLIC: propagated to consumers
+# PUBLIC: propagated to consumers (if any of the exported headers contain a #include of a header from the library)
 # PRIVATE: used only internally
 target_link_libraries(
-    FastCaloSim_FastCaloSim PUBLIC
-    ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
-    fmt::fmt-header-only
-    CLHEP::CLHEP
-    ${LWTNN_LIBRARIES}
-    ONNXRuntime::ONNXRuntime
-    ${LibXml2_LIBRARIES}
-    ${Geant4_LIBRARIES}
-    TBB::tbb
+    FastCaloSim_FastCaloSim 
+    PUBLIC
+        ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
+        fmt::fmt-header-only
+        CLHEP::CLHEP
+        ${LWTNN_LIBRARIES}
+        ${Geant4_LIBRARIES}
+        TBB::tbb
+    PRIVATE
+        ONNXRuntime::ONNXRuntime
+        ${LibXml2_LIBRARIES}
 )
 
 # Add the include directory to the target
