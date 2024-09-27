@@ -14,7 +14,7 @@ project(
 )
 
 # Append the path for CMake to look for any custom modules, e.g. Findlwtnn.cmake
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
@@ -61,19 +61,17 @@ add_subdirectory(source/Extrapolation)
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
-# PUBLIC: propagated to consumers (if any of the exported headers contain a #include of a header from the library)
-# PRIVATE: used only internally
 target_link_libraries(
     FastCaloSim_FastCaloSim 
     PUBLIC
         ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
         fmt::fmt-header-only
         CLHEP::CLHEP
-        ${LWTNN_LIBRARIES}
         ${Geant4_LIBRARIES}
         TBB::tbb
     PRIVATE
         ONNXRuntime::ONNXRuntime
+        ${LWTNN_LIBRARIES}
         ${LibXml2_LIBRARIES}
 )
 
