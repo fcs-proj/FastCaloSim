@@ -1,3 +1,5 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 #include "ActionInitialization.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "RunAction.hh"

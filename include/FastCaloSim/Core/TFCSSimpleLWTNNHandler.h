@@ -1,5 +1,6 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 /**
- * Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
  *
  * Class for a neural network read in the LWTNN format.
  * Derived from the abstract base class VNetworkBase

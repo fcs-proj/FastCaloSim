@@ -1,5 +1,6 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 /**
- * Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
  *
  * Class to perform runtime selection from the derived
  * classes of VNetworkBase given input for a network.

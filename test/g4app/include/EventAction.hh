@@ -1,3 +1,5 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 #ifndef EVENTACTION_HH
 #define EVENTACTION_HH
 

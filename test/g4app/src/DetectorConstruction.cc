@@ -1,3 +1,5 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 #include "DetectorConstruction.hh"
 
 #include <G4MagneticField.hh>
@@ -50,7 +52,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   for (const auto& [name, cyl] : cylinders) {
     add_cylinder(world_log, detectorRegion, cyl, name);
   }
-  
+
   return world_phys;
 }
 
@@ -86,7 +88,7 @@ void DetectorConstruction::ConstructSDandField()
 
     auto uniformMagField     = new G4UniformMagField(G4ThreeVector(0.0, 0.0, fMagFieldStrength));
     fieldMgr->SetDetectorField(uniformMagField);
-    fieldMgr->CreateChordFinder(uniformMagField);  
+    fieldMgr->CreateChordFinder(uniformMagField);
 
   }
 

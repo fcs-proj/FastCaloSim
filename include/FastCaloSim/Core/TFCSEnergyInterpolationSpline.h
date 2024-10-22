@@ -1,6 +1,4 @@
-/*
-  Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
-*/
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h
 #define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h

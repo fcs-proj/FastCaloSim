@@ -1,4 +1,5 @@
-# Set up the project.
+# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 cmake_minimum_required( VERSION 3.5 )
 
 set(CMAKE_CXX_STANDARD 17)

@@ -1,3 +1,5 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 #include "G4ParticleGun.hh"
 
 #include "PrimaryGeneratorAction.hh"
@@ -24,8 +26,8 @@ void PrimaryGeneratorAction::configure_gun(const TestHelpers::Particle* particle
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
-{   
-    
+{
+
     if (fParticleContainer == nullptr)
     {
         G4Exception("PrimaryGeneratorAction::GeneratePrimaries()", "PrimaryGeneratorAction", FatalException, "Particle container not set");
