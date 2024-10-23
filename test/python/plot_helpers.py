@@ -1,3 +1,5 @@
+# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np

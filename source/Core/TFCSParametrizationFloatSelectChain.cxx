@@ -1,8 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-/*
-  Copyright (C) 2002-2018 CERN for the benefit of the ATLAS collaboration
-*/
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
 #include <iostream>

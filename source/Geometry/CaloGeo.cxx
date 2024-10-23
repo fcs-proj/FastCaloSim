@@ -1,3 +1,5 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 CaloGeo::CaloGeo(ROOT::RDataFrame& geo)

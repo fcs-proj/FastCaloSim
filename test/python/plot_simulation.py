@@ -1,3 +1,5 @@
+# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 import pygeosimplify as pgs
 import argparse
 import pandas as pd

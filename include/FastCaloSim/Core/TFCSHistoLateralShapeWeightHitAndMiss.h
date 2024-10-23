@@ -1,6 +1,4 @@
-/*
-  Copyright (C) 2002-2019 CERN for the benefit of the ATLAS collaboration
-*/
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSHistoLateralShapeWeightHitAndMiss_h
 #define TFCSHistoLateralShapeWeightHitAndMiss_h

@@ -1,3 +1,5 @@
+# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 FROM gitlab-registry.cern.ch/linuxsupport/alma9-base
 
 ENV PIP_ROOT_USER_ACTION=ignore

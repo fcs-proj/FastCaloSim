@@ -1,3 +1,5 @@
+# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 FROM ubuntu:24.04
 
 ENV PIP_ROOT_USER_ACTION=ignore

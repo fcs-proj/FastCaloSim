@@ -1,6 +1,4 @@
-/*
-  Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
-*/
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
 /* Header include */
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"

@@ -1,3 +1,5 @@
+# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 cmake_minimum_required(VERSION 3.14)
 
 # Globbing source and header files

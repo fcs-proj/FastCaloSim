@@ -1,3 +1,5 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 #ifndef DETECTORCONSTRUCTION_HH
 #define DETECTORCONSTRUCTION_HH
 

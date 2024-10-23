@@ -1,3 +1,5 @@
+// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+
 #ifndef FASTSIMMODEL_HH
 #define FASTSIMMODEL_HH
 
@@ -9,9 +11,9 @@
 
 
 #include <G4FieldTrack.hh>
-#include <G4String.hh>                
-#include <G4ThreeVector.hh>           
-#include <G4Types.hh>                 
+#include <G4String.hh>
+#include <G4ThreeVector.hh>
+#include <G4Types.hh>
 #include "G4VFastSimulationModel.hh"
 #include "TestHelpers/TrackContainer.h"
 #include "TestHelpers/ExtrapStateContainer.h"
@@ -42,7 +44,7 @@ class FastSimModel : public G4VFastSimulationModel
   auto GetSimulationStates() const -> TestHelpers::SimStateContainer { return fSimulationStates; }
 
   // Reset the current state of the model
-  void Reset() { 
+  void Reset() {
     fTransportTracks.clear();
     fExtrapolations.clear();
     fSimulationStates.clear();
@@ -52,7 +54,7 @@ class FastSimModel : public G4VFastSimulationModel
   void doSimulation(G4bool doSimulation) { fDoSimulation = doSimulation; }
   // Set the extrapolator tool
   void setExtrapolationTool(FastCaloSimCaloExtrapolation tool) { fExtrapolationTool = tool; }
-  // Set debug flag 
+  // Set debug flag
   void setDebug(bool debug) { m_debug = debug; }
   // Set FastCaloSim parametrization
   void setParametrization(TFCSParametrizationBase* param) { fParametrization = param; }
@@ -74,7 +76,7 @@ class FastSimModel : public G4VFastSimulationModel
 
   // Boolean flag whether to do the simulation
   G4bool fDoSimulation;
-  
+
   // Random engine
   CLHEP::RanluxEngine m_random_engine;
   // Boolean flag to enable debug output
