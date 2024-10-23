@@ -1,13 +1,11 @@
 # FastCaloSim
  ![Checks](https://github.com/fcs-proj/FastCaloSim/actions/workflows/ci.yml/badge.svg)
  [![Coverage](https://codecov.io/gh/fcs-proj/FastCaloSim/graph/badge.svg)](https://codecov.io/gh/fcs-proj/FastCaloSim)
- [![Docs](https://readthedocs.org/projects/FastCaloSim/badge/?version=latest)](https://codecov.io/gh/fcs-proj/FastCaloSim)
+ [![Doxygen Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](https://fcs-proj.github.io/FastCaloSim/)
  [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
  [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md) 
 
 FastCaloSim is an experiment-independent toolkit for the fast parametrised and ML-based simulation of electromagnetic and hadronic showers in (high energy) physics experiments implemented in C++.
-
-More information can be found in the [documentation](https://fastcalosim.readthedocs.io/) and the [doxygen](https://fcs-proj.github.io/FastCaloSim/).
 
 # Quick Start
 
