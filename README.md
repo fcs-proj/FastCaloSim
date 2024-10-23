@@ -1,10 +1,10 @@
 # FastCaloSim
 
-FasatCaloSim is an experiment-independent toolkit for the fast parametrised and ML-based simulation of electromagnetic and hadronic showers in (high energy) physics experiments implemented in C++.
+FastCaloSim is an experiment-independent toolkit for the fast parametrised and ML-based simulation of electromagnetic and hadronic showers in (high energy) physics experiments implemented in C++.
 
 More information can be found in the [documentation](https://fastcalosim.readthedocs.io/) and the [doxygen](https://jbeirer.github.io/FastCaloSim/index.html).
 
-# Building and installing
+# Quick Start
 
 FastCaloSim is developed in C++ and is build using [CMake](https://cmake.org). The
 following commands will clone the repository, configure, and build the library
@@ -14,7 +14,7 @@ git clone https://github.com/fcs-project/FastCaloSim <source>
 cmake -B <build> -S <source> -D CMAKE_BUILD_TYPE=Release
 cmake --build <build>
 ```
-For install options see the [BUILDING](BUILDING.md) document and for advanced developer configuration with [presets][1] see the [HACKING](HACKING.md) document.
+For install options and instruction on how to include FastCaloSim in your experiment see the [BUILDING](BUILDING.md) document. For advanced developer configuration with [presets][1] and other useful information see the [HACKING](HACKING.md) document.
 
 # Contributing
 
