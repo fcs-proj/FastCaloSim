@@ -41,11 +41,11 @@ jobs:
       run: cmake --preset=ci-coverage
 
     - name: Build
-      run: cmake --build build/coverage -j 2
+      run: cmake --build build/coverage -j 4
 
     - name: Test
       working-directory: build/coverage
-      run: ctest --output-on-failure --no-tests=error --output-junit junit.xml  -j 2
+      run: ctest --output-on-failure --no-tests=error --output-junit junit.xml  -j 4
 
     - name: Process coverage info
       run: cmake --build build/coverage -t coverage
@@ -80,14 +80,14 @@ jobs:
       run: cmake "--preset=ci-linux"
 
     - name: Build
-      run: cmake --build build --config Release -j 2
+      run: cmake --build build --config Release -j 4
 
     - name: Install
       run: cmake --install build --config Release --prefix prefix
 
     - name: Test
       working-directory: build
-      run: ctest --output-on-failure --no-tests=error -C Release -j 2
+      run: ctest --output-on-failure --no-tests=error -C Release -j 4
 
     - uses: actions/upload-artifact@v4
       with:
@@ -130,13 +130,13 @@ jobs:
             cmake "--preset=ci-linux-lcg"
 
             echo "::group::Build"
-            cmake --build build --config Release -j 2
+            cmake --build build --config Release -j 4
 
             echo "::group::Install"
             cmake --install build --config Release --prefix prefix
 
             echo "::group::Test"
-            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 2
+            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
 
       - uses: actions/upload-artifact@v4
         with:
