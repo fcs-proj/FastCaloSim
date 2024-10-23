@@ -13,7 +13,7 @@ FastCaloSim is developed in C++ and is build using [CMake](https://cmake.org). T
 following commands will clone the repository, configure, and build the library
 
 ```sh
-git clone https://github.com/fcs-project/FastCaloSim <source>
+git clone https://github.com/fcs-proj/FastCaloSim <source>
 cmake -B <build> -S <source> -D CMAKE_BUILD_TYPE=Release
 cmake --build <build>
 ```
