@@ -7,7 +7,7 @@ include(cmake/silencer.cmake)
 
 project(
     FastCaloSim
-    VERSION 0.1.0-alpha
+    VERSION 0.1.0
     DESCRIPTION "An experiment-independent library for fast calorimeter simulation"
     HOMEPAGE_URL "https://fcs-proj.github.io/FastCaloSim/"
     LANGUAGES CXX
