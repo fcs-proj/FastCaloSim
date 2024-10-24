@@ -1,5 +1,6 @@
 # FastCaloSim
- ![Checks](https://github.com/fcs-proj/FastCaloSim/actions/workflows/ci.yml/badge.svg)
+ [![Checks](https://github.com/fcs-proj/FastCaloSim/actions/workflows/ci.yml/badge.svg)](https://github.com/fcs-proj/FastCaloSim/actions/workflows/ci.yml)
+ [![Release](https://img.shields.io/github/v/release/fcs-proj/fastcalosim?include_prereleases)](https://github.com/fcs-proj/fastcalosim/releases)
  [![Coverage](https://codecov.io/gh/fcs-proj/FastCaloSim/graph/badge.svg)](https://codecov.io/gh/fcs-proj/FastCaloSim)
  [![Doxygen Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](https://fcs-proj.github.io/FastCaloSim/)
  [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
