@@ -62,7 +62,7 @@ add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
 target_link_libraries(
-    FastCaloSim_FastCaloSim 
+    FastCaloSim_FastCaloSim
     PUBLIC
         ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
         fmt::fmt-header-only
@@ -83,7 +83,7 @@ ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim fmt)
+deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim fmt::fmt)
 
 include(GenerateExportHeader)
 generate_export_header(
