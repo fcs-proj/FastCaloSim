@@ -107,7 +107,7 @@ FCSReturnCode TFCSHitCellMappingWiggleEMB::simulate_hit(
   if (cs < 4 && cs > 0)
     wiggle = doWiggle(CLHEP::RandFlat::shoot(simulstate.randomEngine()));
 
-  ATH_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
                           << " phi=" << hit.phi() << " wiggle=" << wiggle);
 
   double hit_phi_shifted = hit.phi() - wiggle;

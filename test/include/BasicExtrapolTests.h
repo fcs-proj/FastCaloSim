@@ -20,7 +20,7 @@ protected:
     // Set the geometry of the extrapolator
     extrapolator.set_geometry(AtlasGeoTests::geo);
     // Set the verbosity level
-    extrapolator.setLevel(MSG::Level::INFO);
+    extrapolator.setLevel(FCS_MSG::Level::INFO);
   }
 
   // Per-test-suite tear-down.

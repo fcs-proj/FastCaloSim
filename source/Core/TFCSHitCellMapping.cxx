@@ -27,7 +27,7 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/)
 {
-  ATH_MSG_DEBUG("Got hit with E=" << hit.E() << " eta=" << hit.eta()
+  FCS_MSG_DEBUG("Got hit with E=" << hit.E() << " eta=" << hit.eta()
                                   << " phi=" << hit.phi());
 
   // Position where we will perform the lookup
@@ -35,14 +35,14 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
 
   // Get the best matching cell
   const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
-  ATH_MSG_DEBUG(cell);
+  FCS_MSG_DEBUG(cell);
 
   // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
   double proximity = cell.boundary_proximity(lookup_pos);
 
-  ATH_MSG_DEBUG("Hit-cell distance in eta-phi is: " << proximity);
+  FCS_MSG_DEBUG("Hit-cell distance in eta-phi is: " << proximity);
 
   // If the distance is positive then we are using the nearest cell rather
   // than are inside a cell If we are more than 0.005mm from the nearest cell
@@ -74,13 +74,14 @@ void TFCSHitCellMapping::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint)
-    ATH_MSG_INFO(optprint << "  geo=" << m_geo);
+    FCS_MSG_INFO(optprint << "  geo=" << m_geo);
 }
 
 #pragma GCC diagnostic push

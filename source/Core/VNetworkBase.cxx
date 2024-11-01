@@ -19,7 +19,7 @@ VNetworkBase::VNetworkBase()
 VNetworkBase::VNetworkBase(const std::string& inputFile)
     : m_inputFile(inputFile)
 {
-  ATH_MSG_DEBUG("Constructor called with inputFile");
+  FCS_MSG_DEBUG("Constructor called with inputFile");
 };
 
 // No setupPersistedVariables or setupNet here!
@@ -73,10 +73,10 @@ std::string VNetworkBase::representNetworkOutputs(
 void VNetworkBase::print(std::ostream& strm) const
 {
   if (m_inputFile.empty()) {
-    ATH_MSG_DEBUG("Making a network without a named inputFile");
+    FCS_MSG_DEBUG("Making a network without a named inputFile");
     strm << "Unknown network";
   } else {
-    ATH_MSG_DEBUG("Making a network with input file " << m_inputFile);
+    FCS_MSG_DEBUG("Making a network with input file " << m_inputFile);
     strm << m_inputFile;
   };
 };
@@ -84,7 +84,7 @@ void VNetworkBase::print(std::ostream& strm) const
 void VNetworkBase::writeNetToTTree(TFile& root_file,
                                    std::string const& tree_name)
 {
-  ATH_MSG_DEBUG("Making tree name " << tree_name);
+  FCS_MSG_DEBUG("Making tree name " << tree_name);
   root_file.cd();
   const std::string title = "onnxruntime saved network";
   TTree tree(tree_name.c_str(), title.c_str());
@@ -95,7 +95,7 @@ void VNetworkBase::writeNetToTTree(TFile& root_file,
 void VNetworkBase::writeNetToTTree(std::string const& root_name,
                                    std::string const& tree_name)
 {
-  ATH_MSG_DEBUG("Making or updating file name " << root_name);
+  FCS_MSG_DEBUG("Making or updating file name " << root_name);
   TFile root_file(root_name.c_str(), "UPDATE");
   this->writeNetToTTree(root_file, tree_name);
   root_file.Close();
@@ -106,7 +106,7 @@ bool VNetworkBase::isRootFile(std::string const& filename) const
   const std::string* to_check = &filename;
   if (filename.length() == 0) {
     to_check = &this->m_inputFile;
-    ATH_MSG_DEBUG("No file name given, so using m_inputFile, " << m_inputFile);
+    FCS_MSG_DEBUG("No file name given, so using m_inputFile, " << m_inputFile);
   };
   const std::string ending = ".root";
   const int ending_len = ending.length();

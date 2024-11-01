@@ -11,7 +11,7 @@ FCSReturnCode TFCSParametrizationPlaceholder::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const
 {
-  ATH_MSG_ERROR(
+  FCS_MSG_ERROR(
       "TFCSParametrizationPlaceholder::simulate(). This is a "
       "placeholder and should never get called. Likely a problem in "
       "the reading of the parametrization file occurred and this "

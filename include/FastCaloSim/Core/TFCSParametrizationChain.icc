@@ -9,7 +9,7 @@ inline FCSReturnCode TFCSParametrizationChain::simulate_and_retry(
   int retry = 0;
   for (int i = 0; i <= retry; i++) {
     if (i >= retry_warning)
-      ATH_MSG_WARNING(
+      FCS_MSG_WARNING(
           "TFCSParametrizationChain::simulate_and_retry(): Retry simulate call "
           << i << "/" << retry);
 
@@ -31,7 +31,7 @@ inline FCSReturnCode TFCSParametrizationChain::simulate_and_retry(
       return status;
   }
 
-  ATH_MSG_FATAL("TFCSParametrizationChain::simulate_and_retry(): Simulate call "
+  FCS_MSG_FATAL("TFCSParametrizationChain::simulate_and_retry(): Simulate call "
                 "failed after "
                 << retry << " retries");
 

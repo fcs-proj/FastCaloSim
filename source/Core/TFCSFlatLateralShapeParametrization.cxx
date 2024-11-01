@@ -86,7 +86,7 @@ FCSReturnCode TFCSFlatLateralShapeParametrization::simulate_hit(
                   center_z,
                   hit.E() * m_scale);
 
-  ATH_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
                           << " phi=" << hit.phi() << " z=" << hit.z()
                           << " r=" << r << " alpha=" << alpha);
 
@@ -97,13 +97,14 @@ void TFCSFlatLateralShapeParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
-    ATH_MSG_INFO(optprint << "  dR=" << m_dR << " scale factor=" << m_scale
+    FCS_MSG_INFO(optprint << "  dR=" << m_dR << " scale factor=" << m_scale
                           << ", #hits=" << m_nhits);
   }
 }

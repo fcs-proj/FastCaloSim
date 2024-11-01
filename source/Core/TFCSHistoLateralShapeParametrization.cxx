@@ -36,7 +36,7 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
     int first_fix_bin = -1;
     for (int i = (int)(m_hist.get_HistoContents().size() - 1); i >= 0; --i) {
       if (std::isnan(m_hist.get_HistoContents()[i])) {
-        ATH_MSG_DEBUG("nan in histo content for "
+        FCS_MSG_DEBUG("nan in histo content for "
                       << GetTitle() << ", bin[" << i
                       << "]=" << m_hist.get_HistoContents()[i] << " -> 1");
         m_hist.get_HistoContents()[i] = 1;
@@ -47,7 +47,7 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
       return;
 
     if (first_fix_bin == 0) {
-      ATH_MSG_WARNING("nan in histo content for "
+      FCS_MSG_WARNING("nan in histo content for "
                       << GetTitle()
                       << " for all bins. Fixed to probability 1 causing hits "
                          "to be deposited in the shower center");
@@ -55,14 +55,14 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
       int last_fix_bin = -1;
       for (size_t i = 0; i < m_hist.get_HistoContents().size(); ++i) {
         if (std::isnan(m_hist.get_HistoContents()[i])) {
-          ATH_MSG_DEBUG("nan in histo content for "
+          FCS_MSG_DEBUG("nan in histo content for "
                         << GetTitle() << ", bin[" << i
                         << "]=" << m_hist.get_HistoContents()[i] << " -> 0");
           m_hist.get_HistoContents()[i] = 0;
           last_fix_bin = i;
         }
       }
-      ATH_MSG_WARNING("nan in histo content for "
+      FCS_MSG_WARNING("nan in histo content for "
                       << GetTitle() << ". Fixed up to bin " << last_fix_bin
                       << " with probability 0 and beyond bin " << first_fix_bin
                       << " with probability 1.");
@@ -140,7 +140,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrization::simulate_hit(
     m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
   }
   if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
-    ATH_MSG_ERROR("  Histogram: "
+    FCS_MSG_ERROR("  Histogram: "
                   << m_hist.get_HistoBordersx().size() - 1 << "*"
                   << m_hist.get_HistoBordersy().size() - 1
                   << " bins, #hits=" << m_nhits << " alpha=" << alpha
@@ -148,7 +148,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrization::simulate_hit(
     alpha = 0;
     r = 0.001;
 
-    ATH_MSG_ERROR("  This error could probably be retried");
+    FCS_MSG_ERROR("  This error could probably be retried");
     return FCSFatal;
   }
 
@@ -180,7 +180,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrization::simulate_hit(
   hit.setEtaPhiZE(
       center_eta + delta_eta, center_phi + delta_phi, center_z, hit.E());
 
-  ATH_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
                           << " phi=" << hit.phi() << " z=" << hit.z()
                           << " r=" << r << " alpha=" << alpha);
 
@@ -224,20 +224,21 @@ void TFCSHistoLateralShapeParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
     if (is_phi_symmetric()) {
-      ATH_MSG_INFO(optprint
+      FCS_MSG_INFO(optprint
                    << "  Histo: " << m_hist.get_HistoBordersx().size() - 1
                    << "*" << m_hist.get_HistoBordersy().size() - 1
                    << " bins, #hits=" << m_nhits << ", r scale=" << m_r_scale
                    << ", r offset=" << m_r_offset << "mm (phi symmetric)");
     } else {
-      ATH_MSG_INFO(optprint
+      FCS_MSG_INFO(optprint
                    << "  Histo: " << m_hist.get_HistoBordersx().size() - 1
                    << "*" << m_hist.get_HistoBordersy().size() - 1
                    << " bins, #hits=" << m_nhits << ", r scale=" << m_r_scale

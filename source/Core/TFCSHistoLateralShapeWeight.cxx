@@ -78,7 +78,7 @@ FCSReturnCode TFCSHistoLateralShapeWeight::simulate_hit(
   }
   hit.set_E(weight * hit.E());
 
-  ATH_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
+  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
                           << " weight=" << weight);
   return FCSSuccess;
 }
@@ -100,20 +100,21 @@ void TFCSHistoLateralShapeWeight::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
     if (m_hist)
-      ATH_MSG_INFO(optprint
+      FCS_MSG_INFO(optprint
                    << "  Histogram: " << m_hist->GetNbinsX() << " bins ["
                    << std::as_const(m_hist)->GetXaxis()->GetXmin() << ","
                    << std::as_const(m_hist)->GetXaxis()->GetXmax() << "]"
                    << " min weight: " << m_minWeight
                    << " max weight: " << m_maxWeight);
     else
-      ATH_MSG_INFO(optprint << "  no Histogram");
+      FCS_MSG_INFO(optprint << "  no Histogram");
   }
 }

@@ -65,7 +65,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
     m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
   }
   if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
-    ATH_MSG_ERROR("  Histogram: "
+    FCS_MSG_ERROR("  Histogram: "
                   << m_hist.get_HistoBordersx().size() - 1 << "*"
                   << m_hist.get_HistoBordersy().size() - 1
                   << " bins, #hits=" << m_nhits << " alpha=" << alpha
@@ -73,7 +73,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
     alpha = 0;
     r = 0.001;
 
-    ATH_MSG_ERROR("  This error could probably be retried");
+    FCS_MSG_ERROR("  This error could probably be retried");
     return FCSFatal;
   }
 
@@ -88,7 +88,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
 
   hit.setXYZE(hit_r * cos(hit_phi), hit_r * sin(hit_phi), center_z, hit.E());
 
-  ATH_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " x=" << hit.x()
+  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " x=" << hit.x()
                           << " y=" << hit.y() << " z=" << hit.z() << " r=" << r
                           << " alpha=" << alpha);
 

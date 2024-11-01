@@ -75,11 +75,11 @@ public:
             ibinx, hist->GetXaxis()->GetBinLowEdge(ibinx + 1));
         //          if(ihist>0)
         //          if(m_HistoBorders.GetBinLowEdge(ihist-1)==m_HistoBorders.GetBinLowEdge(ihist))
-        //          { ATH_MSG_INFO( bin="<<ibin+1<<"
+        //          { FCS_MSG_INFO( bin="<<ibin+1<<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist);
         //          --ihist;
-        //          ATH_MSG_INFO("     bin="<<ibin  <<"
+        //          FCS_MSG_INFO("     bin="<<ibin  <<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin  )<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
         //          }
@@ -89,11 +89,11 @@ public:
             ibiny, hist->GetYaxis()->GetBinLowEdge(ibiny + 1));
         //          if(ihist>0)
         //          if(m_HistoBorders.GetBinLowEdge(ihist-1)==m_HistoBorders.GetBinLowEdge(ihist))
-        //          { ATH_MSG_INFO("Skip bin="<<ibin+1<<"
+        //          { FCS_MSG_INFO("Skip bin="<<ibin+1<<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
         //          --ihist;
-        //          ATH_MSG_INFO("     bin="<<ibin  <<"
+        //          FCS_MSG_INFO("     bin="<<ibin  <<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin  )<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
         //          }
@@ -107,16 +107,16 @@ public:
           //          if(ihist>0)
           //          if(m_HistoContents.get_fraction(ihist-1)==m_HistoContents.get_fraction(ihist))
           //          {
-          //            ATH_MSG_INFO("Skip fbin="<<ihist<<"
+          //            FCS_MSG_INFO("Skip fbin="<<ihist<<"
           //            fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
           //            frac="<<m_HistoContents.get_fraction(ihist));
           //            --ihist;
-          //            ATH_MSG_INFO("     fbin="<<ihist<<"
+          //            FCS_MSG_INFO("     fbin="<<ihist<<"
           //            fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
           //            frac="<<m_HistoContents.get_fraction(ihist));
           //          }
 
-          //          ATH_MSG_INFO("bin="<<ibin+1<<"
+          //          FCS_MSG_INFO("bin="<<ibin+1<<"
           //          fbin="<<ihist<<"/"<<m_HistoBorders.get_nbins()<<"
           //          x=["<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<","<<hist->GetXaxis()->GetBinUpEdge(ibin+1)<<"]
           //          fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
@@ -142,16 +142,16 @@ public:
   //          if(ihist>0)
   if(m_HistoContents.get_fraction(ihist-1)==m_HistoContents.get_fraction(ihist))
   {
-  //            ATH_MSG_INFO("Skip fbin="<<ihist<<"
+  //            FCS_MSG_INFO("Skip fbin="<<ihist<<"
   fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
   frac="<<m_HistoContents.get_fraction(ihist));
   //            --ihist;
-  //            ATH_MSG_INFO("     fbin="<<ihist<<"
+  //            FCS_MSG_INFO("     fbin="<<ihist<<"
   fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
   frac="<<m_HistoContents.get_fraction(ihist));
   //          }
 
-  //          ATH_MSG_INFO("bin="<<ibin+1<<"
+  //          FCS_MSG_INFO("bin="<<ibin+1<<"
   fbin="<<ihist<<"/"<<m_HistoBorders.get_nbins()<<"
   x=["<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<","<<hist->GetXaxis()->GetBinUpEdge(ibin+1)<<"]
   fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"

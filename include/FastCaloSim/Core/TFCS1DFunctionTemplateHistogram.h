@@ -69,13 +69,13 @@ public:
               == m_HistoBorders.GetBinLowEdge(ihist))
           {
             if (doprint)
-              ATH_MSG_INFO("Skip bin="
+              FCS_MSG_INFO("Skip bin="
                            << ibin + 1
                            << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
                            << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
             --ihist;
             if (doprint)
-              ATH_MSG_INFO("     bin="
+              FCS_MSG_INFO("     bin="
                            << ibin
                            << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin)
                            << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
@@ -87,20 +87,20 @@ public:
               == m_HistoContents.get_fraction(ihist))
           {
             if (doprint)
-              ATH_MSG_INFO("Skip fbin="
+              FCS_MSG_INFO("Skip fbin="
                            << ihist
                            << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
                            << " frac=" << m_HistoContents.get_fraction(ihist));
             --ihist;
             if (doprint)
-              ATH_MSG_INFO("     fbin="
+              FCS_MSG_INFO("     fbin="
                            << ihist
                            << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
                            << " frac=" << m_HistoContents.get_fraction(ihist));
           }
 
         if (doprint)
-          ATH_MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
+          FCS_MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
                               << m_HistoBorders.get_nbins() << " x=["
                               << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
                               << "," << hist->GetXaxis()->GetBinUpEdge(ibin + 1)
@@ -129,7 +129,7 @@ public:
       return 0;
     Trandom residual_rnd;
     size_t ibin = m_HistoContents.get_bin(rnd, residual_rnd);
-    // ATH_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
+    // FCS_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
     // frac="<<m_HistoContents.get_fraction(ibin)<<"
     // residual_rnd="<<residual_rnd);
     return m_HistoBorders.position(ibin, residual_rnd);

@@ -11,7 +11,7 @@ FCSReturnCode TFCSInvisibleParametrization::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const
 {
-  ATH_MSG_VERBOSE(
+  FCS_MSG_VERBOSE(
       "now in TFCSInvisibleParametrization::simulate(). Don't do "
       "anything for invisible");
   return FCSSuccess;
