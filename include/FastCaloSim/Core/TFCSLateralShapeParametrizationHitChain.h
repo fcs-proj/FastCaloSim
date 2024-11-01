@@ -83,7 +83,7 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
-  void PropagateMSGLevel(MSG::Level level) const;
+  void PropagateMSGLevel(FCS_MSG::Level level) const;
 
   Chain_t m_chain;
 

@@ -307,7 +307,7 @@ protected:
 
 private:
   // Supplying a ClassDef for writing to file.
-  ClassDef(VNetworkBase, 1);
+  ClassDef(VNetworkBase, 3);
 };
 
 #endif

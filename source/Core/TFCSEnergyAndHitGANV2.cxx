@@ -70,7 +70,7 @@ bool TFCSEnergyAndHitGANV2::initializeNetwork(
   // initialize all necessary constants
   // FIXME eventually all these could be stored in the .json file
 
-  ATH_MSG_INFO(
+  FCS_MSG_INFO(
       "Using FastCaloGANInputFolderName: " << FastCaloGANInputFolderName);
   // get neural net JSON file as an std::istream object
   const int etaMax = etaMin + 5;
@@ -113,12 +113,12 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
     const TFCSExtrapolationState* extrapol) const
 {
   if (!truth) {
-    ATH_MSG_ERROR("Invalid truth pointer");
+    FCS_MSG_ERROR("Invalid truth pointer");
     return false;
   }
 
   if (!extrapol) {
-    ATH_MSG_ERROR("Invalid extrapolation pointer");
+    FCS_MSG_ERROR("Invalid extrapolation pointer");
     return false;
   }
 
@@ -132,34 +132,34 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   else
     Einit = Ekin;
 
-  ATH_MSG_VERBOSE("Momentum " << truth->P() << " pdgId " << truth->pdgid());
+  FCS_MSG_VERBOSE("Momentum " << truth->P() << " pdgId " << truth->pdgid());
   // check that the network exists
   if (!m_slice->IsGanCorrectlyLoaded()) {
-    ATH_MSG_WARNING("GAN not loaded correctly.");
+    FCS_MSG_WARNING("GAN not loaded correctly.");
     return false;
   }
 
   const TFCSGANEtaSlice::NetworkOutputs& outputs =
       m_slice->GetNetworkOutputs(truth, extrapol, simulstate);
-  ATH_MSG_VERBOSE("network outputs size: " << outputs.size());
+  FCS_MSG_VERBOSE("network outputs size: " << outputs.size());
 
   const TFCSGANXMLParameters::Binning& binsInLayers = m_param.GetBinning();
   const auto ganVersion = m_param.GetGANVersion();
   const TFCSGANEtaSlice::FitResultsPerLayer& fitResults =
       m_slice->GetFitResults();  // used only if GAN version > 1
 
-  ATH_MSG_DEBUG("energy voxels size = " << outputs.size());
+  FCS_MSG_DEBUG("energy voxels size = " << outputs.size());
 
   double totalEnergy = 0;
   for (auto output : outputs) {
     totalEnergy += output.second;
   }
   if (totalEnergy < 0) {
-    ATH_MSG_WARNING("Energy from GAN is negative, skipping particle");
+    FCS_MSG_WARNING("Energy from GAN is negative, skipping particle");
     return false;
   }
 
-  ATH_MSG_VERBOSE("Get binning");
+  FCS_MSG_VERBOSE("Get binning");
 
   simulstate.set_E(0);
 
@@ -174,7 +174,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
 
     // If only one bin in r means layer is empty, no value should be added
     if (xBinNum == 1) {
-      ATH_MSG_VERBOSE(" Layer "
+      FCS_MSG_VERBOSE(" Layer "
                       << layer
                       << " has only one bin in r, this means is it not used, "
                          "skipping (this is needed to keep correct "
@@ -183,14 +183,14 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
       continue;
     }
 
-    ATH_MSG_VERBOSE(" Getting energy for Layer " << layer);
+    FCS_MSG_VERBOSE(" Getting energy for Layer " << layer);
 
     // First fill energies
     for (int ix = 1; ix <= xBinNum; ++ix) {
       double binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
       for (int iy = 1; iy <= binsInAlphaInRBin; ++iy) {
         const double energyInVoxel = outputs.at(std::to_string(vox));
-        ATH_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
+        FCS_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
                                 << " binx " << ix << " biny " << iy);
 
         if (energyInVoxel <= 0) {
@@ -205,7 +205,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   for (unsigned int ichain = m_bin_start.back(); ichain < size(); ++ichain) {
-    ATH_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
+    FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
     if (simulate_and_retry(chain()[ichain], simulstate, truth, extrapol)
         != FCSSuccess)
     {
@@ -227,7 +227,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
 
     // If only one bin in r means layer is empty, no value should be added
     if (xBinNum == 1) {
-      ATH_MSG_VERBOSE(" Layer "
+      FCS_MSG_VERBOSE(" Layer "
                       << layer
                       << " has only one bin in r, this means is it not used, "
                          "skipping (this is needed to keep correct "
@@ -244,7 +244,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                                  m_bin_start[bin + 1]);
              ++ichain)
         {
-          ATH_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
+          FCS_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
                                << " run init " << get_bin_text(bin) << ": "
                                << chain()[ichain]->GetName());
           if (chain()[ichain]->InheritsFrom(
@@ -255,14 +255,14 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
             if (sim->simulate_hit(hit, simulstate, truth, extrapol)
                 != FCSSuccess)
             {
-              ATH_MSG_ERROR("error for "
+              FCS_MSG_ERROR("error for "
                             << get_variable_text(simulstate, truth, extrapol)
                             << " run init " << get_bin_text(bin) << ": "
                             << chain()[ichain]->GetName());
               return false;
             }
           } else {
-            ATH_MSG_ERROR("for "
+            FCS_MSG_ERROR("for "
                           << get_variable_text(simulstate, truth, extrapol)
                           << " run init " << get_bin_text(bin) << ": "
                           << chain()[ichain]->GetName()
@@ -272,7 +272,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
           }
         }
       } else {
-        ATH_MSG_WARNING("nothing to init for "
+        FCS_MSG_WARNING("nothing to init for "
                         << get_variable_text(simulstate, truth, extrapol)
                         << ": " << get_bin_text(bin));
       }
@@ -288,7 +288,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
     const double center_r = hit.center_r();
     const double center_z = hit.center_z();
 
-    ATH_MSG_VERBOSE(" Layer " << layer << " Extrap eta " << center_eta
+    FCS_MSG_VERBOSE(" Layer " << layer << " Extrap eta " << center_eta
                               << " phi " << center_phi << " R " << center_r);
 
     const float dist000 =
@@ -309,7 +309,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
         const double energyInVoxel = outputs.at(std::to_string(vox));
         const int lowEdgeIndex = (iy - 1) * binsToMerge + 1;
 
-        ATH_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
+        FCS_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
                                 << " binx " << ix << " biny " << iy);
 
         if (energyInVoxel <= 0) {
@@ -378,7 +378,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                   tries++;
                 }
                 if (tries >= 100) {
-                  ATH_MSG_VERBOSE(" Too many tries for bin ["
+                  FCS_MSG_VERBOSE(" Too many tries for bin ["
                                   << x->GetBinLowEdge(ix) << "-"
                                   << x->GetBinUpEdge(ix) << "] having slope "
                                   << fitResults.at(layer)[ix - 1]
@@ -415,7 +415,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
               float delta_eta_mm = r * cos(alpha);
               float delta_phi_mm = r * sin(alpha);
 
-              ATH_MSG_VERBOSE("delta_eta_mm " << delta_eta_mm
+              FCS_MSG_VERBOSE("delta_eta_mm " << delta_eta_mm
                                               << " delta_phi_mm "
                                               << delta_phi_mm);
 
@@ -437,7 +437,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
               hit.set_eta_x(center_eta + delta_eta);
               hit.set_phi_y(TVector2::Phi_mpi_pi(center_phi + delta_phi));
 
-              ATH_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
+              FCS_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                           << " layer " << layer);
             } else {  // FCAL is in (x,y,z)
               const float hit_r = r * cos(alpha) + center_r;
@@ -453,7 +453,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
               hit.set_eta_x(hit_r * cos(hit_phi));
               hit.set_phi_y(hit_r * sin(hit_phi));
               hit.set_z(center_z);
-              ATH_MSG_VERBOSE(" Hit x " << hit.x() << " y " << hit.y()
+              FCS_MSG_VERBOSE(" Hit x " << hit.x() << " y " << hit.y()
                                         << " layer " << layer);
             }
 
@@ -465,7 +465,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                      ichain < m_bin_start[bin + 1];
                      ++ichain)
                 {
-                  ATH_MSG_DEBUG(
+                  FCS_MSG_DEBUG(
                       "for " << get_variable_text(simulstate, truth, extrapol)
                              << " run " << get_bin_text(bin) << ": "
                              << chain()[ichain]->GetName());
@@ -478,7 +478,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                     if (sim->simulate_hit(hit, simulstate, truth, extrapol)
                         != FCSSuccess)
                     {
-                      ATH_MSG_ERROR(
+                      FCS_MSG_ERROR(
                           "error for "
                           << get_variable_text(simulstate, truth, extrapol)
                           << " run init " << get_bin_text(bin) << ": "
@@ -486,7 +486,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                       return false;
                     }
                   } else {
-                    ATH_MSG_ERROR(
+                    FCS_MSG_ERROR(
                         "for " << get_variable_text(simulstate, truth, extrapol)
                                << " run init " << get_bin_text(bin) << ": "
                                << chain()[ichain]->GetName()
@@ -496,13 +496,13 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                   }
                 }
               } else {
-                ATH_MSG_WARNING(
+                FCS_MSG_WARNING(
                     "nothing to do for "
                     << get_variable_text(simulstate, truth, extrapol) << ": "
                     << get_bin_text(bin));
               }
             } else {
-              ATH_MSG_WARNING("no bins defined, is this intended?");
+              FCS_MSG_WARNING("no bins defined, is this intended?");
             }
           }
         }
@@ -510,8 +510,8 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
       }
     }
 
-    ATH_MSG_VERBOSE("Number of voxels " << vox);
-    ATH_MSG_VERBOSE("Done layer " << layer);
+    FCS_MSG_VERBOSE("Number of voxels " << vox);
+    FCS_MSG_VERBOSE("Done layer " << layer);
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
@@ -520,7 +520,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
     }
   }
 
-  ATH_MSG_VERBOSE("Done particle");
+  FCS_MSG_VERBOSE("Done particle");
   return true;
 }
 
@@ -530,7 +530,7 @@ FCSReturnCode TFCSEnergyAndHitGANV2::simulate(
     const TFCSExtrapolationState* extrapol) const
 {
   for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
-    ATH_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
+    FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
     if (simulate_and_retry(chain()[ichain], simulstate, truth, extrapol)
         != FCSSuccess)
     {
@@ -538,9 +538,9 @@ FCSReturnCode TFCSEnergyAndHitGANV2::simulate(
     }
   }
 
-  ATH_MSG_VERBOSE("Fill Energies");
+  FCS_MSG_VERBOSE("Fill Energies");
   if (!fillEnergy(simulstate, truth, extrapol)) {
-    ATH_MSG_WARNING("Could not fill energies ");
+    FCS_MSG_WARNING("Could not fill energies ");
     // bail out but do not stop the job
     return FCSSuccess;
   }
@@ -554,7 +554,7 @@ void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
   TString opt(option);
   const bool shortprint = opt.Index("short") >= 0;
   const bool longprint =
-      msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 
@@ -563,7 +563,7 @@ void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
     if (ichain == 0 && ichain != m_bin_start.front()) {
       prefix = "> ";
       if (longprint)
-        ATH_MSG_INFO(optprint << prefix << "Run for all bins");
+        FCS_MSG_INFO(optprint << prefix << "Run for all bins");
     }
     for (unsigned int ibin = 0; ibin < get_number_of_bins(); ++ibin) {
       if (ichain == m_bin_start[ibin]) {
@@ -572,13 +572,13 @@ void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
             continue;
         prefix = Form("%-2d", ibin);
         if (longprint)
-          ATH_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
+          FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
       }
     }
     if (ichain == m_bin_start.back()) {
       prefix = "< ";
       if (longprint)
-        ATH_MSG_INFO(optprint << prefix << "Run for all bins");
+        FCS_MSG_INFO(optprint << prefix << "Run for all bins");
     }
     chain()[ichain]->Print(opt + prefix);
   }
@@ -602,7 +602,7 @@ int TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
 {
   double binsInAlphaInRBin = yBinNum;
   if (yBinNum == 32) {
-    ATH_MSG_DEBUG("yBinNum is special value 32");
+    FCS_MSG_DEBUG("yBinNum is special value 32");
     const double widthX = x->GetBinWidth(ix);
     const double radious = x->GetBinCenter(ix);
     double circumference = radious * 2 * TMath::Pi();
@@ -612,7 +612,7 @@ int TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
 
     const double bins = circumference / widthX;
     binsInAlphaInRBin = GetBinsInFours(bins);
-    ATH_MSG_DEBUG("Bin in alpha: " << binsInAlphaInRBin << " for r bin: " << ix
+    FCS_MSG_DEBUG("Bin in alpha: " << binsInAlphaInRBin << " for r bin: " << ix
                                    << " (" << x->GetBinLowEdge(ix) << "-"
                                    << x->GetBinUpEdge(ix) << ")");
   }

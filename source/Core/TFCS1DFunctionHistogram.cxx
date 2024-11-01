@@ -106,7 +106,7 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
     maxdev *= 100.0;
 
     if (i % 100 == 0)
-      ATH_MSG_INFO("Iteration nr. " << i << " -----> change " << change
+      FCS_MSG_INFO("Iteration nr. " << i << " -----> change " << change
                                     << " bins " << h_out->GetNbinsX()
                                     << " -> maxdev=" << maxdev);
 
@@ -123,7 +123,7 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
     }
   }
 
-  ATH_MSG_INFO("Info: Rebinned histogram has " << h_output->GetNbinsX()
+  FCS_MSG_INFO("Info: Rebinned histogram has " << h_output->GetNbinsX()
                                                << " bins.");
 
   // store:

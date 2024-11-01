@@ -75,12 +75,12 @@ FCSReturnCode TFCSParametrizationBinnedChain::simulate(
   FCSReturnCode status = FCSSuccess;
   for (int i = 0; i <= retry; i++) {
     if (i >= retry_warning)
-      ATH_MSG_WARNING(
+      FCS_MSG_WARNING(
           "TFCSParametrizationBinnedChain::simulate(): Retry simulate call "
           << i << "/" << retry);
 
     for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
-      ATH_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
+      FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
       status = simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
       if (status >= FCSRetry) {
         retry = status - FCSRetry;
@@ -102,7 +102,7 @@ FCSReturnCode TFCSParametrizationBinnedChain::simulate(
              ichain < m_bin_start[bin + 1];
              ++ichain)
         {
-          ATH_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
+          FCS_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
                                << " run " << get_bin_text(bin) << ": "
                                << chain()[ichain]->GetName());
           status =
@@ -118,17 +118,17 @@ FCSReturnCode TFCSParametrizationBinnedChain::simulate(
             return FCSFatal;
         }
       } else {
-        ATH_MSG_WARNING("for " << get_variable_text(simulstate, truth, extrapol)
+        FCS_MSG_WARNING("for " << get_variable_text(simulstate, truth, extrapol)
                                << ": " << get_bin_text(bin));
       }
     } else {
-      ATH_MSG_WARNING("no bins defined, is this intended?");
+      FCS_MSG_WARNING("no bins defined, is this intended?");
     }
     if (status >= FCSRetry)
       continue;
 
     for (unsigned int ichain = m_bin_start.back(); ichain < size(); ++ichain) {
-      ATH_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
+      FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
       status = simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
       if (status >= FCSRetry) {
         retry = status - FCSRetry;
@@ -146,7 +146,7 @@ FCSReturnCode TFCSParametrizationBinnedChain::simulate(
   }
 
   if (status != FCSSuccess) {
-    ATH_MSG_FATAL(
+    FCS_MSG_FATAL(
         "TFCSParametrizationBinnedChain::simulate(): Simulate call "
         "failed after "
         << retry << " retries");
@@ -161,7 +161,8 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
   TFCSParametrization::Print(option);
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 
@@ -170,7 +171,7 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
     if (ichain == 0 && ichain != m_bin_start.front()) {
       prefix = "> ";
       if (longprint)
-        ATH_MSG_INFO(optprint << prefix << "Run for all bins");
+        FCS_MSG_INFO(optprint << prefix << "Run for all bins");
     }
     for (unsigned int ibin = 0; ibin < get_number_of_bins(); ++ibin) {
       if (ichain == m_bin_start[ibin]) {
@@ -179,13 +180,13 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
             continue;
         prefix = Form("%-2d", ibin);
         if (longprint)
-          ATH_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
+          FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
       }
     }
     if (ichain == m_bin_start.back()) {
       prefix = "< ";
       if (longprint)
-        ATH_MSG_INFO(optprint << prefix << "Run for all bins");
+        FCS_MSG_INFO(optprint << prefix << "Run for all bins");
     }
     chain()[ichain]->Print(opt + prefix);
   }

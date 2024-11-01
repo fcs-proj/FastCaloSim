@@ -76,10 +76,10 @@ FCSReturnCode TFCSEnergyInterpolationPiecewiseLinear::simulate(
   }
 
   if (OnlyScaleEnergy())
-    ATH_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << Ekin
+    FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << Ekin
                            << " and E=" << Einit);
   else
-    ATH_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << Ekin);
+    FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << Ekin);
 
   // set mean energy of simulstate
   simulstate.set_E(Emean);
@@ -114,13 +114,14 @@ void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSParametrization::Print(option);
 
   if (longprint)
-    ATH_MSG_INFO(optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
+    FCS_MSG_INFO(optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
                           << "linInterpol N=" << m_logEkin.size() << " "
                           << m_MinMaxlogEkin.first
                           << "<=log(Ekin)<=" << m_MinMaxlogEkin.second << " "

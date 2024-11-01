@@ -17,7 +17,7 @@ int TFCSParametrizationFloatSelectChain::push_back_in_bin(
 {
   if (up < low) {
     // can't handle wrong order of bounds
-    ATH_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
+    FCS_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
                                 << up << ") not well defined");
     return -1;
   }
@@ -41,7 +41,7 @@ int TFCSParametrizationFloatSelectChain::push_back_in_bin(
 
   if (ilow < 0 && iup < 0) {
     // can't handle disjunct ranges
-    ATH_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
+    FCS_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
                                 << up << ") which is outside existing range ["
                                 << m_bin_low_edge[0] << ","
                                 << m_bin_low_edge[get_number_of_bins()] << ")");
@@ -74,7 +74,7 @@ int TFCSParametrizationFloatSelectChain::push_back_in_bin(
     return newbin;
   }
 
-  ATH_MSG_ERROR("Cannot add "
+  FCS_MSG_ERROR("Cannot add "
                 << param->GetName() << ": range [" << low << "," << up
                 << ") covers more than one bin in existing range ["
                 << m_bin_low_edge[0] << ","
@@ -96,19 +96,19 @@ void TFCSParametrizationFloatSelectChain::push_back_in_bin(
 int TFCSParametrizationFloatSelectChain::val_to_bin(float val) const
 {
   if (val < m_bin_low_edge[0]) {
-    ATH_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " < "
+    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " < "
                                   << m_bin_low_edge[0]);
     return -1;
   }
   if (val >= m_bin_low_edge[get_number_of_bins()]) {
-    ATH_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " >= "
+    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " >= "
                                   << m_bin_low_edge[get_number_of_bins()]);
     return -1;
   }
 
   auto it = std::upper_bound(m_bin_low_edge.begin(), m_bin_low_edge.end(), val);
   int dist = std::distance(m_bin_low_edge.begin(), it) - 1;
-  ATH_MSG_VERBOSE("val_to_bin(" << val << ")=" << dist);
+  FCS_MSG_VERBOSE("val_to_bin(" << val << ")=" << dist);
   return dist;
 }
 

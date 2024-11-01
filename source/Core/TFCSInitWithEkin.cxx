@@ -19,7 +19,7 @@ FCSReturnCode TFCSInitWithEkin::simulate(TFCSSimulationState& simulstate,
                                          const TFCSTruthState* truth,
                                          const TFCSExtrapolationState*) const
 {
-  ATH_MSG_DEBUG("set E to Ekin=" << truth->Ekin());
+  FCS_MSG_DEBUG("set E to Ekin=" << truth->Ekin());
   simulstate.set_E(truth->Ekin());
   return FCSSuccess;
 }

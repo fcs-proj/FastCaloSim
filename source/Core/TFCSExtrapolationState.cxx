@@ -16,7 +16,7 @@ TFCSExtrapolationState::TFCSExtrapolationState()
 void TFCSExtrapolationState::Print(Option_t*) const
 {
   // Print the IDCaloBoundary information
-  ATH_MSG_INFO("IDCalo: eta="
+  FCS_MSG_INFO("IDCalo: eta="
                << m_IDCaloBoundary_eta << " phi=" << m_IDCaloBoundary_phi
                << " r=" << m_IDCaloBoundary_r << " z=" << m_IDCaloBoundary_z);
 
@@ -25,7 +25,7 @@ void TFCSExtrapolationState::Print(Option_t*) const
     int layer = key.first;
     int subpos = key.second;
     if (ok) {
-      ATH_MSG_INFO("  layer " << layer << " subpos " << subpos
+      FCS_MSG_INFO("  layer " << layer << " subpos " << subpos
                               << " MID eta=" << m_etaCalo.at({layer, subpos})
                               << " phi=" << m_phiCalo.at({layer, subpos})
                               << " r=" << m_rCalo.at({layer, subpos})

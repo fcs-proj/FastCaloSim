@@ -37,16 +37,16 @@ void TFCSSimulationState::deposit(const long long cell_id, float E)
 
 void TFCSSimulationState::Print(Option_t*) const
 {
-  ATH_MSG_INFO("Ebin=" << m_Ebin << " E=" << E()
+  FCS_MSG_INFO("Ebin=" << m_Ebin << " E=" << E()
                        << " #cells=" << m_cells.size());
   for (int i = 0; i < m_E.size(); ++i)
     if (E(i) != 0) {
-      ATH_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
+      FCS_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
     }
   if (!m_AuxInfo.empty()) {
-    ATH_MSG_INFO("  AuxInfo has " << m_AuxInfo.size() << " elements");
+    FCS_MSG_INFO("  AuxInfo has " << m_AuxInfo.size() << " elements");
     for (const auto& a : m_AuxInfo) {
-      ATH_MSG_INFO("    " << a.first
+      FCS_MSG_INFO("    " << a.first
                           << " : "
                           // Don't print as char/bool.
                           // Accessing as a bool is likely to undefined

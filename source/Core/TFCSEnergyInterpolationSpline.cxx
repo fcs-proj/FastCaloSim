@@ -84,10 +84,10 @@ FCSReturnCode TFCSEnergyInterpolationSpline::simulate(
   }
 
   if (OnlyScaleEnergy()) {
-    ATH_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin()
+    FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin()
                            << " and E=" << Einit);
   } else {
-    ATH_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin());
+    FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin());
   }
   simulstate.set_E(Emean);
 
@@ -98,13 +98,14 @@ void TFCSEnergyInterpolationSpline::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSParametrization::Print(option);
 
   if (longprint)
-    ATH_MSG_INFO(optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
+    FCS_MSG_INFO(optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
                           << "Spline N=" << m_spline.GetNp() << " "
                           << m_spline.GetXmin()
                           << "<=log(Ekin)<=" << m_spline.GetXmax() << " "

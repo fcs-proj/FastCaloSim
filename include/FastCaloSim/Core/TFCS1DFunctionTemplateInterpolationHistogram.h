@@ -80,7 +80,7 @@ public:
     } else
       m = 0;
 
-    // ATH_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
+    // FCS_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
     // frac="<<m_HistoContents.get_fraction(ibin)<<" dfracprev="<<dfracprev<<"
     // dfrac="<<dfrac<<" dfracnext="<<dfracnext<<"
     // dfracprev-dfrac="<<dfracprev-dfrac<<"

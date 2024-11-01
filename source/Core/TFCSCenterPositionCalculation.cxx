@@ -37,10 +37,10 @@ FCSReturnCode TFCSCenterPositionCalculation::simulate_hit(
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))
   {
-    ATH_MSG_WARNING(
+    FCS_MSG_WARNING(
         "Extrapolator contains NaN or infinite number.\nSetting "
         "center position to calo boundary.");
-    ATH_MSG_WARNING("Before fix: center_r: "
+    FCS_MSG_WARNING("Before fix: center_r: "
                     << r << " center_z: " << z << " center_phi: " << phi
                     << " center_eta: " << eta << " weight: " << m_extrapWeight
                     << " cs: " << cs);
@@ -50,7 +50,7 @@ FCSReturnCode TFCSCenterPositionCalculation::simulate_hit(
     eta = extrapol->IDCaloBoundary_eta();
     phi = extrapol->IDCaloBoundary_phi();
 
-    ATH_MSG_WARNING("After fix: center_r: "
+    FCS_MSG_WARNING("After fix: center_r: "
                     << r << " center_z: " << z << " center_phi: " << phi
                     << " center_eta: " << eta << " weight: " << m_extrapWeight
                     << " cs: " << cs);
@@ -61,7 +61,7 @@ FCSReturnCode TFCSCenterPositionCalculation::simulate_hit(
   hit.setCenter_eta(eta);
   hit.setCenter_phi(phi);
 
-  ATH_MSG_DEBUG("TFCSCenterPositionCalculation: center_r: "
+  FCS_MSG_DEBUG("TFCSCenterPositionCalculation: center_r: "
                 << hit.center_r() << " center_z: " << hit.center_z()
                 << " center_phi: " << hit.center_phi()
                 << " center_eta: " << hit.center_eta()
@@ -74,12 +74,13 @@ void TFCSCenterPositionCalculation::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint)
-    ATH_MSG_INFO(optprint << "  Weight for extrapolated position: "
+    FCS_MSG_INFO(optprint << "  Weight for extrapolated position: "
                           << m_extrapWeight);
 }

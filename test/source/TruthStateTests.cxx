@@ -49,7 +49,7 @@ TEST(TFCSTruthStateTest, EkinComputation)
   EXPECT_NEAR(ts.Ekin(), expectedEkin, 1e-6);
 }
 
-// Print functionality (mocking ATH_MSG_INFO)
+// Print functionality (mocking FCS_MSG_INFO)
 TEST(TFCSTruthStateTest, Print)
 {
   TFCSTruthState ts(1.0, 0, 0, 1.0, 11);

@@ -82,7 +82,7 @@ int TFCSParametrizationEkinSelectChain::get_bin(
 
     if (numerator / denominator < rnd)
       bin = prevbin;
-    ATH_MSG_DEBUG("logEkin="
+    FCS_MSG_DEBUG("logEkin="
                   << logEkin << " logEkin_previous=" << logEkin_previous
                   << " logEkin_nominal=" << logEkin_nominal
                   << " (rnd=" << 1 - rnd
@@ -110,7 +110,7 @@ int TFCSParametrizationEkinSelectChain::get_bin(
 
     if (rnd < numerator / denominator)
       bin = nextbin;
-    ATH_MSG_DEBUG("logEkin="
+    FCS_MSG_DEBUG("logEkin="
                   << logEkin << " logEkin_nominal=" << logEkin_nominal
                   << " logEkin_next=" << logEkin_next << " (rnd=" << rnd
                   << " < p(next)=" << numerator / denominator

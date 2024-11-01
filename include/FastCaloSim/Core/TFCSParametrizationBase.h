@@ -178,7 +178,7 @@ public:
   }
 
 private:
-  ClassDef(TFCSParametrizationBase, 3)  // TFCSParametrizationBase
+  ClassDef(TFCSParametrizationBase, 4)  // TFCSParametrizationBase
 };
 
 #endif  // End header guards

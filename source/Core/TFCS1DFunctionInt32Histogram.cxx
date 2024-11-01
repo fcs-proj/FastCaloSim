@@ -30,7 +30,7 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
       if (TMath::Abs(fraction) > 1e-5) {
-        ATH_MSG_WARNING("bin content is negative in histogram "
+        FCS_MSG_WARNING("bin content is negative in histogram "
                         << hist->GetName() << " : " << hist->GetTitle()
                         << " binval=" << binval << " " << fraction * 100
                         << "% of integral=" << hist->Integral()
@@ -43,7 +43,7 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
     ++ibin;
   }
   if (integral <= 0) {
-    ATH_MSG_ERROR("histogram " << hist->GetName() << " : " << hist->GetTitle()
+    FCS_MSG_ERROR("histogram " << hist->GetName() << " : " << hist->GetTitle()
                                << " integral=" << integral << " is <=0");
     m_HistoBorders.resize(0);
     m_HistoContents.resize(0);

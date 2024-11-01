@@ -25,7 +25,7 @@ TFCSTruthState::TFCSTruthState(
 
 void TFCSTruthState::Print(Option_t*) const
 {
-  ATH_MSG_INFO("PDGID=" << m_pdgid << " pT=" << Pt() << " eta=" << Eta()
+  FCS_MSG_INFO("PDGID=" << m_pdgid << " pT=" << Pt() << " eta=" << Eta()
                         << " phi=" << Phi() << " E=" << E()
                         << " Ekin_off=" << Ekin_off());
 }

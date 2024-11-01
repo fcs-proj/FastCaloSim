@@ -29,7 +29,7 @@ FCSReturnCode TFCSParametrizationBase::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const
 {
-  ATH_MSG_ERROR(
+  FCS_MSG_ERROR(
       "now in TFCSParametrizationBase::simulate(). This should "
       "normally not happen");
   // Force one retry to issue a printout from the chain causing the call to this
@@ -40,7 +40,7 @@ FCSReturnCode TFCSParametrizationBase::simulate(
 bool TFCSParametrizationBase::compare(const TFCSParametrizationBase& ref) const
 {
   if (this == &ref) {
-    ATH_MSG_DEBUG("compare(): identical instances " << this << " == " << &ref);
+    FCS_MSG_DEBUG("compare(): identical instances " << this << " == " << &ref);
     return true;
   }
   return false;
@@ -51,39 +51,40 @@ void TFCSParametrizationBase::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 
   if (longprint) {
-    ATH_MSG_INFO(optprint << GetTitle() << " " << IsA()->GetName());
-    ATH_MSG(INFO) << optprint << "  PDGID: ";
+    FCS_MSG_INFO(optprint << GetTitle() << " " << IsA()->GetName());
+    FCS_MSG(INFO) << optprint << "  PDGID: ";
     if (is_match_all_pdgid()) {
-      ATH_MSG(INFO) << "all";
+      FCS_MSG(INFO) << "all";
     } else {
       for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
            ++it)
       {
         if (it != pdgid().begin())
-          ATH_MSG(INFO) << ", ";
-        ATH_MSG(INFO) << *it;
+          FCS_MSG(INFO) << ", ";
+        FCS_MSG(INFO) << *it;
       }
     }
     if (is_match_all_Ekin()) {
-      ATH_MSG(INFO) << " ; Ekin=all";
+      FCS_MSG(INFO) << " ; Ekin=all";
     } else {
-      ATH_MSG(INFO) << " ; Ekin=" << Ekin_nominal() << " [" << Ekin_min()
+      FCS_MSG(INFO) << " ; Ekin=" << Ekin_nominal() << " [" << Ekin_min()
                     << " , " << Ekin_max() << ") MeV";
     }
     if (is_match_all_eta()) {
-      ATH_MSG(INFO) << " ; eta=all";
+      FCS_MSG(INFO) << " ; eta=all";
     } else {
-      ATH_MSG(INFO) << " ; eta=" << eta_nominal() << " [" << eta_min() << " , "
+      FCS_MSG(INFO) << " ; eta=" << eta_nominal() << " [" << eta_min() << " , "
                     << eta_max() << ")";
     }
-    ATH_MSG(INFO) << END_MSG(INFO);
+    FCS_MSG(INFO) << END_FCS_MSG(INFO);
   } else {
-    ATH_MSG_INFO(optprint << GetTitle());
+    FCS_MSG_INFO(optprint << GetTitle());
   }
 }
 
@@ -96,11 +97,11 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
       // If param is already in the duplication list, skip over
       auto checkexist = dup.find(param);
       if (checkexist != dup.end()) {
-        ATH_MSG_DEBUG("Found duplicate pointer for: " << param << "="
+        FCS_MSG_DEBUG("Found duplicate pointer for: " << param << "="
                                                       << param->GetName());
         if (checkexist->second.replace) {
           TFCSParametrizationBase* refparam = checkexist->second.replace;
-          ATH_MSG_DEBUG("Found duplicate pointer: "
+          FCS_MSG_DEBUG("Found duplicate pointer: "
                         << refparam << "=" << refparam->GetName()
                         << ", duplicate is " << param << "=" << param->GetName()
                         << " index " << i << " of " << this);
@@ -124,7 +125,7 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
           continue;
         // Check for objects with identical content
         if (*param == *refparam) {
-          ATH_MSG_DEBUG("Found duplicate: "
+          FCS_MSG_DEBUG("Found duplicate: "
                         << refparam << "=" << refparam->GetName()
                         << ", duplicate is " << param << "=" << param->GetName()
                         << " index " << i << " of " << this);
@@ -151,21 +152,21 @@ void TFCSParametrizationBase::RemoveDuplicates()
       if (onedup.second.mother.empty())
         continue;
       TFCSParametrizationBase* ref = onedup.first;
-      ATH_MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
+      FCS_MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
       for (unsigned int i = 0; i < onedup.second.mother.size(); ++i) {
         int index = onedup.second.index[i];
         TFCSParametrizationBase* mother = onedup.second.mother[i];
         TFCSParametrizationBase* delparam = mother->operator[](index);
         unsigned int delcount = dup[delparam].mother.size();
         if (delcount == 0) {
-          ATH_MSG_DEBUG("  - Delete object "
+          FCS_MSG_DEBUG("  - Delete object "
                         << delparam << "=" << delparam->GetName() << " index "
                         << index << " of " << mother << ", has " << delcount
                         << " other replacements attached. Deleting");
           mother->set_daughter(index, ref);
           dellist.insert(delparam);
         } else {
-          ATH_MSG_WARNING("  - Delete object "
+          FCS_MSG_WARNING("  - Delete object "
                           << delparam << "=" << delparam->GetName() << " index "
                           << index << " of " << mother << ", has " << delcount
                           << " other replacements attached. Skipping");
@@ -174,7 +175,7 @@ void TFCSParametrizationBase::RemoveDuplicates()
     }
   }
 
-  ATH_MSG_INFO("RERUNNING DUPLICATE FINDING");
+  FCS_MSG_INFO("RERUNNING DUPLICATE FINDING");
   FindDuplicateClasses_t dupclasses2;
   FindDuplicates(dupclasses2);
 
@@ -183,18 +184,18 @@ void TFCSParametrizationBase::RemoveDuplicates()
     FindDuplicates_t& dup2 = dupclasses2[delparam->GetName()];
     bool present = dup2.find(delparam) != dup2.end();
     if (present) {
-      ATH_MSG_WARNING("- Delete object " << delparam << "="
+      FCS_MSG_WARNING("- Delete object " << delparam << "="
                                          << delparam->GetName()
                                          << " still referenced somewhere!");
     } else {
-      ATH_MSG_DEBUG("- Delete object " << delparam << "="
+      FCS_MSG_DEBUG("- Delete object " << delparam << "="
                                        << delparam->GetName());
       ++ndel[delparam->ClassName()];
       delete delparam;
     }
   }
   for (auto& del : ndel)
-    ATH_MSG_INFO("Deleted " << del.second << " duplicate objects of class "
+    FCS_MSG_INFO("Deleted " << del.second << " duplicate objects of class "
                             << del.first);
 }
 

@@ -42,7 +42,7 @@ double TFCS2DFunction::CheckAndIntegrate2DHistogram(
         // Can't work if a bin is negative, forcing bins to 0 in this case
         double fraction = binval / hint;
         if (TMath::Abs(fraction) > 1e-5) {
-          ATH_MSG_NOCLASS(logger,
+          FCS_MSG_NOCLASS(logger,
                           "Warning: bin content is negative in histogram "
                               << hist->GetName() << " : " << hist->GetTitle()
                               << " binval=" << binval << " " << fraction * 100
@@ -65,7 +65,7 @@ double TFCS2DFunction::CheckAndIntegrate2DHistogram(
   last++;
 
   if (integral <= 0) {
-    ATH_MSG_NOCLASS(logger,
+    FCS_MSG_NOCLASS(logger,
                     "Error: histogram "
                         << hist->GetName() << " : " << hist->GetTitle()
                         << " integral=" << integral << " is <=0");

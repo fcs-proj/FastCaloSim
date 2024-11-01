@@ -65,7 +65,7 @@ FCSReturnCode TFCSLateralShapeTuning::initFromModelFile(
       m_parameterInterpol.insert(
           std::make_pair(parameterName, linModelInterpol));
     } else {
-      ATH_MSG_DEBUG(
+      FCS_MSG_DEBUG(
           "[TFCSLateralShapeTuning] Could not find model parameter "
           "graph for layer="
           << layer << " minEta=" << intMinEta << " maxEta=" << intMaxEta);
@@ -80,7 +80,7 @@ FCSReturnCode TFCSLateralShapeTuning::initFromModelFile(
 FCSReturnCode TFCSLateralShapeTuning::initFromMap(
     const interpolationMap& interpolationMap)
 {
-  ATH_MSG_DEBUG(
+  FCS_MSG_DEBUG(
       "[TFCSLateralShapeTuning] Initializing data tuning model from "
       "interpolation map.");
   m_parameterInterpol = interpolationMap;
@@ -115,11 +115,11 @@ FCSReturnCode TFCSLateralShapeTuning::simulate_hit(
   // retrieve calo sample
   int layer = TFCSLateralShapeParametrization::calosample();
 
-  ATH_MSG_DEBUG("[TFCSLateralShapeTuning] Initializing with pdgId="
+  FCS_MSG_DEBUG("[TFCSLateralShapeTuning] Initializing with pdgId="
                 << pdgId << ", charge=" << charge << ", Ekin=" << Ekin
                 << ", caloSample=" << layer);
 
-  ATH_MSG_DEBUG("[TFCSLateralShapeTuning] Got hit position: "
+  FCS_MSG_DEBUG("[TFCSLateralShapeTuning] Got hit position: "
                 << " hit.eta=" << hit.eta() << ", hit.phi=" << hit.phi()
                 << ", hit.r=" << hit.r());
 
@@ -137,7 +137,7 @@ FCSReturnCode TFCSLateralShapeTuning::simulate_hit(
     phiScaleFactor =
         std::abs(phiScaleFactor) < maxScaling ? phiScaleFactor : maxScaling;
 
-    ATH_MSG_DEBUG(
+    FCS_MSG_DEBUG(
         "[TFCSLateralShapeTuning] Applying 2D eta_s - eta_phi "
         "scaling model with eta_s="
         << etaScaleFactor << " and phi_s=" << phiScaleFactor);
@@ -163,7 +163,7 @@ FCSReturnCode TFCSLateralShapeTuning::simulate_hit(
     etaScaleFactor =
         std::abs(etaScaleFactor) < maxScaling ? etaScaleFactor : maxScaling;
 
-    ATH_MSG_DEBUG(
+    FCS_MSG_DEBUG(
         "[TFCSLateralShapeTuning] Applying eta_s series expansion "
         "model with eta_s="
         << etaScaleFactor);

@@ -51,7 +51,7 @@ private:
   int m_latentDim;
   std::string m_fastCaloGANInputFolderName;
 
-  ClassDef(TFCSGANXMLParameters, 2)  // TFCSGANXMLParameters
+  ClassDef(TFCSGANXMLParameters, 1)  // TFCSGANXMLParameters
 };
 
 #endif  //> !ISF_TFCSGANXMLPARAMETERS_H

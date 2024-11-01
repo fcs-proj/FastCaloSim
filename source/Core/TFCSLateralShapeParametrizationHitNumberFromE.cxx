@@ -54,7 +54,7 @@ double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
   }
 
   if (TMath::IsNaN(energy)) {
-    ATH_MSG_DEBUG("Energy is NaN");
+    FCS_MSG_DEBUG("Energy is NaN");
     return 1;
   }
 
@@ -70,7 +70,7 @@ double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
   double sigma2 =
       sigma_stochastic * sigma_stochastic + sigma_hadron * sigma_hadron;
 
-  ATH_MSG_DEBUG("sigma^2 fluctuation=" << sigma2);
+  FCS_MSG_DEBUG("sigma^2 fluctuation=" << sigma2);
 
   return sigma2;
 }
@@ -87,7 +87,7 @@ int TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
   float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   int hits = CLHEP::RandPoisson::shoot(simulstate.randomEngine(), 1.0 / sigma2);
 
-  ATH_MSG_DEBUG("#hits=" << hits);
+  FCS_MSG_DEBUG("#hits=" << hits);
 
   return hits;
 }
@@ -110,7 +110,7 @@ bool TFCSLateralShapeParametrizationHitNumberFromE::compare(
     const TFCSParametrizationBase& ref) const
 {
   if (IsA() != ref.IsA()) {
-    ATH_MSG_DEBUG("compare(): different class types "
+    FCS_MSG_DEBUG("compare(): different class types "
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
@@ -120,7 +120,7 @@ bool TFCSLateralShapeParametrizationHitNumberFromE::compare(
       || m_stochastic_hadron != ref_typed.m_stochastic_hadron
       || m_constant != ref_typed.m_constant)
   {
-    ATH_MSG_DEBUG("operator==(): different fluctuation model sigma^2=["
+    FCS_MSG_DEBUG("operator==(): different fluctuation model sigma^2=["
                   << m_stochastic << "/sqrt(E/GeV)]^2 + [" << m_constant
                   << " + " << m_stochastic_hadron
                   << "/sqrt(E/GeV)]^2 != sigma^2=[" << ref_typed.m_stochastic
@@ -137,13 +137,14 @@ void TFCSLateralShapeParametrizationHitNumberFromE::Print(
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint)
-    ATH_MSG_INFO(optprint << "  sigma^2=[" << m_stochastic
+    FCS_MSG_INFO(optprint << "  sigma^2=[" << m_stochastic
                           << "/sqrt(E/GeV)]^2 + [" << m_constant << " + "
                           << m_stochastic_hadron << "/sqrt(E/GeV)]^2");
 }

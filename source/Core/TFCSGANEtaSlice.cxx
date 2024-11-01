@@ -89,7 +89,7 @@ bool TFCSGANEtaSlice::LoadGAN()
     inputFileName = m_param.GetInputFolder() + "/neural_net_"
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_All.*";
-    ATH_MSG_DEBUG("Gan input file name " << inputFileName);
+    FCS_MSG_DEBUG("Gan input file name " << inputFileName);
     m_net_all = TFCSNetworkFactory::create(inputFileName);
     if (m_net_all == nullptr)
       success = false;
@@ -97,7 +97,7 @@ bool TFCSGANEtaSlice::LoadGAN()
     inputFileName = m_param.GetInputFolder() + "/neural_net_"
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_High10.*";
-    ATH_MSG_DEBUG("Gan input file name " << inputFileName);
+    FCS_MSG_DEBUG("Gan input file name " << inputFileName);
     m_net_all = TFCSNetworkFactory::create(inputFileName);
     if (m_net_all == nullptr)
       success = false;
@@ -105,7 +105,7 @@ bool TFCSGANEtaSlice::LoadGAN()
     inputFileName = m_param.GetInputFolder() + "/neural_net_"
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_High12.*";
-    ATH_MSG_DEBUG("Gan input file name " << inputFileName);
+    FCS_MSG_DEBUG("Gan input file name " << inputFileName);
     m_net_high = TFCSNetworkFactory::create(inputFileName);
     if (m_net_high == nullptr)
       success = false;
@@ -125,10 +125,10 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
   std::string rootFileName = m_param.GetInputFolder() + "/rootFiles/pid"
       + std::to_string(m_pid) + "_E1048576_eta_" + std::to_string(m_etaMin)
       + "_" + std::to_string(m_etaMin + 5) + ".root";
-  ATH_MSG_DEBUG("Opening file " << rootFileName);
+  FCS_MSG_DEBUG("Opening file " << rootFileName);
   TFile* file = TFile::Open(rootFileName.c_str(), "read");
   for (int layer : m_param.GetRelevantLayers()) {
-    ATH_MSG_DEBUG("Layer " << layer);
+    FCS_MSG_DEBUG("Layer " << layer);
     TFCSGANXMLParameters::Binning binsInLayers = m_param.GetBinning();
     TH2D* h2 = &binsInLayers[layer];
 
@@ -141,7 +141,7 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
 
     TAxis* x = (TAxis*)h2->GetXaxis();
     for (int ix = 1; ix <= h2->GetNbinsX(); ++ix) {
-      ATH_MSG_DEBUG(ix);
+      FCS_MSG_DEBUG(ix);
       h1->GetXaxis()->SetRangeUser(x->GetBinLowEdge(ix), x->GetBinUpEdge(ix));
 
       double result = 0;
@@ -156,7 +156,7 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
       m_allFitResults[layer].push_back(result);
     }
   }
-  ATH_MSG_DEBUG("Done initializing fits");
+  FCS_MSG_DEBUG("Done initializing fits");
 }
 
 void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
@@ -164,7 +164,7 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
   std::string rootFileName = m_param.GetInputFolder() + "/rootFiles/pid"
       + std::to_string(m_pid) + "_E65536_eta_" + std::to_string(m_etaMin) + "_"
       + std::to_string(m_etaMin + 5) + "_validation.root";
-  ATH_MSG_DEBUG("Opening file " << rootFileName);
+  FCS_MSG_DEBUG("Opening file " << rootFileName);
   TFile* file = TFile::Open(rootFileName.c_str(), "read");
   for (int layer : m_param.GetRelevantLayers()) {
     std::string branchName = "extrapWeight_" + std::to_string(layer);
@@ -173,7 +173,7 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
     std::string command = branchName + ">>h";
     tree->Draw(command.c_str());
     m_extrapolatorWeights[layer] = h->GetMean();
-    ATH_MSG_DEBUG("Extrapolation: layer " << layer << " mean "
+    FCS_MSG_DEBUG("Extrapolation: layer " << layer << " mean "
                                           << m_extrapolatorWeights[layer]);
   }
 }
@@ -221,7 +221,7 @@ VNetworkBase::NetworkOutputs TFCSGANEtaSlice::GetNetworkOutputs(
 
   // double e = log(truth->Ekin()/Ekin_min)/log(Ekin_max/Ekin_min) ;
   // Could be uncommented , but would need the line above too
-  // ATH_MSG_DEBUG( "Check label: " << e <<" Ekin:" << truth->Ekin() <<" p:" <<
+  // FCS_MSG_DEBUG( "Check label: " << e <<" Ekin:" << truth->Ekin() <<" p:" <<
   //                truth->P() <<" mass:" << truth->M() <<" Ekin_off:" <<
   //                truth->Ekin_off() << " Ekin_min:"<<Ekin_min<<"
   //                Ekin_max:"<<Ekin_max);
@@ -249,26 +249,26 @@ VNetworkBase::NetworkOutputs TFCSGANEtaSlice::GetNetworkOutputs(
     if (truth->P() > 4096)
     {  // This is the momentum, not the energy, because the split is
        // based on the samples which are produced with the momentum
-      ATH_MSG_DEBUG("Computing outputs given inputs for high");
+      FCS_MSG_DEBUG("Computing outputs given inputs for high");
       outputs = GetNetHigh()->compute(inputs);
     } else {
       outputs = GetNetLow()->compute(inputs);
     }
   }
-  ATH_MSG_DEBUG("Start Network inputs ~~~~~~~~");
-  ATH_MSG_DEBUG(VNetworkBase::representNetworkInputs(inputs, 10000));
-  ATH_MSG_DEBUG("End Network inputs ~~~~~~~~");
-  ATH_MSG_DEBUG("Start Network outputs ~~~~~~~~");
-  ATH_MSG_DEBUG(VNetworkBase::representNetworkOutputs(outputs, 10000));
-  ATH_MSG_DEBUG("End Network outputs ~~~~~~~~");
+  FCS_MSG_DEBUG("Start Network inputs ~~~~~~~~");
+  FCS_MSG_DEBUG(VNetworkBase::representNetworkInputs(inputs, 10000));
+  FCS_MSG_DEBUG("End Network inputs ~~~~~~~~");
+  FCS_MSG_DEBUG("Start Network outputs ~~~~~~~~");
+  FCS_MSG_DEBUG(VNetworkBase::representNetworkOutputs(outputs, 10000));
+  FCS_MSG_DEBUG("End Network outputs ~~~~~~~~");
   return outputs;
 }
 
 void TFCSGANEtaSlice::Print() const
 {
-  ATH_MSG_INFO("LWTNN Handler parameters");
-  ATH_MSG_INFO("  pid: " << m_pid);
-  ATH_MSG_INFO("  etaMin:" << m_etaMin);
-  ATH_MSG_INFO("  etaMax: " << m_etaMax);
+  FCS_MSG_INFO("LWTNN Handler parameters");
+  FCS_MSG_INFO("  pid: " << m_pid);
+  FCS_MSG_INFO("  etaMin:" << m_etaMin);
+  FCS_MSG_INFO("  etaMax: " << m_etaMax);
   m_param.Print();
 }

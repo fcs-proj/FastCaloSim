@@ -103,13 +103,13 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
     m_function->rnd_to_fct(alpha, r, rnd1, rnd2);
   }
   if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
-    ATH_MSG_ERROR("  2D function, #hits=" << m_nhits << " alpha=" << alpha
+    FCS_MSG_ERROR("  2D function, #hits=" << m_nhits << " alpha=" << alpha
                                           << " r=" << r << " rnd1=" << rnd1
                                           << " rnd2=" << rnd2);
     alpha = 0;
     r = 0.001;
 
-    ATH_MSG_ERROR("  This error could probably be retried");
+    FCS_MSG_ERROR("  This error could probably be retried");
     return FCSFatal;
   }
 
@@ -136,7 +136,7 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   hit.setEtaPhiZE(
       center_eta + delta_eta, center_phi + delta_phi, center_z, hit.E());
 
-  ATH_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
                           << " phi=" << hit.phi() << " z=" << hit.z()
                           << " r=" << r << " alpha=" << alpha);
 
@@ -162,17 +162,18 @@ void TFCS2DFunctionLateralShapeParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
     if (is_phi_symmetric()) {
-      ATH_MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
+      FCS_MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
                             << " (phi symmetric)");
     } else {
-      ATH_MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
+      FCS_MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
                             << " (not phi symmetric)");
     }
   }

@@ -84,7 +84,7 @@ void TFCSLateralShapeParametrizationHitChain::set_daughter(
   TFCSLateralShapeParametrizationHitBase* param_typed = nullptr;
   if (param != nullptr) {
     if (!param->InheritsFrom(TFCSLateralShapeParametrizationHitBase::Class())) {
-      ATH_MSG_ERROR("Wrong class type " << param->IsA()->GetName());
+      FCS_MSG_ERROR("Wrong class type " << param->IsA()->GetName());
       return;
     }
     param_typed = static_cast<TFCSLateralShapeParametrizationHitBase*>(param);
@@ -184,7 +184,7 @@ float TFCSLateralShapeParametrizationHitChain::get_sigma2_fluctuation(
 }
 
 void TFCSLateralShapeParametrizationHitChain::PropagateMSGLevel(
-    MSG::Level level) const
+    FCS_MSG::Level level) const
 {
   for (TFCSLateralShapeParametrizationHitBase* reset : m_chain)
     reset->setLevel(level);
@@ -198,7 +198,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::init_hit(
 {
   hit.reset_center();
   if (get_nr_of_init() > 0) {
-    ATH_MSG_DEBUG("E(" << calosample() << ")=" << simulstate.E(calosample())
+    FCS_MSG_DEBUG("E(" << calosample() << ")=" << simulstate.E(calosample())
                        << " before init");
 
     auto initloopend = m_chain.begin() + get_nr_of_init();
@@ -209,7 +209,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::init_hit(
           hitsim->simulate_hit(hit, simulstate, truth, extrapol);
 
       if (status != FCSSuccess) {
-        ATH_MSG_ERROR(
+        FCS_MSG_ERROR(
             "TFCSLateralShapeParametrizationHitChain::simulate(): "
             "simulate_hit init call failed");
         return FCSFatal;
@@ -224,15 +224,15 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const
 {
-  MSG::Level old_level = level();
-  const bool debug = msgLvl(MSG::DEBUG);
-  const bool verbose = msgLvl(MSG::VERBOSE);
+  FCS_MSG::Level old_level = level();
+  const bool debug = msgLvl(FCS_MSG::DEBUG);
+  const bool verbose = msgLvl(FCS_MSG::VERBOSE);
 
   // Execute the first get_nr_of_init() simulate calls only once. Used for
   // example to initialize the center position
   TFCSLateralShapeParametrizationHitBase::Hit hit;
   if (init_hit(hit, simulstate, truth, extrapol) != FCSSuccess) {
-    ATH_MSG_ERROR("init_hit() failed");
+    FCS_MSG_ERROR("init_hit() failed");
     return FCSFatal;
   }
 
@@ -241,12 +241,12 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
   // energy
   const float Elayer = simulstate.E(cs);
   if (Elayer == 0) {
-    ATH_MSG_VERBOSE("Elayer=0, nothing to do");
+    FCS_MSG_VERBOSE("Elayer=0, nothing to do");
     return FCSSuccess;
   }
   const float Ehit = get_E_hit(simulstate, truth, extrapol);
   if (Ehit * Elayer <= 0) {
-    ATH_MSG_ERROR(
+    FCS_MSG_ERROR(
         "TFCSLateralShapeParametrizationHitChain::simulate(): Ehit "
         "and Elayer have different sign! Ehit="
         << Ehit << " Elayer=" << Elayer);
@@ -263,7 +263,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
 
   if (debug) {
     PropagateMSGLevel(old_level);
-    ATH_MSG_DEBUG("E(" << cs << ")=" << simulstate.E(cs) << " #hits~" << nhit);
+    FCS_MSG_DEBUG("E(" << cs << ")=" << simulstate.E(cs) << " #hits~" << nhit);
   }
 
   {
@@ -282,7 +282,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
           if (!verbose) {
             // Switch debug output back to INFO to avoid huge logs, but keep
             // full log in verbose
-            PropagateMSGLevel(MSG::INFO);
+            PropagateMSGLevel(FCS_MSG::INFO);
           }
       for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
         TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
@@ -312,13 +312,13 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
         ++ihit;
 
         if (((ihit == 20 * nhit) || (ihit == 100 * nhit)) && ihit >= 100) {
-          ATH_MSG_DEBUG(
+          FCS_MSG_DEBUG(
               "TFCSLateralShapeParametrizationHitChain::simulate(): Iterated "
               << ihit << " times, expected " << nhit << " times. Deposited E("
               << cs << ")=" << sumEhit << " expected E=" << Elayer);
         }
         if (ihit >= 1000 * nhit && ihit >= 1000) {
-          ATH_MSG_DEBUG(
+          FCS_MSG_DEBUG(
               "TFCSLateralShapeParametrizationHitChain::simulate():"
               " Aborting hit chain, iterated "
               << ihit << " times, expected " << nhit << " times. Deposited E("
@@ -330,7 +330,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
         }
       } else {
         if (ifail >= retry) {
-          ATH_MSG_ERROR(
+          FCS_MSG_ERROR(
               "TFCSLateralShapeParametrizationHitChain::simulate(): "
               "simulate_hit call failed after "
               << ifail << "/" << retry
@@ -340,7 +340,7 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
           return FCSFatal;
         }
         if (ifail >= retry_warning) {
-          ATH_MSG_WARNING(
+          FCS_MSG_WARNING(
               "TFCSLateralShapeParametrizationHitChain::simulate():"
               " retry simulate_hit calls "
               << ifail << "/" << retry << ", total fails=" << itotalfail);
@@ -359,24 +359,25 @@ void TFCSLateralShapeParametrizationHitChain::Print(Option_t* option) const
   TFCSLateralShapeParametrization::Print(option);
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 
   if (m_number_of_hits_simul) {
     if (longprint)
-      ATH_MSG_INFO(optprint << "#:Number of hits simulation:");
+      FCS_MSG_INFO(optprint << "#:Number of hits simulation:");
     m_number_of_hits_simul->Print(opt + "#:");
   }
   if (longprint && get_nr_of_init() > 0)
-    ATH_MSG_INFO(optprint << "> Simulation init chain:");
+    FCS_MSG_INFO(optprint << "> Simulation init chain:");
   auto hitloopstart = m_chain.begin() + get_nr_of_init();
   for (auto hititr = m_chain.begin(); hititr != hitloopstart; ++hititr) {
     TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
     hitsim->Print(opt + "> ");
   }
   if (longprint)
-    ATH_MSG_INFO(optprint << "- Simulation chain:");
+    FCS_MSG_INFO(optprint << "- Simulation chain:");
   char count = 'A';
   for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
     TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;

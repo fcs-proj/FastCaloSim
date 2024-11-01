@@ -50,14 +50,14 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const
 {
-  MSG::Level old_level = level();
-  const bool debug = msgLvl(MSG::DEBUG);
+  FCS_MSG::Level old_level = level();
+  const bool debug = msgLvl(FCS_MSG::DEBUG);
 
   // Execute the first get_nr_of_init() simulate calls only once. Used for
   // example to initialize the center position
   TFCSLateralShapeParametrizationHitBase::Hit hit;
   if (init_hit(hit, simulstate, truth, extrapol) != FCSSuccess) {
-    ATH_MSG_ERROR("init_hit() failed");
+    FCS_MSG_ERROR("init_hit() failed");
     return FCSFatal;
   }
 
@@ -65,14 +65,14 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
   // energy
   const float Elayer = simulstate.E(calosample());
   if (Elayer == 0) {
-    ATH_MSG_VERBOSE("Elayer=0, nothing to do");
+    FCS_MSG_VERBOSE("Elayer=0, nothing to do");
     return FCSSuccess;
   }
 
   // Call get_sigma2_fluctuation only once, as it could contain a random number
   float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   if (sigma2 >= s_max_sigma2_fluctuation) {
-    ATH_MSG_ERROR(
+    FCS_MSG_ERROR(
         "TFCSLateralShapeParametrizationFluctChain::simulate(): "
         "fluctuation of hits could not be calculated");
     return FCSFatal;
@@ -93,7 +93,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
 
   if (debug) {
     PropagateMSGLevel(old_level);
-    ATH_MSG_DEBUG("E(" << calosample() << ")=" << Elayer
+    FCS_MSG_DEBUG("E(" << calosample() << ")=" << Elayer
                        << " sigma2=" << sigma2);
   }
 
@@ -114,7 +114,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
     if (debug)
       if (ihit == 2) {
         // Switch debug output back to INFO to avoid huge logs
-        PropagateMSGLevel(MSG::INFO);
+        PropagateMSGLevel(FCS_MSG::INFO);
       }
     for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
       TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
@@ -149,7 +149,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
         error2 = error2_sumEhit / sumEhit2;
     } else {
       if (ifail >= retry) {
-        ATH_MSG_ERROR(
+        FCS_MSG_ERROR(
             "TFCSLateralShapeParametrizationFluctChain::simulate(): "
             "simulate_hit call failed after "
             << ifail << "/" << retry << "retries, total fails=" << itotalfail);
@@ -158,7 +158,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
         return FCSFatal;
       }
       if (ifail >= retry_warning) {
-        ATH_MSG_WARNING(
+        FCS_MSG_WARNING(
             "TFCSLateralShapeParametrizationFluctChain::simulate():"
             " retry simulate_hit calls "
             << ifail << "/" << retry << ", total fails=" << itotalfail);
@@ -168,7 +168,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
 
   if (debug) {
     PropagateMSGLevel(old_level);
-    ATH_MSG_DEBUG("E(" << calosample() << ")=" << Elayer << " sumE=" << sumEhit
+    FCS_MSG_DEBUG("E(" << calosample() << ")=" << Elayer << " sumE=" << sumEhit
                        << "+-" << TMath::Sqrt(error2_sumEhit) << " ~ "
                        << TMath::Sqrt(error2_sumEhit) / sumEhit * 100
                        << "% rel error^2=" << error2 << " sigma^2=" << sigma2
@@ -183,13 +183,14 @@ void TFCSLateralShapeParametrizationFluctChain::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
+  bool longprint =
+      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitChain::Print(option);
 
   if (longprint)
-    ATH_MSG_INFO(optprint << "  hit energy fluctuation RMS=" << m_RMS);
+    FCS_MSG_INFO(optprint << "  hit energy fluctuation RMS=" << m_RMS);
 }
 
 #pragma GCC diagnostic pop

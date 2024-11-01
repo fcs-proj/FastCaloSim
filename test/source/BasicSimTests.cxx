@@ -33,7 +33,7 @@ TEST_F(BasicSimTests, DoDummySimulation)
   // Set up the geometry
   param->set_geometry(AtlasGeoTests::geo);
   // Set logging level
-  param->setLevel(MSG::Level::VERBOSE);
+  param->setLevel(FCS_MSG::Level::VERBOSE);
 
   // Set up a random engine
   std::unique_ptr<CLHEP::RanluxEngine> rnd_engine =

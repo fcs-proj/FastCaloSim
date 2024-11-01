@@ -35,20 +35,20 @@ FCSReturnCode TFCSParametrizationPDGIDSelectChain::simulate(
   FCSReturnCode status = FCSSuccess;
   for (int i = 0; i <= retry; i++) {
     if (i >= retry_warning)
-      ATH_MSG_WARNING(
+      FCS_MSG_WARNING(
           "TFCSParametrizationPDGIDSelectChain::simulate(): Retry "
           "simulate call "
           << i << "/" << retry);
 
-    ATH_MSG_DEBUG("Running for pdgid=" << truth->pdgid());
+    FCS_MSG_DEBUG("Running for pdgid=" << truth->pdgid());
     for (const auto& param : chain()) {
-      ATH_MSG_DEBUG("Now testing: "
+      FCS_MSG_DEBUG("Now testing: "
                     << param->GetName()
                     << ((SimulateOnlyOnePDGID() == true)
                             ? ", abort PDGID loop afterwards"
                             : ", continue PDGID loop afterwards"));
       if (param->is_match_pdgid(truth->pdgid())) {
-        ATH_MSG_DEBUG("pdgid=" << truth->pdgid()
+        FCS_MSG_DEBUG("pdgid=" << truth->pdgid()
                                << ", now run: " << param->GetName()
                                << ((SimulateOnlyOnePDGID() == true)
                                        ? ", abort PDGID loop afterwards"
@@ -74,7 +74,7 @@ FCSReturnCode TFCSParametrizationPDGIDSelectChain::simulate(
   }
 
   if (status != FCSSuccess) {
-    ATH_MSG_FATAL(
+    FCS_MSG_FATAL(
         "TFCSParametrizationChain::simulate(): Simulate call failed after "
         << retry << " retries");
     return FCSFatal;

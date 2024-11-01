@@ -43,7 +43,7 @@ TEST_P(AtlasTransportTests, AtlasTransport)
 
   // Set the extrapolation tool
   BasicExtrapolTests::extrapolator.setLevel(
-      AtlasTransportTestConfig::EXTRAPOLATION_MSG_LEVEL);
+      AtlasTransportTestConfig::EXTRAPOLATION_FCS_MSG_LEVEL);
   model->setExtrapolationTool(BasicExtrapolTests::extrapolator);
 
   // Start a run

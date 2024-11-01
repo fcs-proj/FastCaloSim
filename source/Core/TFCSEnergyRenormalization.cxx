@@ -56,14 +56,14 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     if (energies[layer] == 0 && simulstate.E(layer) != 0) {
       if (simulstate.E(layer) > 8.0 * approxLayerNoise.at(layer) && layer != 5
           && layer != 6 && layer != 7)
-        ATH_MSG_INFO(
+        FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
             << " simulated: " << energies[layer]);
       if (simulstate.E(layer) > 1500.0
           && (layer == 5 || layer == 6 || layer == 7))
-        ATH_MSG_INFO(
+        FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
@@ -82,10 +82,10 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     cell_iter.second *= scalefactor[layer];
   }
 
-  if (msgLvl(MSG::DEBUG)) {
-    ATH_MSG_DEBUG("Apply scale factors : ");
+  if (msgLvl(FCS_MSG::DEBUG)) {
+    FCS_MSG_DEBUG("Apply scale factors : ");
     for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
-      ATH_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
+      FCS_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
                          << energies[layer] << " -> " << simulstate.E(layer));
     }
   }
