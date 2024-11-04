@@ -69,7 +69,7 @@ typedef std::ostream MsgStream;
 // Add a new line if the level is in use, and end any stream
 #define END_FCS_MSG(lvl) this->streamerEndLine(FCS_MSG::lvl)
 // Force a new line, and end any stream
-#define endmsg this->streamerEndLine(FCS_MSG::INFO)
+#define FCS_ENDMSG this->streamerEndLine(FCS_MSG::INFO)
 
 class FASTCALOSIM_EXPORT MLogging
 {
