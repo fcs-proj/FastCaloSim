@@ -14,7 +14,7 @@ project(
 )
 
 # Append the path for CMake to look for any custom modules, e.g. Findlwtnn.cmake
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
@@ -61,18 +61,18 @@ add_subdirectory(source/Extrapolation)
 add_library(FastCaloSim::FastCaloSim ALIAS FastCaloSim_FastCaloSim)
 
 # Link against external libraries
-# PUBLIC: propagated to consumers
-# PRIVATE: used only internally
 target_link_libraries(
-    FastCaloSim_FastCaloSim PUBLIC
-    ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
-    fmt::fmt-header-only
-    CLHEP::CLHEP
-    lwtnn::lwtnn
-    ONNXRuntime::ONNXRuntime
-    ${LibXml2_LIBRARIES}
-    ${Geant4_LIBRARIES}
-    TBB::tbb
+    FastCaloSim_FastCaloSim
+    PUBLIC
+        ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
+        fmt::fmt-header-only
+        CLHEP::CLHEP
+        ${Geant4_LIBRARIES}
+        TBB::tbb
+    PRIVATE
+        ONNXRuntime::ONNXRuntime
+        ${LWTNN_LIBRARIES}
+        ${LibXml2_LIBRARIES}
 )
 
 # Add the include directory to the target
@@ -83,7 +83,7 @@ ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim fmt)
+deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim fmt::fmt)
 
 include(GenerateExportHeader)
 generate_export_header(
