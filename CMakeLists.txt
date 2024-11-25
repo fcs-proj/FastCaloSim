@@ -144,3 +144,12 @@ elseif(NOT PROJECT_IS_TOP_LEVEL)
 endif()
 
 include(cmake/dev-mode.cmake)
+
+# ---- Install optional DD4hep tools ----
+
+if(FastCaloSim_DEVELOPER_MODE)
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
+    add_custom_target(python_dev_setup ALL
+    COMMAND ${Python3_EXECUTABLE} -m pip install -q --disable-pip-version-check -e ${CMAKE_SOURCE_DIR}/DD4hep/BitFieldDecoder
+    COMMENT "Installing python DD4hep bitfield decoder")
+endif()
