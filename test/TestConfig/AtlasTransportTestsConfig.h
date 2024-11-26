@@ -28,7 +28,7 @@ public:
   inline static const std::string TEST_GEO_DIR = "test/geo/";
 
   // The output directory for the test
-  inline static const std::string PYTHON_SCRIPT_DIR = "test/python/";
+  inline static const std::string PYTHON_SCRIPT_DIR = "test/python/scripts/";
 
   // The list of events (event = particle container) to be transported
   inline static const std::vector<TestHelpers::Event> EVENTS = []()
@@ -73,15 +73,15 @@ public:
 
   // The location of the python script to plot the transport
   inline static const std::string PYTHON_SCRIPT =
-      std::string(TEST_BASE_DIR) + "/python/plot_transport.py";
+      std::string(TEST_BASE_DIR) + "/python/scripts/plot_transport.py";
 
   // The location of the python script to plot the extrapolation
   inline static const std::string PYTHON_EXTRAP_SCRIPT =
-      std::string(TEST_BASE_DIR) + "/python/plot_extrapolation.py";
+      std::string(TEST_BASE_DIR) + "/python/scripts/plot_extrapolation.py";
 
   // The location of calo layer data used for plotting the transport
   inline static const std::string CALO_LAYER_DATA =
-      std::string(TEST_BASE_DIR) + "/python/calo_layers.csv";
+      std::string(TEST_BASE_DIR) + "/python/scripts/calo_layers.csv";
 
   // Set the name of the output files
   inline static const std::string TRANSPORT_DATA_FILE_NAME =

@@ -67,7 +67,6 @@ include(GoogleTest)
 #Glob test sources
 file(GLOB TEST_SOURCES "source/*Tests.cxx")
 
-
 # Create test executables
 foreach(TEST_SOURCE ${TEST_SOURCES})
   get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
@@ -85,6 +84,14 @@ target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app ${Boo
 target_link_libraries(AtlasSimTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasGeoTests PRIVATE ATLASFCalGeoPlugin)
 
+# Add python tests
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+file(GLOB PYTHON_TESTS "python/*tests.py")
+foreach(PYTHON_TEST ${PYTHON_TESTS})
+  get_filename_component(TEST_NAME ${PYTHON_TEST} NAME_WE)
+  add_test(NAME ${TEST_NAME}
+           COMMAND ${Python3_EXECUTABLE} ${PYTHON_TEST})
+endforeach()
 
 # ---- End-of-file commands ----
 

@@ -85,7 +85,7 @@ public:
   // The location of the python script to plot the colored cells containing
   // energy
   inline static const std::string PYTHON_SCRIPT =
-      std::string(TEST_BASE_DIR) + "/python/plot_simulation.py";
+      std::string(TEST_BASE_DIR) + "/python/scripts/plot_simulation.py";
 
   // Set the name of the output files
   inline static const std::string TRANSPORT_DATA_FILE_NAME =
