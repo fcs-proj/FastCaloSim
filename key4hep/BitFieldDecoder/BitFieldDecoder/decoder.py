@@ -128,4 +128,10 @@ class Decoder:
         if field.is_signed and (result & (1 << (field.width - 1))):
             result -= 1 << field.width
 
+        # Verify result is within field bounds
+        if not (field.min_val <= result <= field.max_val):
+            raise ValueError(
+                f"Decoded value {result} exceeds field bounds [{field.min_val}, {field.max_val}]"
+            )
+
         return result
