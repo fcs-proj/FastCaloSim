@@ -94,21 +94,7 @@ class Decoder:
                 f"{field.name:<10} {field.offset:<15} {field.width:<15} {'Yes' if field.is_signed else 'No':<10} {field.min_val:<15} {field.max_val:<15}"
             )
 
-    def set_value(self, value):
-        """
-        Sets the current value to be decoded.
-
-        Args:
-            value (int): The value to decode.
-
-        Raises:
-            TypeError: If the value is not an integer.
-        """
-        if not isinstance(value, int):
-            raise TypeError("Value must be an integer.")
-        self.current_value = value
-
-    def value(self, name, value=None):
+    def get(self, value, field):
         """
         Extracts the value of a specific field.
 
@@ -123,13 +109,13 @@ class Decoder:
             KeyError: If the field name does not exist.
             TypeError: If the provided value is not an integer.
         """
-        if name not in self.fields:
-            raise KeyError(f"Field '{name}' does not exist.")
+        if field not in self.fields:
+            raise KeyError(f"Field '{field}' does not exist.")
         if value is not None and not isinstance(value, int):
             raise TypeError("Provided value must be an integer.")
 
         target_value = self.current_value if value is None else value
-        field = self.fields[name]
+        field = self.fields[field]
 
         # Extract the raw bits
         result = (target_value & field.mask) >> field.offset

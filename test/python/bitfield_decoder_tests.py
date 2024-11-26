@@ -25,9 +25,8 @@ class TestBitFieldDecoder(unittest.TestCase):
 
         for value, expected_fields in test_cases:
             with self.subTest(value=value):
-                dec.set_value(value)
                 for field, expected_value in expected_fields.items():
-                    actual = dec.value(field)
+                    actual = dec.get(value, field)
                     self.assertEqual(
                         actual,
                         expected_value,
