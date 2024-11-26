@@ -73,6 +73,8 @@ class Decoder:
                 name, offset, width = parts[0], int(parts[1]), int(parts[2])
             else:
                 raise ValueError(f"Invalid field description: {field_desc}")
+            if name in self.fields:
+                raise ValueError(f"Duplicate field name detected: '{name}'")
             self.fields[name] = Field(name, offset, width)
             current_offset = max(current_offset, offset + abs(width))
 
