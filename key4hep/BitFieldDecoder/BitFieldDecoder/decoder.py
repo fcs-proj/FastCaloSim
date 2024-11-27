@@ -1,3 +1,7 @@
+import numpy as np
+import awkward as ak
+
+
 class Field:
     """
     Represents a single bit field in a structured binary format.
@@ -96,36 +100,57 @@ class Decoder:
 
     def get(self, value, field):
         """
-        Extracts the value of a specific field.
+        Extracts the value of a specific field, supporting scalars and array inputs.
 
         Args:
-            name (str): The name of the field to extract.
-            value (int, optional): The value to decode. Defaults to the current value.
+            value (int, numpy.ndarray, awkward.Array): The value(s) to decode.
+            field (str): The name of the field to extract.
 
         Returns:
-            int: The decoded value of the specified field.
+            int, numpy.ndarray, awkward.Array: The decoded value(s) of the specified field.
 
         Raises:
             KeyError: If the field name does not exist.
-            TypeError: If the provided value is not an integer.
+            TypeError: If the provided value type is unsupported.
         """
         if field not in self.fields:
             raise KeyError(f"Field '{field}' does not exist.")
-        if value is not None and not isinstance(value, int):
-            raise TypeError("Provided value must be an integer.")
 
-        target_value = self.current_value if value is None else value
         field = self.fields[field]
 
-        # Extract the raw bits
-        result = (target_value & field.mask) >> field.offset
+        # Scalar decoding logic
+        def decode_single(val):
+            result = (val & field.mask) >> field.offset
+            if field.is_signed and (result & (1 << (field.width - 1))):
+                result -= 1 << field.width
+            return result
 
-        # Handle signed values
-        if field.is_signed and (result & (1 << (field.width - 1))):
-            result -= 1 << field.width
-        # Verify result is within field bounds
-        if not (field.min_val <= result <= field.max_val):
-            raise ValueError(
-                f"Decoded value {result} exceeds field bounds [{field.min_val}, {field.max_val}]"
-            )
-        return result
+        # NumPy optimization
+        if isinstance(value, np.ndarray):
+            result = (value & field.mask) >> field.offset
+            if field.is_signed:
+                result = np.where(
+                    result & (1 << (field.width - 1)),
+                    result - (1 << field.width),
+                    result,
+                )
+            return result
+
+        # Awkward optimization
+        if isinstance(value, ak.Array):
+            result = (value & field.mask) >> field.offset
+            if field.is_signed:
+                result = ak.where(
+                    result & (1 << (field.width - 1)),
+                    result - (1 << field.width),
+                    result,
+                )
+            return result
+
+        # Scalar fallback
+        if isinstance(value, (int, np.integer)):
+            return decode_single(value)
+
+        raise TypeError(
+            "Unsupported type for 'value'. Must be int, numpy.ndarray, or awkward.Array."
+        )

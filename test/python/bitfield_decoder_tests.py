@@ -1,4 +1,6 @@
 import unittest
+import numpy as np
+import awkward as ak
 from BitFieldDecoder import decoder
 
 
@@ -46,6 +48,40 @@ class TestBitFieldDecoder(unittest.TestCase):
             (21, {"type": 1, "name": 1, "sys": 1}),
         ]
         self.assert_decoder("sys:2,name:2,type:4", test_cases)
+
+    def test_basic_decoder_values_numpy(self):
+        """
+        Test basic decoding functionality with a simple schema and numpy input.
+
+        Schema: "sys:2,name:2,type:4"
+        """
+        np_values = np.array([5, 7, 15, 21])
+
+        dec = decoder.Decoder("sys:2,name:2,type:4")
+
+        self.assertTrue(
+            np.array_equal(dec.get(np_values, "sys"), np.array([1, 3, 3, 1]))
+        )
+        self.assertTrue(
+            np.array_equal(dec.get(np_values, "name"), np.array([1, 1, 3, 1]))
+        )
+        self.assertTrue(
+            np.array_equal(dec.get(np_values, "type"), np.array([0, 0, 0, 1]))
+        )
+
+    def test_basic_decoder_values_awkward(self):
+        """
+        Test basic decoding functionality with a simple schema and awkward input.
+
+        Schema: "sys:2,name:2,type:4"
+        """
+        ak_values = ak.Array([[5, 7], [15, 21]])
+
+        dec = decoder.Decoder("sys:2,name:2,type:4")
+
+        self.assertTrue(ak.to_list(dec.get(ak_values, "sys")) == [[1, 3], [3, 1]])
+        self.assertTrue(ak.to_list(dec.get(ak_values, "name")) == [[1, 1], [3, 1]])
+        self.assertTrue(ak.to_list(dec.get(ak_values, "type")) == [[0, 0], [0, 1]])
 
     def test_negative_fields(self):
         """
