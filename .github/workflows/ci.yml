@@ -55,8 +55,6 @@ jobs:
       with:
         files: build/coverage/coverage.info
         token: ${{ secrets.CODECOV_TOKEN }}
-        verbose: true
-        slug: fcs-proj/FastCaloSim
 
     - name: Upload test results to Codecov
       if: ${{ !cancelled() }}
