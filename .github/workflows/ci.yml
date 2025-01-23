@@ -148,11 +148,10 @@ jobs:
 
     strategy:
       matrix:
-        releases: [2024-11-28]  # or whatever valid date you have
+        releases: [2024-11-28]
 
     env:
       KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
-      KEY4HEP_BASE: /cvmfs/sw.hsf.org/key4hep
       KEY4HEP_VERSION: ${{ matrix.releases }}
       LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
     steps:
@@ -168,12 +167,11 @@ jobs:
             --volume /cvmfs:/cvmfs:shared \
             --volume ${{ github.workspace }}:/workspace \
             --workdir /workspace \
-            --env KEY4HEP_VERSION="${{ env.KEY4HEP_VERSION }}" \
             "${{ env.KEY4HEP_IMAGE }}" \
-            bash -ex -c '
-              echo "::group::Set up key4hep environment"
-              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "$KEY4HEP_VERSION"
+            bash -e -c '
 
+              echo "::group::Set up key4hep environment"
+              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
               echo "::group::Set-up Python environment"
               source .github/scripts/setup_pyvenv.sh
 
@@ -183,7 +181,7 @@ jobs:
               pip install --user -r test/python/requirements.txt
 
               echo "::group::Configure"
-              cmake --preset=ci-linux-lcg -Dlwtnn_ROOT="${LWTNN_ROOT}"
+              cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
 
               echo "::group::Build"
               cmake --build build --config Release -j 4
