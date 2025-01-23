@@ -34,11 +34,24 @@ jobs:
             --volume ${{ github.workspace }}:/workspace \
             --workdir /workspace \
             ${{ env.KEY4HEP_IMAGE }} bash -c "
-              echo '::group::Set-up key4hep environment'
 
+              echo '::group::Set-up key4hep environment'
               source setup.sh
+
+              echo "::group::Install Python test dependencies"
+              pip install --user pipreqs
+              pipreqs test/python --mode no-pin
+              pip install --user -r test/python/requirements.txt
 
               echo '::group::Configure'
               cmake --preset=ci-linux-lcg -Dlwtnn_ROOT=${LWTNN_ROOT}
 
+              echo '::group::Build'
+              cmake --build build --config Release -j 4
+
+              echo '::group::Install'
+              cmake --install build --config Release --prefix prefix
+
+              echo '::group::Test'
+              ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
             "

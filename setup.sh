@@ -21,9 +21,3 @@ fi
 
 # Activate the environment
 . fcs-venv/bin/activate
-
-# # Install python dependencies from requirements.txt
-# pip install --quiet --no-dependencies -r requirements.txt
-
-# # Install pre-commit hooks
-# pre-commit install
