@@ -16,6 +16,7 @@ jobs:
     env:
       KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
       KEY4HEP_BASE: /cvmfs/sw.hsf.org/key4hep
+      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -54,7 +55,7 @@ jobs:
             # pip install --user -r test/python/requirements.txt
 
             echo '::group::Configure'
-            cmake --preset=ci-linux-lcg
+            cmake --preset=ci-linux-lcg -Dlwtnn_ROOT=${LWTNN_ROOT}
 
             echo '::group::Build'
             cmake --build build --config Release -j 4
