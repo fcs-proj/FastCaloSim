@@ -145,6 +145,55 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+  # Test against key4hep releases
+  test_key4hep:
+    needs: [lint]
+    env:
+      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
+      KEY4HEP_BASE: /cvmfs/sw.hsf.org/key4hep
+      KEY4HEP_VERSION: 2024-11-28
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v4
+      - name: Build and test
+        run: |
+          docker run --rm \
+            --device /dev/fuse \
+            --cap-add SYS_ADMIN \
+            --volume /cvmfs:/cvmfs:shared \
+            --volume ${{ github.workspace }}:/workspace \
+            --workdir /workspace \
+            ${{ env.KEY4HEP_IMAGE }} bash -c "
+            # Set-up key4hep environment
+            source ${{env.KEY4HEP_BASE}}/setup.sh -r ${{env.KEY4HEP_VERSION}}
+
+            echo '::group::Set-up Python environment'
+            mkdir -p ~/.local/bin
+            export PATH=~/.local/bin:${PATH}
+            curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
+            chmod +x ~/.local/bin/cvmfs-venv
+            cvmfs-venv lcg-venv && . lcg-venv/bin/activate
+
+            echo '::group::Install Python test dependencies'
+            pip install --user pipreqs
+            pipreqs test/python --mode no-pin
+            pip install --user -r test/python/requirements.txt
+
+            echo '::group::Configure'
+            cmake --preset=ci-linux-lcg
+
+            echo '::group::Build'
+            cmake --build build --config Release -j 4
+
+            echo '::group::Install'
+            cmake --install build --config Release --prefix prefix
+
+            echo '::group::Test'
+            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4"
+
   docs:
     # Deploy docs only when builds succeed
     needs: [test]
