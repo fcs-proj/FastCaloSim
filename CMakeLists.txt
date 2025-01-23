@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 if(POLICY CMP0167)
-  cmake_policy(SET CMP0167 OLD)
+  cmake_policy(SET CMP0167 NEW)
 endif()
 
 include(cmake/prelude.cmake)
