@@ -175,6 +175,7 @@ jobs:
             --volume ${{ github.workspace }}:/workspace \
             --workdir /workspace \
             ${{ env.KEY4HEP_IMAGE }} bash -ex -c '
+
               echo "::group::Set-up Python environment"
               source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "${KEY4HEP_VERSION}" >> /dev/null
               mkdir -p ~/.local/bin
