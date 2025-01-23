@@ -2,6 +2,10 @@
 
 cmake_minimum_required(VERSION 3.14)
 
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 project(FastCaloSimTests LANGUAGES CXX)
 
 include(../cmake/project-is-top-level.cmake)
