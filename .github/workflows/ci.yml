@@ -119,7 +119,7 @@ jobs:
             export PATH=~/.local/bin:"${PATH}"
             curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
             chmod +x ~/.local/bin/cvmfs-venv
-            cvmfs-venv lcg-venv && . lcg-venv/bin/activate
+            cvmfs-venv fcs-venv && . fcs-venv/bin/activate
 
             echo "::group::Install Python test dependencies"
             pip install --user pipreqs
@@ -147,6 +147,7 @@ jobs:
 
   # Test against key4hep releases
   test_key4hep:
+    needs: [lint]
     env:
       KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
       KEY4HEP_BASE: /cvmfs/sw.hsf.org/key4hep
@@ -169,17 +170,14 @@ jobs:
             --workdir /workspace \
             ${{ env.KEY4HEP_IMAGE }} bash -c "
 
-              echo '::group::Set-up key4hep python environment'
-              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "${{ env.KEY4HEP_VERSION }}" >> /dev/null
 
-              # Set up python virtual environment
+              echo "::group::Set-up Python environment"
+              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "${{ env.KEY4HEP_VERSION }}" >> /dev/null
               mkdir -p ~/.local/bin
               export PATH=~/.local/bin:"${PATH}"
               curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
               chmod +x ~/.local/bin/cvmfs-venv
-
-              # Activate the python environment
-              . fcs-venv/bin/activate
+              cvmfs-venv fcs-venv && . fcs-venv/bin/activate
 
               echo '::group::Set-up key4hep software environment'
               source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "${{ env.KEY4HEP_VERSION }}"
