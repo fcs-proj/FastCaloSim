@@ -53,6 +53,11 @@ deactivate_checks(gtest gtest_main
 add_subdirectory(g4app)
 deactivate_checks(g4app)
 
+# Get the nlohmann json library
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz DOWNLOAD_EXTRACT_TIMESTAMP true)
+set(NLOHMANN_JSON_SYSTEM_INCLUDE "" CACHE STRING "" FORCE)
+FetchContent_MakeAvailable(json)
+
 # Build the ATLAS geometry plugin
 add_subdirectory(TestPlugins/ATLAS/ATLASFCalGeoPlugin)
 deactivate_checks(ATLASFCalGeoPlugin)

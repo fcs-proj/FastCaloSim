@@ -12,4 +12,4 @@ add_library(g4app SHARED ${g4app_SOURCES})
 target_include_directories(g4app PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR})
 
 # Link against Geant4 and FastCaloSim (for G4 transpot tool)
-target_link_libraries(g4app PUBLIC ${Geant4_LIBRARIES} FastCaloSim::FastCaloSim)
+target_link_libraries(g4app PUBLIC ${Geant4_LIBRARIES} nlohmann_json::nlohmann_json FastCaloSim::FastCaloSim)
