@@ -89,7 +89,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 # Link tests against plugins and g4app
 target_link_libraries(BasicExtrapolTests PRIVATE ATLASFCalGeoPlugin)
 target_link_libraries(BasicSimTests PRIVATE ATLASFCalGeoPlugin)
-target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app ${Boost_LIBRARIES})
+target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasSimTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasGeoTests PRIVATE ATLASFCalGeoPlugin)
 
