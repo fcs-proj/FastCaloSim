@@ -3,11 +3,11 @@ name: Pipeline
 on:
   push:
     branches:
-    - main
+      - main
 
   pull_request:
     branches:
-    - main
+      - main
 
 jobs:
 
@@ -38,32 +38,32 @@ jobs:
             echo '::group::Set-up key4hep environment'
 
             # Write the setup script content into setup.sh
-            cat << 'EOF' > setup.sh
-            #!/bin/bash
+            cat <<- 'EOF' > setup.sh
+                #!/bin/bash
 
-            source ${{env.KEY4HEP_BASE}}/setup.sh -r ${{matrix.releases}}
+                source ${{env.KEY4HEP_BASE}}/setup.sh -r ${{matrix.releases}}
 
-            # Create the local bin directory if it doesn't exist
-            mkdir -p ~/.local/bin
+                # Create the local bin directory if it doesn't exist
+                mkdir -p ~/.local/bin
 
-            # Add local bin to the PATH
-            export PATH=~/.local/bin:${PATH}
+                # Add local bin to the PATH
+                export PATH=~/.local/bin:${PATH}
 
-            # Download cvmfs-venv script
-            curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
+                # Download cvmfs-venv script
+                curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
 
-            # Make the script executable
-            chmod +x ~/.local/bin/cvmfs-venv
+                # Make the script executable
+                chmod +x ~/.local/bin/cvmfs-venv
 
-            # Set up and activate the virtual environment
-            cvmfs-venv fcs-venv && . fcs-venv/bin/activate
+                # Set up and activate the virtual environment
+                cvmfs-venv fcs-venv && . fcs-venv/bin/activate
 
-            # Install pipreqs and generate requirements
-            pip install --user pipreqs
-            pipreqs test/python --mode no-pin
+                # Install pipreqs and generate requirements
+                pip install --user pipreqs
+                pipreqs test/python --mode no-pin
 
-            # Install the required packages
-            pip install --user -r test/python/requirements.txt
+                # Install the required packages
+                pip install --user -r test/python/requirements.txt
             EOF
 
             chmod +x setup.sh
