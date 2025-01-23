@@ -146,72 +146,69 @@ jobs:
           retention-days: 90
 
   # Test against key4hep releases
-test_key4hep:
-  needs: [lint]
-  runs-on: ubuntu-24.04
+  test_key4hep:
+    needs: [lint]
+    runs-on: ubuntu-24.04
 
-  strategy:
-    matrix:
-      releases: [2024-11-28]  # or whatever valid date you have
+    strategy:
+      matrix:
+        releases: [2024-11-28]  # or whatever valid date you have
 
-  env:
-    KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
-    KEY4HEP_BASE: /cvmfs/sw.hsf.org/key4hep
-    KEY4HEP_VERSION: ${{ matrix.releases }}
-    LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
-  steps:
-    - uses: actions/checkout@v4
+    env:
+      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
+      KEY4HEP_BASE: /cvmfs/sw.hsf.org/key4hep
+      KEY4HEP_VERSION: ${{ matrix.releases }}
+      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
+    steps:
+      - uses: actions/checkout@v4
 
-    - uses: cvmfs-contrib/github-action-cvmfs@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v4
 
-    - name: Build and test
-      run: |
-        docker run --rm \
-          --device /dev/fuse \
-          --cap-add SYS_ADMIN \
-          --volume /cvmfs:/cvmfs:shared \
-          --volume ${{ github.workspace }}:/workspace \
-          --workdir /workspace \
-          --env KEY4HEP_VERSION="${{ env.KEY4HEP_VERSION }}" \
-          "${{ env.KEY4HEP_IMAGE }}" \
-          bash -ex -c '
-            echo "::group::Check environment"
-            echo "Inside container, KEY4HEP_VERSION=$KEY4HEP_VERSION"
+      - name: Build and test
+        run: |
+          docker run --rm \
+            --device /dev/fuse \
+            --cap-add SYS_ADMIN \
+            --volume /cvmfs:/cvmfs:shared \
+            --volume ${{ github.workspace }}:/workspace \
+            --workdir /workspace \
+            --env KEY4HEP_VERSION="${{ env.KEY4HEP_VERSION }}" \
+            "${{ env.KEY4HEP_IMAGE }}" \
+            bash -ex -c '
+              echo "::group::Check environment"
+              echo "Inside container, KEY4HEP_VERSION=$KEY4HEP_VERSION"
 
-            echo "::group::Set-up Python environment"
-            source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "$KEY4HEP_VERSION" >> /dev/null
+              echo "::group::Set-up Python environment"
+              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "$KEY4HEP_VERSION" >> /dev/null
 
-            mkdir -p ~/.local/bin
-            export PATH="$HOME/.local/bin:$PATH"
-            curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh \
-                 -o ~/.local/bin/cvmfs-venv
-            chmod +x ~/.local/bin/cvmfs-venv
-            cvmfs-venv fcs-venv
-            source fcs-venv/bin/activate
+              mkdir -p ~/.local/bin
+              export PATH="$HOME/.local/bin:$PATH"
+              curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh \
+                  -o ~/.local/bin/cvmfs-venv
+              chmod +x ~/.local/bin/cvmfs-venv
+              cvmfs-venv fcs-venv
+              source fcs-venv/bin/activate
 
-            echo "::group::Set-up key4hep software environment"
-            source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "$KEY4HEP_VERSION"
+              echo "::group::Set-up key4hep software environment"
+              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r "$KEY4HEP_VERSION"
 
-            echo "::group::Install Python test dependencies"
-            pip install --user pipreqs
-            pipreqs test/python --mode no-pin
-            pip install --user -r test/python/requirements.txt
+              echo "::group::Install Python test dependencies"
+              pip install --user pipreqs
+              pipreqs test/python --mode no-pin
+              pip install --user -r test/python/requirements.txt
 
-            echo "::group::Configure"
-            cmake --preset=ci-linux-lcg -Dlwtnn_ROOT="${LWTNN_ROOT}"
+              echo "::group::Configure"
+              cmake --preset=ci-linux-lcg -Dlwtnn_ROOT="${LWTNN_ROOT}"
 
-            echo "::group::Build"
-            cmake --build build --config Release -j 4
+              echo "::group::Build"
+              cmake --build build --config Release -j 4
 
-            echo "::group::Install"
-            cmake --install build --config Release --prefix prefix
+              echo "::group::Install"
+              cmake --install build --config Release --prefix prefix
 
-            echo "::group::Test"
-            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
-          '
-
-
-
+              echo "::group::Test"
+              ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
+            '
 
   docs:
     # Deploy docs only when builds succeed
