@@ -34,49 +34,43 @@ jobs:
             --volume ${{ github.workspace }}:/workspace \
             --workdir /workspace \
             ${{ env.KEY4HEP_IMAGE }} bash -c "
+              echo '::group::Set-up key4hep environment'
 
-            echo '::group::Set-up key4hep environment'
 
-            # Write the setup script content into setup.sh
-            cat <<- 'EOF' > setup.sh
-                #!/bin/bash
+              echo -e '#!/bin/bash
+              source ${{ env.KEY4HEP_BASE }}/setup.sh -r ${{ matrix.releases }}
 
-                source ${{env.KEY4HEP_BASE}}/setup.sh -r ${{matrix.releases}}
+              # Create the local bin directory if it does not exist
+              mkdir -p ~/.local/bin
+              export PATH=~/.local/bin:${PATH}
 
-                # Create the local bin directory if it doesn't exist
-                mkdir -p ~/.local/bin
+              # Download cvmfs-venv script
+              curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
+              chmod +x ~/.local/bin/cvmfs-venv
 
-                # Add local bin to the PATH
-                export PATH=~/.local/bin:${PATH}
+              # Set up and activate the virtual environment
+              cvmfs-venv fcs-venv && . fcs-venv/bin/activate
 
-                # Download cvmfs-venv script
-                curl -sL https://raw.githubusercontent.com/jbeirer/cvmfs-venv/main/cvmfs-venv.sh -o ~/.local/bin/cvmfs-venv
+              # Install pipreqs and generate requirements
+              pip install --user pipreqs
+              pipreqs test/python --mode no-pin
 
-                # Make the script executable
-                chmod +x ~/.local/bin/cvmfs-venv
+              # Install the required packages
+              pip install --user -r test/python/requirements.txt
+              ' > setup.sh
 
-                # Set up and activate the virtual environment
-                cvmfs-venv fcs-venv && . fcs-venv/bin/activate
+              chmod +x setup.sh
+              source setup.sh
 
-                # Install pipreqs and generate requirements
-                pip install --user pipreqs
-                pipreqs test/python --mode no-pin
+              echo '::group::Configure'
+              cmake --preset=ci-linux-lcg -Dlwtnn_ROOT=${LWTNN_ROOT}
 
-                # Install the required packages
-                pip install --user -r test/python/requirements.txt
-            EOF
+              echo '::group::Build'
+              cmake --build build --config Release -j 4
 
-            chmod +x setup.sh
-            source setup.sh
+              echo '::group::Install'
+              cmake --install build --config Release --prefix prefix
 
-            echo '::group::Configure'
-            cmake --preset=ci-linux-lcg -Dlwtnn_ROOT=${LWTNN_ROOT}
-
-            echo '::group::Build'
-            cmake --build build --config Release -j 4
-
-            echo '::group::Install'
-            cmake --install build --config Release --prefix prefix
-
-            echo '::group::Test'
-            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4"
+              echo '::group::Test'
+              ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
+            "
