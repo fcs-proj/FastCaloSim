@@ -39,6 +39,10 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
+# Boost for FastCaloSim and serialization
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
 # Deactivate compiler warnings and static analyzers
 # Note: test should be linked with gtest_main unless
 # you want to write your own main function
@@ -81,10 +85,6 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
   get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
   create_test_executable(${TEST_NAME} ${TEST_SOURCE})
 endforeach()
-
-# Boost is used for transport / extrapolation data serialization in the transport test
-find_package(Boost REQUIRED COMPONENTS serialization)
-include_directories(${Boost_INCLUDE_DIRS})
 
 # Link tests against plugins and g4app
 target_link_libraries(BasicExtrapolTests PRIVATE ATLASFCalGeoPlugin)
