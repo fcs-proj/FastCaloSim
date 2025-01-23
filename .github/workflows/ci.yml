@@ -38,7 +38,7 @@ jobs:
               echo '::group::Set-up key4hep environment'
               source setup.sh
 
-              echo "::group::Install Python test dependencies"
+              echo '::group::Install Python test dependencies'
               pip install --user pipreqs
               pipreqs test/python --mode no-pin
               pip install --user -r test/python/requirements.txt
