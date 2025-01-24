@@ -2,6 +2,10 @@
 
 cmake_minimum_required(VERSION 3.14)
 
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 project(FastCaloSimTests LANGUAGES CXX)
 
 include(../cmake/project-is-top-level.cmake)
@@ -35,6 +39,10 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
+# Boost for FastCaloSim and serialization
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
 # Deactivate compiler warnings and static analyzers
 # Note: test should be linked with gtest_main unless
 # you want to write your own main function
@@ -48,6 +56,11 @@ deactivate_checks(gtest gtest_main
 # - Uses simplified geometry
 add_subdirectory(g4app)
 deactivate_checks(g4app)
+
+# Get the nlohmann json library
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz DOWNLOAD_EXTRACT_TIMESTAMP true)
+set(NLOHMANN_JSON_SYSTEM_INCLUDE "" CACHE STRING "" FORCE)
+FetchContent_MakeAvailable(json)
 
 # Build the ATLAS geometry plugin
 add_subdirectory(TestPlugins/ATLAS/ATLASFCalGeoPlugin)
@@ -73,14 +86,10 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
   create_test_executable(${TEST_NAME} ${TEST_SOURCE})
 endforeach()
 
-# Boost is used for transport / extrapolation data serialization in the transport test
-find_package(Boost REQUIRED COMPONENTS serialization)
-include_directories(${Boost_INCLUDE_DIRS})
-
 # Link tests against plugins and g4app
 target_link_libraries(BasicExtrapolTests PRIVATE ATLASFCalGeoPlugin)
 target_link_libraries(BasicSimTests PRIVATE ATLASFCalGeoPlugin)
-target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app ${Boost_LIBRARIES})
+target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasSimTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasGeoTests PRIVATE ATLASFCalGeoPlugin)
 
