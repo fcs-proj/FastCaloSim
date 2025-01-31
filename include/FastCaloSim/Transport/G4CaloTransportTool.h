@@ -33,13 +33,22 @@ public:
   //  Setter methods for configuration
   //--------------------------------------------------------------------------
   /// @brief Turn on/off the use of simplified geometry.
-  void setUseSimplifiedGeo(bool useSimplifiedGeo);
+  void setUseSimplifiedGeo(bool useSimplifiedGeo)
+  {
+    m_useSimplifiedGeo = useSimplifiedGeo;
+  }
 
   /// @brief Set the name of the logical volume for the simplified world
-  void setSimplifiedWorldLogName(const std::string& simplifiedWorldLogName);
+  void setSimplifiedWorldLogName(const std::string& simplifiedWorldLogName)
+  {
+    m_simplifiedWorldLogName = simplifiedWorldLogName;
+  }
 
   /// @brief Set the name of the volume until which to transport the particle
-  void setTransportLimitVolume(const std::string& transportLimitVolume);
+  void setTransportLimitVolume(const std::string& transportLimitVolume)
+  {
+    m_transportLimitVolume = transportLimitVolume;
+  }
 
 private:
   /// @brief Obtain the world volume in which particle transport is performed
