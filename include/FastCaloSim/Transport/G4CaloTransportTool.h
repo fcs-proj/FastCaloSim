@@ -17,7 +17,6 @@ class G4FieldTrack;
 ///
 /// @author Joshua Falco Beirer <joshua.falco.beirer@cern.ch>
 ///
-
 class FASTCALOSIM_EXPORT G4CaloTransportTool
 {
 public:
@@ -26,32 +25,50 @@ public:
 
   // Initialize propagator for the current thread
   void initializePropagator();
+
   // Transport input track through the geometry
-  std::vector<G4FieldTrack> transport(const G4Track& G4InputTrack);
+  auto transport(const G4Track& G4InputTrack) -> std::vector<G4FieldTrack>;
+
+  //--------------------------------------------------------------------------
+  //  Setter methods for configuration
+  //--------------------------------------------------------------------------
+  /// @brief Turn on/off the use of simplified geometry.
+  void setUseSimplifiedGeo(bool useSimplifiedGeo);
+
+  /// @brief Set the name of the logical volume for the simplified world
+  void setSimplifiedWorldLogName(const std::string& simplifiedWorldLogName);
+
+  /// @brief Set the name of the volume until which to transport the particle
+  void setTransportLimitVolume(const std::string& transportLimitVolume);
 
 private:
-  // Get the world volume in which the particle transport is performed
-  G4VPhysicalVolume* getWorldVolume();
-  // Create and return a new propagator
-  G4PropagatorInField* makePropagator();
-  // Advance track by single Geant4 step in geometry
+  /// @brief Obtain the world volume in which particle transport is performed
+  auto getWorldVolume() -> G4VPhysicalVolume*;
+
+  /// @brief Create and return a new G4PropagatorInField.
+  auto makePropagator() -> G4PropagatorInField*;
+
+  /// @brief Advance the track by one Geant4 step in the geometry
   void doStep(G4FieldTrack& fieldTrack);
-  // Pointer to the physical volume of the world (either simplified or full
-  // geometry)
+
+  /// Pointer to the physical volume of the world (either simplified or full
+  /// geometry)
   G4VPhysicalVolume* m_worldVolume {};
 
-  // Whether to use simplified geometry for particle transport
+  /// Whether to use simplified geometry for particle transport
   bool m_useSimplifiedGeo = true;
-  // Name of the logical volume of the simplified world as defined in the loaded
-  // GDML file
-  std::string m_simplifiedWorldLogName = "WorldLog";
-  // Name of volume until which the particle is tracked in transport
-  std::string m_transportLimitVolume = "Envelope";
-  // Maximum number of steps in particle transport
-  unsigned int m_maxSteps = 100;
-  // Thread local holder for propagators
-  thread_utils::ThreadLocalHolder<G4PropagatorInField> m_propagatorHolder;
 
-};  // class G4CaloTransportTool
+  /// Name of the logical volume of the simplified world (as defined in GDML)
+  std::string m_simplifiedWorldLogName = "WorldLog";
+
+  /// Name of the volume in which to stop tracking the particle
+  std::string m_transportLimitVolume = "Envelope";
+
+  /// Maximum number of steps allowed in particle transport
+  unsigned int m_maxSteps = 100;
+
+  /// Thread-local holder for G4PropagatorInField instances
+  thread_utils::ThreadLocalHolder<G4PropagatorInField> m_propagatorHolder;
+};
 
 #endif  // G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H

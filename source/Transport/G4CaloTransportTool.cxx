@@ -11,13 +11,14 @@
 #include "G4PathFinder.hh"
 #include "G4TransportationManager.hh"
 
-G4CaloTransportTool::G4CaloTransportTool() {}
+G4CaloTransportTool::G4CaloTransportTool() = default;
 
 G4CaloTransportTool::~G4CaloTransportTool()
 {
   // Delete the world volume if we created it
-  if (m_useSimplifiedGeo)
+  if (m_useSimplifiedGeo) {
     delete m_worldVolume;
+  }
 
   // Delete the navigators and propagators for each thread
   for (auto& mapPair : m_propagatorHolder.getMap()) {
@@ -50,7 +51,7 @@ void G4CaloTransportTool::initializePropagator()
   }
 
   // Check if we already have propagator set up for the current thread
-  auto propagator = m_propagatorHolder.get();
+  auto* propagator = m_propagatorHolder.get();
   // If not, we create one
   if (!propagator) {
     propagator = makePropagator();
@@ -62,7 +63,7 @@ void G4CaloTransportTool::initializePropagator()
   }
 }
 
-G4VPhysicalVolume* G4CaloTransportTool::getWorldVolume()
+auto G4CaloTransportTool::getWorldVolume() -> G4VPhysicalVolume*
 {
   if (m_useSimplifiedGeo) {
     G4cout << "Creating simplified world volume for particle transport"
@@ -90,7 +91,7 @@ G4VPhysicalVolume* G4CaloTransportTool::getWorldVolume()
   }
 }
 
-G4PropagatorInField* G4CaloTransportTool::makePropagator()
+auto G4CaloTransportTool::makePropagator() -> G4PropagatorInField*
 {
   // Create a new navigator
   G4Navigator* navigator = new G4Navigator();
@@ -142,15 +143,13 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack)
     propagator->ComputeStep(
         fieldTrack, currentMinimumStep, retSafety, currentPhysVol);
   }
-
-  return;
 }
 
 std::vector<G4FieldTrack> G4CaloTransportTool::transport(
     const G4Track& G4InputTrack)
 {
   // Get the navigator for the current thread
-  auto navigator = m_propagatorHolder.get()->GetNavigatorForPropagating();
+  auto* navigator = m_propagatorHolder.get()->GetNavigatorForPropagating();
 
   // Create a vector to store the output steps
   std::vector<G4FieldTrack> outputStepVector;
@@ -172,8 +171,9 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
             ->LocateGlobalPointAndSetup(tmpFieldTrack.GetPosition(), nullptr)
             ->GetName();
     // We stop the track navigation once we have reached the provided volume
-    if (volName.find(m_transportLimitVolume) != std::string::npos)
+    if (volName.find(m_transportLimitVolume) != std::string::npos) {
       break;
+    }
   }
 
   return outputStepVector;
