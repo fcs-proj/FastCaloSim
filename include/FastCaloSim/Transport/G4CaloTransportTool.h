@@ -50,6 +50,9 @@ public:
     m_transportLimitVolume = transportLimitVolume;
   }
 
+  /// @brief Set the maximum number of steps allowed in particle transport
+  void setMaxSteps(unsigned int maxSteps) { m_maxSteps = maxSteps; }
+
 private:
   /// @brief Obtain the world volume in which particle transport is performed
   auto getWorldVolume() -> G4VPhysicalVolume*;
