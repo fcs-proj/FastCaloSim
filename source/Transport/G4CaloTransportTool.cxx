@@ -166,13 +166,23 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
     // Fill the output vector with the updated track
     outputStepVector.push_back(tmpFieldTrack);
     // Get the name of the volume in which the particle is located
-    std::string volName =
-        navigator
-            ->LocateGlobalPointAndSetup(tmpFieldTrack.GetPosition(), nullptr)
-            ->GetName();
-    // We stop the track navigation once we have reached the provided volume
-    if (volName.find(m_transportLimitVolume) != std::string::npos) {
-      break;
+    auto volume = navigator->LocateGlobalPointAndSetup(
+        tmpFieldTrack.GetPosition(), nullptr);
+    if (volume != nullptr) {
+      std::string volName = volume->GetName();
+      // We stop the track navigation once we have reached the provided volume
+      if (volName.find(m_transportLimitVolume) != std::string::npos) {
+        break;
+      }
+    } else {
+      G4ExceptionDescription description;
+      description << "at step " << iStep << "/" << m_maxSteps
+                  << " with position " << tmpFieldTrack.GetPosition()
+                  << " and momentum " << tmpFieldTrack.GetMomentum();
+      G4Exception("G4CaloTransportTool::transport",
+                  "Cannot get LocateGlobalPointAndSetup",
+                  JustWarning,
+                  description);
     }
   }
 
