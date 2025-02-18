@@ -176,13 +176,21 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
       }
     } else {
       G4ExceptionDescription description;
-      description << "at step " << iStep << "/" << m_maxSteps
-                  << " with position " << tmpFieldTrack.GetPosition()
-                  << " and momentum " << tmpFieldTrack.GetMomentum();
+      description
+          << "Transport failure at step " << iStep << "/" << m_maxSteps
+          << G4endl << " - Position: " << tmpFieldTrack.GetPosition() << G4endl
+          << " - Momentum: " << tmpFieldTrack.GetMomentum() << G4endl
+          << "Possible cause: The transport is likely outside the world volume."
+          << G4endl
+          << "Check if an envelope volume is defined and properly set up."
+          << G4endl << "This issue should not occur during normal operation.";
+
       G4Exception("G4CaloTransportTool::transport",
-                  "Cannot get LocateGlobalPointAndSetup",
+                  "LocateGlobalPointAndSetup failed: Particle may be "
+                  "transported outside the world volume.",
                   JustWarning,
                   description);
+      break;
     }
   }
 
