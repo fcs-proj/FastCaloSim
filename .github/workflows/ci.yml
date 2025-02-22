@@ -148,7 +148,7 @@ jobs:
 
     strategy:
       matrix:
-        releases: [2024-11-28]
+        releases: [2025-01-28]
 
     env:
       KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
