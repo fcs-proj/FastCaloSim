@@ -106,7 +106,7 @@ jobs:
     strategy:
       matrix:
         # See https://lcginfo.cern.ch/ for info on available LCG releases
-        lcg: [LCG_106]
+        lcg: [LCG_106, LCG_107a]
     steps:
       - uses: actions/checkout@v4
       - uses: cvmfs-contrib/github-action-cvmfs@v4
