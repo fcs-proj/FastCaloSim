@@ -638,5 +638,10 @@
 #pragma link C++ class TFCSTruthState + ;
 #pragma link C++ class TFCSExtrapolationState + ;
 #pragma link C++ class TFCSSimulationState + ;
+
+#pragma link C++ class std::vector<TFCSTruthState> + ;
+#pragma link C++ class std::vector<TFCSExtrapolationState> + ;
+#pragma link C++ class std::vector<TFCSSimulationState> + ;
+
 #endif
 // clang-format on
