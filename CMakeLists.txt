@@ -127,13 +127,10 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
     include(cmake/install-rules.cmake)
 endif()
 
-# ---- Examples ----
+# ---- Parametrization ----
 
-if(PROJECT_IS_TOP_LEVEL)
-    option(BUILD_EXAMPLES "Build examples tree." "${FastCaloSim_DEVELOPER_MODE}")
-    if(BUILD_EXAMPLES)
-        add_subdirectory(example)
-    endif()
+if (FastCaloSim_DEVELOPER_MODE)
+    add_subdirectory(param)
 endif()
 
 # ---- Developer mode ----
