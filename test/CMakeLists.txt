@@ -14,13 +14,17 @@ include(../cmake/silencer.cmake)
 include(../cmake/tests.cmake)
 
 # ---- Test Base Directory ----
-add_definitions(-DTEST_BASE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/")
+add_compile_definitions(TEST_BASE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/")
+
+# ---- Define param binary directory ----
+add_compile_definitions(PARAM_BINARY_DIR="${CMAKE_BINARY_DIR}/param/")
 
 # ---- Create test output Location ----
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/output)
-add_definitions(-DTEST_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output/")
+add_compile_definitions(TEST_OUTPUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/output/")
+
 # ---- Location to store test references ----
-add_definitions(-DTEST_REFS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/refs/")
+add_compile_definitions(TEST_REFS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/refs/")
 
 # ---- Dependencies ----
 
