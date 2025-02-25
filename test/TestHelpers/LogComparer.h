@@ -70,11 +70,11 @@ private:
     // We'll replace memory addresses and timing info, then pipe both logs
     // through the same sed+grep filter, then compare with diff -u.
     std::ostringstream cmd;
-    cmd << "diff -u "
-        << "<(sed -E 's/0x[0-9a-f]+/0xADDR/g; s/[0-9]+\\.[0-9]+ s/XX.XX s/g' "
+    cmd << "bash -c 'diff -u "
+        << R"(<(sed -E "s/0x[0-9a-f]+/0xADDR/g; s/[0-9]+\.[0-9]+ s/XX.XX s/g" )"
         << ref_log_file << " " << grep_filter << ") "
-        << "<(sed -E 's/0x[0-9a-f]+/0xADDR/g; s/[0-9]+\\.[0-9]+ s/XX.XX s/g' "
-        << new_log_file << " " << grep_filter << ")";
+        << R"(<(sed -E "s/0x[0-9a-f]+/0xADDR/g; s/[0-9]+\.[0-9]+ s/XX.XX s/g" )"
+        << new_log_file << " " << grep_filter << ")'";
 
     return cmd.str();
   }
