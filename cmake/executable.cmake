@@ -10,7 +10,7 @@ function(add_exec NAME)
   )
 
   target_link_libraries("${NAME}" PRIVATE
-    FastCaloSimParam::FastCaloSimParam
+    FastCaloSim::Param
     fmt::fmt-header-only
   )
 

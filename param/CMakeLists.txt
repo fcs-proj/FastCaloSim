@@ -21,35 +21,35 @@ endif()
 # ---- Declare library ----
 
 # Create a empty shared library
-add_library(FastCaloSimParam_FastCaloSimParam SHARED "")
+add_library(FastCaloSim_Param SHARED "")
 
 # Add source files
 add_subdirectory(source)
 
-add_library(FastCaloSimParam::FastCaloSimParam ALIAS FastCaloSimParam_FastCaloSimParam)
+add_library(FastCaloSim::Param ALIAS FastCaloSim_Param)
 
 # Link against external libraries
 target_link_libraries(
-    FastCaloSimParam_FastCaloSimParam
+    FastCaloSim_Param
     PUBLIC
         FastCaloSim::FastCaloSim
 )
 
 # Generate ROOT dictionary for custom classes when building a shared library
-ROOT_GENERATE_DICTIONARY(FastCaloSimParam_dict MODULE FastCaloSimParam_FastCaloSimParam LINKDEF include/FastCaloSimParam/LinkDef.h)
+ROOT_GENERATE_DICTIONARY(FastCaloSimParam_dict MODULE FastCaloSim_Param LINKDEF include/FastCaloSimParam/LinkDef.h)
 
 # Deacticate checks for the generated dictionary
-deactivate_checks(FastCaloSimParam_dict FastCaloSimParam_FastCaloSimParam)
+deactivate_checks(FastCaloSimParam_dict FastCaloSim_Param)
 
 # Add include directories for the generated dictionary
 target_include_directories(
-    FastCaloSimParam_FastCaloSimParam ${warning_guard}
+    FastCaloSim_Param ${warning_guard}
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
 )
 
 
-target_compile_features(FastCaloSimParam_FastCaloSimParam PUBLIC cxx_std_17)
+target_compile_features(FastCaloSim_Param PUBLIC cxx_std_17)
 
 
 
