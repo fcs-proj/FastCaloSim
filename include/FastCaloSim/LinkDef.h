@@ -81,6 +81,8 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
+#include "FastCaloSim/Param/FCS_Cell.h"
+
 #ifdef __CINT__
 #pragma link C++ class DoubleArray + ;
 #pragma link C++ class IntArray + ;
@@ -642,6 +644,17 @@
 #pragma link C++ class std::vector<TFCSTruthState> + ;
 #pragma link C++ class std::vector<TFCSExtrapolationState> + ;
 #pragma link C++ class std::vector<TFCSSimulationState> + ;
+
+#pragma link C++ struct FCS_cell+;
+#pragma link C++ struct FCS_hit+;
+#pragma link C++ struct FCS_g4hit+;
+#pragma link C++ struct std::vector<FCS_hit>+;
+#pragma link C++ struct std::vector<FCS_g4hit>+;
+#pragma link C++ struct FCS_matchedcell+;
+#pragma link C++ struct std::vector<FCS_matchedcell>+;
+#pragma link C++ struct FCS_matchedcellvector+;
+#pragma link C++ class std::vector<std::vector<Long64_t>>+;
+#pragma link C++ class std::vector<std::vector<bool>>+;
 
 #endif
 // clang-format on
