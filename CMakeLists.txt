@@ -121,16 +121,21 @@ target_include_directories(
 
 target_compile_features(FastCaloSim_FastCaloSim PUBLIC cxx_std_17)
 
+
+# Define the list of targets to install
+set(FastCaloSim_TARGETS FastCaloSim_FastCaloSim)
+
+# ---- Parametrization ----
+
+# Create FastCaloSim::Param target
+if (FastCaloSim_PARAM_MODE)
+    add_subdirectory(param)
+endif()
+
 # ---- Install rules ----
 
 if(NOT CMAKE_SKIP_INSTALL_RULES)
     include(cmake/install-rules.cmake)
-endif()
-
-# ---- Parametrization ----
-
-if (FastCaloSim_DEVELOPER_MODE)
-    add_subdirectory(param)
 endif()
 
 # ---- Developer mode ----

@@ -21,7 +21,7 @@ install(
 )
 
 install(
-    TARGETS FastCaloSim_FastCaloSim
+    TARGETS ${FastCaloSim_TARGETS}
     EXPORT FastCaloSimTargets
     RUNTIME #
     COMPONENT FastCaloSim_Runtime
