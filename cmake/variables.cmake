@@ -8,17 +8,11 @@ if(PROJECT_IS_TOP_LEVEL)
   option(FastCaloSim_DEVELOPER_MODE "Enable developer mode" OFF)
 endif()
 
-# ---- Suppress C4251 on Windows ----
 
-# Please see include/FastCaloSim/FastCaloSim.h for more details
-set(pragma_suppress_c4251 "
-/* This needs to suppress only for MSVC */
-#if defined(_MSC_VER) && !defined(__ICL)
-#  define FASTCALOSIM_SUPPRESS_C4251 _Pragma(\"warning(suppress:4251)\")
-#else
-#  define FASTCALOSIM_SUPPRESS_C4251
-#endif
-")
+# ---- Build parametrization target ----
+if(PROJECT_IS_TOP_LEVEL)
+  option(FastCaloSim_PARAM_MODE "Enable parametrization mode" OFF)
+endif()
 
 # ---- Warning guard ----
 

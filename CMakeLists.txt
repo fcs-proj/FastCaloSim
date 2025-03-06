@@ -127,8 +127,8 @@ set(FastCaloSim_TARGETS FastCaloSim_FastCaloSim)
 
 # ---- Parametrization ----
 
-if (FastCaloSim_DEVELOPER_MODE)
-    # Create FastCaloSim::Param library
+# Create FastCaloSim::Param target
+if (FastCaloSim_PARAM_MODE)
     add_subdirectory(param)
 endif()
 
