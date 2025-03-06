@@ -48,13 +48,25 @@ target_include_directories(
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
 )
 
+# Set the shared library properties
+set_target_properties(
+    FastCaloSim_Param PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN YES
+    VERSION "${PROJECT_VERSION}"
+    SOVERSION "${PROJECT_VERSION_MAJOR}"
+    EXPORT_NAME FastCaloSim_Param
+    OUTPUT_NAME FastCaloSim_Param
+)
 
+# Set the C++17 standard to the target
 target_compile_features(FastCaloSim_Param PUBLIC cxx_std_17)
 
+# Append FastCaloSim_Param to the list of targets to install
+list(APPEND FastCaloSim_TARGETS FastCaloSim_Param)
 
-
-
-# Add executable
+# Add executables
 add_exec(createParamSlice)
 
+# Add this as a subdirectory
 add_folders(param)
