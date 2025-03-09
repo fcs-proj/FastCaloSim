@@ -16,12 +16,16 @@ RUN apt-get update -qq \
  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
  && rm root_dependencies.txt
 
-# Upgrade CMake version
+# Build CMake form source
 ARG CMAKE_VERSION=3.29.2
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
- && chmod +x cmake-${CMAKE_VERSION}-linux-x86_64.sh \
- && sh cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local \
- && rm cmake-${CMAKE_VERSION}-linux-x86_64.sh
+RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz \
+ && tar -xzvf cmake-${CMAKE_VERSION}.tar.gz \
+ && cd cmake-${CMAKE_VERSION} \
+ && ./bootstrap --parallel=$(nproc) \
+ && make -j$(nproc) \
+ && make install \
+ && cd .. \
+ && rm -rf cmake-${CMAKE_VERSION} cmake-${CMAKE_VERSION}.tar.gz
 
 # Build ROOT from source.
 # Note: mathmore is currently needed for interpolation, clad is deactivated due to build issues
