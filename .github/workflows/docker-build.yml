@@ -1,6 +1,13 @@
-name: Build and Push Docker Image
+name: docker-build
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docker/alma9/**'
+      - 'docker/ubuntu24/**'
+
   pull_request:
     branches:
       - main
@@ -9,7 +16,7 @@ on:
       - 'docker/ubuntu24/**'
 
 jobs:
-  docker-build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,6 +43,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: fastcalosim/alma9-fastcalosim:latest
+          cache-from: type=registry,ref=fastcalosim/alma9-fastcalosim:latest
+          cache-to: type=registry,ref=fastcalosim/alma9-fastcalosim:cache,mode=max
 
       - name: Build and Push Multi-Arch Image (Ubuntu24)
         uses: docker/build-push-action@v5
@@ -45,3 +54,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: fastcalosim/ubuntu24-fastcalosim:latest
+          cache-from: type=registry,ref=fastcalosim/ubuntu24-fastcalosim:latest
+          cache-to: type=registry,ref=fastcalosim/ubuntu24-fastcalosim:cache,mode=max

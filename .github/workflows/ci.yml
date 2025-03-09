@@ -9,6 +9,11 @@ on:
     branches:
     - main
 
+  workflow_run:
+    workflows: ["docker-build"]
+    types:
+      - completed
+
 jobs:
   lint:
     needs: [docker-build]
