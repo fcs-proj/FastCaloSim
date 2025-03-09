@@ -16,8 +16,6 @@ on:
 
 jobs:
   lint:
-    needs: [docker-build]
-
     runs-on: ubuntu-24.04
 
     container:
