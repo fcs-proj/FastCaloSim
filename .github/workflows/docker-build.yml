@@ -2,26 +2,31 @@ name: docker-build
 
 on:
   pull_request:
-    types:
-    - labeled
+    branches:
+    - main
 
 jobs:
-  check-label:
+  check-docker-changes:
     runs-on: ubuntu-latest
     outputs:
-      docker-build: ${{ steps.label-check.outputs.should_run }}
+      docker_needed: ${{ steps.filter.outputs.docker }}
     steps:
-    - name: Check if PR has 'docker-build' label
-      id: label-check
-      uses: actions/github-script@v7
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Detect Docker file changes
+      id: filter
+      uses: dorny/paths-filter@v3
       with:
-        script: >
-          const label = "docker-build";  const labels = context.payload.pull_request.labels.map(l => l.name);  core.setOutput("should_run", labels.includes(label) ? "true" : "false");
+        filters: |+
+          docker:
+            - 'docker/**'
+            - '.github/workflows/docker-build.yml'
 
   build-and-push:
+    needs: check-docker-changes
+    if: needs.check-docker-changes.outputs.docker_needed == 'true'
     runs-on: self-hosted
-    needs: check-label
-    if: ${{ needs.check-label.outputs.docker-build == 'true' }}
     strategy:
       matrix:
         os: [ alma9, ubuntu24 ]

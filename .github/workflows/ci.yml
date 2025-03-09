@@ -1,34 +1,49 @@
 name: Pipeline
 
 on:
-  # Run on push to main
   push:
     branches:
     - main
-  # Run on PRs to main
+
   pull_request:
     branches:
     - main
 
-  # Run on completion of docker-build
   workflow_run:
     workflows: [ "docker-build" ]
     types:
     - completed
 
 jobs:
-  lint:
-    runs-on: ubuntu-24.04
 
+  check-docker-build:
+    runs-on: ubuntu-latest
+    outputs:
+      docker_needed: ${{ steps.filter.outputs.docker }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Detect Docker file changes
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          docker:
+            - 'docker/**'
+            - '.github/workflows/docker-build.yml'
+
+  lint:
+    # Run if no docker build is needed or if the docker build succeeded
+    needs: check-docker-build
+    if: needs.check-docker-build.outputs.docker_needed == 'false' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
     container:
       image: fastcalosim/alma9-fastcalosim:latest
-
     steps:
     - uses: actions/checkout@v4
-
     - name: Lint
       run: cmake -D FORMAT_COMMAND=clang-format -P cmake/lint.cmake
-
     - name: Spell check
       if: always()
       run: cmake -P cmake/spell.cmake
