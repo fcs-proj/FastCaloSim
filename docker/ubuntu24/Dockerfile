@@ -21,7 +21,7 @@ ARG CMAKE_VERSION=3.29.2
 RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz \
  && tar -xzvf cmake-${CMAKE_VERSION}.tar.gz \
  && cd cmake-${CMAKE_VERSION} \
- && ./bootstrap --parallel=$(nproc) \
+ && ./bootstrap --parallel=$(nproc) --prefix=/usr/local \
  && make -j$(nproc) \
  && make install \
  && cd .. \

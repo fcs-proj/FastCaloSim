@@ -7,7 +7,6 @@ on:
 
 jobs:
   check-label:
-    name: Check if 'docker-build' label exists
     runs-on: ubuntu-latest
     outputs:
       docker-build: ${{ steps.label-check.outputs.should_run }}
@@ -67,4 +66,3 @@ jobs:
           type=local,dest=/tmp/.buildx-cache
           type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:cache,mode=max
         tags: fastcalosim/${{ matrix.os }}-fastcalosim:latest
-        progress: plain
