@@ -18,6 +18,13 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [alma9, ubuntu24]
+        platform: [linux/amd64, linux/arm64]
+        exclude:
+          - platform: linux/amd64
+          - platform: linux/arm64
 
     steps:
       - name: Checkout repository
@@ -35,24 +42,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Multi-Arch Image (Alma9)
+      - name: Build and Push Multi-Arch Image (fastcalosim/${{ matrix.os }}-fastcalosim:latest)
         uses: docker/build-push-action@v5
         with:
-          context: docker/alma9
-          file: docker/alma9/Dockerfile
+          context: docker/${{ matrix.os }}
+          file: docker/${{ matrix.os }}/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: fastcalosim/alma9-fastcalosim:latest
-          cache-from: type=registry,ref=fastcalosim/alma9-fastcalosim:latest
-          cache-to: type=registry,ref=fastcalosim/alma9-fastcalosim:cache,mode=max
-
-      - name: Build and Push Multi-Arch Image (Ubuntu24)
-        uses: docker/build-push-action@v5
-        with:
-          context: docker/ubuntu24
-          file: docker/ubuntu24/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: fastcalosim/ubuntu24-fastcalosim:latest
-          cache-from: type=registry,ref=fastcalosim/ubuntu24-fastcalosim:latest
-          cache-to: type=registry,ref=fastcalosim/ubuntu24-fastcalosim:cache,mode=max
+          tags: fastcalosim/${{ matrix.os }}-fastcalosim:latest
+          cache-from: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:latest
+          cache-to: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:cache,mode=max
