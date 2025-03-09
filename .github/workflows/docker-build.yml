@@ -1,0 +1,47 @@
+name: Build and Push Docker Image
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docker/alma9/**'
+      - 'docker/ubuntu24/**'
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU for multi-arch builds
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Multi-Arch Image (Alma9)
+        uses: docker/build-push-action@v5
+        with:
+          context: docker/alma9
+          file: docker/alma9/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: fastcalosim/alma9-fastcalosim:latest
+
+      - name: Build and Push Multi-Arch Image (Ubuntu24)
+        uses: docker/build-push-action@v5
+        with:
+          context: docker/ubuntu24
+          file: docker/ubuntu24/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: fastcalosim/ubuntu24-fastcalosim:latest

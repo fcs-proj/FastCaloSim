@@ -11,10 +11,12 @@ on:
 
 jobs:
   lint:
+    needs: [docker-build]
+
     runs-on: ubuntu-24.04
 
     container:
-      image: jbeirer/alma9-fastcalosim:latest
+      image: fastcalosim/alma9-fastcalosim:latest
 
     steps:
     - uses: actions/checkout@v4
@@ -32,7 +34,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: jbeirer/alma9-fastcalosim:latest
+      image: fastcalosim/alma9-fastcalosim:latest
 
     steps:
     - uses: actions/checkout@v4
@@ -71,7 +73,7 @@ jobs:
         os: [alma9, ubuntu24]
 
     container:
-      image: jbeirer/${{ matrix.os }}-fastcalosim:latest
+      image: fastcalosim/${{ matrix.os }}-fastcalosim:latest
 
     steps:
     - uses: actions/checkout@v4
