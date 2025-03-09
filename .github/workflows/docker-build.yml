@@ -38,7 +38,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Multi-Arch Image (fastcalosim/${{ matrix.os }}-fastcalosim:latest)
+      - name: Build and Push Multi-Arch Image
         uses: docker/build-push-action@v5
         with:
           context: docker/${{ matrix.os }}
