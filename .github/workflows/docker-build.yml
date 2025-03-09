@@ -1,32 +1,22 @@
 name: docker-build
 
 on:
-  pull_request:
-    branches:
-    - main
+  # Run for labeler workflow completion
+  workflow_run:
+    workflows: [ "Labeler" ]
+    types:
+    - completed
 
 jobs:
-  check-docker-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      docker_needed: ${{ steps.filter.outputs.docker }}
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
-
-    - name: Detect Docker file changes
-      id: filter
-      uses: dorny/paths-filter@v3
-      with:
-        filters: |+
-          docker:
-            - 'docker/**'
-            - '.github/workflows/docker-build.yml'
 
   build-and-push:
-    needs: check-docker-changes
-    if: needs.check-docker-changes.outputs.docker_needed == 'true'
+    # Run only if the label 'docker-build' is present
+    if: contains(github.event.pull_request.labels.*.name, 'docker-build')
+    # Run on self-hosted runners with more than 6h timeout
     runs-on: self-hosted
+    # Set maximum 24-hour timeout
+    timeout-minutes: 1440
+    # Build for alma9 and ubuntu24
     strategy:
       matrix:
         os: [ alma9, ubuntu24 ]
