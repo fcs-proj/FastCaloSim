@@ -16,7 +16,7 @@ RUN dnf update -y \
  && dnf clean all \
  && rm -rf root_dependencies.txt /var/cache/dnf
 
-# Build CMake form source
+# Build CMake from source
 ARG CMAKE_VERSION=3.29.2
 RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz \
  && tar -xzvf cmake-${CMAKE_VERSION}.tar.gz \

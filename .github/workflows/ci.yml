@@ -1,11 +1,16 @@
 name: Pipeline
 
 on:
-
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+    - main
   workflow_run:
-    workflows: ["docker-build"]
+    workflows: [ "docker-build" ]
     types:
-      - completed
+    - completed
 
 jobs:
   lint:
@@ -25,7 +30,7 @@ jobs:
       run: cmake -P cmake/spell.cmake
 
   coverage:
-    needs: [lint]
+    needs: [ lint ]
 
     runs-on: ubuntu-24.04
 
@@ -61,12 +66,12 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [lint]
+    needs: [ lint ]
     runs-on: ubuntu-24.04
 
     strategy:
       matrix:
-        os: [alma9, ubuntu24]
+        os: [ alma9, ubuntu24 ]
 
     container:
       image: fastcalosim/${{ matrix.os }}-fastcalosim:latest
@@ -96,7 +101,7 @@ jobs:
 
   # Test against LCG releases
   test_lcg:
-    needs: [lint]
+    needs: [ lint ]
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
       platform: x86_64-el9-gcc13-opt
@@ -104,15 +109,73 @@ jobs:
     strategy:
       matrix:
         # See https://lcginfo.cern.ch/ for info on available LCG releases
-        lcg: [LCG_106, LCG_107a]
+        lcg: [ LCG_106, LCG_107a ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: cvmfs-contrib/github-action-cvmfs@v4
-      - uses: aidasoft/run-lcg-view@v4
-        with:
-          release-platform: "${{matrix.lcg}}/${{env.platform}}"
-          run: |
-            echo ":: Set-up python environment"
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: aidasoft/run-lcg-view@v4
+      with:
+        release-platform: "${{matrix.lcg}}/${{env.platform}}"
+        run: |
+          echo ":: Set-up python environment"
+          source .github/scripts/setup_pyvenv.sh
+
+          echo "::group::Install Python test dependencies"
+          pip install --user pipreqs
+          pipreqs test/python --mode no-pin
+          pip install --user -r test/python/requirements.txt
+
+          echo "::group::Configure"
+          cmake "--preset=ci-linux-lcg"
+
+          echo "::group::Build"
+          cmake --build build --config Release -j 4
+
+          echo "::group::Install"
+          cmake --install build --config Release --prefix prefix
+
+          echo "::group::Test"
+          ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: artifacts-${{ matrix.lcg }}
+        path: test/output
+        if-no-files-found: error
+        retention-days: 90
+
+  # Test against key4hep releases
+  test_key4hep:
+    needs: [ lint ]
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        releases: [ 2025-01-28 ]
+
+    env:
+      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
+      KEY4HEP_VERSION: ${{ matrix.releases }}
+      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
+
+    - name: Build and test
+      run: |
+        docker run --rm \
+          --device /dev/fuse \
+          --cap-add SYS_ADMIN \
+          --volume /cvmfs:/cvmfs:shared \
+          --volume ${{ github.workspace }}:/workspace \
+          --workdir /workspace \
+          "${{ env.KEY4HEP_IMAGE }}" \
+          bash -e -c '
+
+            echo "::group::Set up key4hep environment"
+            source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
+            echo "::group::Set-up Python environment"
             source .github/scripts/setup_pyvenv.sh
 
             echo "::group::Install Python test dependencies"
@@ -121,7 +184,7 @@ jobs:
             pip install --user -r test/python/requirements.txt
 
             echo "::group::Configure"
-            cmake "--preset=ci-linux-lcg"
+            cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
 
             echo "::group::Build"
             cmake --build build --config Release -j 4
@@ -131,75 +194,15 @@ jobs:
 
             echo "::group::Test"
             ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: artifacts-${{ matrix.lcg }}
-          path: test/output
-          if-no-files-found: error
-          retention-days: 90
-
-  # Test against key4hep releases
-  test_key4hep:
-    needs: [lint]
-    runs-on: ubuntu-24.04
-
-    strategy:
-      matrix:
-        releases: [2025-01-28]
-
-    env:
-      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
-      KEY4HEP_VERSION: ${{ matrix.releases }}
-      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: cvmfs-contrib/github-action-cvmfs@v4
-
-      - name: Build and test
-        run: |
-          docker run --rm \
-            --device /dev/fuse \
-            --cap-add SYS_ADMIN \
-            --volume /cvmfs:/cvmfs:shared \
-            --volume ${{ github.workspace }}:/workspace \
-            --workdir /workspace \
-            "${{ env.KEY4HEP_IMAGE }}" \
-            bash -e -c '
-
-              echo "::group::Set up key4hep environment"
-              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
-              echo "::group::Set-up Python environment"
-              source .github/scripts/setup_pyvenv.sh
-
-              echo "::group::Install Python test dependencies"
-              pip install --user pipreqs
-              pipreqs test/python --mode no-pin
-              pip install --user -r test/python/requirements.txt
-
-              echo "::group::Configure"
-              cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
-
-              echo "::group::Build"
-              cmake --build build --config Release -j 4
-
-              echo "::group::Install"
-              cmake --install build --config Release --prefix prefix
-
-              echo "::group::Test"
-              ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
-            '
+          '
 
   docs:
     # Deploy docs only when builds succeed
-    needs: [test]
+    needs: [ test ]
 
     runs-on: ubuntu-22.04
 
-    if: github.ref == 'refs/heads/main'
-      && github.event_name == 'push'
-      && github.repository_owner == 'jbeirer'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository_owner == 'jbeirer'
 
     steps:
     - uses: actions/checkout@v4
@@ -211,12 +214,10 @@ jobs:
       run: pip3 install jinja2 Pygments
 
     - name: Install Doxygen
-      run: sudo apt-get update -q
-        && sudo apt-get install ghostscript doxygen -q -y
+      run: sudo apt-get update -q && sudo apt-get install ghostscript doxygen -q -y
 
     - name: Build docs
-      run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build"
-        -P cmake/docs-ci.cmake
+      run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build" -P cmake/docs-ci.cmake
 
     - name: Deploy docs
       uses: peaceiris/actions-gh-pages@v4

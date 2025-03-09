@@ -1,50 +1,53 @@
 name: docker-build
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'docker/alma9/**'
-      - 'docker/ubuntu24/**'
-
   pull_request:
-    branches:
-      - main
-    paths:
-      - 'docker/alma9/**'
-      - 'docker/ubuntu24/**'
+    types:
+    - labeled
 
 jobs:
+  check-label:
+    name: Check if 'docker-build' label exists
+    runs-on: ubuntu-latest
+    outputs:
+      docker-build: ${{ steps.label-check.outputs.should_run }}
+    steps:
+    - name: Check if PR has 'docker-build' label
+      id: label-check
+      uses: actions/github-script@v7
+      with:
+        script: >
+          const label = "docker-build"; const labels = context.payload.pull_request.labels.map(l => l.name); core.setOutput("should_run", labels.includes(label) ? "true" : "false");
+
   build-and-push:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [alma9, ubuntu24]
+        os: [ alma9, ubuntu24 ]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up QEMU for multi-arch builds
-        uses: docker/setup-qemu-action@v3
+    - name: Set up QEMU for multi-arch builds
+      uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Multi-Arch Image
-        uses: docker/build-push-action@v5
-        with:
-          context: docker/${{ matrix.os }}
-          file: docker/${{ matrix.os }}/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: fastcalosim/${{ matrix.os }}-fastcalosim:latest
-          cache-from: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:latest
-          cache-to: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:cache,mode=max
+    - name: Build and Push Multi-Arch Image
+      uses: docker/build-push-action@v5
+      with:
+        context: docker/${{ matrix.os }}
+        file: docker/${{ matrix.os }}/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: fastcalosim/${{ matrix.os }}-fastcalosim:latest
+        cache-from: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:latest
+        cache-to: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:cache,mode=max
