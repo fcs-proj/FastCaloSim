@@ -20,7 +20,7 @@ jobs:
           const label = "docker-build"; const labels = context.payload.pull_request.labels.map(l => l.name); core.setOutput("should_run", labels.includes(label) ? "true" : "false");
 
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         os: [ alma9, ubuntu24 ]
@@ -41,6 +41,15 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    - name: Cache Docker layers on Github
+      uses: actions/cache@v4
+
+      with:
+        path: /tmp/.buildx-cache
+        key: buildx-${{ runner.os }}-${{ matrix.os }}-${{ github.sha }}
+        restore-keys: |
+          buildx-${{ runner.os }}-${{ matrix.os }}-
+
     - name: Build and Push Multi-Arch Image
       uses: docker/build-push-action@v5
       with:
@@ -48,6 +57,10 @@ jobs:
         file: docker/${{ matrix.os }}/Dockerfile
         push: true
         platforms: linux/amd64,linux/arm64
+        cache-from: |
+          type=local,src=/tmp/.buildx-cache
+          type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:cache
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache
+          type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:cache,mode=max
         tags: fastcalosim/${{ matrix.os }}-fastcalosim:latest
-        cache-from: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:latest
-        cache-to: type=registry,ref=fastcalosim/${{ matrix.os }}-fastcalosim:cache,mode=max
