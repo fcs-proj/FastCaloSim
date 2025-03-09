@@ -1,3 +1,5 @@
 docker-build:
-- docker/**
-- .github/workflows/docker-build.yml
+- changed-files:
+  - any-glob-to-any-file:
+    - docker/**
+    - .github/workflows/docker-build.yml
