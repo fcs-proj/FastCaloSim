@@ -1,4 +1,4 @@
-# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+# Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 
 FROM gitlab-registry.cern.ch/linuxsupport/alma9-base
 
@@ -85,10 +85,10 @@ RUN  dnf clean all && dnf update -y \
  && dnf clean all \
  && rm -rf extra_packages.txt /var/cache/dnf
 
-#  # Install python packages
-#  COPY python_packages.txt python_packages.txt
+ # Install python packages
+COPY python_packages.txt python_packages.txt
 
-#  RUN python3 -m ensurepip --default-pip \
-#  && python3 -m pip install --upgrade pip \
-#  && pip3 install $(cat python_packages.txt) \
-#  && rm -rf python_packages.txt
+RUN python3 -m ensurepip --default-pip \
+ && python3 -m pip install --upgrade pip \
+ && pip3 install $(cat python_packages.txt) \
+ && rm -rf python_packages.txt

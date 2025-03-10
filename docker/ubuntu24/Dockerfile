@@ -1,4 +1,4 @@
-# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+# Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 
 FROM ubuntu:24.04
 
@@ -88,11 +88,11 @@ RUN apt-get update -qq \
  && rm extra_packages.txt
 
 # Configure the clang-tidy version
-RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 170
+RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 180
 
 # Install python packages
-# COPY python_packages.txt python_packages.txt
+COPY python_packages.txt python_packages.txt
 
-# RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
-#  && pip3 install --break-system-packages $(cat python_packages.txt) \
-#  && rm -rf python_packages.txt
+RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
+ && pip3 install --break-system-packages $(cat python_packages.txt) \
+ && rm -rf python_packages.txt
