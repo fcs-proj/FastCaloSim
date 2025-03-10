@@ -10,8 +10,7 @@ on:
   workflow_run:
     workflows: [ "docker-build" ]
     types:
-      - completed
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    - completed
 
 jobs:
 
