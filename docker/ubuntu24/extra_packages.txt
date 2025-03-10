@@ -1,4 +1,3 @@
-wget
 libeigen3-dev
 libboost-all-dev
 lcov
