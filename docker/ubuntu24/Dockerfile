@@ -54,7 +54,7 @@ RUN apt-get update -qq && apt-get -y install libxerces-c-dev \
 ARG ONNXRUNTIME_VERSION=1.16.3
 RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
  && mkdir onnx_build && cd onnx_build \
- && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel -j$(nproc) --skip_submodule_sync --skip_tests --build_dir . \
+ && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel $(nproc) --skip_submodule_sync --skip_tests --build_dir . \
  && make install -C RelWithDebInfo \
  && rm -rf ../onnx_build
 
