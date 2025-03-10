@@ -1,17 +1,33 @@
 name: docker-build
 
 on:
-  # Run for labeler workflow completion
-  workflow_run:
-    workflows: [ "Labeler" ]
-    types:
-    - completed
+  pull_request:
+    branches:
+    - main
 
 jobs:
+  # Step 1: Detect changes on Ubuntu runner
+  check-files:
+    runs-on: ubuntu-latest
+    outputs:
+      docker_changed: ${{ steps.filter.outputs.docker }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
+    - name: Detect Docker file changes
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          docker:
+            - 'docker/**'
+            - '.github/workflows/docker-build.yml'
+
+  # Step 2: Run Docker build ONLY if relevant files changed
   build-and-push:
-    # Run only if the label 'docker-build' is present
-    if: contains(github.event.pull_request.labels.*.name, 'docker-build')
+    needs: check-files
+    if: needs.check-files.outputs.docker_changed == 'true'
     # Run on self-hosted runners with more than 6h timeout
     runs-on: self-hosted
     # Set maximum 24-hour timeout
