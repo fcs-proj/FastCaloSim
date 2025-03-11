@@ -13,11 +13,38 @@ on:
     - completed
 
 jobs:
+  setup:
+    runs-on: ubuntu-24.04
+    outputs:
+      container_tag: ${{ steps.set-tag.outputs.container_tag }}
+      pr_number: ${{ steps.extract-pr.outputs.pr_number }}
+    steps:
+      - name: Extract PR number from triggering workflow
+        id: extract-pr
+        if: github.event_name == 'workflow_run'
+        run: |
+          PR_NUMBER=$(curl -s ${{ github.event.workflow_run.repository.pulls_url }} | jq -r '.[] | select(.head.sha=="${{ github.event.workflow_run.head_sha }}") | .number')
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "PR number: $PR_NUMBER"
+
+      - name: Set container tag
+        id: set-tag
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_run" && "${{ steps.extract-pr.outputs.pr_number }}" != "" && "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            # Use PR-specific tag if this was triggered by a successful docker build
+            echo "container_tag=pr-${{ steps.extract-pr.outputs.pr_number }}" >> $GITHUB_OUTPUT
+            echo "Using PR-specific container tag: pr-${{ steps.extract-pr.outputs.pr_number }}"
+          else
+            # Use latest tag for direct pushes to main
+            echo "container_tag=latest" >> $GITHUB_OUTPUT
+            echo "Using latest container tag"
+          fi
 
   lint:
+    needs: [setup]
     runs-on: ubuntu-24.04
     container:
-      image: fcs-proj/fastcalosim-alma9:latest
+      image: fcs-proj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
     - name: Lint
@@ -27,13 +54,12 @@ jobs:
       run: cmake -P cmake/spell.cmake
 
   coverage:
-    needs: [ lint ]
+    needs: [ setup, lint ]
 
     runs-on: ubuntu-24.04
 
     container:
-      image: fcs-proj/fastcalosim-alma9:latest
-
+      image: fcs-proj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -63,7 +89,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [ lint ]
+    needs: [ setup, lint ]
     runs-on: ubuntu-24.04
 
     strategy:
@@ -71,7 +97,7 @@ jobs:
         os: [ alma9, ubuntu24 ]
 
     container:
-      image: fcs-proj/fastcalosim-${{ matrix.os }}:latest
+      image: fcs-proj/fastcalosim-${{ matrix.os }}:${{ needs.setup.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -97,7 +123,7 @@ jobs:
 
   # Test against LCG releases
   test_lcg:
-    needs: [ lint ]
+    needs: [ setup, lint ]
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
       platform: x86_64-el9-gcc13-opt
@@ -142,7 +168,7 @@ jobs:
 
   # Test against key4hep releases
   test_key4hep:
-    needs: [ lint ]
+    needs: [ setup, lint ]
     runs-on: ubuntu-24.04
 
     strategy:
