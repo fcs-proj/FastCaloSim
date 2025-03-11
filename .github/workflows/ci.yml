@@ -17,7 +17,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     container:
-      image: fastcalosim/alma9-fastcalosim:latest
+      image: fcs-proj/fastcalosim-alma9:latest
     steps:
     - uses: actions/checkout@v4
     - name: Lint
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: fastcalosim/alma9-fastcalosim:latest
+      image: fcs-proj/fastcalosim-alma9:latest
 
     steps:
     - uses: actions/checkout@v4
@@ -71,8 +71,7 @@ jobs:
         os: [ alma9, ubuntu24 ]
 
     container:
-      image: fastcalosim/${{ matrix.os }}-fastcalosim:latest
-
+      image: fcs-proj/fastcalosim-${{ matrix.os }}:latest
     steps:
     - uses: actions/checkout@v4
 
