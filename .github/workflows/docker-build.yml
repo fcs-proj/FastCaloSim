@@ -39,6 +39,9 @@ jobs:
           - linux/amd64
           - linux/arm64
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Prepare
         run: |
           platform=${{ matrix.platform }}
@@ -101,6 +104,9 @@ jobs:
       matrix:
         os: [alma9, ubuntu24]
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
