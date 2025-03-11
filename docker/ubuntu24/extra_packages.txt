@@ -11,3 +11,5 @@ cppcheck
 gdb
 clang-tidy-18
 python3-pip
+vtk9
+python3-vtk9

@@ -10,3 +10,5 @@ gnupg
 doxygen
 gdb
 clang-tools-extra
+vtk
+python3-vtk
