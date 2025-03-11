@@ -33,14 +33,17 @@ jobs:
   build:
     needs: check-files
     if: needs.check-files.outputs.docker_changed == 'true' && github.event.action != 'closed'
-    runs-on: self-hosted
-    timeout-minutes: 1440
     strategy:
       matrix:
         os: [alma9, ubuntu24]
         platform:
           - linux/amd64
           - linux/arm64
+
+    # Use appropriate runner based on platform
+    # Note: GithubRunners have a job timeout of 6 hours = 360 minutes
+    runs-on: ${{ (matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm') || (matrix.platform == 'linux/amd64' && 'ubuntu-24.04') }}
+    timeout-minutes: 1440
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -79,10 +82,8 @@ jobs:
           tags: ${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           cache-from: |
-            type=local,src=/tmp/.buildx-cache
             type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache
           cache-to: |
-            type=local,dest=/tmp/.buildx-cache
             type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache,mode=max
 
       - name: Export digest
@@ -107,9 +108,6 @@ jobs:
       matrix:
         os: [alma9, ubuntu24]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Download digests
         uses: actions/download-artifact@v4
         with:

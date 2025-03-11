@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       container_tag: ${{ steps.set-tag.outputs.container_tag }}
-      pr_number: ${{ steps.extract-pr.outputs.pr_number }}
     steps:
       - name: Extract PR number from triggering workflow
         id: extract-pr
