@@ -8,7 +8,7 @@ on:
 
   # Run for PRs after docker check
   workflow_run:
-    workflows: [ docker-build ]
+    workflows: [docker-build]
     types:
     - completed
 
@@ -43,7 +43,7 @@ jobs:
     needs: [setup]
     runs-on: ubuntu-24.04
     container:
-      image: fcs-proj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
     - name: Lint
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: fcs-proj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -96,7 +96,7 @@ jobs:
         os: [ alma9, ubuntu24 ]
 
     container:
-      image: fcs-proj/fastcalosim-${{ matrix.os }}:${{ needs.setup.outputs.container_tag }}
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ needs.setup.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
