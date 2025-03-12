@@ -3,15 +3,13 @@ name: docker-build
 on:
   workflow_call:
 
+
 env:
   REGISTRY_IMAGE: fcsproj/fastcalosim
 
 jobs:
 
-  # Step 2: Run Docker build ONLY if relevant files changed and not a closed PR
   build:
-    needs: check-files
-    if: needs.check-files.outputs.docker_changed == 'true' && github.event.action != 'closed'
     strategy:
       matrix:
         os: [ alma9, ubuntu24 ]
