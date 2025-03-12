@@ -82,9 +82,9 @@ jobs:
           tags: ${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           cache-from: |
-            type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache
+            type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache-${{ env.PLATFORM_PAIR }}
           cache-to: |
-            type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache,mode=max
+            type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache-${{ env.PLATFORM_PAIR }},mode=max
 
       - name: Export digest
         run: |
