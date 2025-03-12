@@ -91,8 +91,8 @@ RUN apt-get update -qq \
 RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 180
 
 # Install python packages
-COPY python_packages.txt python_packages.txt
+# COPY python_packages.txt python_packages.txt
 
-RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
- && pip3 install --break-system-packages $(cat python_packages.txt) \
- && rm -rf python_packages.txt
+# RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
+#  && pip3 install --break-system-packages $(cat python_packages.txt) \
+#  && rm -rf python_packages.txt
