@@ -45,10 +45,8 @@ jobs:
   docker-build:
     needs: [ docker-check ]
     if: >-
-      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == false &&  github.event.action != 'closed'
+      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == false &&  github.epr_numbervent.action != 'closed'
     uses: ./.github/workflows/docker-build.yml
-    with:
-      pr_number: ${{ github.event.pull_request.number }}
     secrets: inherit
 
   # Promote PR docker images to latest if
@@ -226,7 +224,7 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v4
 
     - name: Build and test
-      run: |
+      run: |+
         docker run --rm \
           --device /dev/fuse \
           --cap-add SYS_ADMIN \
