@@ -62,7 +62,7 @@ jobs:
     secrets: inherit
 
   # Set up container tags
-  setup:
+  tag_selector:
     needs: [ docker-check ]
     runs-on: ubuntu-24.04
     outputs:
@@ -84,12 +84,22 @@ jobs:
 
   # Run linting
   lint:
-    needs: [ setup, docker-build, promote-to-latest ]
+    needs: [ tag_selector, docker-build, promote-to-latest ]
+    # Three valid scenarios:
+    # 1. Open PR with Docker changes: docker-build succeeded, promote-to-latest skipped
+    # 2. Merged PR with Docker changes: docker-build skipped, promote-to-latest succeeded
+    # 3. Any workflow without Docker changes: both docker-build and promote-to-latest skipped
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') || 
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
+
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     container:
-      image: fcsproj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ needs.tag_selector.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -104,7 +114,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: fcsproj/fastcalosim-alma9:${{ needs.setup.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ needs.tag_selector.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
     - name: Configure
@@ -136,7 +146,7 @@ jobs:
         os: [ alma9, ubuntu24 ]
 
     container:
-      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ needs.setup.outputs.container_tag }}
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ needs.tag_selector.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
