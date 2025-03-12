@@ -90,9 +90,12 @@ RUN apt-get update -qq \
 # Configure the clang-tidy version
 RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 180
 
-# Install python packages
-# COPY python_packages.txt python_packages.txt
+#Install python packages
+COPY python_packages.txt python_packages.txt
 
-# RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
-#  && pip3 install --break-system-packages $(cat python_packages.txt) \
-#  && rm -rf python_packages.txt
+# Pygeosimplify installed without dependencies
+# See https://github.com/g4edge/pyg4ometry/issues/243
+RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
+ && pip3 install --break-system-packages $(cat python_packages.txt) \
+ && pip3 install --break-system-packages pygeosimplify --no-deps \
+ && rm -rf python_packages.txt

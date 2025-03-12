@@ -4,5 +4,6 @@ ipykernel
 codespell
 numpy
 uproot
-pygeosimplify
 pre-commit
+distinctipy
+scipy

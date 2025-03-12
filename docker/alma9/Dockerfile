@@ -85,10 +85,13 @@ RUN  dnf clean all && dnf update -y \
  && dnf clean all \
  && rm -rf extra_packages.txt /var/cache/dnf
 
- # Install python packages
-# COPY python_packages.txt python_packages.txt
+#Install python packages
+COPY python_packages.txt python_packages.txt
 
-# RUN python3 -m ensurepip --default-pip \
-#  && python3 -m pip install --upgrade pip \
-#  && pip3 install $(cat python_packages.txt) \
-#  && rm -rf python_packages.txt
+# Pygeosimplify installed without dependencies
+# See https://github.com/g4edge/pyg4ometry/issues/243
+RUN python3 -m ensurepip --default-pip \
+ && python3 -m pip install --upgrade pip \
+ && pip3 install $(cat python_packages.txt) \
+ && pip3 install pygeosimplify --no-deps \
+ && rm -rf python_packages.txt
