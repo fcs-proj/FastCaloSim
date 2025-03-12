@@ -1,6 +1,7 @@
 name: docker-build
 
-workflow_call:
+on:
+  workflow_call:
 
 env:
   REGISTRY_IMAGE: fcsproj/fastcalosim
