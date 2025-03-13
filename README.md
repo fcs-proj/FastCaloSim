@@ -1,8 +1,8 @@
 # FastCaloSim
- [![Checks](https://github.com/fcs-proj/FastCaloSim/actions/workflows/ci.yml/badge.svg)](https://github.com/fcs-proj/FastCaloSim/actions/workflows/ci.yml)
+ [![Checks](https://github.com/fcs-proj/FastCaloSim/actions/workflows/pipeline.yml/badge.svg)](https://github.com/fcs-proj/FastCaloSim/actions/workflows/pipeline.yml)
  [![Release](https://img.shields.io/github/v/release/fcs-proj/fastcalosim?include_prereleases)](https://github.com/fcs-proj/fastcalosim/releases)
  [![Coverage](https://codecov.io/gh/fcs-proj/FastCaloSim/graph/badge.svg)](https://codecov.io/gh/fcs-proj/FastCaloSim)
- [![Doxygen Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](https://fcs-proj.github.io/FastCaloSim/) 
+ [![Doxygen Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](https://fcs-proj.github.io/FastCaloSim/)
  [![DOI](https://zenodo.org/badge/781604786.svg)](https://doi.org/10.5281/zenodo.14308464)
 
 FastCaloSim is an experiment-independent toolkit for the fast parametrised and ML-based simulation of electromagnetic and hadronic showers in (high energy) physics experiments implemented in C++.
@@ -19,17 +19,17 @@ cmake --build <build>
 ```
 For install options and instruction on how to include FastCaloSim in your experiment see the [BUILDING](BUILDING.md) document. For advanced developer configuration with [presets][1] and other useful information see the [HACKING](HACKING.md) document.
 
-# Contributing 
+# Contributing
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
- 
+
 See the [CONTRIBUTING](CONTRIBUTING.md) document.
 
 # Authors
 
 Contributors to the FastCaloSim project are listed in the [AUTHORS](AUTHORS) file.
 
-# Licensing 
+# Licensing
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
