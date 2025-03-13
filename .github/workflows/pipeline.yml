@@ -45,7 +45,7 @@ jobs:
       run: cmake -P cmake/spell.cmake
 
   coverage:
-    needs: [docker-check, lint ]
+    needs: [docker-check, docker-build]
     runs-on: ubuntu-24.04
 
     # If pull request with Docker file changes: use PR image, else use main
@@ -81,7 +81,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [ docker-check, lint ]
+    needs: [docker-check, docker-build]
     runs-on: ubuntu-24.04
 
     strategy:
@@ -117,7 +117,6 @@ jobs:
 
   # Test against LCG releases
   test_lcg:
-    needs: [ lint ]
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
       platform: x86_64-el9-gcc13-opt
@@ -162,7 +161,6 @@ jobs:
 
   # Test against key4hep releases
   test_key4hep:
-    needs: [ lint ]
     runs-on: ubuntu-24.04
 
     strategy:
