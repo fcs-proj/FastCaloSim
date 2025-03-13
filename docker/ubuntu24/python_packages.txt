@@ -7,3 +7,4 @@ uproot
 pre-commit
 distinctipy
 scipy
+tqdm

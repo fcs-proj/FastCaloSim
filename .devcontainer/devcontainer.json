@@ -15,7 +15,7 @@
         "eamodio.gitlens"
       ],
       "settings": {
-        "cmake.cmakePath": "/usr/bin/cmake"
+        "cmake.cmakePath": "/usr/local/bin/cmake"
       }
     }
   },

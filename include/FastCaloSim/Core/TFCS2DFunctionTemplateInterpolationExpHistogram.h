@@ -124,10 +124,10 @@ class TFCS2DFunctionInt8Int8Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int8Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int8Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int8Int8InterpolationExpHistogram
@@ -142,10 +142,10 @@ class TFCS2DFunctionInt8Int8Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int8Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int8Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int8Int16InterpolationExpHistogram
@@ -160,10 +160,10 @@ class TFCS2DFunctionInt8Int8Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int8Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int8Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int8Int32InterpolationExpHistogram
@@ -181,10 +181,10 @@ class TFCS2DFunctionInt8Int16Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int16Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int16Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int16Int8InterpolationExpHistogram
@@ -199,10 +199,10 @@ class TFCS2DFunctionInt8Int16Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int16Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int16Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int16Int16InterpolationExpHistogram
@@ -217,10 +217,10 @@ class TFCS2DFunctionInt8Int16Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int16Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int16Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int16Int32InterpolationExpHistogram
@@ -236,10 +236,10 @@ class TFCS2DFunctionInt8Int32Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int32Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int32Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int32Int8InterpolationExpHistogram
@@ -254,10 +254,10 @@ class TFCS2DFunctionInt8Int32Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int32Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int32Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int32Int16InterpolationExpHistogram
@@ -272,10 +272,10 @@ class TFCS2DFunctionInt8Int32Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt8Int32Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt8Int32Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt8Int32Int32InterpolationExpHistogram
@@ -291,10 +291,10 @@ class TFCS2DFunctionInt16Int8Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int8Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int8Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int8Int8InterpolationExpHistogram
@@ -309,10 +309,10 @@ class TFCS2DFunctionInt16Int8Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int8Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int8Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int8Int16InterpolationExpHistogram
@@ -327,10 +327,10 @@ class TFCS2DFunctionInt16Int8Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int8Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int8Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int8Int32InterpolationExpHistogram
@@ -348,10 +348,10 @@ class TFCS2DFunctionInt16Int16Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int16Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int16Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int16Int8InterpolationExpHistogram
@@ -366,10 +366,10 @@ class TFCS2DFunctionInt16Int16Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int16Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int16Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int16Int16InterpolationExpHistogram
@@ -384,10 +384,10 @@ class TFCS2DFunctionInt16Int16Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int16Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int16Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int16Int32InterpolationExpHistogram
@@ -403,10 +403,10 @@ class TFCS2DFunctionInt16Int32Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int32Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int32Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int32Int8InterpolationExpHistogram
@@ -421,10 +421,10 @@ class TFCS2DFunctionInt16Int32Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int32Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int32Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int32Int16InterpolationExpHistogram
@@ -439,10 +439,10 @@ class TFCS2DFunctionInt16Int32Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt16Int32Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt16Int32Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt16Int32Int32InterpolationExpHistogram
@@ -458,10 +458,10 @@ class TFCS2DFunctionInt32Int8Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int8Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int8Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int8Int8InterpolationExpHistogram
@@ -476,10 +476,10 @@ class TFCS2DFunctionInt32Int8Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int8Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int8Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int8Int16InterpolationExpHistogram
@@ -494,10 +494,10 @@ class TFCS2DFunctionInt32Int8Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int8Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int8Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int8Int32InterpolationExpHistogram
@@ -515,10 +515,10 @@ class TFCS2DFunctionInt32Int16Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int16Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int16Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int16Int8InterpolationExpHistogram
@@ -533,10 +533,10 @@ class TFCS2DFunctionInt32Int16Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int16Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int16Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int16Int16InterpolationExpHistogram
@@ -551,10 +551,10 @@ class TFCS2DFunctionInt32Int16Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int16Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int16Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int16Int32InterpolationExpHistogram
@@ -570,10 +570,10 @@ class TFCS2DFunctionInt32Int32Int8InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int32Int8InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int32Int8InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int32Int8InterpolationExpHistogram
@@ -588,10 +588,10 @@ class TFCS2DFunctionInt32Int32Int16InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int32Int16InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int32Int16InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int32Int16InterpolationExpHistogram
@@ -606,10 +606,10 @@ class TFCS2DFunctionInt32Int32Int32InterpolationExpHistogram
 public:
   TFCS2DFunctionInt32Int32Int32InterpolationExpHistogram(TH2* h = nullptr)
       : TFCS2DFunctionTemplateInterpolationExpHistogram<
-          TFCS1DFunction_HistogramInt32BinEdges,
-          TFCS1DFunction_HistogramInt32BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt32BinEdges,
+            TFCS1DFunction_HistogramInt32BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS2DFunctionInt32Int32Int32InterpolationExpHistogram,
            1)  // TFCS2DFunctionInt32Int32Int32InterpolationExpHistogram

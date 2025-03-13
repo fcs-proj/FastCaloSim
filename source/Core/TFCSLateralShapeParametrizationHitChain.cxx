@@ -25,8 +25,8 @@ TFCSLateralShapeParametrizationHitChain::
     TFCSLateralShapeParametrizationHitChain(
         TFCSLateralShapeParametrizationHitBase* hitsim)
     : TFCSLateralShapeParametrization(
-        TString("hit_chain_") + hitsim->GetName(),
-        TString("hit chain for ") + hitsim->GetTitle())
+          TString("hit_chain_") + hitsim->GetName(),
+          TString("hit chain for ") + hitsim->GetTitle())
     , m_number_of_hits_simul(nullptr)
 {
   set_pdgid_Ekin_eta_Ekin_bin_calosample(*hitsim);

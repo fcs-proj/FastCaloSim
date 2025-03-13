@@ -55,11 +55,13 @@ public:
   auto is_eta_phi_z(int layer) const -> bool;
 
   /// @brief Get the z position of a cell in a layer at a given position
-  auto zpos(int layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto zpos(int layer,
+            const Position& pos,
+            Cell::SubPos subpos) const -> double;
   /// @brief Get the r position of a cell in a layer at a given position
-  auto rpos(int layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto rpos(int layer,
+            const Position& pos,
+            Cell::SubPos subpos) const -> double;
 
   /// @brief Get the min eta extent of a layer on a given detector side
   auto min_eta(int layer, DetectorSide side) const -> double;

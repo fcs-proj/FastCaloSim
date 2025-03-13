@@ -127,9 +127,9 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
                                                  << ", creating from bytes.");
     return create(vector_input);
   } else if (string_input.length() > 0) {
-    FCS_MSG_NOCLASS(logger,
-                    "No data in bytes, string contains data, "
-                        << "creating from string.");
+    FCS_MSG_NOCLASS(
+        logger,
+        "No data in bytes, string contains data, " << "creating from string.");
     return create(string_input);
   } else {
     throw std::invalid_argument(
@@ -153,9 +153,9 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
                                                  << ", creating from bytes.");
     return create(vector_input);
   } else if (string_input.length() > 0) {
-    FCS_MSG_NOCLASS(logger,
-                    "No data in bytes, string contains data, "
-                        << "creating from string.");
+    FCS_MSG_NOCLASS(
+        logger,
+        "No data in bytes, string contains data, " << "creating from string.");
     return create(string_input, graph_form);
   } else {
     throw std::invalid_argument(

@@ -13,11 +13,13 @@ on:
 jobs:
   # Detect any changes to Docker files
   docker-check:
+
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+
     outputs:
       docker_changed: ${{ steps.filter.outputs.docker }}
+      container_tag: ${{ steps.set-tag.outputs.container_tag }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -29,7 +31,21 @@ jobs:
         filters: |+
           docker:
             - 'docker/**'
-            
+
+    - name: Set container tag
+      id: set-tag
+      run: |
+        # Determine the appropriate container tag
+        if [[ "${{ github.event_name }}" == "pull_request" && "${{ steps.filter.outputs.docker }}" == "true" && "${{ github.event.pull_request.merged }}" == "false" ]]; then
+          # Use PR-specific tag
+          echo "container_tag=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "Using PR-specific container tag: pr-${{ github.event.pull_request.number }}"
+        else
+          # Use latest tag
+          echo "container_tag=latest" >> $GITHUB_OUTPUT
+          echo "Using latest container tag"
+        fi
+
     # Block direct Docker changes to main
     - name: Block direct Docker push
       if: github.event_name == 'push' && steps.filter.outputs.docker == 'true'
@@ -37,7 +53,7 @@ jobs:
         echo "❌ ERROR: Direct modifications to Docker files are NOT allowed on main."
         echo "🔒 Please create a pull request instead."
         exit 1
-            
+
   # Build Docker images for PRs if
   # - PR is open or synchronized
   # - Docker files changed
@@ -45,7 +61,7 @@ jobs:
   docker-build:
     needs: [ docker-check ]
     if: >-
-      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == false &&  github.epr_numbervent.action != 'closed'
+      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == false &&  github.event.action != 'closed'
     uses: ./.github/workflows/docker-build.yml
     secrets: inherit
 
@@ -61,45 +77,24 @@ jobs:
       pr_number: ${{ github.event.pull_request.number }}
     secrets: inherit
 
-  # Set up container tags
-  tag_selector:
-    needs: [ docker-check ]
-    runs-on: ubuntu-24.04
-    outputs:
-      container_tag: ${{ steps.set-tag.outputs.container_tag }}
-    steps:
-    - name: Set container tag
-      id: set-tag
-      run: |
-        # Determine the appropriate container tag
-        if [[ "${{ github.event_name }}" == "pull_request" && "${{ needs.docker-check.outputs.docker_changed }}" == "true" && "${{ github.event.pull_request.merged }}" == "false" ]]; then
-          # Use PR-specific tag
-          echo "container_tag=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-          echo "Using PR-specific container tag: pr-${{ github.event.pull_request.number }}"
-        else
-          # Use latest tag
-          echo "container_tag=latest" >> $GITHUB_OUTPUT
-          echo "Using latest container tag"
-        fi
 
   # Run linting
   lint:
-    needs: [ tag_selector, docker-build, promote-to-latest ]
+    needs: [ docker-check, docker-build, promote-to-latest ]
     # Three valid scenarios:
     # 1. Open PR with Docker changes: docker-build succeeded, promote-to-latest skipped
     # 2. Merged PR with Docker changes: docker-build skipped, promote-to-latest succeeded
     # 3. Any workflow without Docker changes: both docker-build and promote-to-latest skipped
     if: |
       always() &&
-      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') || 
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
       (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
       (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
 
     runs-on: ubuntu-24.04
-    permissions:
-      contents: read
+
     container:
-      image: fcsproj/fastcalosim-alma9:${{ needs.tag_selector.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ needs.docker-check.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -114,23 +109,29 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: fcsproj/fastcalosim-alma9:${{ needs.tag_selector.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ needs.docker-check.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
+
     - name: Configure
       run: cmake --preset=ci-coverage
+
     - name: Build
       run: cmake --build build/coverage -j 4
+
     - name: Test
       working-directory: build/coverage
       run: ctest --output-on-failure --no-tests=error --output-junit junit.xml -j 4
+
     - name: Process coverage info
       run: cmake --build build/coverage -t coverage
+
     - name: Upload coverage to codecov
       uses: codecov/codecov-action@v5
       with:
         files: build/coverage/coverage.info
         token: ${{ secrets.CODECOV_TOKEN }}
+
     - name: Upload test results to Codecov
       if: ${{ !cancelled() }}
       uses: codecov/test-results-action@v1
@@ -146,7 +147,7 @@ jobs:
         os: [ alma9, ubuntu24 ]
 
     container:
-      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ needs.tag_selector.outputs.container_tag }}
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ needs.docker-check.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -248,7 +249,7 @@ jobs:
             source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
             echo "::group::Set-up Python environment"
             source .github/scripts/setup_pyvenv.sh
-            
+
             echo "::group::Install Python test dependencies"
             pip install --user pipreqs
             pipreqs test/python --mode no-pin
@@ -266,7 +267,7 @@ jobs:
             echo "::group::Test"
             ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
           '
-          
+
   docs:
     # Deploy docs only when builds succeed
     needs: [ test ]

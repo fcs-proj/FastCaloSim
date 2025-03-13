@@ -553,8 +553,8 @@ class TFCS1DFunction_HistogramInt8BinEdges
 {
 public:
   TFCS1DFunction_HistogramInt8BinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramCompactBinEdges<float, uint8_t, float>(
-          nbins) {};
+      : TFCS1DFunction_HistogramCompactBinEdges<float, uint8_t, float>(nbins) {
+      };
 
   ClassDefNV(TFCS1DFunction_HistogramInt8BinEdges,
              1)  // TFCS1DFunction_HistogramInt8BinEdges
@@ -565,8 +565,8 @@ class TFCS1DFunction_HistogramInt16BinEdges
 {
 public:
   TFCS1DFunction_HistogramInt16BinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramCompactBinEdges<float, uint16_t, float>(
-          nbins) {};
+      : TFCS1DFunction_HistogramCompactBinEdges<float, uint16_t, float>(nbins) {
+      };
 
   ClassDefNV(TFCS1DFunction_HistogramInt16BinEdges,
              1)  // TFCS1DFunction_HistogramInt16BinEdges
@@ -577,8 +577,8 @@ class TFCS1DFunction_HistogramInt32BinEdges
 {
 public:
   TFCS1DFunction_HistogramInt32BinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramCompactBinEdges<float, uint32_t, float>(
-          nbins) {};
+      : TFCS1DFunction_HistogramCompactBinEdges<float, uint32_t, float>(nbins) {
+      };
 
   ClassDefNV(TFCS1DFunction_HistogramInt32BinEdges,
              1)  // TFCS1DFunction_HistogramInt32BinEdges
