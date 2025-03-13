@@ -1,7 +1,6 @@
 name: Pipeline
 
 on:
-
   # Run on push to main
   push:
     branches:
@@ -13,10 +12,10 @@ on:
       - main
     types: [opened, reopened, synchronize]
 
-  # Do not run if docker deployment is in progress
-  concurrency:
-    group: docker-deployment
-    cancel-in-progress: false
+# Do not run if docker deployment is in progress
+concurrency:
+  group: docker-deployment
+  cancel-in-progress: false
 
 jobs:
 
