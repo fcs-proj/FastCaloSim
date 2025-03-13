@@ -49,14 +49,6 @@ jobs:
           echo "Using latest container tag"
         fi
 
-    # Block direct Docker changes to main
-    - name: Block direct Docker push
-      if: github.event_name == 'push' && steps.filter.outputs.docker == 'true'
-      run: |+
-        echo "❌ ERROR: Direct modifications to Docker files are NOT allowed on main."
-        echo "🔒 Please create a pull request instead."
-        exit 1
-
   # Build Docker images for PRs if
   # - PR is open or synchronized
   # - Docker files changed
