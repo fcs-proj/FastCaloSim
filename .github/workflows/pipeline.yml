@@ -32,7 +32,7 @@ jobs:
 
   # Run linting
   lint:
-    needs: [docker-build]
+    needs: [docker-check, docker-build]
     # Allow skipping docker-build if no Docker files changed
     if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
