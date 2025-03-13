@@ -187,6 +187,11 @@ jobs:
   # Test against LCG releases
   test_lcg:
     needs: [ lint ]
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
       platform: x86_64-el9-gcc13-opt
@@ -232,6 +237,11 @@ jobs:
   # Test against key4hep releases
   test_key4hep:
     needs: [ lint ]
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
     runs-on: ubuntu-24.04
 
     strategy:
