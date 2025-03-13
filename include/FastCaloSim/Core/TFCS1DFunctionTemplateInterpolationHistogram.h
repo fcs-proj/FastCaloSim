@@ -102,9 +102,9 @@ class TFCS1DFunctionInt8Int8InterpolationHistogram
 public:
   TFCS1DFunctionInt8Int8InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint8_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint8_t,
+            float>(h) {};
 
   ClassDef(TFCS1DFunctionInt8Int8InterpolationHistogram,
            1)  // TFCS1DFunctionInt8Int8InterpolationHistogram
@@ -119,9 +119,9 @@ class TFCS1DFunctionInt8Int16InterpolationHistogram
 public:
   TFCS1DFunctionInt8Int16InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt8BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt8BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS1DFunctionInt8Int16InterpolationHistogram,
            1)  // TFCS1DFunctionInt8Int16InterpolationHistogram
@@ -136,9 +136,9 @@ class TFCS1DFunctionInt16Int16InterpolationHistogram
 public:
   TFCS1DFunctionInt16Int16InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint16_t,
+            float>(h) {};
 
   ClassDef(TFCS1DFunctionInt16Int16InterpolationHistogram,
            1)  // TFCS1DFunctionInt16Int16InterpolationHistogram
@@ -153,9 +153,9 @@ class TFCS1DFunctionInt16Int32InterpolationHistogram
 public:
   TFCS1DFunctionInt16Int32InterpolationHistogram(TH1* h = nullptr)
       : TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t,
-          float>(h) {};
+            TFCS1DFunction_HistogramInt16BinEdges,
+            uint32_t,
+            float>(h) {};
 
   ClassDef(TFCS1DFunctionInt16Int32InterpolationHistogram,
            1)  // TFCS1DFunctionInt16Int32InterpolationHistogram

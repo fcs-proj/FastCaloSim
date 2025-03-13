@@ -1,6 +1,6 @@
 {
   // AlmaLinux9 container that already contains all project dependencies
-  "image": "jbeirer/alma9-fastcalosim:latest",
+  "image": "fcsproj/fastcalosim-alma9:latest",
   // Activate vs code extensions and set cmake path
   "customizations": {
     "vscode": {
@@ -15,7 +15,7 @@
         "eamodio.gitlens"
       ],
       "settings": {
-        "cmake.cmakePath": "/usr/bin/cmake"
+        "cmake.cmakePath": "/usr/local/bin/cmake"
       }
     }
   },

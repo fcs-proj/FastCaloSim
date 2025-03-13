@@ -1,39 +1,123 @@
 name: Pipeline
-
 on:
+  # Run for direct pushes to main
   push:
     branches:
     - main
-
+  # Run for PRs to main
   pull_request:
     branches:
     - main
+    types: [ opened, synchronize, reopened, closed ]
+
+env:
+  CONTAINER_TAG: latest
 
 jobs:
+  # Detect any changes to Docker files
+  docker-check:
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      docker_changed: ${{ steps.filter.outputs.docker }}
+      container_tag: ${{ steps.set-tag.outputs.container_tag }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Detect Docker file changes
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |+
+          docker:
+            - 'docker/**'
+
+    - name: Set container tag
+      id: set-tag
+      run: |
+        # Determine the appropriate container tag
+        if [[ "${{ github.event_name }}" == "pull_request" && "${{ steps.filter.outputs.docker }}" == "true" && "${{ github.event.pull_request.merged }}" == "false" ]]; then
+          # Use PR-specific tag
+          echo "container_tag=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "Using PR-specific container tag: pr-${{ github.event.pull_request.number }}"
+        else
+          # Use latest tag
+          echo "container_tag=latest" >> $GITHUB_OUTPUT
+          echo "Using latest container tag"
+        fi
+
+    # Block direct Docker changes to main
+    - name: Block direct Docker push
+      if: github.event_name == 'push' && steps.filter.outputs.docker == 'true'
+      run: |+
+        echo "❌ ERROR: Direct modifications to Docker files are NOT allowed on main."
+        echo "🔒 Please create a pull request instead."
+        exit 1
+
+  # Build Docker images for PRs if
+  # - PR is open or synchronized
+  # - Docker files changed
+  # - PR is not closed
+  docker-build:
+    needs: [ docker-check ]
+    if: >-
+      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == false &&  github.event.action != 'closed'
+    uses: ./.github/workflows/docker-build.yml
+    secrets: inherit
+
+  # Promote PR docker images to latest if
+  # - PR is merged
+  # - Docker files changed
+  promote-to-latest:
+    needs: [ docker-check ]
+    if: >-
+      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == true &&  github.event.action == 'closed'
+    uses: ./.github/workflows/promote-to-latest.yml
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+    secrets: inherit
+
+
+  # Run linting
   lint:
+    needs: [ docker-check, docker-build, promote-to-latest ]
+    # Three valid scenarios:
+    # 1. Open PR with Docker changes: docker-build succeeded, promote-to-latest skipped
+    # 2. Merged PR with Docker changes: docker-build skipped, promote-to-latest succeeded
+    # 3. Any workflow without Docker changes: both docker-build and promote-to-latest skipped
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
+
     runs-on: ubuntu-24.04
 
     container:
-      image: jbeirer/alma9-fastcalosim:latest
-
+      image: fcsproj/fastcalosim-alma9:${{ needs.docker-check.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
     - name: Lint
       run: cmake -D FORMAT_COMMAND=clang-format -P cmake/lint.cmake
-
     - name: Spell check
       if: always()
       run: cmake -P cmake/spell.cmake
 
   coverage:
-    needs: [lint]
-
+    needs: [ lint, docker-check, docker-build, promote-to-latest ]
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
     runs-on: ubuntu-24.04
 
     container:
-      image: jbeirer/alma9-fastcalosim:latest
-
+      image: fcsproj/fastcalosim-alma9:${{ needs.docker-check.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -45,7 +129,7 @@ jobs:
 
     - name: Test
       working-directory: build/coverage
-      run: ctest --output-on-failure --no-tests=error --output-junit junit.xml  -j 4
+      run: ctest --output-on-failure --no-tests=error --output-junit junit.xml -j 4
 
     - name: Process coverage info
       run: cmake --build build/coverage -t coverage
@@ -63,16 +147,20 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [lint]
+    needs: [ lint, docker-check, docker-build, promote-to-latest ]
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
     runs-on: ubuntu-24.04
 
     strategy:
       matrix:
-        os: [alma9, ubuntu24]
+        os: [ alma9, ubuntu24 ]
 
     container:
-      image: jbeirer/${{ matrix.os }}-fastcalosim:latest
-
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ needs.docker-check.outputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -98,7 +186,12 @@ jobs:
 
   # Test against LCG releases
   test_lcg:
-    needs: [lint]
+    needs: [ lint ]
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
       platform: x86_64-el9-gcc13-opt
@@ -106,15 +199,78 @@ jobs:
     strategy:
       matrix:
         # See https://lcginfo.cern.ch/ for info on available LCG releases
-        lcg: [LCG_106, LCG_107a]
+        lcg: [ LCG_106, LCG_107a ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: cvmfs-contrib/github-action-cvmfs@v4
-      - uses: aidasoft/run-lcg-view@v4
-        with:
-          release-platform: "${{matrix.lcg}}/${{env.platform}}"
-          run: |
-            echo ":: Set-up python environment"
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: aidasoft/run-lcg-view@v4
+      with:
+        release-platform: "${{matrix.lcg}}/${{env.platform}}"
+        run: |
+          echo ":: Set-up python environment"
+          source .github/scripts/setup_pyvenv.sh
+
+          echo "::group::Install Python test dependencies"
+          pip install --user pipreqs
+          pipreqs test/python --mode no-pin
+          pip install --user -r test/python/requirements.txt
+
+          echo "::group::Configure"
+          cmake "--preset=ci-linux-lcg"
+
+          echo "::group::Build"
+          cmake --build build --config Release -j 4
+
+          echo "::group::Install"
+          cmake --install build --config Release --prefix prefix
+
+          echo "::group::Test"
+          ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: artifacts-${{ matrix.lcg }}
+        path: test/output
+        if-no-files-found: error
+        retention-days: 90
+
+  # Test against key4hep releases
+  test_key4hep:
+    needs: [ lint ]
+    if: |
+      always() &&
+      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
+      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
+      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        releases: [ 2025-01-28 ]
+
+    env:
+      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
+      KEY4HEP_VERSION: ${{ matrix.releases }}
+      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
+
+    - name: Build and test
+      run: |+
+        docker run --rm \
+          --device /dev/fuse \
+          --cap-add SYS_ADMIN \
+          --volume /cvmfs:/cvmfs:shared \
+          --volume ${{ github.workspace }}:/workspace \
+          --workdir /workspace \
+          "${{ env.KEY4HEP_IMAGE }}" \
+          bash -e -c '
+
+            echo "::group::Set up key4hep environment"
+            source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
+            echo "::group::Set-up Python environment"
             source .github/scripts/setup_pyvenv.sh
 
             echo "::group::Install Python test dependencies"
@@ -123,7 +279,7 @@ jobs:
             pip install --user -r test/python/requirements.txt
 
             echo "::group::Configure"
-            cmake "--preset=ci-linux-lcg"
+            cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
 
             echo "::group::Build"
             cmake --build build --config Release -j 4
@@ -133,75 +289,15 @@ jobs:
 
             echo "::group::Test"
             ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: artifacts-${{ matrix.lcg }}
-          path: test/output
-          if-no-files-found: error
-          retention-days: 90
-
-  # Test against key4hep releases
-  test_key4hep:
-    needs: [lint]
-    runs-on: ubuntu-24.04
-
-    strategy:
-      matrix:
-        releases: [2025-01-28]
-
-    env:
-      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
-      KEY4HEP_VERSION: ${{ matrix.releases }}
-      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: cvmfs-contrib/github-action-cvmfs@v4
-
-      - name: Build and test
-        run: |
-          docker run --rm \
-            --device /dev/fuse \
-            --cap-add SYS_ADMIN \
-            --volume /cvmfs:/cvmfs:shared \
-            --volume ${{ github.workspace }}:/workspace \
-            --workdir /workspace \
-            "${{ env.KEY4HEP_IMAGE }}" \
-            bash -e -c '
-
-              echo "::group::Set up key4hep environment"
-              source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
-              echo "::group::Set-up Python environment"
-              source .github/scripts/setup_pyvenv.sh
-
-              echo "::group::Install Python test dependencies"
-              pip install --user pipreqs
-              pipreqs test/python --mode no-pin
-              pip install --user -r test/python/requirements.txt
-
-              echo "::group::Configure"
-              cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
-
-              echo "::group::Build"
-              cmake --build build --config Release -j 4
-
-              echo "::group::Install"
-              cmake --install build --config Release --prefix prefix
-
-              echo "::group::Test"
-              ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
-            '
+          '
 
   docs:
     # Deploy docs only when builds succeed
-    needs: [test]
+    needs: [ test ]
 
     runs-on: ubuntu-22.04
 
-    if: github.ref == 'refs/heads/main'
-      && github.event_name == 'push'
-      && github.repository_owner == 'jbeirer'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository_owner == 'jbeirer'
 
     steps:
     - uses: actions/checkout@v4
@@ -213,12 +309,10 @@ jobs:
       run: pip3 install jinja2 Pygments
 
     - name: Install Doxygen
-      run: sudo apt-get update -q
-        && sudo apt-get install ghostscript doxygen -q -y
+      run: sudo apt-get update -q && sudo apt-get install ghostscript doxygen -q -y
 
     - name: Build docs
-      run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build"
-        -P cmake/docs-ci.cmake
+      run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build" -P cmake/docs-ci.cmake
 
     - name: Deploy docs
       uses: peaceiris/actions-gh-pages@v4

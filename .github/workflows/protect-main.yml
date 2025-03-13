@@ -1,0 +1,18 @@
+name: Prevent Direct Docker Changes to Main
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - 'docker/**'
+
+jobs:
+  block-docker-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fail if Docker files are modified in main
+      run: |
+        echo "❌ ERROR: Direct modifications to Docker files are NOT allowed on main."
+        echo "🔒 Please create a pull request instead."
+        exit 1

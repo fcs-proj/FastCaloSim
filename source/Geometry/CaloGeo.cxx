@@ -76,15 +76,17 @@ auto CaloGeo::is_eta_phi_z(int layer) const -> bool
   return m_layer_flags.at(layer).is_eta_phi_z;
 }
 
-auto CaloGeo::zpos(int layer, const Position& pos, Cell::SubPos subpos) const
-    -> double
+auto CaloGeo::zpos(int layer,
+                   const Position& pos,
+                   Cell::SubPos subpos) const -> double
 {
   const auto& cell = get_cell(layer, pos);
   return cell.z(subpos);
 }
 
-auto CaloGeo::rpos(int layer, const Position& pos, Cell::SubPos subpos) const
-    -> double
+auto CaloGeo::rpos(int layer,
+                   const Position& pos,
+                   Cell::SubPos subpos) const -> double
 {
   const auto& cell = get_cell(layer, pos);
   return cell.r(subpos);

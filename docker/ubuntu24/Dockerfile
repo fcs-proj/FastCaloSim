@@ -1,4 +1,4 @@
-# Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+# Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 
 FROM ubuntu:24.04
 
@@ -16,12 +16,16 @@ RUN apt-get update -qq \
  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
  && rm root_dependencies.txt
 
-# Upgrade CMake version
+# Build CMake from source
 ARG CMAKE_VERSION=3.29.2
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
- && chmod +x cmake-${CMAKE_VERSION}-linux-x86_64.sh \
- && sh cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local \
- && rm cmake-${CMAKE_VERSION}-linux-x86_64.sh
+RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz \
+ && tar -xzvf cmake-${CMAKE_VERSION}.tar.gz \
+ && cd cmake-${CMAKE_VERSION} \
+ && ./bootstrap --parallel=$(nproc) --prefix=/usr/local \
+ && make -j$(nproc) \
+ && make install \
+ && cd .. \
+ && rm -rf cmake-${CMAKE_VERSION} cmake-${CMAKE_VERSION}.tar.gz
 
 # Build ROOT from source.
 # Note: mathmore is currently needed for interpolation, clad is deactivated due to build issues
@@ -32,7 +36,7 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && mkdir root_build \
  && cd root_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../root_src -D mathmore=ON -D clad=OFF \
- && cmake --build . --config RelWithDebInfo --target install -j6 \
+ && cmake --build . --config RelWithDebInfo --target install -j$(nproc) \
  && rm -rf ../root_build
 
 # Build Geant4 from source with GDML support and installed data
@@ -42,7 +46,7 @@ RUN apt-get update -qq && apt-get -y install libxerces-c-dev \
  && git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_BUILD_TYPE=Debug ../geant4_src \
- && cmake --build . --config RelWithDebInfo --target install -j6  \
+ && cmake --build . --config RelWithDebInfo --target install -j$(nproc)  \
  && rm -rf ../geant4_build
 
 # Build onnxruntime for inference from source
@@ -50,7 +54,7 @@ RUN apt-get update -qq && apt-get -y install libxerces-c-dev \
 ARG ONNXRUNTIME_VERSION=1.16.3
 RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
  && mkdir onnx_build && cd onnx_build \
- && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel 4 --skip_submodule_sync --skip_tests --build_dir . \
+ && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel $(nproc) --skip_submodule_sync --skip_tests --build_dir . \
  && make install -C RelWithDebInfo \
  && rm -rf ../onnx_build
 
@@ -60,7 +64,7 @@ ARG LWTNN_VERSION=2.13
 RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtnn.git lwtnn_src \
  && mkdir lwtnn_build && cd lwtnn_build \
  && cmake -DBUILTIN_BOOST=true -DBUILTIN_EIGEN=true -DCMAKE_INSTALL_PREFIX=/usr/local ../lwtnn_src \
- && make -j4 \
+ && make -j$(nproc) \
  && make install \
  && rm -rf ../lwtnn_build
 
@@ -70,7 +74,7 @@ ARG CLHEP_VERSION=2_4_7_1
 RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERSION} clhep_src \
  && mkdir clhep_build && cd clhep_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../clhep_src \
- && cmake --build . --config RelWithDebInfo --target install -j6 \
+ && cmake --build . --config RelWithDebInfo --target install -j$(nproc) \
  && rm -rf ../clhep_build
 
 # Install extra packages
@@ -84,11 +88,14 @@ RUN apt-get update -qq \
  && rm extra_packages.txt
 
 # Configure the clang-tidy version
-RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 170
+RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 180
 
-# Install python packages
+#Install python packages
 COPY python_packages.txt python_packages.txt
 
+# Pygeosimplify installed without dependencies
+# See https://github.com/g4edge/pyg4ometry/issues/243
 RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
  && pip3 install --break-system-packages $(cat python_packages.txt) \
+ && pip3 install --break-system-packages pygeosimplify --no-deps \
  && rm -rf python_packages.txt

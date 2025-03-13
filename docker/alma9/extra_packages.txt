@@ -1,5 +1,5 @@
 wget
-eigen3-devel 
+eigen3-devel
 boost-devel
 lcov
 cppcheck
@@ -9,5 +9,4 @@ xrootd
 gnupg
 doxygen
 gdb
-clang-tools-extra-17.0.6-5.el9
-
+clang-tools-extra
