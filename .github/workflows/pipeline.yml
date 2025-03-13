@@ -1,0 +1,229 @@
+name: Pipeline
+
+# Run on push to main
+on:
+  push:
+    branches:
+      - main
+
+# Run on PRs to main
+  workflow_call:
+    inputs:
+      container_tag:
+        required: true
+        type: string
+
+# Push to main: take latest docker tag
+# Push to PR: tag can be given as input
+env:
+  container_tag: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'latest' || inputs.container_tag }}
+
+jobs:
+
+  # Run linting
+  lint:
+    runs-on: ubuntu-24.04
+
+    container:
+      image: fcsproj/fastcalosim-alma9:${{ env.container_tag }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Lint
+      run: cmake -D FORMAT_COMMAND=clang-format -P cmake/lint.cmake
+    - name: Spell check
+      if: always()
+      run: cmake -P cmake/spell.cmake
+
+  coverage:
+    needs: [ lint ]
+    runs-on: ubuntu-24.04
+
+    container:
+      image: fcsproj/fastcalosim-alma9:${{ env.container_tag }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure
+      run: cmake --preset=ci-coverage
+
+    - name: Build
+      run: cmake --build build/coverage -j 4
+
+    - name: Test
+      working-directory: build/coverage
+      run: ctest --output-on-failure --no-tests=error --output-junit junit.xml -j 4
+
+    - name: Process coverage info
+      run: cmake --build build/coverage -t coverage
+
+    - name: Upload coverage to codecov
+      uses: codecov/codecov-action@v5
+      with:
+        files: build/coverage/coverage.info
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+  test:
+    needs: [ lint ]
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        os: [ alma9, ubuntu24 ]
+
+    container:
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ env.container_tag }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure
+      run: cmake "--preset=ci-linux"
+
+    - name: Build
+      run: cmake --build build --config Release -j 4
+
+    - name: Install
+      run: cmake --install build --config Release --prefix prefix
+
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure --no-tests=error -C Release -j 4
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: artifacts-${{ matrix.os }}
+        path: test/output
+        if-no-files-found: error
+        retention-days: 90
+
+  # Test against LCG releases
+  test_lcg:
+    needs: [ lint ]
+    env:
+      views_path: /cvmfs/sft.cern.ch/lcg/views
+      platform: x86_64-el9-gcc13-opt
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        # See https://lcginfo.cern.ch/ for info on available LCG releases
+        lcg: [ LCG_106, LCG_107a ]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: aidasoft/run-lcg-view@v4
+      with:
+        release-platform: "${{matrix.lcg}}/${{env.platform}}"
+        run: |
+          echo ":: Set-up python environment"
+          source .github/scripts/setup_pyvenv.sh
+
+          echo "::group::Install Python test dependencies"
+          pip install --user pipreqs
+          pipreqs test/python --mode no-pin
+          pip install --user -r test/python/requirements.txt
+
+          echo "::group::Configure"
+          cmake "--preset=ci-linux-lcg"
+
+          echo "::group::Build"
+          cmake --build build --config Release -j 4
+
+          echo "::group::Install"
+          cmake --install build --config Release --prefix prefix
+
+          echo "::group::Test"
+          ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: artifacts-${{ matrix.lcg }}
+        path: test/output
+        if-no-files-found: error
+        retention-days: 90
+
+  # Test against key4hep releases
+  test_key4hep:
+    needs: [ lint ]
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        releases: [ 2025-01-28 ]
+
+    env:
+      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
+      KEY4HEP_VERSION: ${{ matrix.releases }}
+      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
+
+    - name: Build and test
+      run: |+
+        docker run --rm \
+          --device /dev/fuse \
+          --cap-add SYS_ADMIN \
+          --volume /cvmfs:/cvmfs:shared \
+          --volume ${{ github.workspace }}:/workspace \
+          --workdir /workspace \
+          "${{ env.KEY4HEP_IMAGE }}" \
+          bash -e -c '
+
+            echo "::group::Set up key4hep environment"
+            source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
+            echo "::group::Set-up Python environment"
+            source .github/scripts/setup_pyvenv.sh
+
+            echo "::group::Install Python test dependencies"
+            pip install --user pipreqs
+            pipreqs test/python --mode no-pin
+            pip install --user -r test/python/requirements.txt
+
+            echo "::group::Configure"
+            cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
+
+            echo "::group::Build"
+            cmake --build build --config Release -j 4
+
+            echo "::group::Install"
+            cmake --install build --config Release --prefix prefix
+
+            echo "::group::Test"
+            ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
+          '
+
+  docs:
+    # Deploy docs only when builds succeed
+    needs: [ test ]
+
+    runs-on: ubuntu-22.04
+
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository_owner == 'jbeirer'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with: { python-version: "3.8" }
+
+    - name: Install m.css dependencies
+      run: pip3 install jinja2 Pygments
+
+    - name: Install Doxygen
+      run: sudo apt-get update -q && sudo apt-get install ghostscript doxygen -q -y
+
+    - name: Build docs
+      run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build" -P cmake/docs-ci.cmake
+
+    - name: Deploy docs
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: build/docs/html

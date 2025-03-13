@@ -1,17 +1,22 @@
 name: docker-promote
 
 on:
-  workflow_call:
-    inputs:
-      pr_number:
-        required: true
-        type: string
+  pull_request:
+    branches:
+    - main
+    types: [ merged ]
 
 env:
   REGISTRY_IMAGE: fcsproj/fastcalosim
 
 jobs:
+  docker-check:
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/docker-check.yml
+
   promote:
+    needs: [ docker-check ]
+    if : ${{ needs.docker-check.outputs.docker_changed == 'true' }}
     runs-on: ubuntu-latest
 
     strategy:
