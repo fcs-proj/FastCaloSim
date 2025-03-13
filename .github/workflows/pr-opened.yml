@@ -16,6 +16,7 @@ jobs:
     needs: [docker-check]
     if: ${{ needs.docker-check.outputs.docker_changed == 'true' }}
     uses: ./.github/workflows/docker-build.yml
+    secrets: inherit
 
   # Run the main tests
   test:
@@ -25,3 +26,4 @@ jobs:
     uses: ./.github/workflows/pipeline.yml
     with:
       container_tag: ${{ needs.docker-check.outputs.docker_changed == 'true' && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+    secrets: inherit
