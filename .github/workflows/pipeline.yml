@@ -81,7 +81,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [ docker-check, lint ]
+    needs: [docker-check, docker-build]
     runs-on: ${{ matrix.platform == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
 
 
