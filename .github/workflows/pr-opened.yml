@@ -11,12 +11,11 @@ jobs:
   docker-check:
     uses: ./.github/workflows/docker-check.yml
 
-#   # Build the Docker image if Docker files changed
-#   docker-build:
-#     needs: [docker-check]
-#     if: ${{ needs.docker-check.outputs.docker_changed == 'true' }}
-#     uses: ./.github/workflows/docker-build.yml
-#     secrets: inherit
+  # Build the Docker image if Docker files changed
+  docker-build:
+    needs: [docker-check]
+    if: ${{ needs.docker-check.outputs.docker_changed == 'true' }}
+    uses: ./.github/workflows/docker-build.yml
 
 #   # Run the main tests
 #   test:
