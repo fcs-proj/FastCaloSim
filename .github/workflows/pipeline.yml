@@ -46,6 +46,8 @@ jobs:
 
   coverage:
     needs: [docker-check, docker-build]
+    # Allow skipping docker-build if no Docker files changed
+    if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
 
     # If pull request with Docker file changes: use PR image, else use main
@@ -82,6 +84,8 @@ jobs:
 
   test:
     needs: [docker-check, docker-build]
+    # Allow skipping docker-build if no Docker files changed
+    if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
 
     strategy:
