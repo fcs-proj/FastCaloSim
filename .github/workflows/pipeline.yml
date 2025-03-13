@@ -1,27 +1,45 @@
 name: Pipeline
 
 on:
-
   # Run on push to main
   push:
     branches:
       - main
 
-  # Run on PRs to main
-  workflow_call:
-    inputs:
-      container_tag:
-        required: true
-        type: string
+  # Run for PRs to main
+  pull_request:
+    branches:
+      - main
+    types: [opened, reopened, synchronize]
+
+# Do not run if docker deployment is in progress
+concurrency:
+  group: docker-deployment
+  cancel-in-progress: false
 
 jobs:
 
+  # Detect any changes to Docker files
+  docker-check:
+    uses: ./.github/workflows/docker-check.yml
+
+  # Build the Docker image if Docker files changed
+  docker-build:
+    needs: [docker-check]
+    if: ${{ needs.docker-check.outputs.docker_changed == 'true' }}
+    uses: ./.github/workflows/docker-build.yml
+    secrets: inherit
+
   # Run linting
   lint:
+    needs: [docker-check, docker-build]
+    # Allow skipping docker-build if no Docker files changed
+    if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
-
+    # If PR: use PR image, else use latest
     container:
-      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+
     steps:
     - uses: actions/checkout@v4
 
@@ -32,11 +50,13 @@ jobs:
       run: cmake -P cmake/spell.cmake
 
   coverage:
-    needs: [ lint ]
+    needs: [docker-check, lint ]
     runs-on: ubuntu-24.04
-
+    
+    # If PR: use PR image, else use latest
     container:
-      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+
     steps:
     - uses: actions/checkout@v4
 
@@ -66,15 +86,17 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [ lint ]
+    needs: [ docker-check, lint ]
     runs-on: ubuntu-24.04
 
     strategy:
       matrix:
         os: [ alma9, ubuntu24 ]
 
+    # If PR: use PR image, else use latest
     container:
-      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+    
     steps:
     - uses: actions/checkout@v4
 
