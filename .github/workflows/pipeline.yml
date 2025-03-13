@@ -86,12 +86,14 @@ jobs:
     needs: [docker-check, docker-build]
     # Allow skipping docker-build if no Docker files changed
     if: always() && !failure() && !cancelled()
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.platform == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+
 
     strategy:
       fail-fast: false
       matrix:
         os: [ alma9, ubuntu24 ]
+        platform: [ amd64, arm64 ]
 
     # If pull request with Docker file changes: use PR image, else use main
     container:
@@ -115,7 +117,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: artifacts-${{ matrix.os }}
+        name: artifacts-${{ matrix.os }}-${{ matrix.platform }}
         path: test/output
         if-no-files-found: error
         retention-days: 90
