@@ -36,8 +36,9 @@ jobs:
     # Allow skipping docker-build if no Docker files changed
     if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
-    
-    image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+    # If PR: use PR image, else use latest
+    container:
+      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -52,7 +53,9 @@ jobs:
     needs: [ lint ]
     runs-on: ubuntu-24.04
     
-    image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+    # If PR: use PR image, else use latest
+    container:
+      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -90,7 +93,9 @@ jobs:
       matrix:
         os: [ alma9, ubuntu24 ]
 
-    image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+    # If PR: use PR image, else use latest
+    container:
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
     
     steps:
     - uses: actions/checkout@v4
