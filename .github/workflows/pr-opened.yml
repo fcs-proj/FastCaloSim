@@ -3,9 +3,8 @@ on:
   # Run for PRs to main
   pull_request:
     branches:
-    - main
-    types: [ opened, synchronized ]
-
+      - main
+    types: [opened, reopened, synchronize]
 
 jobs:
   # Detect any changes to Docker files
@@ -15,14 +14,14 @@ jobs:
 
   # Build the Docker image if Docker files changed
   docker-build:
-    needs: [ docker-check ]
-    if : ${{ needs.docker-check.outputs.docker_changed == 'true' }}
+    needs: [docker-check]
+    if: ${{ needs.docker-check.outputs.docker_changed == 'true' }}
     uses: ./.github/workflows/docker-build.yml
     secrets: inherit
 
   # Run the main tests
   test:
-    needs: [ docker-build ]
+    needs: [docker-build]
     # Allow skipping docker-build if no Docker files changed
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/pipeline.yml
