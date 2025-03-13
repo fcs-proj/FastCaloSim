@@ -1,17 +1,22 @@
 name: docker-promote
 
 on:
-  workflow_call:
-    inputs:
-      pr_number:
-        required: true
-        type: string
+  pull_request:
+    types:
+      - closed
 
 env:
   REGISTRY_IMAGE: fcsproj/fastcalosim
 
 jobs:
+  docker-check:
+    uses: ./.github/workflows/docker-check.yml
+
+  # If Docker files were changed
+  # promote the PR image to latest when PR is merged
   promote:
+    needs: [ docker-check ]
+    if: ${{ github.event.pull_request.merged == true && needs.docker-check.outputs.docker_changed == 'true' }}
     runs-on: ubuntu-latest
 
     strategy:

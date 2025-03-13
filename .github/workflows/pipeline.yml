@@ -1,95 +1,27 @@
 name: Pipeline
+
 on:
-  # Run for direct pushes to main
+
+  # Run on push to main
   push:
     branches:
-    - main
-  # Run for PRs to main
-  pull_request:
-    branches:
-    - main
-    types: [ opened, synchronize, reopened, closed ]
+      - main
 
-env:
-  CONTAINER_TAG: latest
+  # Run on PRs to main
+  workflow_call:
+    inputs:
+      container_tag:
+        required: true
+        type: string
 
 jobs:
-  # Detect any changes to Docker files
-  docker-check:
-
-    runs-on: ubuntu-latest
-
-    outputs:
-      docker_changed: ${{ steps.filter.outputs.docker }}
-      container_tag: ${{ steps.set-tag.outputs.container_tag }}
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Detect Docker file changes
-      id: filter
-      uses: dorny/paths-filter@v3
-      with:
-        filters: |+
-          docker:
-            - 'docker/**'
-
-    - name: Set container tag
-      id: set-tag
-      run: |
-        # Determine the appropriate container tag
-        if [[ "${{ github.event_name }}" == "pull_request" && "${{ steps.filter.outputs.docker }}" == "true" && "${{ github.event.pull_request.merged }}" == "false" ]]; then
-          # Use PR-specific tag
-          echo "container_tag=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-          echo "Using PR-specific container tag: pr-${{ github.event.pull_request.number }}"
-        else
-          # Use latest tag
-          echo "container_tag=latest" >> $GITHUB_OUTPUT
-          echo "Using latest container tag"
-        fi
-
-  # Build Docker images for PRs if
-  # - PR is open or synchronized
-  # - Docker files changed
-  # - PR is not closed
-  docker-build:
-    needs: [ docker-check ]
-    if: >-
-      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == false &&  github.event.action != 'closed'
-    uses: ./.github/workflows/docker-build.yml
-    secrets: inherit
-
-  # Promote PR docker images to latest if
-  # - PR is merged
-  # - Docker files changed
-  promote-to-latest:
-    needs: [ docker-check ]
-    if: >-
-      needs.docker-check.outputs.docker_changed == 'true' &&  github.event_name == 'pull_request' &&  github.event.pull_request.merged == true &&  github.event.action == 'closed'
-    uses: ./.github/workflows/promote-to-latest.yml
-    with:
-      pr_number: ${{ github.event.pull_request.number }}
-    secrets: inherit
-
 
   # Run linting
   lint:
-    needs: [ docker-check, docker-build, promote-to-latest ]
-    # Three valid scenarios:
-    # 1. Open PR with Docker changes: docker-build succeeded, promote-to-latest skipped
-    # 2. Merged PR with Docker changes: docker-build skipped, promote-to-latest succeeded
-    # 3. Any workflow without Docker changes: both docker-build and promote-to-latest skipped
-    if: |
-      always() &&
-      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
-      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
-      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
-
     runs-on: ubuntu-24.04
 
     container:
-      image: fcsproj/fastcalosim-alma9:${{ needs.docker-check.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -100,16 +32,11 @@ jobs:
       run: cmake -P cmake/spell.cmake
 
   coverage:
-    needs: [ lint, docker-check, docker-build, promote-to-latest ]
-    if: |
-      always() &&
-      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
-      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
-      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
+    needs: [ lint ]
     runs-on: ubuntu-24.04
 
     container:
-      image: fcsproj/fastcalosim-alma9:${{ needs.docker-check.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -139,12 +66,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [ lint, docker-check, docker-build, promote-to-latest ]
-    if: |
-      always() &&
-      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
-      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
-      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
+    needs: [ lint ]
     runs-on: ubuntu-24.04
 
     strategy:
@@ -152,7 +74,7 @@ jobs:
         os: [ alma9, ubuntu24 ]
 
     container:
-      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ needs.docker-check.outputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
     steps:
     - uses: actions/checkout@v4
 
@@ -179,11 +101,6 @@ jobs:
   # Test against LCG releases
   test_lcg:
     needs: [ lint ]
-    if: |
-      always() &&
-      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
-      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
-      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
       platform: x86_64-el9-gcc13-opt
@@ -229,11 +146,6 @@ jobs:
   # Test against key4hep releases
   test_key4hep:
     needs: [ lint ]
-    if: |
-      always() &&
-      ((needs.docker-build.result == 'success' && needs.promote-to-latest.result == 'skipped') ||
-      (needs.promote-to-latest.result == 'success' && needs.docker-build.result == 'skipped') ||
-      (needs.docker-build.result == 'skipped' && needs.promote-to-latest.result == 'skipped'))
     runs-on: ubuntu-24.04
 
     strategy:

@@ -1,0 +1,24 @@
+name: docker-check
+
+on:
+  workflow_call:
+    outputs:
+      docker_changed:
+        value: ${{ jobs.check_docker.outputs.docker_changed }}
+
+jobs:
+  check_docker:
+    runs-on: ubuntu-latest
+    outputs:
+      docker_changed: ${{ steps.filter.outputs.docker }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check for Docker file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            docker:
+              - 'docker/**'
