@@ -24,4 +24,4 @@ jobs:
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/pipeline.yml
     with:
-      container_tag: pr-${{ github.event.pull_request.number }}
+      container_tag: ${{ needs.docker-check.outputs.docker_changed == 'true' && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
