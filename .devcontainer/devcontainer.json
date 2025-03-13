@@ -1,6 +1,6 @@
 {
   // AlmaLinux9 container that already contains all project dependencies
-  "image": "fcsproj/fastcalosim-alma9:latest",
+  "image": "fcsproj/fastcalosim-alma9:main",
   // Activate vs code extensions and set cmake path
   "customizations": {
     "vscode": {

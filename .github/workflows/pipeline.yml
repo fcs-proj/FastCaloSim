@@ -12,11 +12,6 @@ on:
       - main
     types: [opened, reopened, synchronize]
 
-# Do not run if docker deployment is in progress
-concurrency:
-  group: docker-deployment
-  cancel-in-progress: false
-
 jobs:
 
   # Detect any changes to Docker files
@@ -36,9 +31,9 @@ jobs:
     # Allow skipping docker-build if no Docker files changed
     if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
-    # If PR: use PR image, else use latest
+    # If pull request with Docker file changes: use PR image, else use main
     container:
-      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -52,10 +47,10 @@ jobs:
   coverage:
     needs: [docker-check, lint ]
     runs-on: ubuntu-24.04
-    
-    # If PR: use PR image, else use latest
+
+    # If pull request with Docker file changes: use PR image, else use main
     container:
-      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -93,10 +88,10 @@ jobs:
       matrix:
         os: [ alma9, ubuntu24 ]
 
-    # If PR: use PR image, else use latest
+    # If pull request with Docker file changes: use PR image, else use main
     container:
-      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
-    
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
+
     steps:
     - uses: actions/checkout@v4
 
