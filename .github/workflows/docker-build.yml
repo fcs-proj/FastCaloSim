@@ -59,6 +59,7 @@ jobs:
         outputs: type=image,push-by-digest=true,name-canonical=true,push=true
         cache-from: |
           type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache-${{ env.PLATFORM_PAIR }}
+          type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:main
           type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:latest
         cache-to: |
           type=registry,ref=${{ env.REGISTRY_IMAGE }}-${{ matrix.os }}:cache-${{ env.PLATFORM_PAIR }},mode=max
