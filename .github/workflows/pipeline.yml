@@ -90,6 +90,7 @@ jobs:
 
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ alma9, ubuntu24 ]
         platform: [ amd64, arm64 ]
