@@ -17,7 +17,7 @@ on:
 # Push to main: take latest docker tag
 # Push to PR: tag can be given as input
 env:
-  container_tag: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'latest' || inputs.container_tag }}
+  CONTAINER_TAG: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'latest' || inputs.container_tag }}
 
 jobs:
 
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: fcsproj/fastcalosim-alma9:${{ env.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ env.CONTAINER_TAG }}
     steps:
     - uses: actions/checkout@v4
 
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     container:
-      image: fcsproj/fastcalosim-alma9:${{ env.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ env.CONTAINER_TAG }}
     steps:
     - uses: actions/checkout@v4
 
@@ -79,7 +79,7 @@ jobs:
         os: [ alma9, ubuntu24 ]
 
     container:
-      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ env.container_tag }}
+      image: fcsproj/fastcalosim-${{ matrix.os }}:${{ env.CONTAINER_TAG }}
     steps:
     - uses: actions/checkout@v4
 
