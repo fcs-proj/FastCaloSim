@@ -2,3 +2,25 @@ docker-build:
 - changed-files:
   - any-glob-to-any-file:
     - docker/**
+
+workflows:
+- changed-files:
+  - any-glob-to-any-file:
+    - workflows/**
+
+tests:
+- changed-files:
+  - any-glob-to-any-file:
+    - test/**
+
+parametrization:
+- changed-files:
+  - any-glob-to-any-file:
+    - parametrization/**
+
+cmake:
+- changed-files:
+  - any-glob-to-any-file:
+    - cmake/**
+  - any-glob-to-any-file:
+    - '**/CMake*.txt'
