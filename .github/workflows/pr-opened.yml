@@ -17,12 +17,11 @@ jobs:
     if: ${{ needs.docker-check.outputs.docker_changed == 'true' }}
     uses: ./.github/workflows/docker-build.yml
 
-#   # Run the main tests
-#   test:
-#     needs: [docker-build]
-#     # Allow skipping docker-build if no Docker files changed
-#     if: always() && !failure() && !cancelled()
-#     uses: ./.github/workflows/pipeline.yml
-#     with:
-#       container_tag: pr-${{ github.event.pull_request.number }}
-#     secrets: inherit
+  # Run the main tests
+  test:
+    needs: [docker-build]
+    # Allow skipping docker-build if no Docker files changed
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/pipeline.yml
+    with:
+      container_tag: pr-${{ github.event.pull_request.number }}
