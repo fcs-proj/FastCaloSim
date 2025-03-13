@@ -25,9 +25,7 @@ jobs:
     needs: [ docker-build ]
     # Allow skipping docker-build if no Docker files changed
     if: always() && !failure() && !cancelled()
-    runs-on: ubuntu-24.04
-
     uses: ./.github/workflows/pipeline.yml
-    secrets: inherit
     with:
       container_tag: pr-${{ github.event.pull_request.number }}
+    secrets: inherit

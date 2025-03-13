@@ -1,12 +1,13 @@
 name: Pipeline
 
-# Run on push to main
 on:
+
+  # Run on push to main
   push:
     branches:
       - main
 
-# Run on PRs to main
+  # Run on PRs to main
   workflow_call:
     inputs:
       container_tag:
