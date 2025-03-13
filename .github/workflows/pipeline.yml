@@ -36,9 +36,11 @@ jobs:
     # Allow skipping docker-build if no Docker files changed
     if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
-
+    env:
+      DOCKER_TAG: ${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
     container:
-      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ env.DOCKER_TAG }}
+
     steps:
     - uses: actions/checkout@v4
 
@@ -51,9 +53,12 @@ jobs:
   coverage:
     needs: [ lint ]
     runs-on: ubuntu-24.04
-
+    
+    env:
+      DOCKER_TAG: ${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
     container:
-      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ env.DOCKER_TAG }}
+
     steps:
     - uses: actions/checkout@v4
 
@@ -90,8 +95,12 @@ jobs:
       matrix:
         os: [ alma9, ubuntu24 ]
 
+    env:
+      DOCKER_TAG: ${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'latest' }}
+    
     container:
-      image: fcsproj/fastcalosim-alma9:${{ github.event_name == 'push' && 'latest' || inputs.container_tag }}
+      image: fcsproj/fastcalosim-alma9:${{ env.DOCKER_TAG }}
+    
     steps:
     - uses: actions/checkout@v4
 
