@@ -95,6 +95,7 @@ COPY python_packages.txt python_packages.txt
 
 # Pygeosimplify installed without dependencies
 # See https://github.com/g4edge/pyg4ometry/issues/243
+# TODO: installation should be moved to python_packages.txt
 RUN pip3 install --break-system-packages --upgrade --ignore-installed pip \
  && pip3 install --break-system-packages $(cat python_packages.txt) \
  && pip3 install --break-system-packages pygeosimplify --no-deps \
