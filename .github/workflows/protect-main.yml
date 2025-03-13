@@ -1,18 +1,38 @@
-name: Prevent Direct Docker Changes to Main
+name: protect-main
 
 on:
+  # Only run for direct pushes to main
   push:
     branches:
     - main
-    paths:
-    - 'docker/**'
 
 jobs:
-  block-docker-push:
+  protect-main:
     runs-on: ubuntu-latest
     steps:
-    - name: Fail if Docker files are modified in main
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Block direct Docker changes
+      uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |+
+          docker:
+            - 'docker/**'
+
+    - name: Enforce PR requirement
       run: |
-        echo "❌ ERROR: Direct modifications to Docker files are NOT allowed on main."
-        echo "🔒 Please create a pull request instead."
-        exit 1
+        # Check if this is a merge commit (more than one parent)
+        MERGE_COMMIT=$(if [[ "$(git log -1 --pretty=%P | wc -w)" -gt 1 ]]; then echo "true"; else echo "false"; fi)
+
+        # Block if Docker files changed and it's not a merge commit
+        if [[ "${{ steps.filter.outputs.docker }}" == "true" && "$MERGE_COMMIT" == "false" ]]; then
+          echo "❌ ERROR: Direct modifications to Docker files are NOT allowed on main."
+          echo "🔒 Please create a pull request instead."
+          exit 1
+        else
+          echo "✅ Main branch protection check passed."
+        fi
