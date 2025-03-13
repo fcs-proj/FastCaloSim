@@ -5,6 +5,10 @@ on:
     types:
       - closed
 
+concurrency:
+  group: docker-deployment
+  cancel-in-progress: false
+
 env:
   REGISTRY_IMAGE: fcsproj/fastcalosim
 

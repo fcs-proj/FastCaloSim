@@ -7,17 +7,35 @@ on:
     branches:
       - main
 
-  # Run on PRs to main
-  workflow_call:
-    inputs:
-      container_tag:
-        required: true
-        type: string
+  # Run for PRs to main
+  pull_request:
+    branches:
+      - main
+    types: [opened, reopened, synchronize]
+
+  # Do not run if docker deployment is in progress
+  concurrency:
+    group: docker-deployment
+    cancel-in-progress: false
 
 jobs:
 
+  # Detect any changes to Docker files
+  docker-check:
+    uses: ./.github/workflows/docker-check.yml
+
+  # Build the Docker image if Docker files changed
+  docker-build:
+    needs: [docker-check]
+    if: ${{ needs.docker-check.outputs.docker_changed == 'true' }}
+    uses: ./.github/workflows/docker-build.yml
+    secrets: inherit
+
   # Run linting
   lint:
+    needs: [docker-build]
+    # Allow skipping docker-build if no Docker files changed
+    if: always() && !failure() && !cancelled()
     runs-on: ubuntu-24.04
 
     container:
