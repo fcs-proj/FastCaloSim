@@ -50,7 +50,7 @@ jobs:
       run: cmake -P cmake/spell.cmake
 
   coverage:
-    needs: [ lint ]
+    needs: [docker-check, lint ]
     runs-on: ubuntu-24.04
     
     # If PR: use PR image, else use latest
@@ -86,7 +86,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [ lint ]
+    needs: [ docker-check, lint ]
     runs-on: ubuntu-24.04
 
     strategy:
