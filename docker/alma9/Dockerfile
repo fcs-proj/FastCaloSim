@@ -90,6 +90,7 @@ COPY python_packages.txt python_packages.txt
 
 # Pygeosimplify installed without dependencies
 # See https://github.com/g4edge/pyg4ometry/issues/243
+# TODO: installation should be moved to python_packages.txt
 RUN python3 -m ensurepip --default-pip \
  && python3 -m pip install --upgrade pip \
  && pip3 install $(cat python_packages.txt) \
