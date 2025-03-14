@@ -37,7 +37,7 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInLogEkin(
   m_linInterpol.SetData(m_logEkin, m_response);
 
   auto min_max = std::minmax_element(m_logEkin.begin(), m_logEkin.end());
-  m_MinMaxlogEkin = std::make_pair(*min_max.first, *min_max.second);
+  m_MinMaxlogEkin = std::pair<double, double>(*min_max.first, *min_max.second);
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
