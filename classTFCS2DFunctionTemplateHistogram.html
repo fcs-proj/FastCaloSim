@@ -61,6 +61,7 @@
               Reference
               <ul>
                 <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#derived-classes">Derived classes</a></li>
                 <li><a href="#pub-types">Public types</a></li>
                 <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
@@ -74,6 +75,21 @@
           <dl class="m-doc">
             <dt>
               class <a href="classTFCS2DFunction.html" class="m-doc">TFCS2DFunction</a>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="derived-classes">
+          <h2><a href="#derived-classes">Derived classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <div class="m-doc-template">template&lt;typename Txvec, typename Tyvec, typename Tz, typename Trandom = float&gt;</div>
+              class <a href="classTFCS2DFunctionTemplateInterpolationExpHistogram.html" class="m-doc">TFCS2DFunctionTemplateInterpolationExpHistogram</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename Txvec, typename Tyvec, typename Tz, typename Trandom = float&gt;</div>
+              class <a href="classTFCS2DFunctionTemplateInterpolationHistogram.html" class="m-doc">TFCS2DFunctionTemplateInterpolationHistogram</a>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -178,15 +194,11 @@
             </dt>
             <dd><span></span></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#ad864a1ce3fc98c833ec107d210cc2b5b" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">float&amp; valuex,
-              float&amp; valuey,
-              float rnd0,
-              float rnd1) const <span class="m-label m-flat m-warning">pure virtual</span></span>
+              <span class="m-doc-wrap-bumper">void <a href="#ad864a1ce3fc98c833ec107d210cc2b5b" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a0c4a13871195588f408915f563c3a4f1" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const</span>
+              <span class="m-doc-wrap-bumper">void <a href="#a0c4a13871195588f408915f563c3a4f1" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const</span>
             </dt>
             <dd></dd>
           </dl>
@@ -242,10 +254,7 @@
               <div class="m-doc-template">
                 template&lt;typename Txvec, typename Tyvec, typename Tz, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">void TFCS2DFunctionTemplateHistogram&lt;Txvec, Tyvec, Tz, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ad864a1ce3fc98c833ec107d210cc2b5b" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float&amp; valuex,
-              float&amp; valuey,
-              float rnd0,
-              float rnd1) const <span class="m-label m-warning">pure virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">void TFCS2DFunctionTemplateHistogram&lt;Txvec, Tyvec, Tz, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ad864a1ce3fc98c833ec107d210cc2b5b" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">pure virtual</span></span></span>
             </h3>
 <p>Function gets random number rnd in the range [0,1) as argument and returns function value according to a histogram distribution</p>
           </div></section>
@@ -254,8 +263,7 @@
               <div class="m-doc-template">
                 template&lt;typename Txvec, typename Tyvec, typename Tz, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">void TFCS2DFunctionTemplateHistogram&lt;Txvec, Tyvec, Tz, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0c4a13871195588f408915f563c3a4f1" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const</span></span>
+              <span class="m-doc-wrap-bumper">void TFCS2DFunctionTemplateHistogram&lt;Txvec, Tyvec, Tz, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0c4a13871195588f408915f563c3a4f1" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const</span></span>
             </h3>
 <p>Function gets random number rnd in the range [0,1) as argument and returns function value according to a histogram distribution</p>
           </div></section>
@@ -304,7 +312,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.8.16 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
       </div>
     </div>
   </div>

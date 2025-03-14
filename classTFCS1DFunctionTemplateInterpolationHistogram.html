@@ -72,7 +72,7 @@
           <dl class="m-doc">
             <dt>
               <div class="m-doc-template">template&lt;typename Txvec, typename Ty, typename Trandom = float&gt;</div>
-              class <a href="classTFCS1DFunctionTemplateHistogram.html" class="m-doc">TFCS1DFunctionTemplateHistogram&lt;Txvec, Ty, float&gt;</a>
+              class <a href="classTFCS1DFunctionTemplateHistogram.html" class="m-doc">TFCS1DFunctionTemplateHistogram&lt;Txvec, Ty, Trandom&gt;</a>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -94,12 +94,11 @@
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a85f17655648a4c94ab958c155fd28a40" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const</span>
+              <span class="m-doc-wrap-bumper">void <a href="#a85f17655648a4c94ab958c155fd28a40" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const</span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a7287d11b06ec8da6ef053e93977a07ab" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">double rnd) const -&gt; double <span class="m-label m-flat m-warning">pure virtual</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a7287d11b06ec8da6ef053e93977a07ab" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd></dd>
           </dl>
@@ -120,8 +119,7 @@
               <div class="m-doc-template">
                 template&lt;typename Txvec, typename Ty, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">void TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a85f17655648a4c94ab958c155fd28a40" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const</span></span>
+              <span class="m-doc-wrap-bumper">void TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a85f17655648a4c94ab958c155fd28a40" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const</span></span>
             </h3>
 <p>Function gets array of random numbers rnd[] in the range [0,1) as arguments and returns function value in array value. For a n-dimensional function, value and rnd should both have n elements.</p>
           </div></section>
@@ -130,7 +128,7 @@
               <div class="m-doc-template">
                 template&lt;typename Txvec, typename Ty, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">double TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7287d11b06ec8da6ef053e93977a07ab" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">double rnd) const <span class="m-label m-warning">pure virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">double TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7287d11b06ec8da6ef053e93977a07ab" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">pure virtual</span></span></span>
             </h3>
 <p>Function gets random number rnd in the range [0,1) as argument and returns function value</p>
           </div></section>
@@ -179,7 +177,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.8.16 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
       </div>
     </div>
   </div>

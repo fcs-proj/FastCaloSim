@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>DecodedPID class | FastCaloSim</title>
+  <title>FCS_MSG namespace | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,62 +49,23 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          DecodedPID <span class="m-thin">class</span>
-          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="ParticleData_8h.html">&lt;ParticleData.h&gt;</a></div>
+          FCS_MSG <span class="m-thin">namespace</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="MLogging_8h.html">&lt;FastCaloSim/Core/MLogging.h&gt;</a></div>
         </h1>
-        <div class="m-block m-default">
-          <h3>Contents</h3>
-          <ul>
-            <li>
-              Reference
-              <ul>
-                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
-                <li><a href="#pub-methods">Public functions</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-<p>Implementation of classification functions according to PDG2022. <a href="https://pdg.lbl.gov/2023/reviews/rpp2022-rev-monte-carlo-numbering.pdf">https:/<wbr />/<wbr />pdg.lbl.gov/<wbr />2023/<wbr />reviews/<wbr />rpp2022-rev-monte-carlo-numbering.pdf</a></p>
-        <section id="typeless-methods">
-          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+        <p><span></span></p>
+        <section id="enum-members">
+          <h2><a href="#enum-members">Enums</a></h2>
           <dl class="m-doc">
-            <dt id="a95cad6b82dbdada88902e44252e54ac4">
-              <span class="m-doc-wrap-bumper"><a href="#a95cad6b82dbdada88902e44252e54ac4" class="m-doc-self">DecodedPID</a>(</span><span class="m-doc-wrap">const int&amp; p)</span>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section id="pub-methods">
-          <h2><a href="#pub-methods">Public functions</a></h2>
-          <dl class="m-doc">
-            <dt id="a2b9dd1b44b1db3781bc9a35e548ca5ae">
-              <span class="m-doc-wrap-bumper">auto <a href="#a2b9dd1b44b1db3781bc9a35e548ca5ae" class="m-doc-self">shift</a>(</span><span class="m-doc-wrap">const size_t n) const -&gt; <a href="classDecodedPID.html" class="m-doc">DecodedPID</a></span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="ad0aacee8577fa3632444871030fa4a3d">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad0aacee8577fa3632444871030fa4a3d" class="m-doc-self">operator()</a>(</span><span class="m-doc-wrap">const size_t n) const -&gt; const int&amp;</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a629f178300030000db7477e52178dbed">
-              <span class="m-doc-wrap-bumper">auto <a href="#a629f178300030000db7477e52178dbed" class="m-doc-self">last</a>(</span><span class="m-doc-wrap">) const -&gt; const int&amp;</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="abbe3c5aa93fef6ce6b7e4312bc739bf5">
-              <span class="m-doc-wrap-bumper">auto <a href="#abbe3c5aa93fef6ce6b7e4312bc739bf5" class="m-doc-self">pid</a>(</span><span class="m-doc-wrap">) const -&gt; const int&amp;</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a3d6a277156eba2217956de9a207fdbc9">
-              <span class="m-doc-wrap-bumper">auto <a href="#a3d6a277156eba2217956de9a207fdbc9" class="m-doc-self">max_digit</a>(</span><span class="m-doc-wrap">const int m,
-              const int n) const -&gt; int</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a03fb0669b4067ba9a3d1e342422341f9">
-              <span class="m-doc-wrap-bumper">auto <a href="#a03fb0669b4067ba9a3d1e342422341f9" class="m-doc-self">min_digit</a>(</span><span class="m-doc-wrap">const int m,
-              const int n) const -&gt; int</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a7bc68be828083bf73e5b306dcd58607e">
-              <span class="m-doc-wrap-bumper">auto <a href="#a7bc68be828083bf73e5b306dcd58607e" class="m-doc-self">ndigits</a>(</span><span class="m-doc-wrap">) const -&gt; size_t</span>
+            <dt id="a97a3e4dd3421eb3cad0facc6a44988d9">
+              <span class="m-doc-wrap-bumper">enum <a href="#a97a3e4dd3421eb3cad0facc6a44988d9" class="m-doc-self">Level</a> { </span><span class="m-doc-wrap"><a href="#a97a3e4dd3421eb3cad0facc6a44988d9a258af625204300dee4e379ab05a86993" class="m-doc">NIL</a> = 0,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9a9ee06120a8ba78a1db5a79045c8a82ae" class="m-doc">VERBOSE</a>,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9ac6d4b4ca54f041fd210914cc557d043c" class="m-doc">DEBUG</a>,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9ac68ef3dc4b44b40676b20842653700f1" class="m-doc">INFO</a>,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9ae538ad755c0af13619943f94ebcc4409" class="m-doc">WARNING</a>,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9a37116c5bb3827ac3783b0564193e8bbd" class="m-doc">ERROR</a>,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9a2f65dca89bdfeef731e7407802d3ddb3" class="m-doc">FATAL</a>,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9a6f8e7b347da4589a1472bf70b5a60df1" class="m-doc">ALWAYS</a>,
+              <a href="#a97a3e4dd3421eb3cad0facc6a44988d9a8b7c13d33b6e7e47b5af6c14f8416412" class="m-doc">NUM_LEVELS</a> }</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -153,7 +114,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.8.16 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
       </div>
     </div>
   </div>

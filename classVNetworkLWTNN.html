@@ -69,7 +69,7 @@
             </li>
           </ul>
         </div>
-<p>Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration</p><p>Abstract base class for LWTNN Neural networks. Inherits from a generic abstract network class, and defined aspects common to all LWTNN networks.</p><p>In particular, this derived virtual class handles saving, memory management and printing.</p><p>To classes derive from this class;</p><ul><li><a href="classTFCSSimpleLWTNNHandler.html" class="m-doc">TFCSSimpleLWTNNHandler</a>; Designed to wrap a lwtnn neural network</li><li><a href="classTFCSGANLWTNNHandler.html" class="m-doc">TFCSGANLWTNNHandler</a>; Designed to wrap a lwtnn graph network</li></ul><p>Has various subclasses to cover the various formats of lwtnn networks.</p>
+<p>Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration</p><p>Abstract base class for LWTNN Neural networks. Inherits from a generic abstract network class, and defined aspects common to all LWTNN networks.</p><p>In particular, this derived virtual class handles saving, memory management and printing.</p><p>To classes derive from this class;</p><ul><li><a href="classTFCSSimpleLWTNNHandler.html" class="m-doc">TFCSSimpleLWTNNHandler</a>; Designed to wrap a lwtnn neural network</li><li><a href="classTFCSGANLWTNNHandler.html" class="m-doc">TFCSGANLWTNNHandler</a>; Designed to wrap a lwtnn graph network Has various subclasses to cover the various formats of lwtnn networks.</li></ul>
         <section id="base-classes">
           <h2><a href="#base-classes">Base classes</a></h2>
           <dl class="m-doc">
@@ -108,11 +108,11 @@
             </dt>
             <dd><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> default constructor.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper"><a href="#af0ce4f963d627913b64550927dfe65aa" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">const std::string&amp; inputFile) <span class="m-label m-flat m-info">explicit</span> </span>
+              <span class="m-doc-wrap-bumper"><a href="#af0ce4f963d627913b64550927dfe65aa" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> constructor.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper"><a href="#ac0a4898e4187e4d44fb53ef860ee6dde" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; copy_from)</span>
+              <span class="m-doc-wrap-bumper"><a href="#ac0a4898e4187e4d44fb53ef860ee6dde" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> copy constructor.</dd>
           </dl>
@@ -129,17 +129,15 @@
             </dt>
             <dd>Get rid of any memory objects that aren&#x27;t needed to run the net.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a67a72e59de0fce8cd056fdb5429ec0b3" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">TTree&amp; tree) <span class="m-label m-flat m-warning">pure virtual</span></span>
+              <span class="m-doc-wrap-bumper">void <a href="#a67a72e59de0fce8cd056fdb5429ec0b3" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd>Save the network to a TTree.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a365a55b8d028e0c9c2b39c72cd861933" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">TFile&amp; root_file,
-              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span>
+              <span class="m-doc-wrap-bumper">void <a href="#a365a55b8d028e0c9c2b39c72cd861933" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Save the network to a TTree.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#aeb2725fc6b5413c92f2e4619941b0d2e" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">std::string const&amp; root_name,
-              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span>
+              <span class="m-doc-wrap-bumper">void <a href="#aeb2725fc6b5413c92f2e4619941b0d2e" class="m-doc">writeNetToTTree</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Save the network to a TTree.</dd>
           </dl>
@@ -195,38 +193,16 @@
           </div></section>
           <section class="m-doc-details" id="af0ce4f963d627913b64550927dfe65aa"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"> VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af0ce4f963d627913b64550927dfe65aa" class="m-doc-self">VNetworkBase</a>(</span><span class="m-doc-wrap">const std::string&amp; inputFile) <span class="m-label m-info">explicit</span> </span></span>
+              <span class="m-doc-wrap-bumper"> VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af0ce4f963d627913b64550927dfe65aa" class="m-doc-self">VNetworkBase</a>(</span><span class="m-doc-wrap">) <span class="m-label m-info">explicit</span> </span></span>
             </h3>
             <p><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> constructor.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">inputFile</td>
-                  <td>file-path on disk (with file name) of a readable file containing a description of the network to be constructed or the content of the file.</td>
-                </tr>
-              </tbody>
-            </table>
 <p>Only saves inputFile to m_inputFile; Inheriting classes should call setupPersistedVariables and setupNet in constructor;</p>
           </div></section>
           <section class="m-doc-details" id="ac0a4898e4187e4d44fb53ef860ee6dde"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"> VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac0a4898e4187e4d44fb53ef860ee6dde" class="m-doc-self">VNetworkBase</a>(</span><span class="m-doc-wrap">const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; copy_from)</span></span>
+              <span class="m-doc-wrap-bumper"> VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac0a4898e4187e4d44fb53ef860ee6dde" class="m-doc-self">VNetworkBase</a>(</span><span class="m-doc-wrap">)</span></span>
             </h3>
             <p><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> copy constructor.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">copy_from</td>
-                  <td>existing network that we are copying</td>
-                </tr>
-              </tbody>
-            </table>
 <p>Does not call setupPersistedVariables or setupNet but will pass on m_inputFile. Inheriting classes should do whatever they need to move the variables created in the setup functions.</p>
           </div></section>
           <section class="m-doc-details" id="a38dbb4f206b74ef061cd01c3061aff0a"><div>
@@ -256,66 +232,23 @@
           </div></section>
           <section class="m-doc-details" id="a67a72e59de0fce8cd056fdb5429ec0b3"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a67a72e59de0fce8cd056fdb5429ec0b3" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">TTree&amp; tree) <span class="m-label m-warning">pure virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">void VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a67a72e59de0fce8cd056fdb5429ec0b3" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">pure virtual</span></span></span>
             </h3>
             <p>Save the network to a TTree.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">tree</td>
-                  <td>The tree to save inside.</td>
-                </tr>
-              </tbody>
-            </table>
 <p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
           </div></section>
           <section class="m-doc-details" id="a365a55b8d028e0c9c2b39c72cd861933"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a365a55b8d028e0c9c2b39c72cd861933" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">TFile&amp; root_file,
-              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span></span>
+              <span class="m-doc-wrap-bumper">void VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a365a55b8d028e0c9c2b39c72cd861933" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">)</span></span>
             </h3>
             <p>Save the network to a TTree.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">root_file</td>
-                  <td>The file to save inside.</td>
-                </tr>
-                <tr>
-                  <td>tree_name</td>
-                  <td>The name of the TTree to save inside.</td>
-                </tr>
-              </tbody>
-            </table>
 <p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
           </div></section>
           <section class="m-doc-details" id="aeb2725fc6b5413c92f2e4619941b0d2e"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aeb2725fc6b5413c92f2e4619941b0d2e" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">std::string const&amp; root_name,
-              std::string const&amp; tree_name = <a href="classVNetworkBase.html#a1ba68c0f3009e8baa9ac82d5331f44bf" class="m-doc">m_<wbr />defaultTreeName</a>)</span></span>
+              <span class="m-doc-wrap-bumper">void VNetworkLWTNN::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aeb2725fc6b5413c92f2e4619941b0d2e" class="m-doc-self">writeNetToTTree</a>(</span><span class="m-doc-wrap">)</span></span>
             </h3>
             <p>Save the network to a TTree.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">root_name</td>
-                  <td>The path of the file to save inside.</td>
-                </tr>
-                <tr>
-                  <td>tree_name</td>
-                  <td>The name of the TTree to save inside.</td>
-                </tr>
-              </tbody>
-            </table>
 <p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
           </div></section>
           <section class="m-doc-details" id="a9405c4d3bc8d67cb32e315bc7f1b47aa"><div>
@@ -398,7 +331,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.8.16 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
       </div>
     </div>
   </div>

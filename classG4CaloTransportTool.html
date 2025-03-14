@@ -86,10 +86,26 @@
               <span class="m-doc-wrap-bumper">void <a href="#ad11890e070a357ad6c4292d94e1a656f" class="m-doc-self">initializePropagator</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a22bd3aedc42effd376fe2ade2e5969ec">
-              <span class="m-doc-wrap-bumper">auto <a href="#a22bd3aedc42effd376fe2ade2e5969ec" class="m-doc-self">transport</a>(</span><span class="m-doc-wrap">const G4Track&amp; G4InputTrack) -&gt; std::vector&lt;G4FieldTrack&gt;</span>
+            <dt id="a3d563822cba625c82d3ff809fa59ddf0">
+              <span class="m-doc-wrap-bumper">auto <a href="#a3d563822cba625c82d3ff809fa59ddf0" class="m-doc-self">transport</a>(</span><span class="m-doc-wrap">const G4Track&amp; G4InputTrack) -&gt; std::vector&lt; G4FieldTrack &gt;</span>
             </dt>
             <dd><span></span></dd>
+            <dt id="aa00e09ddbc7ca9c6ba6bbd80b5eb1459">
+              <span class="m-doc-wrap-bumper">void <a href="#aa00e09ddbc7ca9c6ba6bbd80b5eb1459" class="m-doc-self">setUseSimplifiedGeo</a>(</span><span class="m-doc-wrap">bool useSimplifiedGeo)</span>
+            </dt>
+            <dd>Turn on/off the use of simplified geometry.</dd>
+            <dt id="aa195eb9f2855a6ad0a2bc970758304d6">
+              <span class="m-doc-wrap-bumper">void <a href="#aa195eb9f2855a6ad0a2bc970758304d6" class="m-doc-self">setSimplifiedWorldLogName</a>(</span><span class="m-doc-wrap">const std::string&amp; simplifiedWorldLogName)</span>
+            </dt>
+            <dd>Set the name of the logical volume for the simplified world.</dd>
+            <dt id="a35dd624522664d1819da23615ed575d6">
+              <span class="m-doc-wrap-bumper">void <a href="#a35dd624522664d1819da23615ed575d6" class="m-doc-self">setTransportLimitVolume</a>(</span><span class="m-doc-wrap">const std::string&amp; transportLimitVolume)</span>
+            </dt>
+            <dd>Set the name of the volume until which to transport the particle.</dd>
+            <dt id="a3e1e793fec4ad3960ffc9186974a2aef">
+              <span class="m-doc-wrap-bumper">void <a href="#a3e1e793fec4ad3960ffc9186974a2aef" class="m-doc-self">setMaxSteps</a>(</span><span class="m-doc-wrap">unsigned int maxSteps)</span>
+            </dt>
+            <dd>Set the maximum number of steps allowed in particle transport.</dd>
           </dl>
         </section>
       </div>
@@ -136,7 +152,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.8.16 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
       </div>
     </div>
   </div>
