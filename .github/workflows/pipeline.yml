@@ -241,8 +241,8 @@ jobs:
           sudo apt-get update -q && sudo apt-get install ghostscript -q -y
           wget -q https://sourceforge.net/projects/doxygen/files/rel-${DOXYGEN_VERSION}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz
           tar -xzf doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz
-          cp -f doxygen-${DOXYGEN_VERSION}/bin/doxygen /usr/bin/doxygen
-          chmod +x /usr/bin/doxygen
+          sudo cp -f doxygen-${DOXYGEN_VERSION}/bin/doxygen /usr/bin/doxygen
+          sudo chmod +x /usr/bin/doxygen
           doxygen -v
 
     - name: Build docs
