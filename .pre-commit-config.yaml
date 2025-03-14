@@ -18,7 +18,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.5.0"
+    rev: "v0.10.0"
     hooks:
       # Run the linter.
       - id: ruff
@@ -27,7 +27,7 @@ repos:
       - id: ruff-format
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v4.6.0"
+    rev: "v5.0.0"
     hooks:
       - id: check-case-conflict
       - id: check-merge-conflict
@@ -37,6 +37,6 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/psf/black
-    rev: "24.4.2"
+    rev: "25.1.0"
     hooks:
       - id: black
