@@ -233,7 +233,17 @@ jobs:
       run: pip3 install jinja2 Pygments
 
     - name: Install Doxygen
-      run: sudo apt-get update -q && sudo apt-get install ghostscript doxygen -q -y
+      env:
+        # Doxygen 1.9+ currently not supported by m.css
+        # See https://github.com/mosra/m.css/issues/215
+        DOXYGEN_VERSION: "1.8.16"
+      run: |
+          sudo apt-get update -q && sudo apt-get install ghostscript -q -y
+          wget -q https://sourceforge.net/projects/doxygen/files/rel-${DOXYGEN_VERSION}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz
+          tar -xzf doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz
+          cp -f doxygen-${DOXYGEN_VERSION}/bin/doxygen /usr/bin/doxygen
+          chmod +x /usr/bin/doxygen
+          doxygen -v
 
     - name: Build docs
       run: cmake "-DPROJECT_SOURCE_DIR=$PWD" "-DPROJECT_BINARY_DIR=$PWD/build" -P cmake/docs-ci.cmake
