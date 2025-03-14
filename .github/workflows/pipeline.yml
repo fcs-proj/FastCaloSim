@@ -223,6 +223,9 @@ jobs:
     if: always() && !failure() && !cancelled() && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository_owner == 'fcs-proj'
     runs-on: ubuntu-24.04
 
+    permissions:
+      contents: write
+
     steps:
     - uses: actions/checkout@v4
 
