@@ -1,8 +1,5 @@
 # Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
-
 FROM gitlab-registry.cern.ch/linuxsupport/alma9-base
-
-ENV PIP_ROOT_USER_ACTION=ignore
 
 # Install ROOT dependencies
 # Note: Taken from https://github.com/root-project/root-ci-images/blob/main/alma9/packages.txt
@@ -85,14 +82,17 @@ RUN  dnf clean all && dnf update -y \
  && dnf clean all \
  && rm -rf extra_packages.txt /var/cache/dnf
 
-#Install python packages
+# Create a dedicated directory for Python packages
+RUN mkdir -p /usr/local/pip-packages
+ENV PYTHONPATH=/usr/local/pip-packages:$PYTHONPATH
+
+# Install python packages
 COPY python_packages.txt python_packages.txt
 
 # Pygeosimplify installed without dependencies
 # See https://github.com/g4edge/pyg4ometry/issues/243
 # TODO: install should be moved to python_packages.txt
-RUN python3 -m ensurepip --default-pip \
- && python3 -m pip install --upgrade pip \
- && pip3 install $(cat python_packages.txt) \
- && pip3 install pygeosimplify --no-deps \
+RUN pip3 install --upgrade --ignore-installed pip \
+ && pip3 install --target=/usr/local/pip-packages $(cat python_packages.txt) \
+ && pip3 install --target=/usr/local/pip-packages pygeosimplify --no-deps \
  && rm -rf python_packages.txt
