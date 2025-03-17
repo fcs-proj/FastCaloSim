@@ -82,9 +82,10 @@ RUN  dnf clean all && dnf update -y \
  && dnf clean all \
  && rm -rf extra_packages.txt /var/cache/dnf
 
-# Create a dedicated directory for Python packages
-RUN mkdir -p /usr/local/pip-packages
-ENV PYTHONPATH=/usr/local/pip-packages:$PYTHONPATH
+# Create a virtual environment
+ENV VIRT_ENV=/opt/venv
+RUN python3 -m venv $VIRT_ENV
+ENV PATH="$VIRT_ENV/bin:$PATH"
 
 # Install python packages
 COPY python_packages.txt python_packages.txt
@@ -92,7 +93,7 @@ COPY python_packages.txt python_packages.txt
 # Pygeosimplify installed without dependencies
 # See https://github.com/g4edge/pyg4ometry/issues/243
 # TODO: install should be moved to python_packages.txt
-RUN pip3 install --upgrade --ignore-installed pip \
- && pip3 install --target=/usr/local/pip-packages $(cat python_packages.txt) \
- && pip3 install --target=/usr/local/pip-packages pygeosimplify --no-deps \
+RUN pip3 install --upgrade pip \
+ && pip3 install $(cat python_packages.txt) \
+ && pip3 install pygeosimplify --no-deps \
  && rm -rf python_packages.txt
