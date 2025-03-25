@@ -48,7 +48,7 @@ void TFCSLateralShapeParametrizationHitChain::push_back_init(
   if (m_ninit == size()) {
     chain().push_back(value);
   } else {
-    Chain_t::iterator it(&chain()[m_ninit]);
+    const auto it = chain().begin() + m_ninit;
     chain().insert(it, value);
   }
   ++m_ninit;
