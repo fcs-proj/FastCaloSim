@@ -145,6 +145,7 @@ jobs:
           echo "::group::Install Python test dependencies"
           pip install --user pipreqs
           pipreqs test/python --mode no-pin
+          pip install --user --upgrade --force-reinstall pygeosimplify
           pip install --user -r test/python/requirements.txt
 
           echo "::group::Configure"
@@ -202,6 +203,7 @@ jobs:
             echo "::group::Install Python test dependencies"
             pip install --user pipreqs
             pipreqs test/python --mode no-pin
+            pip install --user --upgrade --force-reinstall pygeosimplify
             pip install --user -r test/python/requirements.txt
 
             echo "::group::Configure"
