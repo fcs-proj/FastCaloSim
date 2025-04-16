@@ -92,6 +92,7 @@ private:
     bool is_xyz {false};
     bool is_eta_phi_r {false};
     bool is_eta_phi_z {false};
+    bool is_r_phi_z {false};
     // For each detector side, what are the eta_min and eta_max values?
     std::map<DetectorSide, EtaExtremes> eta_extensions;
 

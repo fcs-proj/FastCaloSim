@@ -32,7 +32,7 @@ private:
   /// @brief Flag to indicate if the cell is in the barrel
   bool m_isBarrel;
   /// @brief Flags to indicate the coordinate system of the (cuboid) cell
-  bool m_isXYZ, m_isEtaPhiR, m_isEtaPhiZ;
+  bool m_isXYZ, m_isEtaPhiR, m_isEtaPhiZ, m_isRPhiZ;
   /// @brief Cell sizes
   double m_dx, m_dy, m_dz, m_deta, m_dphi, m_dr;
   /// @brief Flag to invalidate cell
@@ -53,6 +53,7 @@ public:
        bool isXYZ,
        bool isEtaPhiR,
        bool isEtaPhiZ,
+       bool isRPhiZ,
        double dx,
        double dy,
        double dz,
@@ -67,6 +68,7 @@ public:
       , m_isXYZ(isXYZ)
       , m_isEtaPhiR(isEtaPhiR)
       , m_isEtaPhiZ(isEtaPhiZ)
+      , m_isRPhiZ(isRPhiZ)
       , m_dx(dx)
       , m_dy(dy)
       , m_dz(dz)
@@ -85,6 +87,7 @@ public:
       , m_isXYZ(false)
       , m_isEtaPhiR(false)
       , m_isEtaPhiZ(false)
+      , m_isRPhiZ(false)
       , m_dx(0)
       , m_dy(0)
       , m_dz(0)
@@ -115,6 +118,7 @@ public:
   auto inline isXYZ() const -> bool { return m_isXYZ; }
   auto inline isEtaPhiR() const -> bool { return m_isEtaPhiR; }
   auto inline isEtaPhiZ() const -> bool { return m_isEtaPhiZ; }
+  auto inline isRPhiZ() const -> bool { return m_isRPhiZ; }
 
   /// @brief Cell size accessors
   /// Note: For the hit->cell matching, only the cell sizes
@@ -215,7 +219,9 @@ public:
       return std::max(delta_x - m_dx / 2, delta_y - m_dy / 2);
     }
 
-    if (m_isEtaPhiR || m_isEtaPhiZ) {
+    if (m_isEtaPhiR || m_isEtaPhiZ || m_isRPhiZ) {
+      // Note: if deta is not provided for RPhiZ cells,
+      // approximate deta values will be pre-computed at load time
       double delta_eta = std::abs(pos.eta() - m_pos.eta());
       double delta_phi = std::abs(norm_angle(pos.phi() - m_pos.phi()));
       return std::max(delta_eta / m_deta, delta_phi / m_dphi) - 0.5;
@@ -290,6 +296,19 @@ public:
           cell.deta(),
           cell.dz());
     }
+
+    if (cell.m_isRPhiZ) {
+      os << fmt::format(
+          "Cell size:\n"
+          "  dphi: {:10.2f}\n"
+          "  dz: {:10.2f}\n"
+          "  dr: {:10.2f}\n"
+          "---------------------------\n\n",
+          cell.dphi(),
+          cell.dz(),
+          cell.dr());
+    }
+
     return os;
   }
 };

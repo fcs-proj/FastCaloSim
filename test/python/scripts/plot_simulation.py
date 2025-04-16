@@ -37,9 +37,10 @@ def main(args):
         sim_df = sim_df.groupby("cell_id").agg(agg_fcts).reset_index()
 
     # Set the coordinate system branches for pygeosimplify
-    pgs.set_coordinate_branch("XYZ", "isCartesian")
-    pgs.set_coordinate_branch("EtaPhiR", "isCylindrical")
-    pgs.set_coordinate_branch("EtaPhiZ", "isECCylindrical")
+    pgs.set_coordinate_branch("XYZ", "isXYZ")
+    pgs.set_coordinate_branch("EtaPhiR", "isEtaPhiR")
+    pgs.set_coordinate_branch("EtaPhiZ", "isEtaPhiZ")
+    pgs.set_coordinate_branch("RPhiZ", "isRPhiZ")
 
     # Plot the cells colored according to their enegy
     ax = pgs.plot_geometry(

@@ -23,9 +23,8 @@ struct SimStateContainerData
   double eta, phi, r, x, y, z;  // The center positions of the cell
   double deta, dphi, dr, dx, dy, dz;  // The dimensions of the cell
   bool isBarrel;  // Whether the cell belongs to a barrel or endcap layer
-  bool isCylindrical, isECCylindrical,
-      isCartesian;  // The coordinate system in which cell dimensions are
-                    // described
+  bool isXYZ, isEtaPhiR, isEtaPhiZ, isRPhiZ;  // The coordinate system in which
+                                              // cell dimensions are described
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(SimStateContainerData,
                                  state_id,
@@ -45,9 +44,10 @@ struct SimStateContainerData
                                  dy,
                                  dz,
                                  isBarrel,
-                                 isCylindrical,
-                                 isECCylindrical,
-                                 isCartesian)
+                                 isXYZ,
+                                 isEtaPhiR,
+                                 isEtaPhiZ,
+                                 isRPhiZ)
 };
 
 class SimStateContainer
@@ -70,13 +70,13 @@ class SimStateContainer
         // Get the cell
         const Cell cell = m_geo->get_cell(cell_id);
 
-        data.push_back({state_id,         cell.id(),       cell_energy,
-                        cell.layer(),     cell.eta(),      cell.phi(),
-                        cell.r(),         cell.x(),        cell.y(),
-                        cell.z(),         cell.deta(),     cell.dphi(),
-                        cell.dr(),        cell.dx(),       cell.dy(),
-                        cell.dz(),        cell.isBarrel(), cell.isEtaPhiR(),
-                        cell.isEtaPhiZ(), cell.isXYZ()});
+        data.push_back({state_id,         cell.id(),        cell_energy,
+                        cell.layer(),     cell.eta(),       cell.phi(),
+                        cell.r(),         cell.x(),         cell.y(),
+                        cell.z(),         cell.deta(),      cell.dphi(),
+                        cell.dr(),        cell.dx(),        cell.dy(),
+                        cell.dz(),        cell.isBarrel(),  cell.isXYZ(),
+                        cell.isEtaPhiR(), cell.isEtaPhiZ(), cell.isRPhiZ()});
 
         ++state_id;
       }

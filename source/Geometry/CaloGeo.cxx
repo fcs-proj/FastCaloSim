@@ -168,20 +168,50 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
   auto dphi = geo.Take<double>("dphi");
   auto deta = geo.Take<double>("deta");
   auto dr = geo.Take<double>("dr");
-  auto isCartesian = geo.Take<long long>("isCartesian");
-  auto isCylindrical = geo.Take<long long>("isCylindrical");
-  auto isECCylindrical = geo.Take<long long>("isECCylindrical");
+  auto isXYZ = geo.Take<long long>("isXYZ");
+  auto isEtaPhiR = geo.Take<long long>("isEtaPhiR");
+  auto isEtaPhiZ = geo.Take<long long>("isEtaPhiZ");
+  auto isRPhiZ = geo.Take<long long>("isRPhiZ");
 
   for (size_t i = 0; i < m_n_total_cells; ++i) {
     bool is_barrel = static_cast<bool>(isBarrel->at(i));
-    bool is_XYZ = static_cast<bool>(isCartesian->at(i));
-    bool is_EtaPhiR = static_cast<bool>(isCylindrical->at(i));
-    bool is_EtaPhiZ = static_cast<bool>(isECCylindrical->at(i));
+    bool is_XYZ = static_cast<bool>(isXYZ->at(i));
+    bool is_EtaPhiR = static_cast<bool>(isEtaPhiR->at(i));
+    bool is_EtaPhiZ = static_cast<bool>(isEtaPhiZ->at(i));
+    bool is_RPhiZ = static_cast<bool>(isRPhiZ->at(i));
 
     m_layer_flags.at(layer->at(i)).is_barrel = is_barrel;
     m_layer_flags.at(layer->at(i)).is_xyz = is_XYZ;
     m_layer_flags.at(layer->at(i)).is_eta_phi_r = is_EtaPhiR;
     m_layer_flags.at(layer->at(i)).is_eta_phi_z = is_EtaPhiZ;
+    m_layer_flags.at(layer->at(i)).is_r_phi_z = is_RPhiZ;
+
+    // For RPhiZ cells, we estimate the cell's Δη if it is missing (≤ 0).
+    // RPhiZ cells are defined in cylindrical coordinates (r, φ, z)
+    // and do not have η as a primary coordinate. If deta is not provided in the
+    // input, we compute an approximate Δη by evaluating η at the four (r, z)
+    // corners of the cell and taking the span (η_max - η_min). This gives a
+    // good estimate of the angular extent, especially for projective or
+    // wedge-like cell shapes where both r and z vary.
+    //
+    // We do not apply this approximation to EtaPhiZ or EtaPhiR cells,
+    // since those coordinate systems use η as a fundamental axis
+    // and should have accurate Δη values already present in the input.
+    if (is_RPhiZ && deta->at(i) <= 0.0) {
+      std::array<double, 4> etas;
+      int corner_idx = 0;
+      for (double r_sign : {-0.5, 0.5}) {
+        for (double z_sign : {-0.5, 0.5}) {
+          double r_val = r->at(i) + r_sign * dr->at(i);
+          double z_val = z->at(i) + z_sign * dz->at(i);
+          double theta = std::atan2(r_val, z_val);
+          etas[corner_idx++] = -std::log(std::tan(theta / 2));
+        }
+      }
+
+      auto minmax = std::minmax_element(etas.begin(), etas.end());
+      deta->at(i) = *minmax.second - *minmax.first;
+    }
 
     Position pos = Position {.m_x = x->at(i),
                              .m_y = y->at(i),
@@ -197,6 +227,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
                       is_XYZ,
                       is_EtaPhiR,
                       is_EtaPhiZ,
+                      is_RPhiZ,
                       dx->at(i),
                       dy->at(i),
                       dz->at(i),

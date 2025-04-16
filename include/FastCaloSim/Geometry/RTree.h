@@ -25,6 +25,7 @@ class RTree
     XYZ,
     EtaPhiR,
     EtaPhiZ,
+    RPhiZ,
     Undefined
   };
 
@@ -74,6 +75,7 @@ private:
     return cell.isXYZ()    ? CoordinateSystem::XYZ
         : cell.isEtaPhiR() ? CoordinateSystem::EtaPhiR
         : cell.isEtaPhiZ() ? CoordinateSystem::EtaPhiZ
+        : cell.isRPhiZ()   ? CoordinateSystem::RPhiZ
                            : CoordinateSystem::Undefined;
   }
 
@@ -82,6 +84,7 @@ private:
     switch (m_coordinate_system) {
       case CoordinateSystem::EtaPhiR:
       case CoordinateSystem::EtaPhiZ:
+      case CoordinateSystem::RPhiZ:
         return {pos.eta(), pos.phi()};
       case CoordinateSystem::XYZ:
         return {pos.x(), pos.y()};
@@ -112,14 +115,7 @@ private:
     double phimin = Cell::norm_angle(cell.phi() - cell.dphi() * half);
     double phimax = Cell::norm_angle(cell.phi() + cell.dphi() * half);
 
-    if (cell.isEtaPhiR()) {
-      if (phimin > phimax) {
-        boxes.emplace_back(Point(etamin, -M_PI), Point(etamax, phimax));
-        boxes.emplace_back(Point(etamin, phimin), Point(etamax, M_PI));
-      } else {
-        boxes.emplace_back(Point(etamin, phimin), Point(etamax, phimax));
-      }
-    } else if (cell.isEtaPhiZ()) {
+    if (cell.isEtaPhiR() || cell.isEtaPhiZ() || cell.isRPhiZ()) {
       if (phimin > phimax) {
         boxes.emplace_back(Point(etamin, -M_PI), Point(etamax, phimax));
         boxes.emplace_back(Point(etamin, phimin), Point(etamax, M_PI));

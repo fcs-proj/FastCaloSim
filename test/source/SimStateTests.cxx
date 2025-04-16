@@ -48,6 +48,7 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
             /*isXYZ=*/false,
             /*isEtaPhiR=*/true,
             /*isEtaPhiZ=*/false,
+            /*isRPhiZ=*/false,
             0,
             0,
             0,
