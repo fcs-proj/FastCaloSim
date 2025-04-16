@@ -154,7 +154,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
   // Count the total number of cells
   m_n_total_cells = *geo.Count();
 
-  auto isBarrel = geo.Take<long long>("isBarrel");
+  auto isBarrel = geo.Take<bool>("isBarrel");
   auto id = geo.Take<long long>("id");
   auto x = geo.Take<double>("x");
   auto y = geo.Take<double>("y");
@@ -168,23 +168,17 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
   auto dphi = geo.Take<double>("dphi");
   auto deta = geo.Take<double>("deta");
   auto dr = geo.Take<double>("dr");
-  auto isXYZ = geo.Take<long long>("isXYZ");
-  auto isEtaPhiR = geo.Take<long long>("isEtaPhiR");
-  auto isEtaPhiZ = geo.Take<long long>("isEtaPhiZ");
-  auto isRPhiZ = geo.Take<long long>("isRPhiZ");
+  auto isXYZ = geo.Take<bool>("isXYZ");
+  auto isEtaPhiR = geo.Take<bool>("isEtaPhiR");
+  auto isEtaPhiZ = geo.Take<bool>("isEtaPhiZ");
+  auto isRPhiZ = geo.Take<bool>("isRPhiZ");
 
   for (size_t i = 0; i < m_n_total_cells; ++i) {
-    bool is_barrel = static_cast<bool>(isBarrel->at(i));
-    bool is_XYZ = static_cast<bool>(isXYZ->at(i));
-    bool is_EtaPhiR = static_cast<bool>(isEtaPhiR->at(i));
-    bool is_EtaPhiZ = static_cast<bool>(isEtaPhiZ->at(i));
-    bool is_RPhiZ = static_cast<bool>(isRPhiZ->at(i));
-
-    m_layer_flags.at(layer->at(i)).is_barrel = is_barrel;
-    m_layer_flags.at(layer->at(i)).is_xyz = is_XYZ;
-    m_layer_flags.at(layer->at(i)).is_eta_phi_r = is_EtaPhiR;
-    m_layer_flags.at(layer->at(i)).is_eta_phi_z = is_EtaPhiZ;
-    m_layer_flags.at(layer->at(i)).is_r_phi_z = is_RPhiZ;
+    m_layer_flags.at(layer->at(i)).is_barrel = isBarrel->at(i);
+    m_layer_flags.at(layer->at(i)).is_xyz = isXYZ->at(i);
+    m_layer_flags.at(layer->at(i)).is_eta_phi_r = isEtaPhiR->at(i);
+    m_layer_flags.at(layer->at(i)).is_eta_phi_z = isEtaPhiZ->at(i);
+    m_layer_flags.at(layer->at(i)).is_r_phi_z = isRPhiZ->at(i);
 
     // For RPhiZ cells, we estimate the cell's Δη if it is missing (≤ 0).
     // RPhiZ cells are defined in cylindrical coordinates (r, φ, z)
@@ -197,7 +191,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     // We do not apply this approximation to EtaPhiZ or EtaPhiR cells,
     // since those coordinate systems use η as a fundamental axis
     // and should have accurate Δη values already present in the input.
-    if (is_RPhiZ && deta->at(i) <= 0.0) {
+    if (isRPhiZ->at(i) && deta->at(i) <= 0.0) {
       std::array<double, 4> etas;
       int corner_idx = 0;
       for (double r_sign : {-0.5, 0.5}) {
@@ -223,11 +217,11 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     Cell cell = Cell {id->at(i),
                       pos,
                       layer->at(i),
-                      is_barrel,
-                      is_XYZ,
-                      is_EtaPhiR,
-                      is_EtaPhiZ,
-                      is_RPhiZ,
+                      isBarrel->at(i),
+                      isXYZ->at(i),
+                      isEtaPhiR->at(i),
+                      isEtaPhiZ->at(i),
+                      isRPhiZ->at(i),
                       dx->at(i),
                       dy->at(i),
                       dz->at(i),
