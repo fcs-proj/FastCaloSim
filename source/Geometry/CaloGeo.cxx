@@ -194,13 +194,13 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     // since those coordinate systems use η as a fundamental axis
     // and should have accurate Δη values already present in the input.
     if (isRPhiZ->at(i) && deta->at(i) <= 0.0) {
-      std::array<float, 4> etas;
+      std::array<double, 4> etas;
       int corner_idx = 0;
-      for (float r_sign : {-0.5, 0.5}) {
-        for (float z_sign : {-0.5, 0.5}) {
-          float r_val = r->at(i) + r_sign * dr->at(i);
-          float z_val = z->at(i) + z_sign * dz->at(i);
-          float theta = std::atan2(r_val, z_val);
+      for (double r_sign : {-0.5, 0.5}) {
+        for (double z_sign : {-0.5, 0.5}) {
+          double r_val = r->at(i) + r_sign * dr->at(i);
+          double z_val = z->at(i) + z_sign * dz->at(i);
+          double theta = std::atan2(r_val, z_val);
           etas[corner_idx++] = -std::log(std::tan(theta / 2));
         }
       }
