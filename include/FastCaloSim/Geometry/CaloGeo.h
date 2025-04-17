@@ -23,8 +23,8 @@ public:
   // Default constructor
   CaloGeo() = default;
 
-  // Constructor from a ROOT dataframe
-  explicit CaloGeo(ROOT::RDataFrame& geo);
+  // Method to build geometry
+  void build(ROOT::RDataFrame& geo);
 
   // Retrieve the id of the best matching cell for a given position
   // Alternative geo handlers need to override this method
@@ -128,6 +128,4 @@ private:
   void record_cell(const Cell& cell);
   /// @brief Update the eta extremes of a layer
   void update_eta_extremes(unsigned int layer, const Cell& cell);
-  /// @brief Build the geometry from a ROOT dataframe
-  void build(ROOT::RDataFrame& geo);
 };

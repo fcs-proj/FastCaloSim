@@ -1,18 +1,15 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+#include <unordered_set>
+#include <vector>
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
-
-CaloGeo::CaloGeo(ROOT::RDataFrame& geo)
-{
-  build(geo);
-}
 
 auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const -> Cell
 {
   // Check if an alternative geometry handler is set for the layer
-  if (m_alt_geo_handlers.count(layer) != 0U) {
-    auto cell_id = m_alt_geo_handlers.at(layer)->get_cell_id(layer, pos);
-
+  auto alt_it = m_alt_geo_handlers.find(layer);
+  if (alt_it != m_alt_geo_handlers.end()) {
+    auto cell_id = alt_it->second->get_cell_id(layer, pos);
     // Return an invalid cell if the alternative geometry handler returns -1
     if (cell_id == -1) {
       Cell invalid_cell;
@@ -20,7 +17,6 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const -> Cell
     }
     return m_cell_id_map.at(cell_id);
   }
-
   // Else proceed with the default geometry handler
   return m_layer_tree_map.at(layer).query_point(pos);
 }
@@ -113,8 +109,8 @@ void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
                                   unsigned int llayer,
                                   std::shared_ptr<CaloGeo> handler)
 {
-  for (int i = ilayer; i <= llayer; ++i) {
-    set_alt_geo_handler(i, handler);
+  for (unsigned int i = ilayer; i <= llayer; ++i) {
+    m_alt_geo_handlers[i] = handler;
   }
 }
 
@@ -131,7 +127,6 @@ void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
   double half_width = cell.deta() / 2;
   double min_eta = cell.eta() - half_width;
   double max_eta = cell.eta() + half_width;
-
   auto& eta_extremes = m_layer_flags.at(layer).eta_extensions.at(side);
   if (max_eta > eta_extremes.eta_max) {
     eta_extremes.eta_max = max_eta;
@@ -143,44 +138,79 @@ void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
 
 void CaloGeo::build(ROOT::RDataFrame& geo)
 {
-  // Layer information of cells
-  auto layer = geo.Take<unsigned int>("layer");
+  // Start timing
+  auto start_time = std::chrono::high_resolution_clock::now();
 
-  // Number of layers from unique layer values
-  m_n_layers = std::set<unsigned int>(layer->begin(), layer->end()).size();
+  // Pre-load the geometry data into memory
+  auto df = geo.Cache(geo.GetColumnNames());
 
-  // Initialize layer flags
-  for (int i = 0; i < m_n_layers; ++i) {
-    m_layer_flags.emplace(i, LayerFlags {});
+  // Get all column data
+  auto layer = df.Take<unsigned int>("layer");
+  auto isBarrel = df.Take<bool>("isBarrel");
+  auto id = df.Take<unsigned long long>("id");
+  auto x = df.Take<float>("x");
+  auto y = df.Take<float>("y");
+  auto z = df.Take<float>("z");
+  auto phi = df.Take<float>("phi");
+  auto eta = df.Take<float>("eta");
+  auto r = df.Take<float>("r");
+  auto dx = df.Take<float>("dx");
+  auto dy = df.Take<float>("dy");
+  auto dz = df.Take<float>("dz");
+  auto dphi = df.Take<float>("dphi");
+  auto deta = df.Take<float>("deta");
+  auto dr = df.Take<float>("dr");
+  auto isXYZ = df.Take<bool>("isXYZ");
+  auto isEtaPhiR = df.Take<bool>("isEtaPhiR");
+  auto isEtaPhiZ = df.Take<bool>("isEtaPhiZ");
+  auto isRPhiZ = df.Take<bool>("isRPhiZ");
+
+  // Count total cells
+  m_n_total_cells = layer->size();
+
+  // Find unique layers efficiently
+  std::unordered_set<unsigned int> unique_layers;
+  for (const auto& layer_id : *layer) {
+    unique_layers.insert(layer_id);
   }
-  // Count the total number of cells
-  m_n_total_cells = *geo.Count();
+  m_n_layers = unique_layers.size();
 
-  auto isBarrel = geo.Take<bool>("isBarrel");
-  auto id = geo.Take<unsigned long long>("id");
-  auto x = geo.Take<float>("x");
-  auto y = geo.Take<float>("y");
-  auto z = geo.Take<float>("z");
-  auto phi = geo.Take<float>("phi");
-  auto eta = geo.Take<float>("eta");
-  auto r = geo.Take<float>("r");
-  auto dx = geo.Take<float>("dx");
-  auto dy = geo.Take<float>("dy");
-  auto dz = geo.Take<float>("dz");
-  auto dphi = geo.Take<float>("dphi");
-  auto deta = geo.Take<float>("deta");
-  auto dr = geo.Take<float>("dr");
-  auto isXYZ = geo.Take<bool>("isXYZ");
-  auto isEtaPhiR = geo.Take<bool>("isEtaPhiR");
-  auto isEtaPhiZ = geo.Take<bool>("isEtaPhiZ");
-  auto isRPhiZ = geo.Take<bool>("isRPhiZ");
+  // Pre-allocate layer flags with proper initialization for actual layer IDs
+  for (const auto& layer_id : unique_layers) {
+    m_layer_flags[layer_id] = LayerFlags {};
 
+    // Pre-initialize the eta extensions to extreme values
+    m_layer_flags[layer_id].eta_extensions[kEtaPositive].eta_min =
+        std::numeric_limits<double>::max();
+    m_layer_flags[layer_id].eta_extensions[kEtaPositive].eta_max =
+        -std::numeric_limits<double>::max();
+    m_layer_flags[layer_id].eta_extensions[kEtaNegative].eta_min =
+        std::numeric_limits<double>::max();
+    m_layer_flags[layer_id].eta_extensions[kEtaNegative].eta_max =
+        -std::numeric_limits<double>::max();
+  }
+
+  // Pre-reserve space in maps
+  m_cell_id_map.reserve(m_n_total_cells);
+
+  // Track which layers we've already set flags for to avoid redundant
+  std::unordered_set<unsigned int> processed_layer_flags;
+
+  // Process cells in bulk
+  Position pos;
   for (size_t i = 0; i < m_n_total_cells; ++i) {
-    m_layer_flags.at(layer->at(i)).is_barrel = isBarrel->at(i);
-    m_layer_flags.at(layer->at(i)).is_xyz = isXYZ->at(i);
-    m_layer_flags.at(layer->at(i)).is_eta_phi_r = isEtaPhiR->at(i);
-    m_layer_flags.at(layer->at(i)).is_eta_phi_z = isEtaPhiZ->at(i);
-    m_layer_flags.at(layer->at(i)).is_r_phi_z = isRPhiZ->at(i);
+    unsigned int layer_id = layer->at(i);
+
+    // Only update layer flags once per layer
+    if (processed_layer_flags.find(layer_id) == processed_layer_flags.end()) {
+      auto& flags = m_layer_flags[layer_id];
+      flags.is_barrel = isBarrel->at(i);
+      flags.is_xyz = isXYZ->at(i);
+      flags.is_eta_phi_r = isEtaPhiR->at(i);
+      flags.is_eta_phi_z = isEtaPhiZ->at(i);
+      flags.is_r_phi_z = isRPhiZ->at(i);
+      processed_layer_flags.insert(layer_id);
+    }
 
     // For RPhiZ cells, we estimate the cell's Δη if it is missing (≤ 0).
     // RPhiZ cells are defined in cylindrical coordinates (r, φ, z)
@@ -193,45 +223,55 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     // We do not apply this approximation to EtaPhiZ or EtaPhiR cells,
     // since those coordinate systems use η as a fundamental axis
     // and should have accurate Δη values already present in the input.
-    if (isRPhiZ->at(i) && deta->at(i) <= 0.0) {
+    float deta_val = deta->at(i);
+    if (isRPhiZ->at(i) && deta_val <= 0.0f) {
       std::array<double, 4> etas;
-      int corner_idx = 0;
-      for (double r_sign : {-0.5, 0.5}) {
-        for (double z_sign : {-0.5, 0.5}) {
-          double r_val = r->at(i) + r_sign * dr->at(i);
-          double z_val = z->at(i) + z_sign * dz->at(i);
-          double theta = std::atan2(r_val, z_val);
-          etas[corner_idx++] = -std::log(std::tan(theta / 2));
-        }
+      for (int corner = 0; corner < 4; ++corner) {
+        double r_sign = (corner & 1) ? 0.5 : -0.5;
+        double z_sign = (corner & 2) ? 0.5 : -0.5;
+
+        double r_val = r->at(i) + r_sign * dr->at(i);
+        double z_val = z->at(i) + z_sign * dz->at(i);
+        double theta = std::atan2(r_val, z_val);
+        etas[corner] = -std::log(std::tan(theta / 2));
       }
 
       auto minmax = std::minmax_element(etas.begin(), etas.end());
-      deta->at(i) = *minmax.second - *minmax.first;
+      deta_val = static_cast<float>(*minmax.second - *minmax.first);
     }
 
-    Position pos = Position {.m_x = x->at(i),
-                             .m_y = y->at(i),
-                             .m_z = z->at(i),
-                             .m_eta = eta->at(i),
-                             .m_phi = phi->at(i),
-                             .m_r = r->at(i)};
+    pos.m_x = x->at(i);
+    pos.m_y = y->at(i);
+    pos.m_z = z->at(i);
+    pos.m_eta = eta->at(i);
+    pos.m_phi = phi->at(i);
+    pos.m_r = r->at(i);
 
-    Cell cell = Cell {id->at(i),
-                      pos,
-                      layer->at(i),
-                      isBarrel->at(i),
-                      isXYZ->at(i),
-                      isEtaPhiR->at(i),
-                      isEtaPhiZ->at(i),
-                      isRPhiZ->at(i),
-                      dx->at(i),
-                      dy->at(i),
-                      dz->at(i),
-                      deta->at(i),
-                      dphi->at(i),
-                      dr->at(i)};
+    Cell cell {id->at(i),
+               pos,
+               layer_id,
+               isBarrel->at(i),
+               isXYZ->at(i),
+               isEtaPhiR->at(i),
+               isEtaPhiZ->at(i),
+               isRPhiZ->at(i),
+               dx->at(i),
+               dy->at(i),
+               dz->at(i),
+               deta_val,
+               dphi->at(i),
+               dr->at(i)};
 
+    // Record the cell and update eta extremes
     record_cell(cell);
-    update_eta_extremes(layer->at(i), cell);
+    update_eta_extremes(layer_id, cell);
   }
+
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = end_time - start_time;
+
+  // Print timing information
+  std::cout << "INFO: Done building calo geometry. Took " << elapsed.count()
+            << " s (" << m_n_total_cells << " cells in " << m_n_layers
+            << " layers)" << std::endl;
 }
