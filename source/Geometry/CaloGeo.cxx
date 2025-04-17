@@ -13,8 +13,8 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const -> Cell
   if (m_alt_geo_handlers.count(layer) != 0U) {
     auto cell_id = m_alt_geo_handlers.at(layer)->get_cell_id(layer, pos);
 
-    // Return an invalid cell if the alternative geometry handler returns -1
-    if (cell_id == -1) {
+    // Return an invalid cell if the alternative geometry handler returns 0
+    if (cell_id == std::numeric_limits<unsigned long long>::max()) {
       Cell invalid_cell;
       return invalid_cell;
     }

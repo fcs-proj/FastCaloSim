@@ -9,14 +9,14 @@
 
 struct Position
 {
-  float m_x, m_y, m_z;
-  float m_eta, m_phi, m_r;
-  auto x() const -> float { return m_x; }
-  auto y() const -> float { return m_y; }
-  auto z() const -> float { return m_z; }
-  auto eta() const -> float { return m_eta; }
-  auto phi() const -> float { return m_phi; }
-  auto r() const -> float { return m_r; }
+  double m_x, m_y, m_z;
+  double m_eta, m_phi, m_r;
+  auto x() const -> double { return m_x; }
+  auto y() const -> double { return m_y; }
+  auto z() const -> double { return m_z; }
+  auto eta() const -> double { return m_eta; }
+  auto phi() const -> double { return m_phi; }
+  auto r() const -> double { return m_r; }
 };
 
 // Base class for cells
@@ -34,7 +34,7 @@ private:
   /// @brief Flags to indicate the coordinate system of the (cuboid) cell
   bool m_isXYZ, m_isEtaPhiR, m_isEtaPhiZ, m_isRPhiZ;
   /// @brief Cell sizes
-  float m_dx, m_dy, m_dz, m_deta, m_dphi, m_dr;
+  double m_dx, m_dy, m_dz, m_deta, m_dphi, m_dr;
   /// @brief Flag to invalidate cell
   bool m_is_valid = true;
 
@@ -54,12 +54,12 @@ public:
        bool isEtaPhiR,
        bool isEtaPhiZ,
        bool isRPhiZ,
-       float dx,
-       float dy,
-       float dz,
-       float deta,
-       float dphi,
-       float dr)
+       double dx,
+       double dy,
+       double dz,
+       double deta,
+       double dphi,
+       double dr)
 
       : m_id(id)
       , m_pos(std::move(pos))
@@ -80,9 +80,9 @@ public:
 
   // Allow easy creation of an invalid cell
   Cell()
-      : m_id(-1)
+      : m_id(std::numeric_limits<unsigned long long>::max())
       , m_pos(Position {0, 0, 0, 0, 0, 0})
-      , m_layer(-1)
+      , m_layer(std::numeric_limits<unsigned int>::max())
       , m_isBarrel(false)
       , m_isXYZ(false)
       , m_isEtaPhiR(false)
@@ -106,12 +106,12 @@ public:
 
   // Direct accessors
   auto inline id() const -> unsigned long long { return m_id; }
-  auto inline x() const -> float { return m_pos.x(); }
-  auto inline y() const -> float { return m_pos.y(); }
-  auto inline z() const -> float { return m_pos.z(); }
-  auto inline eta() const -> float { return m_pos.eta(); }
-  auto inline phi() const -> float { return m_pos.phi(); }
-  auto inline r() const -> float { return m_pos.r(); }
+  auto inline x() const -> double { return m_pos.x(); }
+  auto inline y() const -> double { return m_pos.y(); }
+  auto inline z() const -> double { return m_pos.z(); }
+  auto inline eta() const -> double { return m_pos.eta(); }
+  auto inline phi() const -> double { return m_pos.phi(); }
+  auto inline r() const -> double { return m_pos.r(); }
   auto inline layer() const -> unsigned int { return m_layer; }
   auto inline isBarrel() const -> bool { return m_isBarrel; }
 
@@ -131,43 +131,43 @@ public:
   /// dz is stored We might want to revisit the logic in the future
   /// to prevent misuse for now, we assert that stored cell widths are non-zero
   /// in the case e.g. zent() or zext() is called
-  auto inline dx() const -> float { return m_dx; }
-  auto inline dy() const -> float { return m_dy; }
+  auto inline dx() const -> double { return m_dx; }
+  auto inline dy() const -> double { return m_dy; }
 
-  auto inline dz() const -> float { return m_dz; }
+  auto inline dz() const -> double { return m_dz; }
 
-  auto inline deta() const -> float { return m_deta; }
+  auto inline deta() const -> double { return m_deta; }
 
-  auto inline dphi() const -> float { return m_dphi; }
+  auto inline dphi() const -> double { return m_dphi; }
 
-  auto inline dr() const -> float { return m_dr; }
+  auto inline dr() const -> double { return m_dr; }
 
-  auto inline rent() const -> float
+  auto inline rent() const -> double
   {
     assert(m_dr > 0 && "rent() called on cell with dr <= 0. The half-width of the cell seems undefined.");
     return r() - m_dr * 0.5;
   }
 
-  auto inline rext() const -> float
+  auto inline rext() const -> double
   {
     assert(m_dr > 0 && "rext() called on cell with dr <= 0.  The half-width of the cell seems undefined.");
     return r() + m_dr * 0.5;
   }
 
-  auto inline zent() const -> float
+  auto inline zent() const -> double
   {
     assert(m_dz > 0 && "zent() called on cell with dz <= 0. The half-width of the cell seems undefined.");
     return z() < 0 ? z() + m_dz * 0.5 : z() - m_dz * 0.5;
   }
 
-  auto inline zext() const -> float
+  auto inline zext() const -> double
   {
     assert(m_dz > 0 && "zext() called on cell with dz <= 0.  The half-width of the cell seems undefined.");
     return z() < 0 ? z() - m_dz * 0.5 : z() + m_dz * 0.5;
   }
 
   // only makes ense for barrel
-  auto inline r(SubPos subpos) const -> float
+  auto inline r(SubPos subpos) const -> double
   {
     switch (subpos) {
       case SubPos::ENT:
@@ -179,7 +179,7 @@ public:
     }
   }
 
-  auto inline z(SubPos subpos) const -> float
+  auto inline z(SubPos subpos) const -> double
   {
     switch (subpos) {
       case SubPos::ENT:
@@ -191,7 +191,7 @@ public:
     }
   }
 
-  static auto norm_angle(double angle) -> float
+  static auto norm_angle(double angle) -> double
   {
     angle = std::fmod(angle + M_PI, 2.0 * M_PI);
     if (angle < 0) {
