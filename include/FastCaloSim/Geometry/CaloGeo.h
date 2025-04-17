@@ -58,16 +58,16 @@ public:
   /// @brief Get the z position of a cell in a layer at a given position
   auto zpos(unsigned int layer,
             const Position& pos,
-            Cell::SubPos subpos) const -> float;
+            Cell::SubPos subpos) const -> double;
   /// @brief Get the r position of a cell in a layer at a given position
   auto rpos(unsigned int layer,
             const Position& pos,
-            Cell::SubPos subpos) const -> float;
+            Cell::SubPos subpos) const -> double;
 
   /// @brief Get the min eta extent of a layer on a given detector side
-  auto min_eta(unsigned int layer, DetectorSide side) const -> float;
+  auto min_eta(unsigned int layer, DetectorSide side) const -> double;
   /// @brief Get the max eta extent of a layer on a given detector side
-  auto max_eta(unsigned int layer, DetectorSide side) const -> float;
+  auto max_eta(unsigned int layer, DetectorSide side) const -> double;
 
   /// @brief Set an alternative geometry handler for a layer
   void set_alt_geo_handler(unsigned int layer,

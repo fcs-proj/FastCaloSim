@@ -13,8 +13,8 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const -> Cell
   if (m_alt_geo_handlers.count(layer) != 0U) {
     auto cell_id = m_alt_geo_handlers.at(layer)->get_cell_id(layer, pos);
 
-    // Return an invalid cell if the alternative geometry handler returns 0
-    if (cell_id == std::numeric_limits<unsigned long long>::max()) {
+    // Return an invalid cell if the alternative geometry handler returns -1
+    if (cell_id == -1) {
       Cell invalid_cell;
       return invalid_cell;
     }
@@ -79,7 +79,7 @@ auto CaloGeo::is_eta_phi_z(unsigned int layer) const -> bool
 
 auto CaloGeo::zpos(unsigned int layer,
                    const Position& pos,
-                   Cell::SubPos subpos) const -> float
+                   Cell::SubPos subpos) const -> double
 {
   const auto& cell = get_cell(layer, pos);
   return cell.z(subpos);
@@ -87,18 +87,18 @@ auto CaloGeo::zpos(unsigned int layer,
 
 auto CaloGeo::rpos(unsigned int layer,
                    const Position& pos,
-                   Cell::SubPos subpos) const -> float
+                   Cell::SubPos subpos) const -> double
 {
   const auto& cell = get_cell(layer, pos);
   return cell.r(subpos);
 }
 
-auto CaloGeo::min_eta(unsigned int layer, DetectorSide side) const -> float
+auto CaloGeo::min_eta(unsigned int layer, DetectorSide side) const -> double
 {
   return m_layer_flags.at(layer).eta_extensions.at(side).eta_min;
 }
 
-auto CaloGeo::max_eta(unsigned int layer, DetectorSide side) const -> float
+auto CaloGeo::max_eta(unsigned int layer, DetectorSide side) const -> double
 {
   return m_layer_flags.at(layer).eta_extensions.at(side).eta_max;
 }

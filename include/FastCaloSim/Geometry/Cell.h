@@ -80,9 +80,9 @@ public:
 
   // Allow easy creation of an invalid cell
   Cell()
-      : m_id(std::numeric_limits<unsigned long long>::max())
+      : m_id(-1)
       , m_pos(Position {0, 0, 0, 0, 0, 0})
-      , m_layer(std::numeric_limits<unsigned int>::max())
+      , m_layer(-1)
       , m_isBarrel(false)
       , m_isXYZ(false)
       , m_isEtaPhiR(false)
