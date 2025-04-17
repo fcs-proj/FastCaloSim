@@ -7,7 +7,7 @@ CaloGeo::CaloGeo(ROOT::RDataFrame& geo)
   build(geo);
 }
 
-auto CaloGeo::get_cell(int layer, const Position& pos) const -> Cell
+auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const -> Cell
 {
   // Check if an alternative geometry handler is set for the layer
   if (m_alt_geo_handlers.count(layer) != 0U) {
@@ -25,13 +25,14 @@ auto CaloGeo::get_cell(int layer, const Position& pos) const -> Cell
   return m_layer_tree_map.at(layer).query_point(pos);
 }
 
-auto CaloGeo::get_cell_id(int layer, const Position& pos) const -> long long
+auto CaloGeo::get_cell_id(unsigned int layer,
+                          const Position& pos) const -> unsigned long long
 {
   auto cell = get_cell(layer, pos);
   return cell.id();
 }
 
-auto CaloGeo::n_cells(int layer) const -> unsigned int
+auto CaloGeo::n_cells(unsigned int layer) const -> unsigned int
 {
   return m_layer_tree_map.at(layer).size();
 }
@@ -46,37 +47,37 @@ auto CaloGeo::n_layers() const -> unsigned int
   return m_n_layers;
 }
 
-auto CaloGeo::get_cell(long long id) const -> Cell
+auto CaloGeo::get_cell(unsigned long long id) const -> Cell
 {
   return m_cell_id_map.at(id);
 }
 
-auto CaloGeo::get_cell_at_idx(int layer, size_t idx) -> Cell
+auto CaloGeo::get_cell_at_idx(unsigned int layer, size_t idx) -> Cell
 {
   return m_layer_tree_map.at(layer).at(idx);
 }
 
-auto CaloGeo::is_barrel(int layer) const -> bool
+auto CaloGeo::is_barrel(unsigned int layer) const -> bool
 {
   return m_layer_flags.at(layer).is_barrel;
 }
 
-auto CaloGeo::is_xyz(int layer) const -> bool
+auto CaloGeo::is_xyz(unsigned int layer) const -> bool
 {
   return m_layer_flags.at(layer).is_xyz;
 }
 
-auto CaloGeo::is_eta_phi_r(int layer) const -> bool
+auto CaloGeo::is_eta_phi_r(unsigned int layer) const -> bool
 {
   return m_layer_flags.at(layer).is_eta_phi_r;
 }
 
-auto CaloGeo::is_eta_phi_z(int layer) const -> bool
+auto CaloGeo::is_eta_phi_z(unsigned int layer) const -> bool
 {
   return m_layer_flags.at(layer).is_eta_phi_z;
 }
 
-auto CaloGeo::zpos(int layer,
+auto CaloGeo::zpos(unsigned int layer,
                    const Position& pos,
                    Cell::SubPos subpos) const -> double
 {
@@ -84,7 +85,7 @@ auto CaloGeo::zpos(int layer,
   return cell.z(subpos);
 }
 
-auto CaloGeo::rpos(int layer,
+auto CaloGeo::rpos(unsigned int layer,
                    const Position& pos,
                    Cell::SubPos subpos) const -> double
 {
@@ -92,23 +93,24 @@ auto CaloGeo::rpos(int layer,
   return cell.r(subpos);
 }
 
-auto CaloGeo::min_eta(int layer, DetectorSide side) const -> double
+auto CaloGeo::min_eta(unsigned int layer, DetectorSide side) const -> double
 {
   return m_layer_flags.at(layer).eta_extensions.at(side).eta_min;
 }
 
-auto CaloGeo::max_eta(int layer, DetectorSide side) const -> double
+auto CaloGeo::max_eta(unsigned int layer, DetectorSide side) const -> double
 {
   return m_layer_flags.at(layer).eta_extensions.at(side).eta_max;
 }
 
-void CaloGeo::set_alt_geo_handler(int layer, std::shared_ptr<CaloGeo> handler)
+void CaloGeo::set_alt_geo_handler(unsigned int layer,
+                                  std::shared_ptr<CaloGeo> handler)
 {
   m_alt_geo_handlers[layer] = std::move(handler);
 }
 
-void CaloGeo::set_alt_geo_handler(int ilayer,
-                                  int llayer,
+void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
+                                  unsigned int llayer,
                                   std::shared_ptr<CaloGeo> handler)
 {
   for (int i = ilayer; i <= llayer; ++i) {
@@ -123,7 +125,7 @@ void CaloGeo::record_cell(const Cell& cell)
   m_cell_id_map.emplace(cell.id(), cell);
 }
 
-void CaloGeo::update_eta_extremes(int layer, const Cell& cell)
+void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
 {
   DetectorSide side = cell.eta() > 0 ? kEtaPositive : kEtaNegative;
   double half_width = cell.deta() / 2;
@@ -142,10 +144,10 @@ void CaloGeo::update_eta_extremes(int layer, const Cell& cell)
 void CaloGeo::build(ROOT::RDataFrame& geo)
 {
   // Layer information of cells
-  auto layer = geo.Take<long long>("layer");
+  auto layer = geo.Take<unsigned int>("layer");
 
   // Number of layers from unique layer values
-  m_n_layers = std::set<long long>(layer->begin(), layer->end()).size();
+  m_n_layers = std::set<unsigned int>(layer->begin(), layer->end()).size();
 
   // Initialize layer flags
   for (int i = 0; i < m_n_layers; ++i) {
@@ -155,19 +157,19 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
   m_n_total_cells = *geo.Count();
 
   auto isBarrel = geo.Take<bool>("isBarrel");
-  auto id = geo.Take<long long>("id");
-  auto x = geo.Take<double>("x");
-  auto y = geo.Take<double>("y");
-  auto z = geo.Take<double>("z");
-  auto phi = geo.Take<double>("phi");
-  auto eta = geo.Take<double>("eta");
-  auto r = geo.Take<double>("r");
-  auto dx = geo.Take<double>("dx");
-  auto dy = geo.Take<double>("dy");
-  auto dz = geo.Take<double>("dz");
-  auto dphi = geo.Take<double>("dphi");
-  auto deta = geo.Take<double>("deta");
-  auto dr = geo.Take<double>("dr");
+  auto id = geo.Take<unsigned long long>("id");
+  auto x = geo.Take<float>("x");
+  auto y = geo.Take<float>("y");
+  auto z = geo.Take<float>("z");
+  auto phi = geo.Take<float>("phi");
+  auto eta = geo.Take<float>("eta");
+  auto r = geo.Take<float>("r");
+  auto dx = geo.Take<float>("dx");
+  auto dy = geo.Take<float>("dy");
+  auto dz = geo.Take<float>("dz");
+  auto dphi = geo.Take<float>("dphi");
+  auto deta = geo.Take<float>("deta");
+  auto dr = geo.Take<float>("dr");
   auto isXYZ = geo.Take<bool>("isXYZ");
   auto isEtaPhiR = geo.Take<bool>("isEtaPhiR");
   auto isEtaPhiZ = geo.Take<bool>("isEtaPhiZ");

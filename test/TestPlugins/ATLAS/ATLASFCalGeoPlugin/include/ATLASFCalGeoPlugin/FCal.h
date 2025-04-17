@@ -27,7 +27,8 @@ public:
   virtual ~FCal() = default;
 
   /// @brief Get the cell at a specific position
-  auto get_cell_id(int layer, const Position& pos) const -> long long override
+  auto get_cell_id(unsigned int layer,
+                   const Position& pos) const -> unsigned long long override
   {
     return this->get_fcal_cell_id(layer, pos.x(), pos.y(), pos.z());
   }
@@ -192,7 +193,7 @@ public:
                         double x,
                         double y,
                         double z,
-                        int* steps = 0) const -> long long
+                        int* steps = 0) const -> unsigned long long
   {
     int isam = layer - 20;
     int iphi(-100000), ieta(-100000);

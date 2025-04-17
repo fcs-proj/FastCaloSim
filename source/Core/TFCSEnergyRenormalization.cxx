@@ -31,7 +31,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
 
   // Loop over all cells containing energy and sum up energies
   for (const auto& cell_iter : simulstate.cells()) {
-    long long cell_id = cell_iter.first;
+    unsigned long long cell_id = cell_iter.first;
     double cell_energy = cell_iter.second;
     // Retrieve the cell from the geometry by its identifier
     Cell cell = m_geo->get_cell(cell_id);
@@ -75,7 +75,7 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
 
   // Loop over all cells and apply the scalefactor
   for (auto& cell_iter : simulstate.cells()) {
-    long long cell_id = cell_iter.first;
+    unsigned long long cell_id = cell_iter.first;
     double cell_energy = cell_iter.second;
     Cell cell = m_geo->get_cell(cell_id);
     int layer = cell.layer();

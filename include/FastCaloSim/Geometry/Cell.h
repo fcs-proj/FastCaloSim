@@ -24,11 +24,11 @@ class Cell
 {
 private:
   /// @brief Unique identifier for the cell
-  long long m_id;
+  unsigned long long m_id;
   /// @brief Position of the cell in 3D space (x, y, z, eta, phi, r)
   Position m_pos;
   /// @brief Layer of the cell
-  long long m_layer;
+  unsigned int m_layer;
   /// @brief Flag to indicate if the cell is in the barrel
   bool m_isBarrel;
   /// @brief Flags to indicate the coordinate system of the (cuboid) cell
@@ -46,9 +46,9 @@ public:
     EXT = 2  // exit
   };
 
-  Cell(long long id,
+  Cell(unsigned long long id,
        Position pos,
-       long long layer,
+       unsigned int layer,
        bool isBarrel,
        bool isXYZ,
        bool isEtaPhiR,
@@ -105,14 +105,14 @@ public:
   auto inline invalidate() -> void { m_is_valid = false; }
 
   // Direct accessors
-  auto inline id() const -> long long { return m_id; }
+  auto inline id() const -> unsigned long long { return m_id; }
   auto inline x() const -> double { return m_pos.x(); }
   auto inline y() const -> double { return m_pos.y(); }
   auto inline z() const -> double { return m_pos.z(); }
   auto inline eta() const -> double { return m_pos.eta(); }
   auto inline phi() const -> double { return m_pos.phi(); }
   auto inline r() const -> double { return m_pos.r(); }
-  auto inline layer() const -> long long { return m_layer; }
+  auto inline layer() const -> unsigned int { return m_layer; }
   auto inline isBarrel() const -> bool { return m_isBarrel; }
 
   auto inline isXYZ() const -> bool { return m_isXYZ; }
