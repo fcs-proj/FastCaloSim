@@ -25,7 +25,8 @@ protected:
     ROOT::RDataFrame df =
         ROOT::RDataFrame(AtlasGeoTestsConfig::ATLAS_CALO_CELL_TREE_NAME,
                          AtlasGeoTestsConfig::ATLAS_CALO_CELL_PATH);
-    geo = new CaloGeo(df);
+    geo = new CaloGeo();
+    geo->build(df);
 
     // Create alternative geometry handler for FCal
     std::shared_ptr<FCal> fcal_geo = std::make_shared<FCal>();

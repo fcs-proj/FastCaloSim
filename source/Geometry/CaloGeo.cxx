@@ -1,15 +1,8 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
-#include <thread>
 #include <unordered_set>
 #include <vector>
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
-
-CaloGeo::CaloGeo(ROOT::RDataFrame& geo)
-{
-  ROOT::EnableImplicitMT(std::thread::hardware_concurrency());
-  build(geo);
-}
 
 auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const -> Cell
 {
@@ -145,30 +138,32 @@ void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
 
 void CaloGeo::build(ROOT::RDataFrame& geo)
 {
+  // Start timing
+  auto start_time = std::chrono::high_resolution_clock::now();
+
   // Pre-load the geometry data into memory
-  auto df = geo.DefineSlot("slot", [](unsigned int slot) { return slot; })
-                .Snapshot("data", "inmemory:", geo.GetColumnNames());
+  auto df = geo.Cache(geo.GetColumnNames());
 
   // Get all column data
-  auto layer = df->Take<unsigned int>("layer");
-  auto isBarrel = df->Take<bool>("isBarrel");
-  auto id = df->Take<unsigned long long>("id");
-  auto x = df->Take<float>("x");
-  auto y = df->Take<float>("y");
-  auto z = df->Take<float>("z");
-  auto phi = df->Take<float>("phi");
-  auto eta = df->Take<float>("eta");
-  auto r = df->Take<float>("r");
-  auto dx = df->Take<float>("dx");
-  auto dy = df->Take<float>("dy");
-  auto dz = df->Take<float>("dz");
-  auto dphi = df->Take<float>("dphi");
-  auto deta = df->Take<float>("deta");
-  auto dr = df->Take<float>("dr");
-  auto isXYZ = df->Take<bool>("isXYZ");
-  auto isEtaPhiR = df->Take<bool>("isEtaPhiR");
-  auto isEtaPhiZ = df->Take<bool>("isEtaPhiZ");
-  auto isRPhiZ = df->Take<bool>("isRPhiZ");
+  auto layer = df.Take<unsigned int>("layer");
+  auto isBarrel = df.Take<bool>("isBarrel");
+  auto id = df.Take<unsigned long long>("id");
+  auto x = df.Take<float>("x");
+  auto y = df.Take<float>("y");
+  auto z = df.Take<float>("z");
+  auto phi = df.Take<float>("phi");
+  auto eta = df.Take<float>("eta");
+  auto r = df.Take<float>("r");
+  auto dx = df.Take<float>("dx");
+  auto dy = df.Take<float>("dy");
+  auto dz = df.Take<float>("dz");
+  auto dphi = df.Take<float>("dphi");
+  auto deta = df.Take<float>("deta");
+  auto dr = df.Take<float>("dr");
+  auto isXYZ = df.Take<bool>("isXYZ");
+  auto isEtaPhiR = df.Take<bool>("isEtaPhiR");
+  auto isEtaPhiZ = df.Take<bool>("isEtaPhiZ");
+  auto isRPhiZ = df.Take<bool>("isRPhiZ");
 
   // Count total cells
   m_n_total_cells = layer->size();
@@ -271,4 +266,12 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     record_cell(cell);
     update_eta_extremes(layer_id, cell);
   }
+
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = end_time - start_time;
+
+  // Print timing information
+  std::cout << "INFO: Done building calo geometry. Took " << elapsed.count()
+            << " s (" << m_n_total_cells << " cells in " << m_n_layers
+            << " layers)" << std::endl;
 }
