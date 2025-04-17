@@ -54,12 +54,12 @@ public:
   };
 
   // maps the cell id to the energy deposited in the cell
-  using cellmap = std::unordered_map<long long, float>;
+  using cellmap = std::unordered_map<unsigned long long, float>;
 
   cellmap& cells() { return m_cells; };
   const cellmap& cells() const { return m_cells; };
 
-  void deposit(const long long cell_id, float E);
+  void deposit(const unsigned long long cell_id, float E);
 
   void Print(Option_t* option = "") const;
 

@@ -30,7 +30,7 @@ void TFCSSimulationState::clear()
   m_Efrac.clear();
 }
 
-void TFCSSimulationState::deposit(const long long cell_id, float E)
+void TFCSSimulationState::deposit(const unsigned long long cell_id, float E)
 {
   m_cells[cell_id] += E;
 }
