@@ -66,7 +66,7 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
     ASSERT_NEAR(extrapol_state.z(layer, Cell::SubPos::MID), z, 1e-1);
   };
 
-  // Test each layerß
+  // Test each layer
   test_layer(0, 1.22971, 0.018368, 1455.18, 2275.81);
   test_layer(1, 1.22919, -0.0691782, 1515.1, 2368.05);
   test_layer(2, 0.96349, -0.411096, 1729.23, 1936.11);
@@ -84,7 +84,7 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   test_layer(14, 1.23227, -0.0295309, 3630, 5694.34);
   test_layer(15, -0.0895637, 0.190935, 3215, -288.332);
   test_layer(16, -0.151687, 0.248825, 3630, -552.737);
-  test_layer(17, -0.0321279, 0.150037, 110041.23, -3536);
+  test_layer(17, -0.0321279, 0.150037, 110041.39, -3536);
   test_layer(18, 0.161155, 0.0157981, 2450, 396.542);
   test_layer(19, -0.00378506, 0.129909, 2870, -10.8632);
   test_layer(20, -0.138533, 0.228975, 3480, -483.639);

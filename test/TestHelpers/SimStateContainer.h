@@ -16,10 +16,10 @@ namespace TestHelpers
 
 struct SimStateContainerData
 {
-  int state_id;  // The simulation state to which the cell belongs
+  unsigned int state_id;  // The simulation state to which the cell belongs
   unsigned long long cell_id;  // The unique cell identifier
   double cell_energy;  // The deposited energy in that cell
-  long long layer;  // The layer ID to which the cell belons
+  unsigned int layer;  // The layer ID to which the cell belons
   float eta, phi, r, x, y, z;  // The center positions of the cell
   float deta, dphi, dr, dx, dy, dz;  // The dimensions of the cell
   bool isBarrel;  // Whether the cell belongs to a barrel or endcap layer

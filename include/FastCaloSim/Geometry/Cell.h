@@ -48,7 +48,7 @@ public:
 
   Cell(unsigned long long id,
        Position pos,
-       unsigned long long layer,
+       unsigned int layer,
        bool isBarrel,
        bool isXYZ,
        bool isEtaPhiR,
