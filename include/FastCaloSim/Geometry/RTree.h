@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 
 #pragma once
 
@@ -9,16 +9,18 @@
 #include <boost/geometry/index/rtree.hpp>
 
 #include "FastCaloSim/Geometry/Cell.h"
-
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
-
 class RTree
 {
   using Point = bg::model::point<double, 2, bg::cs::cartesian>;
   using Box = bg::model::box<Point>;
   using Value = std::pair<Box, Cell>;
-  static constexpr int rtree_quadratic = 16;
+  // Note: We use rstar as the parameter type, but the tree will be created
+  // using the packing algorithm when we pass the full range of values to the
+  // constructor See also:
+  // https://www.boost.org/doc/libs/1_88_0/boost/geometry/index/rtree.hpp
+  using RtreeType = bgi::rtree<Value, bgi::rstar<16>>;
 
   enum class CoordinateSystem
   {
@@ -33,7 +35,6 @@ public:
   void insert_cell(const Cell& cell)
   {
     CoordinateSystem coordinate_system = determine_coordinate_system(cell);
-
     if (m_coordinate_system == CoordinateSystem::Undefined) {
       m_coordinate_system = coordinate_system;
     } else if (m_coordinate_system != coordinate_system) {
@@ -41,8 +42,21 @@ public:
           "Tree can't be built with cells with differing coordinate systems!");
     }
 
-    insert(cell);
+    // Create and store boxes for the cell
+    prepare_boxes_for_cell(cell);
   }
+
+  // Build the rtree with all stored cells using the packing algorithm
+  void build()
+  {
+    if (m_values.empty()) {
+      return;
+    }
+    // Create a new rtree passing all values at once, which will use the packing
+    // algorithm
+    m_rtree = std::make_unique<RtreeType>(m_values.begin(), m_values.end());
+  }
+
   ///
   /// @brief Returns the nearest cell (bounding box) for a given hit
   /// Note: The hit must have the same coordinate system as the cells in the
@@ -50,24 +64,22 @@ public:
   ///
   auto query_point(const Position& pos) const -> Cell
   {
+    if (!m_rtree) {
+      throw std::logic_error("Tree not built yet. Call build() first.");
+    }
     Point query_point = create_query_point(pos);
-
     std::vector<Value> result;
-    m_rtree.query(bgi::nearest(query_point, 1), std::back_inserter(result));
-
+    m_rtree->query(bgi::nearest(query_point, 1), std::back_inserter(result));
     if (!result.empty()) {
       return result[0].second;
     }
-
     throw std::invalid_argument("No cell found for query point");
   }
 
-  auto size() const -> std::size_t { return m_cells.size(); }
-  auto at(std::size_t idx) const -> const Cell& { return m_cells.at(idx); }
-
 private:
-  bgi::rtree<Value, bgi::quadratic<rtree_quadratic>> m_rtree;
-  std::vector<Cell> m_cells;
+  std::unique_ptr<RtreeType> m_rtree;
+  // Store all cells and values for bulk insertion into the rtree
+  std::vector<Value> m_values;
   CoordinateSystem m_coordinate_system = CoordinateSystem::Undefined;
 
   static auto determine_coordinate_system(const Cell& cell) -> CoordinateSystem
@@ -93,10 +105,8 @@ private:
     }
   }
 
-  void insert(const Cell& cell)
+  void prepare_boxes_for_cell(const Cell& cell)
   {
-    m_cells.push_back(cell);
-
     const float half = 0.5;
     std::vector<Box> boxes;
     if (cell.isXYZ()) {
@@ -104,32 +114,26 @@ private:
       double xmax = cell.x() + cell.dx() * half;
       double ymin = cell.y() - cell.dy() * half;
       double ymax = cell.y() + cell.dy() * half;
-
       boxes.emplace_back(Point(xmin, ymin), Point(xmax, ymax));
-      insert_boxes(cell, boxes);
-      return;
-    }
+    } else {
+      double etamin = cell.eta() - cell.deta() * half;
+      double etamax = cell.eta() + cell.deta() * half;
+      double phimin = Cell::norm_angle(cell.phi() - cell.dphi() * half);
+      double phimax = Cell::norm_angle(cell.phi() + cell.dphi() * half);
 
-    double etamin = cell.eta() - cell.deta() * half;
-    double etamax = cell.eta() + cell.deta() * half;
-    double phimin = Cell::norm_angle(cell.phi() - cell.dphi() * half);
-    double phimax = Cell::norm_angle(cell.phi() + cell.dphi() * half);
-
-    if (cell.isEtaPhiR() || cell.isEtaPhiZ() || cell.isRPhiZ()) {
-      if (phimin > phimax) {
-        boxes.emplace_back(Point(etamin, -M_PI), Point(etamax, phimax));
-        boxes.emplace_back(Point(etamin, phimin), Point(etamax, M_PI));
-      } else {
-        boxes.emplace_back(Point(etamin, phimin), Point(etamax, phimax));
+      if (cell.isEtaPhiR() || cell.isEtaPhiZ() || cell.isRPhiZ()) {
+        if (phimin > phimax) {
+          boxes.emplace_back(Point(etamin, -M_PI), Point(etamax, phimax));
+          boxes.emplace_back(Point(etamin, phimin), Point(etamax, M_PI));
+        } else {
+          boxes.emplace_back(Point(etamin, phimin), Point(etamax, phimax));
+        }
       }
     }
-    insert_boxes(cell, boxes);
-  }
 
-  void insert_boxes(const Cell& cell, const std::vector<Box>& boxes)
-  {
+    // Store all boxes with their associated cell for later bulk insertion
     for (const auto& box : boxes) {
-      m_rtree.insert(std::make_pair(box, cell));
+      m_values.emplace_back(box, cell);
     }
   }
 };

@@ -267,6 +267,10 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     update_eta_extremes(layer_id, cell);
   }
 
+  // Build the RTree for each layer
+  for (auto& [layer_id, layer_tree] : m_layer_tree_map) {
+    layer_tree.build();
+  }
   auto end_time = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = end_time - start_time;
 
