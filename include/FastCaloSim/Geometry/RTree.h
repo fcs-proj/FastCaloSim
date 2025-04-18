@@ -20,6 +20,7 @@ class RTree
   // using the packing algorithm when we pass the full range of values to the
   // constructor See also:
   // https://www.boost.org/doc/libs/1_88_0/boost/geometry/index/rtree.hpp
+  // https://www.boost.org/doc/libs/1_88_0/libs/geometry/doc/html/geometry/spatial_indexes/introduction.html
   using RtreeType = bgi::rtree<Value, bgi::rstar<16>>;
 
   enum class CoordinateSystem
@@ -42,6 +43,8 @@ public:
           "Tree can't be built with cells with differing coordinate systems!");
     }
 
+    // Store the cell for later use
+    m_cells.push_back(cell);
     // Create and store boxes for the cell
     prepare_boxes_for_cell(cell);
   }
@@ -56,7 +59,6 @@ public:
     // algorithm
     m_rtree = std::make_unique<RtreeType>(m_values.begin(), m_values.end());
   }
-
   ///
   /// @brief Returns the nearest cell (bounding box) for a given hit
   /// Note: The hit must have the same coordinate system as the cells in the
@@ -75,10 +77,13 @@ public:
     }
     throw std::invalid_argument("No cell found for query point");
   }
+  auto size() const -> std::size_t { return m_cells.size(); }
+  auto at(std::size_t idx) const -> const Cell& { return m_cells.at(idx); }
 
 private:
   std::unique_ptr<RtreeType> m_rtree;
-  // Store all cells and values for bulk insertion into the rtree
+  std::vector<Cell> m_cells;
+  // Store values for bulk insertion into the rtree
   std::vector<Value> m_values;
   CoordinateSystem m_coordinate_system = CoordinateSystem::Undefined;
 
@@ -109,6 +114,7 @@ private:
   {
     const float half = 0.5;
     std::vector<Box> boxes;
+
     if (cell.isXYZ()) {
       double xmin = cell.x() - cell.dx() * half;
       double xmax = cell.x() + cell.dx() * half;
