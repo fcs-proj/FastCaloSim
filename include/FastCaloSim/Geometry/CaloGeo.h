@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include <FastCaloSim/FastCaloSim_export.h>
@@ -46,7 +47,7 @@ public:
   /// @brief Get a cell by its ID
   auto get_cell(unsigned long long id) const -> const Cell&;
   /// @brief Get a cell by its index in a layer
-  auto get_cell_at_idx(unsigned int layer, size_t idx) -> const Cell&;
+  auto get_cell_at_idx(unsigned int layer, size_t idx) const -> const Cell&;
 
   /// @brief Check if a layer is a barrel layer
   auto is_barrel(unsigned int layer) const -> bool;

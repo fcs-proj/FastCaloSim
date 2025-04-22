@@ -1,6 +1,9 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+#include <array>
 #include <chrono>
+#include <cmath>
 #include <iostream>
+#include <limits>
 #include <unordered_set>
 #include <vector>
 
@@ -14,7 +17,7 @@ auto CaloGeo::get_cell(unsigned int layer,
   if (alt_it != m_alt_geo_handlers.end()) {
     auto cell_id = alt_it->second->get_cell_id(layer, pos);
     // Return an invalid cell if the alternative geometry handler returns -1
-    if (cell_id == -1) {
+    if (cell_id == std::numeric_limits<unsigned long long>::max()) {
       static Cell invalid_cell;
       return invalid_cell;
     }
@@ -22,6 +25,11 @@ auto CaloGeo::get_cell(unsigned int layer,
   }
   // Else proceed with the default geometry handler
   const Cell* cell_ptr = m_layer_tree_map.at(layer).query_point(pos);
+
+  if (!cell_ptr) {
+    throw std::invalid_argument("No cell found for query point");
+  }
+
   return *cell_ptr;
 }
 
@@ -61,7 +69,8 @@ auto CaloGeo::get_cell(unsigned long long id) const -> const Cell&
   return invalid_cell;
 }
 
-auto CaloGeo::get_cell_at_idx(unsigned int layer, size_t idx) -> const Cell&
+auto CaloGeo::get_cell_at_idx(unsigned int layer,
+                              size_t idx) const -> const Cell&
 {
   auto layer_it = m_layer_cell_ids.find(layer);
   if (layer_it == m_layer_cell_ids.end() || idx >= layer_it->second.size()) {

@@ -27,7 +27,7 @@ class RTree
   // Cell*)
   using BoxCellPair = std::pair<Box, const Cell*>;
   // Defines the rtree type
-  using CellTree = bgi::rtree<BoxCellPair, bgi::quadratic<16>>;
+  using CellTree = bgi::rtree<BoxCellPair, bgi::rstar<16>>;
 
   enum class CoordinateSystem
   {
