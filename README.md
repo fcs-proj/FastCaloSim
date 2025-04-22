@@ -19,6 +19,35 @@ cmake --build <build>
 ```
 For install options and instruction on how to include FastCaloSim in your experiment see the [BUILDING](BUILDING.md) document. For advanced developer configuration with [presets][1] and other useful information see the [HACKING](HACKING.md) document.
 
+# Development in Containers
+
+We recommend using Docker containers for FastCaloSim development. We provide two official containers with all necessary dependencies pre-installed:
+
+- AlmaLinux 9 based: [`fcsproj/fastcalosim-alma9`](https://hub.docker.com/r/fcsproj/fastcalosim-alma9/tags)
+- Ubuntu 24.04 based: [`fcsproj/ubuntu24-fastcalosim`](https://hub.docker.com/r/fcsproj/ubuntu24-fastcalosim/tags)
+
+Both containers support x86_64 (Intel/AMD) and ARM64 (Apple Silicon) architectures, ensuring consistent development across platforms.
+
+# VS Code Integration
+
+When using VS Code with the DevContainer extension, containers are automatically pulled and configured when you open the repository, providing a complete development environment with all tools pre-configured.
+
+# LXPLUS Development with Apptainer
+
+For development on LXPLUS, you can use our Docker containers via Apptainer. We provide an `apptainer.sh` script in the repository that contains the necessary command:
+
+```bash
+# Run using the provided script
+source apptainer.sh
+
+# Or use the command directly
+singularity exec --contain --cleanenv \
+  -B $(pwd):/FastCaloSim \
+  -B /tmp \
+  docker://fcsproj/fastcalosim-alma9:main \
+  bash
+```
+ 
 # Contributing
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
