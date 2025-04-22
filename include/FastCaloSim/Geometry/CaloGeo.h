@@ -3,6 +3,8 @@
 #pragma once
 
 #include <map>
+#include <memory>
+#include <vector>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 
@@ -32,7 +34,7 @@ public:
                            const Position& pos) const -> unsigned long long;
 
   // Retrieve the best matching cell for a given position
-  auto get_cell(unsigned int layer, const Position& pos) const -> Cell;
+  auto get_cell(unsigned int layer, const Position& pos) const -> const Cell&;
 
   /// @brief Get the number of cells in a layer
   auto n_cells(unsigned int layer) const -> unsigned int;
@@ -42,9 +44,9 @@ public:
   auto n_layers() const -> unsigned int;
 
   /// @brief Get a cell by its ID
-  auto get_cell(unsigned long long id) const -> Cell;
+  auto get_cell(unsigned long long id) const -> const Cell&;
   /// @brief Get a cell by its index in a layer
-  auto get_cell_at_idx(unsigned int layer, size_t idx) -> Cell;
+  auto get_cell_at_idx(unsigned int layer, size_t idx) -> const Cell&;
 
   /// @brief Check if a layer is a barrel layer
   auto is_barrel(unsigned int layer) const -> bool;
@@ -113,8 +115,14 @@ private:
 
   /// @brief Maps layer id -> RTree
   std::unordered_map<unsigned int, RTree> m_layer_tree_map;
-  /// @brief Maps cell id -> Cell
-  std::unordered_map<unsigned long long, Cell> m_cell_id_map;
+
+  /// @brief Primary cell repository - maps cell id to cells and owns all cells
+  std::unordered_map<unsigned long long, std::unique_ptr<Cell>>
+      m_cell_repository;
+
+  /// @brief Maps layer ID to vector of cell IDs in that layer
+  std::unordered_map<unsigned int, std::vector<unsigned long long>>
+      m_layer_cell_ids;
 
   /// @brief Alternative geo handlers
   /// Allows to implement custom geo handling for specific layers
@@ -124,8 +132,10 @@ private:
 
   /// @brief Maps layer id -> layer properties
   std::map<unsigned int, LayerFlags> m_layer_flags;
+
   /// @brief Record a cell in the geometry
-  void record_cell(const Cell& cell);
+  void record_cell(std::unique_ptr<Cell> cell);
+
   /// @brief Update the eta extremes of a layer
   void update_eta_extremes(unsigned int layer, const Cell& cell);
 };

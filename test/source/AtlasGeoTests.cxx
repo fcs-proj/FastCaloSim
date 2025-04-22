@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 
 #include "AtlasGeoTests.h"
 
