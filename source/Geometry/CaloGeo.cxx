@@ -1,36 +1,43 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+#include <array>
+#include <chrono>
+#include <cmath>
+#include <iostream>
+#include <limits>
 #include <unordered_set>
 #include <vector>
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
-auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const -> Cell
+auto CaloGeo::get_cell(unsigned int layer,
+                       const Position& pos) const -> const Cell&
 {
   // Check if an alternative geometry handler is set for the layer
   auto alt_it = m_alt_geo_handlers.find(layer);
   if (alt_it != m_alt_geo_handlers.end()) {
     auto cell_id = alt_it->second->get_cell_id(layer, pos);
     // Return an invalid cell if the alternative geometry handler returns -1
-    if (cell_id == -1) {
-      Cell invalid_cell;
+    if (cell_id == std::numeric_limits<unsigned long long>::max()) {
+      static Cell invalid_cell;
       return invalid_cell;
     }
-    return m_cell_id_map.at(cell_id);
+    return get_cell(cell_id);
   }
   // Else proceed with the default geometry handler
-  return m_layer_tree_map.at(layer).query_point(pos);
+  const Cell* cell_ptr = m_layer_tree_map.at(layer).query_point(pos);
+
+  if (!cell_ptr) {
+    throw std::invalid_argument("No cell found for query point");
+  }
+
+  return *cell_ptr;
 }
 
 auto CaloGeo::get_cell_id(unsigned int layer,
                           const Position& pos) const -> unsigned long long
 {
-  auto cell = get_cell(layer, pos);
+  const Cell& cell = get_cell(layer, pos);
   return cell.id();
-}
-
-auto CaloGeo::n_cells(unsigned int layer) const -> unsigned int
-{
-  return m_layer_tree_map.at(layer).size();
 }
 
 auto CaloGeo::n_cells() const -> unsigned int
@@ -38,19 +45,41 @@ auto CaloGeo::n_cells() const -> unsigned int
   return m_n_total_cells;
 }
 
+auto CaloGeo::n_cells(unsigned int layer) const -> unsigned int
+{
+  auto it = m_layer_cell_ids.find(layer);
+  if (it != m_layer_cell_ids.end()) {
+    return static_cast<unsigned int>(it->second.size());
+  }
+  return 0;
+}
+
 auto CaloGeo::n_layers() const -> unsigned int
 {
   return m_n_layers;
 }
 
-auto CaloGeo::get_cell(unsigned long long id) const -> Cell
+auto CaloGeo::get_cell(unsigned long long id) const -> const Cell&
 {
-  return m_cell_id_map.at(id);
+  auto it = m_cell_repository.find(id);
+  if (it != m_cell_repository.end()) {
+    return *(it->second);
+  }
+  static Cell invalid_cell;
+  return invalid_cell;
 }
 
-auto CaloGeo::get_cell_at_idx(unsigned int layer, size_t idx) -> Cell
+auto CaloGeo::get_cell_at_idx(unsigned int layer,
+                              size_t idx) const -> const Cell&
 {
-  return m_layer_tree_map.at(layer).at(idx);
+  auto layer_it = m_layer_cell_ids.find(layer);
+  if (layer_it == m_layer_cell_ids.end() || idx >= layer_it->second.size()) {
+    static Cell invalid_cell;
+    return invalid_cell;
+  }
+
+  unsigned long long cell_id = layer_it->second[idx];
+  return *(m_cell_repository.at(cell_id));
 }
 
 auto CaloGeo::is_barrel(unsigned int layer) const -> bool
@@ -77,7 +106,7 @@ auto CaloGeo::zpos(unsigned int layer,
                    const Position& pos,
                    Cell::SubPos subpos) const -> double
 {
-  const auto& cell = get_cell(layer, pos);
+  const Cell& cell = get_cell(layer, pos);
   return cell.z(subpos);
 }
 
@@ -85,7 +114,7 @@ auto CaloGeo::rpos(unsigned int layer,
                    const Position& pos,
                    Cell::SubPos subpos) const -> double
 {
-  const auto& cell = get_cell(layer, pos);
+  const Cell& cell = get_cell(layer, pos);
   return cell.r(subpos);
 }
 
@@ -114,11 +143,19 @@ void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
   }
 }
 
-void CaloGeo::record_cell(const Cell& cell)
+void CaloGeo::record_cell(std::unique_ptr<Cell> cell)
 {
-  auto layer = cell.layer();
-  m_layer_tree_map[layer].insert_cell(cell);
-  m_cell_id_map.emplace(cell.id(), cell);
+  unsigned int layer = cell->layer();
+  unsigned long long id = cell->id();
+
+  // Add cell to layer's cell ID list
+  m_layer_cell_ids[layer].push_back(id);
+
+  // Add pointer to the RTree
+  m_layer_tree_map[layer].insert_cell(cell.get());
+
+  // Store the cell in the repository
+  m_cell_repository[id] = std::move(cell);
 }
 
 void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
@@ -190,8 +227,8 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
         -std::numeric_limits<double>::max();
   }
 
-  // Pre-reserve space in maps
-  m_cell_id_map.reserve(m_n_total_cells);
+  // Reserve capacity for cell repository
+  m_cell_repository.reserve(m_n_total_cells);
 
   // Track which layers we've already set flags for to avoid redundant
   std::unordered_set<unsigned int> processed_layer_flags;
@@ -247,26 +284,31 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     pos.m_phi = phi->at(i);
     pos.m_r = r->at(i);
 
-    Cell cell {id->at(i),
-               pos,
-               layer_id,
-               isBarrel->at(i),
-               isXYZ->at(i),
-               isEtaPhiR->at(i),
-               isEtaPhiZ->at(i),
-               isRPhiZ->at(i),
-               dx->at(i),
-               dy->at(i),
-               dz->at(i),
-               deta_val,
-               dphi->at(i),
-               dr->at(i)};
+    // Create a unique_ptr to a new Cell
+    auto cell_ptr = std::make_unique<Cell>(id->at(i),
+                                           pos,
+                                           layer_id,
+                                           isBarrel->at(i),
+                                           isXYZ->at(i),
+                                           isEtaPhiR->at(i),
+                                           isEtaPhiZ->at(i),
+                                           isRPhiZ->at(i),
+                                           dx->at(i),
+                                           dy->at(i),
+                                           dz->at(i),
+                                           deta_val,
+                                           dphi->at(i),
+                                           dr->at(i));
 
     // Record the cell and update eta extremes
-    record_cell(cell);
-    update_eta_extremes(layer_id, cell);
+    update_eta_extremes(layer_id, *cell_ptr);
+    record_cell(std::move(cell_ptr));
   }
 
+  // Build the RTree for each layer
+  for (auto& [layer_id, layer_tree] : m_layer_tree_map) {
+    layer_tree.build();
+  }
   auto end_time = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = end_time - start_time;
 
