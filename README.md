@@ -24,7 +24,7 @@ For install options and instruction on how to include FastCaloSim in your experi
 We recommend using Docker containers for FastCaloSim development. We provide two official containers with all necessary dependencies pre-installed:
 
 - AlmaLinux 9 based: [`fcsproj/fastcalosim-alma9`](https://hub.docker.com/r/fcsproj/fastcalosim-alma9/tags)
-- Ubuntu 24.04 based: [`fcsproj/ubuntu24-fastcalosim`](https://hub.docker.com/r/fcsproj/ubuntu24-fastcalosim/tags)
+- Ubuntu 24.04 based: [`fcsproj/ubuntu24-fastcalosim`](https://hub.docker.com/r/fcsproj/fastcalosim-ubuntu24/tags)
 
 Both containers support x86_64 (Intel/AMD) and ARM64 (Apple Silicon) architectures, ensuring consistent development across platforms.
 
@@ -39,15 +39,8 @@ For development on LXPLUS, you can use our Docker containers via Apptainer. We p
 ```bash
 # Run using the provided script
 source apptainer.sh
-
-# Or use the command directly
-singularity exec --contain --cleanenv \
-  -B $(pwd):/FastCaloSim \
-  -B /tmp \
-  docker://fcsproj/fastcalosim-alma9:main \
-  bash
 ```
- 
+
 # Contributing
 
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
