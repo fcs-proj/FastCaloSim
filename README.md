@@ -28,11 +28,11 @@ We recommend using Docker containers for FastCaloSim development. We provide two
 
 Both containers support x86_64 (Intel/AMD) and ARM64 (Apple Silicon) architectures, ensuring consistent development across platforms.
 
-# VS Code Integration
+## VS Code Integration
 
 When using VS Code with the DevContainer extension, containers are automatically pulled and configured when you open the repository, providing a complete development environment with all tools pre-configured.
 
-# LXPLUS Development with Apptainer
+## LXPLUS Development with Apptainer
 
 For development on LXPLUS, you can use our Docker containers via Apptainer. We provide an `apptainer.sh` script in the repository that contains the necessary command:
 
