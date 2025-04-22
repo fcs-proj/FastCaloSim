@@ -1,0 +1,1 @@
+apptainer exec --contain --cleanenv --pwd /FastCaloSim -B $(pwd):/FastCaloSim -B /tmp docker://fcsproj/fastcalosim-alma9:main bash
