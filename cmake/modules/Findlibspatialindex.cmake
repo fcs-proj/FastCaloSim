@@ -23,6 +23,7 @@ if(NOT TARGET spatialindex)
     set(CMAKE_CXX_FLAGS "${_saved_cxx_flags} -w -O1 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
 
     FetchContent_MakeAvailable(libspatialindex)
+    deactivate_checks(spatialindex)
 
     # Restore flags
     set(CMAKE_CXX_FLAGS "${_saved_cxx_flags}")

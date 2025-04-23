@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include <filesystem>
+
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
+#include <unistd.h>
 
 #include "ATLASFCalGeoPlugin/FCal.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
@@ -26,7 +29,17 @@ protected:
         ROOT::RDataFrame(AtlasGeoTestsConfig::ATLAS_CALO_CELL_TREE_NAME,
                          AtlasGeoTestsConfig::ATLAS_CALO_CELL_PATH);
     geo = new CaloGeo();
-    geo->build(df);
+
+    // Create Temporary dir for the RTree files
+    char tmpl[] = "/tmp/fastcalosimXXXXXX";
+    int fd = mkstemp(tmpl);
+    close(fd);
+    std::remove(tmpl);
+    std::filesystem::create_directory(tmpl);
+    std::filesystem::path tmp_dir_path {tmpl};
+
+    // 5mb cache size per layer for the RTree
+    geo->build(df, tmp_dir_path.string(), true, 5 * 1024 * 1024);
 
     // Create alternative geometry handler for FCal
     std::shared_ptr<FCal> fcal_geo = std::make_shared<FCal>();

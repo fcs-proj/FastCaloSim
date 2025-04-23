@@ -27,7 +27,10 @@ public:
   CaloGeo() = default;
 
   // Method to build geometry
-  void build(ROOT::RDataFrame& geo);
+  void build(ROOT::RDataFrame& geo,
+             const std::string& rtree_base_path,
+             bool build_tree = true,
+             size_t cache_size = 5 * 1024 * 1024);
 
   // Retrieve the id of the best matching cell for a given position
   // Alternative geo handlers need to override this method

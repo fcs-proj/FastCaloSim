@@ -178,7 +178,10 @@ void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
   }
 }
 
-void CaloGeo::build(ROOT::RDataFrame& geo)
+void CaloGeo::build(ROOT::RDataFrame& geo,
+                    const std::string& rtree_base_path,
+                    bool build_tree,
+                    size_t cache_size)
 {
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
@@ -322,27 +325,28 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     // Get coordinate system directly from layer flags
     auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
 
-    // Build the RTree
-    RTreeBuilder builder(coord_sys);
+    std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
+    std::string rtree_path = rtree_base_path + "/" + rtree_name;
 
-    for (const auto& cell_id : cell_ids) {
-      const Cell* cell = m_cell_repository.at(cell_id).get();
-      builder.add_cell(cell);
+    // Build the RTree if requested
+    if (build_tree) {
+      // Build the RTree
+      RTreeBuilder builder(coord_sys);
+
+      for (const auto& cell_id : cell_ids) {
+        auto cell = m_cell_repository.at(cell_id).get();
+        builder.add_cell(cell);
+      }
+      builder.build(rtree_path);
+
+      std::cout << "Built RTree for layer " << layer_id << " with "
+                << cell_ids.size() << " cells" << std::endl;
     }
 
-    std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
-    std::string rtree_path = "/tmp/" + rtree_name;
-    builder.build(rtree_path);
-
-    std::cout << "Built RTree for layer " << layer_id << " with "
-              << cell_ids.size() << " cells" << std::endl;
-
-    // Immediately load the RTree for querying
+    // Load the RTree for querying
     m_layer_rtree_queries[layer_id] = std::make_unique<RTreeQuery>(coord_sys);
-    // Load the RTree from disk with caching
-    // 5MB cache per layer
-    /// TODO: Make this configurable
-    m_layer_rtree_queries[layer_id]->load(rtree_path, 5 * 1024 * 1024);
+    // Load the RTree from disk with specified cache size
+    m_layer_rtree_queries[layer_id]->load(rtree_path, cache_size);
   }
 
   auto end_time = std::chrono::high_resolution_clock::now();
