@@ -42,5 +42,6 @@ public:
 
 private:
   RTreeHelpers::CoordinateSystem m_coordinate_system;
+  // Store bounding boxes and their associated cell IDs
   std::vector<std::pair<std::array<double, 4>, uint64_t>> m_boxes;
 };

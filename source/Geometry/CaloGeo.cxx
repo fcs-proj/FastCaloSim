@@ -339,8 +339,10 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
 
     // Immediately load the RTree for querying
     m_layer_rtree_queries[layer_id] = std::make_unique<RTreeQuery>(coord_sys);
-    m_layer_rtree_queries[layer_id]->load(rtree_path,
-                                          1024 * 1024 * 1024);  // 1GB cache
+    // Load the RTree from disk with caching
+    // 5MB cache per layer
+    /// TODO: Make this configurable
+    m_layer_rtree_queries[layer_id]->load(rtree_path, 5 * 1024 * 1024);
   }
 
   auto end_time = std::chrono::high_resolution_clock::now();

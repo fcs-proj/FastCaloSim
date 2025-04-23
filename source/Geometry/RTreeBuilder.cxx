@@ -47,7 +47,7 @@ void RTreeBuilder::build(const std::string& output_path)
 
     SpatialIndex::IData* getNext() override
     {
-      // Get the next box-id pair from our collection
+      // Get the next box-cell id pair from our collection
       const auto& [bounds, id] = m_boxes[m_index++];
 
       // Create a spatial region (bounding box) from the bounds
@@ -55,17 +55,12 @@ void RTreeBuilder::build(const std::string& output_path)
       double high[2] = {bounds[2], bounds[3]};  // Max coordinates
       SpatialIndex::Region r(low, high, 2);  // 2D region
 
-      // Create a temporary buffer for our cell pointer (as uint64_t)
-      // The Data constructor will make its own copy of this buffer
-      uint8_t data_buffer[sizeof(uint64_t)];
-      std::memcpy(data_buffer, &id, sizeof(uint64_t));
-
       // Create a new Data object that associates the region with our cell
       // pointer The RTree will take ownership of this object and free it when
       // done
       return new SpatialIndex::RTree::Data(
-          sizeof(uint64_t),  // Size of our data
-          data_buffer,  // Pointer to data (will be copied)
+          0,  // Size of our data (not used as we just return id
+          nullptr,  // Pointer to data (not used as we just return id
           r,  // Region (bounding box)
           id  // ID for this entry
       );
@@ -92,6 +87,9 @@ void RTreeBuilder::build(const std::string& output_path)
 
   // Configure RTree properties (see
   // https://libspatialindex.org/en/latest/overview.html#the-rtree-package)
+  // Note: especially LeafCapacity and IndexCapacity are important for
+  // performance
+  /// @TODO: optimize these parameters based on the expected number of cells
   Tools::PropertySet ps;
 
   // Set FillFactor property
@@ -102,12 +100,12 @@ void RTreeBuilder::build(const std::string& output_path)
 
   // Set IndexCapacity property
   var.m_varType = Tools::VT_ULONG;
-  var.m_val.ulVal = 100;
+  var.m_val.ulVal = 16;
   ps.setProperty("IndexCapacity", var);
 
   // Set LeafCapacity property
   var.m_varType = Tools::VT_ULONG;
-  var.m_val.ulVal = 100;
+  var.m_val.ulVal = 16;
   ps.setProperty("LeafCapacity", var);
 
   // Set Dimension property (2D in our case)

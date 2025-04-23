@@ -57,10 +57,7 @@ auto RTreeQuery::query_point(const Position& pos) const -> uint64_t
 
     void visitData(const SpatialIndex::IData& d) override
     {
-      uint32_t len = 0;
-      uint8_t* data = nullptr;
-      d.getData(len, &data);
-      std::memcpy(&result, data, sizeof(uint64_t));
+      result = d.getIdentifier();
       found = true;
     }
 
