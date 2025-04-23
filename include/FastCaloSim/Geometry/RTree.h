@@ -35,7 +35,7 @@ public:
 
   /**
    * @brief Insert a cell into the collection for bulk loading
-   * @param cell Pointer to the cell to insert
+   * @param cell Reference to the cell to insert
    */
   void insert_cell(const Cell& cell);
 
@@ -55,7 +55,7 @@ public:
   /**
    * @brief Query the nearest cell for a given position
    * @param pos The position to query
-   * @return Pointer to the nearest cell
+   * @return Identifier (uint64_t) of the nearest cell
    */
   auto query_point(const Position& pos) const -> uint64_t;
 
