@@ -28,10 +28,10 @@ public:
 
   /**
    * @brief Load an R-tree from disk with caching
-   * @param index_path Path to the R-tree index file
+   * @param base_path Path to the R-tree index file
    * @param cache_size Size of the cache in bytes (default: 256KB)
    */
-  void load(const std::string& index_path, size_t cache_size = 262144);
+  void load(const std::string& base_path, size_t cache_size = 262144);
 
   /**
    * @brief Query the nearest cell for a given position

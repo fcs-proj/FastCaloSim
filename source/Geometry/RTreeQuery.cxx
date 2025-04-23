@@ -9,10 +9,10 @@ RTreeQuery::RTreeQuery(RTreeHelpers::CoordinateSystem coordSys)
 {
 }
 
-void RTreeQuery::load(const std::string& index_path, size_t cache_size)
+void RTreeQuery::load(const std::string& base_path, size_t cache_size)
 {
   try {
-    std::string filename = index_path;
+    std::string filename = base_path;
     SpatialIndex::IStorageManager* diskfile =
         SpatialIndex::StorageManager::loadDiskStorageManager(filename);
 

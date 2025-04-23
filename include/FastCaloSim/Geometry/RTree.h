@@ -41,16 +41,16 @@ public:
 
   /**
    * @brief Build the RTree using bulk loading and store to disk
-   * @param index_path Path to store the R-tree
+   * @param base_path Path to store the R-tree
    */
-  void build(const std::string& index_path);
+  void build(const std::string& base_path);
 
   /**
    * @brief Load a previously saved RTree from file with caching
-   * @param index_path Path to the input file
+   * @param base_path Path to the input file
    * @param cache_size Size of the cache in bytes (default: 256KB)
    */
-  void load(const std::string& index_path, size_t cache_size = 262144);
+  void load(const std::string& base_path, size_t cache_size = 262144);
 
   /**
    * @brief Query the nearest cell for a given position
