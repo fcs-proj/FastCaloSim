@@ -37,7 +37,7 @@ public:
    * @brief Insert a cell into the collection for bulk loading
    * @param cell Pointer to the cell to insert
    */
-  void insert_cell(const Cell* cell);
+  void insert_cell(const Cell& cell);
 
   /**
    * @brief Build the RTree using bulk loading and store to disk

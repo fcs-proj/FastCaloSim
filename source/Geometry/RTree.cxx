@@ -9,13 +9,13 @@ RTree::RTree(RTreeHelpers::CoordinateSystem coordSys)
 {
 }
 
-void RTree::insert_cell(const Cell* cell)
+void RTree::insert_cell(const Cell& cell)
 {
   if (!m_builder) {
     m_builder = std::make_unique<RTreeBuilder>(m_coordinate_system);
   }
 
-  m_builder->add_cell(cell);
+  m_builder->add_cell(&cell);
 }
 
 void RTree::build(const std::string& base_path)

@@ -1,4 +1,5 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+#include <memory>
 #include <stdexcept>
 
 #include "FastCaloSim/Geometry/RTreeBuilder.h"
@@ -29,7 +30,9 @@ void RTreeBuilder::add_cell(const Cell* cell)
 void RTreeBuilder::build(const std::string& output_path)
 {
   if (m_boxes.empty()) {
-    return;
+    throw std::logic_error(
+        "RTreeBuilder::build() called with no cells. "
+        "Insert cells first via add_cell().");
   }
 
   // Create data stream for bulk loading
@@ -82,8 +85,10 @@ void RTreeBuilder::build(const std::string& output_path)
 
   // Create disk storage manager
   std::string filename = output_path;
-  SpatialIndex::IStorageManager* diskfile =
-      SpatialIndex::StorageManager::createNewDiskStorageManager(filename, 4096);
+
+  std::unique_ptr<SpatialIndex::IStorageManager> diskfile {
+      SpatialIndex::StorageManager::createNewDiskStorageManager(filename,
+                                                                4096)};
 
   // Configure RTree properties (see
   // https://libspatialindex.org/en/latest/overview.html#the-rtree-package)
@@ -120,19 +125,14 @@ void RTreeBuilder::build(const std::string& output_path)
 
   try {
     SpatialIndex::id_type indexId;
-    SpatialIndex::ISpatialIndex* tree =
+    std::unique_ptr<SpatialIndex::ISpatialIndex> tree {
         SpatialIndex::RTree::createAndBulkLoadNewRTree(
-            SpatialIndex::RTree::BLM_STR, stream, *diskfile, ps, indexId);
-
-    // We don't need to keep the tree in memory since we're just building it
-    delete tree;
-    delete diskfile;
+            SpatialIndex::RTree::BLM_STR, stream, *diskfile, ps, indexId)};
 
     // Clear temporary storage
     m_boxes.clear();
     m_boxes.shrink_to_fit();
   } catch (Tools::Exception& e) {
-    delete diskfile;
     throw std::runtime_error(std::string("Error building RTree: ") + e.what());
   }
 }
