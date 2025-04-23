@@ -47,6 +47,10 @@ FetchContent_MakeAvailable(googletest)
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+# libspatialindex for geometry
+find_package(libspatialindex REQUIRED)
+include_directories(${libspatialindex_INCLUDE_DIRS})
+
 # Deactivate compiler warnings and static analyzers
 # Note: test should be linked with gtest_main unless
 # you want to write your own main function

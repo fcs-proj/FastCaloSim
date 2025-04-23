@@ -23,14 +23,20 @@ auto CaloGeo::get_cell(unsigned int layer,
     }
     return get_cell(cell_id);
   }
-  // Else proceed with the default geometry handler
-  const Cell* cell_ptr = m_layer_tree_map.at(layer).query_point(pos);
 
-  if (!cell_ptr) {
-    throw std::invalid_argument("No cell found for query point");
+  // Else proceed with the default geometry handler
+  auto query_it = m_layer_rtree_queries.find(layer);
+  if (query_it == m_layer_rtree_queries.end()) {
+    throw std::runtime_error("No RTree loaded for layer "
+                             + std::to_string(layer));
   }
 
-  return *cell_ptr;
+  // Query the RTree to get the cell ID directly
+  const uint64_t cell_id =
+      reinterpret_cast<uint64_t>(query_it->second->query_point(pos));
+
+  // Look up the cell in the repository
+  return get_cell(cell_id);
 }
 
 auto CaloGeo::get_cell_id(unsigned int layer,
@@ -89,17 +95,20 @@ auto CaloGeo::is_barrel(unsigned int layer) const -> bool
 
 auto CaloGeo::is_xyz(unsigned int layer) const -> bool
 {
-  return m_layer_flags.at(layer).is_xyz;
+  return m_layer_flags.at(layer).coordinate_system
+      == RTreeHelpers::CoordinateSystem::XYZ;
 }
 
 auto CaloGeo::is_eta_phi_r(unsigned int layer) const -> bool
 {
-  return m_layer_flags.at(layer).is_eta_phi_r;
+  return m_layer_flags.at(layer).coordinate_system
+      == RTreeHelpers::CoordinateSystem::EtaPhiR;
 }
 
 auto CaloGeo::is_eta_phi_z(unsigned int layer) const -> bool
 {
-  return m_layer_flags.at(layer).is_eta_phi_z;
+  return m_layer_flags.at(layer).coordinate_system
+      == RTreeHelpers::CoordinateSystem::EtaPhiZ;
 }
 
 auto CaloGeo::zpos(unsigned int layer,
@@ -142,7 +151,6 @@ void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
     m_alt_geo_handlers[i] = handler;
   }
 }
-
 void CaloGeo::record_cell(std::unique_ptr<Cell> cell)
 {
   unsigned int layer = cell->layer();
@@ -150,9 +158,6 @@ void CaloGeo::record_cell(std::unique_ptr<Cell> cell)
 
   // Add cell to layer's cell ID list
   m_layer_cell_ids[layer].push_back(id);
-
-  // Add pointer to the RTree
-  m_layer_tree_map[layer].insert_cell(cell.get());
 
   // Store the cell in the repository
   m_cell_repository[id] = std::move(cell);
@@ -242,10 +247,18 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     if (processed_layer_flags.find(layer_id) == processed_layer_flags.end()) {
       auto& flags = m_layer_flags[layer_id];
       flags.is_barrel = isBarrel->at(i);
-      flags.is_xyz = isXYZ->at(i);
-      flags.is_eta_phi_r = isEtaPhiR->at(i);
-      flags.is_eta_phi_z = isEtaPhiZ->at(i);
-      flags.is_r_phi_z = isRPhiZ->at(i);
+      // Set coordinate system based on the boolean flags
+      if (isXYZ->at(i)) {
+        flags.coordinate_system = RTreeHelpers::CoordinateSystem::XYZ;
+      } else if (isEtaPhiR->at(i)) {
+        flags.coordinate_system = RTreeHelpers::CoordinateSystem::EtaPhiR;
+      } else if (isEtaPhiZ->at(i)) {
+        flags.coordinate_system = RTreeHelpers::CoordinateSystem::EtaPhiZ;
+      } else if (isRPhiZ->at(i)) {
+        flags.coordinate_system = RTreeHelpers::CoordinateSystem::RPhiZ;
+      } else {
+        flags.coordinate_system = RTreeHelpers::CoordinateSystem::Undefined;
+      }
       processed_layer_flags.insert(layer_id);
     }
 
@@ -305,10 +318,31 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     record_cell(std::move(cell_ptr));
   }
 
-  // Build the RTree for each layer
-  for (auto& [layer_id, layer_tree] : m_layer_tree_map) {
-    layer_tree.build();
+  for (const auto& [layer_id, cell_ids] : m_layer_cell_ids) {
+    // Get coordinate system directly from layer flags
+    auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
+
+    // Build the RTree
+    RTreeBuilder builder(coord_sys);
+
+    for (const auto& cell_id : cell_ids) {
+      const Cell* cell = m_cell_repository.at(cell_id).get();
+      builder.add_cell(cell);
+    }
+
+    std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
+    std::string rtree_path = "/FastCaloSim/build/dev/" + rtree_name;
+    builder.build(rtree_path);
+
+    std::cout << "Built RTree for layer " << layer_id << " with "
+              << cell_ids.size() << " cells" << std::endl;
+
+    // Immediately load the RTree for querying
+    m_layer_rtree_queries[layer_id] = std::make_unique<RTreeQuery>(coord_sys);
+    m_layer_rtree_queries[layer_id]->load(rtree_path,
+                                          1024 * 1024 * 1024);  // 1GB cache
   }
+
   auto end_time = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = end_time - start_time;
 

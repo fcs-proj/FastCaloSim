@@ -94,10 +94,8 @@ private:
     // Is the layer a barrel layer?
     bool is_barrel {false};
     // How are the cells in the layer described?
-    bool is_xyz {false};
-    bool is_eta_phi_r {false};
-    bool is_eta_phi_z {false};
-    bool is_r_phi_z {false};
+    RTreeHelpers::CoordinateSystem coordinate_system {
+        RTreeHelpers::CoordinateSystem::Undefined};
     // For each detector side, what are the eta_min and eta_max values?
     std::map<DetectorSide, EtaExtremes> eta_extensions;
 
@@ -114,8 +112,9 @@ private:
   /// @brief The total number of cells
   unsigned int m_n_total_cells {};
 
-  /// @brief Maps layer id -> RTree
-  std::unordered_map<unsigned int, RTree> m_layer_tree_map;
+  /// @brief Maps layer id -> RTreeQuery (for loaded trees)
+  std::unordered_map<unsigned int, std::unique_ptr<RTreeQuery>>
+      m_layer_rtree_queries;
 
   /// @brief Primary cell repository - maps cell id to cells and owns all cells
   std::unordered_map<unsigned long long, std::unique_ptr<Cell>>
