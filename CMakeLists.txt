@@ -75,7 +75,7 @@ target_link_libraries(
         CLHEP::CLHEP
         ${Geant4_LIBRARIES}
         TBB::tbb
-        spatialindex
+        libspatialindex::spatialindex
     PRIVATE
         ONNXRuntime::ONNXRuntime
         ${LWTNN_LIBRARIES}
@@ -83,8 +83,12 @@ target_link_libraries(
 )
 
 # Add the include directory to the target
-target_include_directories(FastCaloSim_FastCaloSim PRIVATE ${CMAKE_SOURCE_DIR}/include/FastCaloSim ${Boost_INCLUDE_DIRS} ${LWTNN_INCLUDE_DIRS} ${libspatialindex_INCLUDE_DIRS})
-
+target_include_directories(FastCaloSim_FastCaloSim
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include/FastCaloSim
+        ${Boost_INCLUDE_DIRS}
+        ${LWTNN_INCLUDE_DIRS}
+)
 # Generate ROOT dictionary for custom classes when building a shared library
 ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
 
