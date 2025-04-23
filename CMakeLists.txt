@@ -75,9 +75,9 @@ target_link_libraries(
         CLHEP::CLHEP
         ${Geant4_LIBRARIES}
         TBB::tbb
+        spatialindex
     PRIVATE
         ONNXRuntime::ONNXRuntime
-        spatialindex
         ${LWTNN_LIBRARIES}
         ${LibXml2_LIBRARIES}
 )
