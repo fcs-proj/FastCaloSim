@@ -32,8 +32,7 @@ auto CaloGeo::get_cell(unsigned int layer,
   }
 
   // Query the RTree to get the cell ID directly
-  const uint64_t cell_id =
-      reinterpret_cast<uint64_t>(query_it->second->query_point(pos));
+  auto cell_id = query_it->second->query_point(pos);
 
   // Look up the cell in the repository
   return get_cell(cell_id);
