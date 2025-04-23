@@ -331,7 +331,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo)
     }
 
     std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
-    std::string rtree_path = "/FastCaloSim/build/dev/" + rtree_name;
+    std::string rtree_path = "/tmp/" + rtree_name;
     builder.build(rtree_path);
 
     std::cout << "Built RTree for layer " << layer_id << " with "
