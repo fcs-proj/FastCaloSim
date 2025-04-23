@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>RTree class | FastCaloSim</title>
+  <title>RTreeBuilder class | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,10 +49,10 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          RTree <span class="m-thin">class</span>
-          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="RTree_8h.html">&lt;RTree.h&gt;</a></div>
+          RTreeBuilder <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="RTreeBuilder_8h.html">&lt;RTreeBuilder.h&gt;</a></div>
         </h1>
-        <p>Main R-tree class providing a unified interface.</p>
+        <p>Class responsible for building and persisting R-trees.</p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
@@ -65,16 +65,16 @@
             </li>
           </ul>
         </div>
-<p>This class delegates to specialized components for building, persisting, loading, and querying R-trees. It provides a simple interface for working with R-trees at the layer level with a known coordinate system.</p><p>The class supports:</p><ol><li>Bulk loading of R-tree for better performance</li><li>Memory persistence capability</li><li>Efficient caching for fast lookups</li></ol>
+<p>This class handles collecting cells and bulk loading them into an R-tree for a specific detector layer with a known coordinate system.</p>
         <section id="typeless-methods">
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper"><a href="#aad4308b67e2f4e1b4aa8a9ab8612b778" class="m-doc">RTree</a>(</span><span class="m-doc-wrap"><a href="namespaceRTreeHelpers.html#a25d79e79af2dbc00589f60af602cfa8d" class="m-doc">RTreeHelpers::<wbr />CoordinateSystem</a> coordSys) <span class="m-label m-flat m-info">explicit</span> </span>
+              <span class="m-doc-wrap-bumper"><a href="#a3cab238930cca0cbaa39a7820550cfc6" class="m-doc">RTreeBuilder</a>(</span><span class="m-doc-wrap"><a href="namespaceRTreeHelpers.html#a25d79e79af2dbc00589f60af602cfa8d" class="m-doc">RTreeHelpers::<wbr />CoordinateSystem</a> coordSys) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
-            <dd>Construct an <a href="classRTree.html" class="m-doc">RTree</a> with a specific coordinate system.</dd>
-            <dt id="a7f9c34539caa5e51cbb4815aa0e79524">
-              <span class="m-doc-wrap-bumper"><a href="#a7f9c34539caa5e51cbb4815aa0e79524" class="m-doc-self">~RTree</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span></span>
+            <dd>Construct an <a href="classRTreeBuilder.html" class="m-doc">RTreeBuilder</a> with a specific coordinate system.</dd>
+            <dt id="ad2f28830c0b7f60a76be955113bb55e3">
+              <span class="m-doc-wrap-bumper"><a href="#ad2f28830c0b7f60a76be955113bb55e3" class="m-doc-self">~RTreeBuilder</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -83,31 +83,22 @@
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a79d5b4e7c9a65106e26f61f2580683a5" class="m-doc">insert_cell</a>(</span><span class="m-doc-wrap">const <a href="classCell.html" class="m-doc">Cell</a>&amp; cell)</span>
+              <span class="m-doc-wrap-bumper">void <a href="#adddaf621b0b5a0c50210850ba2ae72de" class="m-doc">add_cell</a>(</span><span class="m-doc-wrap">const <a href="classCell.html" class="m-doc">Cell</a>* cell)</span>
             </dt>
-            <dd>Insert a cell into the collection for bulk loading.</dd>
+            <dd>Add a cell for inclusion in the R-tree.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a847acaa4e876d83b39a09b32ffdfff50" class="m-doc">build</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path)</span>
+              <span class="m-doc-wrap-bumper">void <a href="#a3a130462070a59135b61036ea7c28c59" class="m-doc">build</a>(</span><span class="m-doc-wrap">const std::string&amp; output_path)</span>
             </dt>
-            <dd>Build the <a href="classRTree.html" class="m-doc">RTree</a> using bulk loading and store to disk.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#aaad134bf48dc434b3cccdf661f0c5035" class="m-doc">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path,
-              size_t cache_size = 262144)</span>
-            </dt>
-            <dd>Load a previously saved <a href="classRTree.html" class="m-doc">RTree</a> from file with caching.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a2fc224c200d88fada8078c151bab654a" class="m-doc">query_point</a>(</span><span class="m-doc-wrap">const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos) const -&gt; uint64_t</span>
-            </dt>
-            <dd>Query the nearest cell for a given position.</dd>
+            <dd>Build the R-tree using bulk loading and persist to disk.</dd>
           </dl>
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="aad4308b67e2f4e1b4aa8a9ab8612b778"><div>
+          <section class="m-doc-details" id="a3cab238930cca0cbaa39a7820550cfc6"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"> RTree::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aad4308b67e2f4e1b4aa8a9ab8612b778" class="m-doc-self">RTree</a>(</span><span class="m-doc-wrap"><a href="namespaceRTreeHelpers.html#a25d79e79af2dbc00589f60af602cfa8d" class="m-doc">RTreeHelpers::<wbr />CoordinateSystem</a> coordSys) <span class="m-label m-info">explicit</span> </span></span>
+              <span class="m-doc-wrap-bumper"> RTreeBuilder::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3cab238930cca0cbaa39a7820550cfc6" class="m-doc-self">RTreeBuilder</a>(</span><span class="m-doc-wrap"><a href="namespaceRTreeHelpers.html#a25d79e79af2dbc00589f60af602cfa8d" class="m-doc">RTreeHelpers::<wbr />CoordinateSystem</a> coordSys) <span class="m-label m-info">explicit</span> </span></span>
             </h3>
-            <p>Construct an <a href="classRTree.html" class="m-doc">RTree</a> with a specific coordinate system.</p>
+            <p>Construct an <a href="classRTreeBuilder.html" class="m-doc">RTreeBuilder</a> with a specific coordinate system.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
@@ -120,11 +111,11 @@
               </tbody>
             </table>
           </div></section>
-          <section class="m-doc-details" id="a79d5b4e7c9a65106e26f61f2580683a5"><div>
+          <section class="m-doc-details" id="adddaf621b0b5a0c50210850ba2ae72de"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void RTree::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a79d5b4e7c9a65106e26f61f2580683a5" class="m-doc-self">insert_cell</a>(</span><span class="m-doc-wrap">const <a href="classCell.html" class="m-doc">Cell</a>&amp; cell)</span></span>
+              <span class="m-doc-wrap-bumper">void RTreeBuilder::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#adddaf621b0b5a0c50210850ba2ae72de" class="m-doc-self">add_cell</a>(</span><span class="m-doc-wrap">const <a href="classCell.html" class="m-doc">Cell</a>* cell)</span></span>
             </h3>
-            <p>Insert a cell into the collection for bulk loading.</p>
+            <p>Add a cell for inclusion in the R-tree.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
@@ -132,71 +123,26 @@
               <tbody>
                 <tr>
                   <td style="width: 1%">cell</td>
-                  <td>Reference to the cell to insert</td>
+                  <td>Pointer to the cell to add</td>
                 </tr>
               </tbody>
             </table>
           </div></section>
-          <section class="m-doc-details" id="a847acaa4e876d83b39a09b32ffdfff50"><div>
+          <section class="m-doc-details" id="a3a130462070a59135b61036ea7c28c59"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void RTree::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a847acaa4e876d83b39a09b32ffdfff50" class="m-doc-self">build</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path)</span></span>
+              <span class="m-doc-wrap-bumper">void RTreeBuilder::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3a130462070a59135b61036ea7c28c59" class="m-doc-self">build</a>(</span><span class="m-doc-wrap">const std::string&amp; output_path)</span></span>
             </h3>
-            <p>Build the <a href="classRTree.html" class="m-doc">RTree</a> using bulk loading and store to disk.</p>
+            <p>Build the R-tree using bulk loading and persist to disk.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="width: 1%">base_path</td>
-                  <td>Path to store the R-tree</td>
+                  <td style="width: 1%">output_path</td>
+                  <td>Path where the R-tree index will be stored</td>
                 </tr>
               </tbody>
-            </table>
-          </div></section>
-          <section class="m-doc-details" id="aaad134bf48dc434b3cccdf661f0c5035"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">void RTree::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aaad134bf48dc434b3cccdf661f0c5035" class="m-doc-self">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path,
-              size_t cache_size = 262144)</span></span>
-            </h3>
-            <p>Load a previously saved <a href="classRTree.html" class="m-doc">RTree</a> from file with caching.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">base_path</td>
-                  <td>Path to the input file</td>
-                </tr>
-                <tr>
-                  <td>cache_size</td>
-                  <td>Size of the cache in bytes (default: 256KB)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div></section>
-          <section class="m-doc-details" id="a2fc224c200d88fada8078c151bab654a"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">auto RTree::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2fc224c200d88fada8078c151bab654a" class="m-doc-self">query_point</a>(</span><span class="m-doc-wrap">const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos) const -&gt; uint64_t</span></span>
-            </h3>
-            <p>Query the nearest cell for a given position.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">pos</td>
-                  <td>The position to query</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Returns</th>
-                  <td>Identifier (uint64_t) of the nearest cell</td>
-                </tr>
-              </tfoot>
             </table>
           </div></section>
         </section>

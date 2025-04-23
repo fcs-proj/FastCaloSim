@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FastCaloSim</title>
+  <title>RTreeHelpers namespace | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -30,7 +30,7 @@
                 <li><a href="about.html">About</a></li>
               </ol>
             </li>
-            <li><a href="namespaces.html" id="m-navbar-current">Namespaces</a></li>
+            <li><a href="namespaces.html">Namespaces</a></li>
           </ol>
           <ol class="m-col-t-6 m-col-m-none" start="3">
             <li><a href="annotated.html">Classes</a></li>
@@ -48,32 +48,59 @@
   <div class="m-container m-container-inflatable">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <h1>Namespaces</h1>
-        <ul class="m-doc">
-          <li>namespace <a href="namespaceCLHEP.html" class="m-doc">CLHEP</a> <span class="m-doc"><span></span></span></li>
-          <li>namespace <a href="namespaceFCS__MSG.html" class="m-doc">FCS_MSG</a> <span class="m-doc"><span></span></span></li>
-          <li>namespace <a href="namespaceISF__FCS.html" class="m-doc">ISF_FCS</a> <span class="m-doc"><span></span></span></li>
-          <li>namespace <a href="namespacelwt.html" class="m-doc">lwt</a> <span class="m-doc"><span></span></span></li>
-          <li>namespace <a href="namespaceParticleData.html" class="m-doc">ParticleData</a> <span class="m-doc"><span></span></span></li>
-          <li>namespace <a href="namespaceRTreeHelpers.html" class="m-doc">RTreeHelpers</a> <span class="m-doc"><span></span></span></li>
-          <li>namespace <a href="namespacethread__utils.html" class="m-doc">thread_utils</a> <span class="m-doc"><span></span></span></li>
-        </ul>
-        <script>
-        function toggle(e) {
-            e.parentElement.className = e.parentElement.className == 'm-doc-collapsible' ?
-                'm-doc-expansible' : 'm-doc-collapsible';
-            return false;
-        }
-        /* Collapse all nodes marked as such. Doing it via JS instead of
-           directly in markup so disabling it doesn't harm usability. The list
-           is somehow regenerated on every iteration and shrinks as I change
-           the classes. It's not documented anywhere and I'm not sure if this
-           is the same across browsers, so I am going backwards in that list to
-           be sure. */
-        var collapsed = document.getElementsByClassName("collapsed");
-        for(var i = collapsed.length - 1; i >= 0; --i)
-            collapsed[i].className = 'm-doc-expansible';
-        </script>
+        <h1>
+          RTreeHelpers <span class="m-thin">namespace</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="RTreeHelpers_8h.html">&lt;FastCaloSim/Geometry/RTreeHelpers.h&gt;</a></div>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#enum-members">Enums</a></li>
+                <li><a href="#func-members">Functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="enum-members">
+          <h2><a href="#enum-members">Enums</a></h2>
+          <dl class="m-doc">
+            <dt id="a25d79e79af2dbc00589f60af602cfa8d">
+              <span class="m-doc-wrap-bumper">enum class <a href="#a25d79e79af2dbc00589f60af602cfa8d" class="m-doc-self">CoordinateSystem</a> { </span><span class="m-doc-wrap"><a href="#a25d79e79af2dbc00589f60af602cfa8dae65075d550f9b5bf9992fa1d71a131be" class="m-doc">XYZ</a>,
+              <a href="#a25d79e79af2dbc00589f60af602cfa8dabb97978cf3cbb03885e33994611de33c" class="m-doc">EtaPhiR</a>,
+              <a href="#a25d79e79af2dbc00589f60af602cfa8dacd6bf316822acb5e92b2b83f2ff81a77" class="m-doc">EtaPhiZ</a>,
+              <a href="#a25d79e79af2dbc00589f60af602cfa8dab95f20f5ae4b955759c188a61d257740" class="m-doc">RPhiZ</a>,
+              <a href="#a25d79e79af2dbc00589f60af602cfa8daec0fc0100c4fc1ce4eea230c3dc10360" class="m-doc">Undefined</a> }</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="func-members">
+          <h2><a href="#func-members">Functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a6e0e4512ba96e3fab05e245e9faddbe8">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6e0e4512ba96e3fab05e245e9faddbe8" class="m-doc-self">norm_phi</a>(</span><span class="m-doc-wrap">double angle) -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac77426bf7b1aeeeca4f7db275cd1df90">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac77426bf7b1aeeeca4f7db275cd1df90" class="m-doc-self">build_eta_phi_boxes</a>(</span><span class="m-doc-wrap">double eta,
+              double phi,
+              double deta,
+              double dphi) -&gt; std::vector&lt;std::array&lt;double, 4&gt;&gt;</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a28986cda790c48676ef28b5dca32a70b">
+              <span class="m-doc-wrap-bumper">auto <a href="#a28986cda790c48676ef28b5dca32a70b" class="m-doc-self">build_xy_box</a>(</span><span class="m-doc-wrap">double x,
+              double y,
+              double dx,
+              double dy) -&gt; std::array&lt;double, 4&gt;</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
       </div>
     </div>
   </div>
