@@ -1,5 +1,5 @@
 if(NOT TARGET spatialindex)
-  find_package(libspatialindex CONFIG QUIET NO_MODULE)
+  find_package(libspatialindex CONFIG QUIET)
 
   if(NOT libspatialindex_FOUND)
     message(STATUS "libspatialindex not found, building from source")
@@ -8,7 +8,6 @@ if(NOT TARGET spatialindex)
     set(SIDX_BASE_CPP "" CACHE STRING "" FORCE)
     set(SIDX_COMMON_CXX_FLAGS "" CACHE STRING "" FORCE)
     set(BUILD_TESTING OFF CACHE BOOL "Disable libspatialindex tests" FORCE)
-
     include(FetchContent)
     FetchContent_Declare(
       libspatialindex
@@ -22,7 +21,17 @@ if(NOT TARGET spatialindex)
     # Override globally *before build*
     set(CMAKE_CXX_FLAGS "${_saved_cxx_flags} -w -O1 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
 
+    # Ensure position independent code for shared libraries
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
     FetchContent_MakeAvailable(libspatialindex)
+
+    target_include_directories(spatialindex PUBLIC
+      "$<BUILD_INTERFACE:${libspatialindex_SOURCE_DIR}/include>"
+      "$<INSTALL_INTERFACE:include>"
+    )
+    add_library(libspatialindex::spatialindex ALIAS spatialindex)
+
     deactivate_checks(spatialindex spatialindex_c)
     # Restore flags
     set(CMAKE_CXX_FLAGS "${_saved_cxx_flags}")
