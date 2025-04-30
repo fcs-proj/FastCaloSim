@@ -1,4 +1,5 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+#include <cstring>
 #include <memory>
 #include <stdexcept>
 
@@ -11,18 +12,15 @@ RTreeBuilder::RTreeBuilder(RTreeHelpers::CoordinateSystem coordSys)
 
 void RTreeBuilder::add_cell(const Cell* cell)
 {
-  // Use the cell ID instead of the pointer
-  uint64_t cell_id = cell->id();
-
   if (m_coordinate_system == RTreeHelpers::CoordinateSystem::XYZ) {
     auto box = RTreeHelpers::build_xy_box(
         cell->x(), cell->y(), cell->dx(), cell->dy());
-    m_boxes.emplace_back(box, cell_id);
+    m_boxes.emplace_back(box, cell, sizeof(Cell));
   } else {
     auto boxes = RTreeHelpers::build_eta_phi_boxes(
         cell->eta(), cell->phi(), cell->deta(), cell->dphi());
     for (const auto& box : boxes) {
-      m_boxes.emplace_back(box, cell_id);
+      m_boxes.emplace_back(box, cell, sizeof(Cell));
     }
   }
 }
@@ -39,8 +37,8 @@ void RTreeBuilder::build(const std::string& output_path)
   class DataStream : public SpatialIndex::IDataStream
   {
   public:
-    DataStream(
-        const std::vector<std::pair<std::array<double, 4>, uint64_t>>& boxes)
+    DataStream(const std::vector<
+               std::tuple<std::array<double, 4>, const Cell*, size_t>>& boxes)
         : m_boxes(boxes)
         , m_index(0)
     {
@@ -50,22 +48,32 @@ void RTreeBuilder::build(const std::string& output_path)
 
     SpatialIndex::IData* getNext() override
     {
-      // Get the next box-cell id pair from our collection
-      const auto& [bounds, id] = m_boxes[m_index++];
+      // Get the next box-cell pair from our collection
+      const auto& [bounds, cellPtr, dataSize] = m_boxes[m_index++];
 
       // Create a spatial region (bounding box) from the bounds
       double low[2] = {bounds[0], bounds[1]};  // Min coordinates
       double high[2] = {bounds[2], bounds[3]};  // Max coordinates
       SpatialIndex::Region r(low, high, 2);  // 2D region
 
-      // Create a new Data object that associates the region with our cell
-      // pointer The RTree will take ownership of this object and free it when
-      // done
+      // Create a byte array with the complete cell data
+      unsigned char* data = nullptr;
+      if (dataSize > 0 && cellPtr != nullptr) {
+        data = new unsigned char[dataSize];
+        std::memcpy(data, cellPtr, dataSize);
+      }
+
+      // Use the cell's ID as the RTree node identifier
+      // This makes direct lookup by ID much simpler
+      uint64_t cellId = cellPtr->id();
+
+      // Create a new Data object that associates the region with the complete
+      // cell data
       return new SpatialIndex::RTree::Data(
-          0,  // Size of our data (not used as we just return id
-          nullptr,  // Pointer to data (not used as we just return id
+          dataSize,  // Size of our data (complete cell)
+          data,  // Pointer to cell data
           r,  // Region (bounding box)
-          id  // ID for this entry
+          cellId  // Use the actual cell ID as the index
       );
     }
 
@@ -77,7 +85,8 @@ void RTreeBuilder::build(const std::string& output_path)
     uint32_t size() override { return static_cast<uint32_t>(m_boxes.size()); }
 
   private:
-    const std::vector<std::pair<std::array<double, 4>, uint64_t>>& m_boxes;
+    const std::vector<std::tuple<std::array<double, 4>, const Cell*, size_t>>&
+        m_boxes;
     size_t m_index;
   };
 
@@ -95,6 +104,7 @@ void RTreeBuilder::build(const std::string& output_path)
   // Note: especially LeafCapacity and IndexCapacity are important for
   // performance
   /// @TODO: optimize these parameters based on the expected number of cells
+  /// Tools::PropertySet ps;
   Tools::PropertySet ps;
 
   // Set FillFactor property

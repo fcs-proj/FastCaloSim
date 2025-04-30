@@ -40,7 +40,7 @@ void RTree::load(const std::string& base_path, size_t cache_size)
   m_query->load(base_path, cache_size);
 }
 
-auto RTree::query_point(const Position& pos) const -> uint64_t
+auto RTree::query_point(const Position& pos) const -> Cell
 {
   if (!m_query) {
     throw std::logic_error("Tree not loaded yet. Call load() first.");

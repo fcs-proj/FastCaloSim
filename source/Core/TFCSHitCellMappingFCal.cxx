@@ -21,6 +21,9 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
   FCS_MSG_DEBUG("Got hit with E=" << hit.E() << " x=" << hit.x()
                                   << " y=" << hit.y());
 
+  // Layer where we perform lookup
+  const unsigned int layer = calosample();
+
   // Position where we perform the lookup
   // The z position here is used to determine the side
   // in the custom FCAL geo handler
@@ -31,12 +34,12 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
     return (FCSReturnCode)(FCSRetry + 5);
   }
   // Get the best matching cell
-  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
+  const auto& cell = m_geo->get_cell(layer, lookup_pos);
   FCS_MSG_DEBUG(cell);
 
   /// Could not find a cell, retry simulation up to 5 times
   if (!cell.is_valid()) {
-    FCS_MSG_WARNING("Hit in layer " << calosample() << " with E = " << hit.E()
+    FCS_MSG_WARNING("Hit in layer " << layer << " with E = " << hit.E()
                                     << " x = " << hit.x() << " y = " << hit.y()
                                     << " could not be matched to a cell");
     return (FCSReturnCode)(FCSRetry + 5);
@@ -56,7 +59,7 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
   // FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
   if (proximity < 2.25) {
-    simulstate.deposit(cell.id(), hit.E());
+    simulstate.deposit(layer, cell.id(), hit.E());
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }

@@ -119,10 +119,6 @@ private:
   std::unordered_map<unsigned int, std::unique_ptr<RTreeQuery>>
       m_layer_rtree_queries;
 
-  /// @brief Primary cell repository - maps cell id to cells and owns all cells
-  std::unordered_map<unsigned long long, std::unique_ptr<Cell>>
-      m_cell_repository;
-
   /// @brief Maps layer ID to vector of cell IDs in that layer
   std::unordered_map<unsigned int, std::vector<unsigned long long>>
       m_layer_cell_ids;
@@ -136,9 +132,12 @@ private:
   /// @brief Maps layer id -> layer properties
   std::map<unsigned int, LayerFlags> m_layer_flags;
 
-  /// @brief Record a cell in the geometry
+  /// @brief Record a cell ID in the layer tracking
   void record_cell(std::unique_ptr<Cell> cell);
 
   /// @brief Update the eta extremes of a layer
   void update_eta_extremes(unsigned int layer, const Cell& cell);
+
+  /// @brief Static invalid cell for error cases
+  static Cell s_invalid_cell;
 };

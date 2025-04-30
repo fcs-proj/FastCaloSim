@@ -30,11 +30,14 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
   FCS_MSG_DEBUG("Got hit with E=" << hit.E() << " eta=" << hit.eta()
                                   << " phi=" << hit.phi());
 
+  // Layer where  we simulate hit
+  const unsigned int layer = calosample();
+
   // Position where we will perform the lookup
   Position lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
 
   // Get the best matching cell
-  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
+  const auto& cell = m_geo->get_cell(layer, lookup_pos);
   FCS_MSG_DEBUG(cell);
 
   // Get hit-cell boundary proximity
@@ -51,7 +54,7 @@ FCSReturnCode TFCSHitCellMapping::simulate_hit(
   // for FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
   if (proximity < 0.005) {
-    simulstate.deposit(cell.id(), hit.E());
+    simulstate.deposit(layer, cell.id(), hit.E());
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }

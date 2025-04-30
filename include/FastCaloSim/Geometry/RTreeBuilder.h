@@ -4,6 +4,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <spatialindex/SpatialIndex.h>
@@ -42,6 +43,6 @@ public:
 
 private:
   RTreeHelpers::CoordinateSystem m_coordinate_system;
-  // Store bounding boxes and their associated cell IDs
-  std::vector<std::pair<std::array<double, 4>, uint64_t>> m_boxes;
+  // Store bounding boxes, cell pointers, and data size
+  std::vector<std::tuple<std::array<double, 4>, const Cell*, size_t>> m_boxes;
 };

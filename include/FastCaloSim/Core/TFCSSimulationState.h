@@ -53,13 +53,20 @@ public:
     m_Etot += Esample;
   };
 
-  // maps the cell id to the energy deposited in the cell
-  using cellmap = std::unordered_map<unsigned long long, float>;
+  struct CellInfo
+  {
+    float energy;
+    int layer;
+  };
+
+  using cellmap = std::unordered_map<unsigned long long, CellInfo>;
 
   cellmap& cells() { return m_cells; };
   const cellmap& cells() const { return m_cells; };
 
-  void deposit(const unsigned long long cell_id, float E);
+  void deposit(const unsigned int layer,
+               const unsigned long long cell_id,
+               float E);
 
   void Print(Option_t* option = "") const;
 

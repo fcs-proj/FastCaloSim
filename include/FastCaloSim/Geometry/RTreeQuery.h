@@ -1,6 +1,5 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 #pragma once
-
 #include <memory>
 #include <string>
 
@@ -10,10 +9,10 @@
 #include "FastCaloSim/Geometry/RTreeHelpers.h"
 
 /**
- * @brief Class responsible for loading and querying R-trees
+ * @brief Class responsible for all RTree queries
  *
  * This class handles loading R-trees from disk with configurable
- * caching for efficient lookup of the nearest cell for a given position.
+ * caching for efficient lookup of cells by position or ID.
  */
 class RTreeQuery
 {
@@ -36,9 +35,16 @@ public:
   /**
    * @brief Query the nearest cell for a given position
    * @param pos The position to query
-   * @return Pointer to the nearest cell
+   * @return The nearest cell
    */
-  auto query_point(const Position& pos) const -> uint64_t;
+  auto query_point(const Position& pos) const -> Cell;
+
+  /**
+   * @brief Get a cell directly by its ID
+   * @param id The cell ID to look up
+   * @return The cell with the given ID, or an invalid cell if not found
+   */
+  auto get_cell_by_id(unsigned long long id) const -> Cell;
 
 private:
   RTreeHelpers::CoordinateSystem m_coordinate_system;

@@ -18,10 +18,10 @@ struct SimStateContainerData
 {
   unsigned int state_id;  // The simulation state to which the cell belongs
   unsigned long long cell_id;  // The unique cell identifier
-  double cell_energy;  // The deposited energy in that cell
+  float cell_energy;  // The deposited energy in that cell
   unsigned int layer;  // The layer ID to which the cell belons
-  double eta, phi, r, x, y, z;  // The center positions of the cell
-  double deta, dphi, dr, dx, dy, dz;  // The dimensions of the cell
+  float eta, phi, r, x, y, z;  // The center positions of the cell
+  float deta, dphi, dr, dx, dy, dz;  // The dimensions of the cell
   bool isBarrel;  // Whether the cell belongs to a barrel or endcap layer
   bool isXYZ, isEtaPhiR, isEtaPhiZ, isRPhiZ;  // The coordinate system in which
                                               // cell dimensions are described
@@ -59,19 +59,17 @@ class SimStateContainer
 
     int state_id = 0;
     for (const auto& state : m_container) {
-      TFCSSimulationState::cellmap cellmap = state.cells();
-      // First order the cellmap by cell id
-      std::map<unsigned long long, float> ordered_cellmap(cellmap.begin(),
-                                                          cellmap.end());
-      for (const auto& cell_map_iter : ordered_cellmap) {
-        unsigned long long cell_id = cell_map_iter.first;
-        const float cell_energy = cell_map_iter.second;
+      const auto& cellmap = state.cells();
 
-        // Get the cell
+      // Order by cell id
+      std::map<unsigned long long, TFCSSimulationState::CellInfo>
+          ordered_cellmap(cellmap.begin(), cellmap.end());
+
+      for (const auto& [cell_id, info] : ordered_cellmap) {
         const Cell cell = m_geo->get_cell(cell_id);
 
-        data.push_back({state_id,         cell.id(),        cell_energy,
-                        cell.layer(),     cell.eta(),       cell.phi(),
+        data.push_back({state_id,         cell.id(),        info.energy,
+                        info.layer,       cell.eta(),       cell.phi(),
                         cell.r(),         cell.x(),         cell.y(),
                         cell.z(),         cell.deta(),      cell.dphi(),
                         cell.dr(),        cell.dx(),        cell.dy(),

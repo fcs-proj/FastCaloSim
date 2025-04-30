@@ -57,7 +57,7 @@ public:
    * @param pos The position to query
    * @return Identifier (uint64_t) of the nearest cell
    */
-  auto query_point(const Position& pos) const -> uint64_t;
+  auto query_point(const Position& pos) const -> Cell;
 
 private:
   // Coordinate system for this layer

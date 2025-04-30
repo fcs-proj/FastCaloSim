@@ -56,15 +56,15 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
             0,
             0);
 
-  // Deposit 10 MeV in that cell
-  sim_state.deposit(cell.id(), 10.0);
+  // Deposit 10 MeV in that cell in layer 0
+  sim_state.deposit(0, cell.id(), 10.0);
   // Retrieve the cell map of the simulation state
   auto& cells = sim_state.cells();
 
   // Check that the cell is in the map
   ASSERT_TRUE(cells.find(cell.id()) != cells.end());
   // Check that the energy deposited in the cell is correct
-  EXPECT_FLOAT_EQ(cells[cell.id()], 10.0);
+  EXPECT_FLOAT_EQ(cells[cell.id()].energy, 10.0);
 }
 
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)

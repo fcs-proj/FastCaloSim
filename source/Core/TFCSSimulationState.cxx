@@ -30,9 +30,13 @@ void TFCSSimulationState::clear()
   m_Efrac.clear();
 }
 
-void TFCSSimulationState::deposit(const unsigned long long cell_id, float E)
+void TFCSSimulationState::deposit(const unsigned int layer,
+                                  const unsigned long long cell_id,
+                                  float E)
 {
-  m_cells[cell_id] += E;
+  auto& info = m_cells[cell_id];
+  info.energy += E;
+  info.layer = layer;
 }
 
 void TFCSSimulationState::Print(Option_t*) const
