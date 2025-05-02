@@ -79,7 +79,8 @@ public:
   {
     auto it = m_index.find(id);
     if (it == m_index.end()) {
-      std::runtime_error("Cell ID not found in index: " + std::to_string(id));
+      throw std::runtime_error("Cell ID not found in index: "
+                               + std::to_string(id));
       return m_invalid_cell;
     }
 
@@ -91,13 +92,17 @@ public:
   auto get_at_index(size_t i) const -> const Cell&
   {
     if (i >= m_n_cells) {
-      std::runtime_error("Index out of bounds: " + std::to_string(i));
-      return m_invalid_cell;
+      throw std::runtime_error("Index out of bounds: " + std::to_string(i));
     }
 
     const CellData* cell_data = reinterpret_cast<const CellData*>(
         static_cast<const char*>(m_data) + i * sizeof(CellData));
-    return *reinterpret_cast<const Cell*>(cell_data);
+
+    // Use thread-local storage to avoid returning a dangling pointer
+    thread_local Cell tmp_cell;
+    std::memcpy(
+        reinterpret_cast<void*>(&tmp_cell.raw()), cell_data, sizeof(CellData));
+    return tmp_cell;
   }
 
   auto size() const -> size_t { return m_n_cells; }

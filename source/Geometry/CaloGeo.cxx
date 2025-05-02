@@ -308,7 +308,12 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
   }
 
   // Write the cell store to disk
+  // Memory will be freed after writing
   cell_store_builder.write(rtree_base_path + "/cellstore");
+
+  // Temporary cell store
+  CellStore temp_cell_store;
+  temp_cell_store.load(rtree_base_path + "/cellstore");
 
   // Build RTrees for each layer
   for (const auto& [layer_id, cell_ids] : m_layer_cell_ids) {
@@ -322,7 +327,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
     RTreeBuilder rtree_builder(coord_sys);
 
     for (const auto& cell_id : cell_ids) {
-      const Cell& cell = m_cell_store.get(cell_id);
+      const Cell& cell = temp_cell_store.get(cell_id);
       rtree_builder.add_cell(&cell);
     }
     rtree_builder.build(rtree_path);
@@ -357,10 +362,8 @@ void CaloGeo::load(const std::string& rtree_base_path, size_t cache_size)
   // Iterate through all cells to rebuild the layer-to-cell mapping
   for (size_t i = 0; i < m_cell_store.size(); ++i) {
     const Cell& cell = m_cell_store.get_at_index(i);
-    std::cout << "Cell valid: " << cell.is_valid() << std::endl;
     if (!cell.is_valid()) {
-      std::cerr << "Invalid cell at index " << i << std::endl;
-      continue;
+      throw std::runtime_error("Invalid cell found in cell store");
     }
     unsigned int layer_id = cell.layer();
     unique_layers.insert(layer_id);
