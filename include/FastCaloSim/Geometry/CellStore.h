@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -43,12 +44,13 @@ public:
       throw std::runtime_error("Failed to open index file: " + index_path);
     }
 
-    while (index_file) {
+    for (;;) {
       uint64_t id, offset;
-      index_file.read(reinterpret_cast<char*>(&id), sizeof(id));
-      index_file.read(reinterpret_cast<char*>(&offset), sizeof(offset));
-      if (index_file.gcount() == 0)
-        break;  // EOF
+      if (!index_file.read(reinterpret_cast<char*>(&id), sizeof(id)))
+        break;
+      if (!index_file.read(reinterpret_cast<char*>(&offset), sizeof(offset))) {
+        throw std::runtime_error("Corrupted index file (offset missing)");
+      }
       m_index[id] = offset;
     }
 
@@ -89,19 +91,20 @@ public:
     return *reinterpret_cast<const Cell*>(cell_data);
   }
 
-  auto get_at_index(size_t i) const -> const Cell&
+  auto get_at_index(size_t idx) const -> const Cell&
   {
-    if (i >= m_n_cells) {
-      throw std::runtime_error("Index out of bounds: " + std::to_string(i));
+    if (idx >= m_n_cells) {
+      throw std::runtime_error("Index out of bounds: " + std::to_string(idx));
     }
 
-    const CellData* cell_data = reinterpret_cast<const CellData*>(
-        static_cast<const char*>(m_data) + i * sizeof(CellData));
+    // Calculate raw pointer to the bytes of CellData
+    const char* cell_bytes =
+        static_cast<const char*>(m_data) + idx * sizeof(CellData);
 
-    // Use thread-local storage to avoid returning a dangling pointer
+    // Use thread-local Cell to avoid lifetime issues
     thread_local Cell tmp_cell;
-    std::memcpy(
-        reinterpret_cast<void*>(&tmp_cell.raw()), cell_data, sizeof(CellData));
+    std::memcpy(&tmp_cell.raw(), cell_bytes, sizeof(CellData));
+
     return tmp_cell;
   }
 

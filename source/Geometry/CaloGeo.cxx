@@ -79,7 +79,7 @@ auto CaloGeo::get_cell_at_idx(unsigned int layer,
 {
   auto layer_it = m_layer_cell_ids.find(layer);
   if (layer_it == m_layer_cell_ids.end() || idx >= layer_it->second.size()) {
-    std::runtime_error("Invalid layer ID or index out of bounds");
+    throw std::runtime_error("Invalid layer ID or index out of bounds");
     static Cell invalid_cell;
     return invalid_cell;
   }
@@ -326,8 +326,8 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
     // Build the RTree
     RTreeBuilder rtree_builder(coord_sys);
 
-    for (const auto& cell_id : cell_ids) {
-      const Cell& cell = temp_cell_store.get(cell_id);
+    for (size_t i = 0; i < cell_ids.size(); ++i) {
+      const Cell& cell = temp_cell_store.get_at_index(i);
       rtree_builder.add_cell(&cell);
     }
     rtree_builder.build(rtree_path);
