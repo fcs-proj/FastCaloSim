@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <ostream>
 
 #include <fmt/core.h>
@@ -119,7 +120,9 @@ public:
   auto dr() const -> double { return m_data.m_dr; }
   auto is_valid() const -> bool { return m_data.m_is_valid; }
   void invalidate() { m_data.m_is_valid = false; }
+  // Raw access to the cell data
   auto raw() const -> const CellData& { return m_data; }
+  auto raw() -> CellData& { return m_data; }
 
   auto rent() const -> double
   {

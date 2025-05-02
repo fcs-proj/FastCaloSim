@@ -38,8 +38,12 @@ protected:
     std::filesystem::create_directory(tmpl);
     std::filesystem::path tmp_dir_path {tmpl};
 
-    // 5mb cache size per layer for the RTree
-    geo->build(df, tmp_dir_path.string(), true, 5 * 1024 * 1024);
+    // Build the geometry and write it to disk
+    geo->build(df, tmp_dir_path.string());
+    // Load the geometry from the files
+    // Set the Rtree cache size to 5 MB per layer
+    size_t cache_size = 5 * 1024 * 1024;
+    geo->load(tmp_dir_path.string(), cache_size);
 
     // Create alternative geometry handler for FCal
     std::shared_ptr<FCal> fcal_geo = std::make_shared<FCal>();

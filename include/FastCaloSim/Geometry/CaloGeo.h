@@ -12,6 +12,7 @@
 #include <ROOT/RDataFrame.hxx>
 
 #include "FastCaloSim/Geometry/Cell.h"
+#include "FastCaloSim/Geometry/CellStore.h"
 #include "FastCaloSim/Geometry/RTree.h"
 
 class FASTCALOSIM_EXPORT CaloGeo
@@ -27,10 +28,11 @@ public:
   CaloGeo() = default;
 
   // Method to build geometry
-  void build(ROOT::RDataFrame& geo,
-             const std::string& rtree_base_path,
-             bool build_tree = true,
-             size_t cache_size = 5 * 1024 * 1024);
+  void build(ROOT::RDataFrame& geo, const std::string& rtree_base_path);
+
+  // Method to load geometry
+  void load(const std::string& rtree_base_path,
+            size_t cache_size = 5 * 1024 * 1024);
 
   // Retrieve the id of the best matching cell for a given position
   // Alternative geo handlers need to override this method
@@ -119,9 +121,8 @@ private:
   std::unordered_map<unsigned int, std::unique_ptr<RTreeQuery>>
       m_layer_rtree_queries;
 
-  /// @brief Primary cell repository - maps cell id to cells and owns all cells
-  std::unordered_map<unsigned long long, std::unique_ptr<Cell>>
-      m_cell_repository;
+  /// @brief The memory-mapped cell store
+  CellStore m_cell_store;
 
   /// @brief Maps layer ID to vector of cell IDs in that layer
   std::unordered_map<unsigned int, std::vector<unsigned long long>>

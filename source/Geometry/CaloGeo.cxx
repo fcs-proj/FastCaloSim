@@ -1,13 +1,17 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+
 #include <array>
 #include <chrono>
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <optional>
 #include <unordered_set>
 #include <vector>
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
+
+#include "FastCaloSim/Geometry/CellStoreBuilder.h"
 
 auto CaloGeo::get_cell(unsigned int layer,
                        const Position& pos) const -> const Cell&
@@ -18,6 +22,7 @@ auto CaloGeo::get_cell(unsigned int layer,
     auto cell_id = alt_it->second->get_cell_id(layer, pos);
     // Return an invalid cell if the alternative geometry handler returns -1
     if (cell_id == std::numeric_limits<unsigned long long>::max()) {
+      std::runtime_error("Invalid cell ID from alternative geometry handler");
       static Cell invalid_cell;
       return invalid_cell;
     }
@@ -66,12 +71,7 @@ auto CaloGeo::n_layers() const -> unsigned int
 
 auto CaloGeo::get_cell(unsigned long long id) const -> const Cell&
 {
-  auto it = m_cell_repository.find(id);
-  if (it != m_cell_repository.end()) {
-    return *(it->second);
-  }
-  static Cell invalid_cell;
-  return invalid_cell;
+  return m_cell_store.get(id);
 }
 
 auto CaloGeo::get_cell_at_idx(unsigned int layer,
@@ -79,12 +79,11 @@ auto CaloGeo::get_cell_at_idx(unsigned int layer,
 {
   auto layer_it = m_layer_cell_ids.find(layer);
   if (layer_it == m_layer_cell_ids.end() || idx >= layer_it->second.size()) {
-    static Cell invalid_cell;
-    return invalid_cell;
+    throw std::runtime_error("Invalid layer ID or index out of bounds");
   }
 
   unsigned long long cell_id = layer_it->second[idx];
-  return *(m_cell_repository.at(cell_id));
+  return m_cell_store.get(cell_id);
 }
 
 auto CaloGeo::is_barrel(unsigned int layer) const -> bool
@@ -150,17 +149,6 @@ void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
     m_alt_geo_handlers[i] = handler;
   }
 }
-void CaloGeo::record_cell(std::unique_ptr<Cell> cell)
-{
-  unsigned int layer = cell->layer();
-  unsigned long long id = cell->id();
-
-  // Add cell to layer's cell ID list
-  m_layer_cell_ids[layer].push_back(id);
-
-  // Store the cell in the repository
-  m_cell_repository[id] = std::move(cell);
-}
 
 void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
 {
@@ -177,10 +165,8 @@ void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
   }
 }
 
-void CaloGeo::build(ROOT::RDataFrame& geo,
-                    const std::string& rtree_base_path,
-                    bool build_tree,
-                    size_t cache_size)
+// Method to build geometry
+void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
 {
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
@@ -234,11 +220,10 @@ void CaloGeo::build(ROOT::RDataFrame& geo,
         -std::numeric_limits<double>::max();
   }
 
-  // Reserve capacity for cell repository
-  m_cell_repository.reserve(m_n_total_cells);
-
   // Track which layers we've already set flags for to avoid redundant
   std::unordered_set<unsigned int> processed_layer_flags;
+  // This will be used to build our memory-mapped cell store
+  CellStoreBuilder cell_store_builder;
 
   // Process cells in bulk
   Position pos;
@@ -299,27 +284,36 @@ void CaloGeo::build(ROOT::RDataFrame& geo,
     pos.m_phi = phi->at(i);
     pos.m_r = r->at(i);
 
-    // Create a unique_ptr to a new Cell
-    auto cell_ptr = std::make_unique<Cell>(id->at(i),
-                                           pos,
-                                           layer_id,
-                                           isBarrel->at(i),
-                                           isXYZ->at(i),
-                                           isEtaPhiR->at(i),
-                                           isEtaPhiZ->at(i),
-                                           isRPhiZ->at(i),
-                                           dx->at(i),
-                                           dy->at(i),
-                                           dz->at(i),
-                                           deta_val,
-                                           dphi->at(i),
-                                           dr->at(i));
+    Cell cell(id->at(i),
+              pos,
+              layer_id,
+              isBarrel->at(i),
+              isXYZ->at(i),
+              isEtaPhiR->at(i),
+              isEtaPhiZ->at(i),
+              isRPhiZ->at(i),
+              dx->at(i),
+              dy->at(i),
+              dz->at(i),
+              deta_val,
+              dphi->at(i),
+              dr->at(i));
 
-    // Record the cell and update eta extremes
-    update_eta_extremes(layer_id, *cell_ptr);
-    record_cell(std::move(cell_ptr));
+    update_eta_extremes(layer_id, cell);
+    m_layer_cell_ids[layer_id].push_back(cell.id());
+
+    cell_store_builder.add_cell(cell);
   }
 
+  // Write the cell store to disk
+  // Memory will be freed after writing
+  cell_store_builder.write(rtree_base_path + "/cellstore");
+
+  // Temporary cell store
+  CellStore temp_cell_store;
+  temp_cell_store.load(rtree_base_path + "/cellstore");
+
+  // Build RTrees for each layer
   for (const auto& [layer_id, cell_ids] : m_layer_cell_ids) {
     // Get coordinate system directly from layer flags
     auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
@@ -327,20 +321,99 @@ void CaloGeo::build(ROOT::RDataFrame& geo,
     std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
     std::string rtree_path = rtree_base_path + "/" + rtree_name;
 
-    // Build the RTree if requested
-    if (build_tree) {
-      // Build the RTree
-      RTreeBuilder builder(coord_sys);
+    // Build the RTree
+    RTreeBuilder rtree_builder(coord_sys);
 
-      for (const auto& cell_id : cell_ids) {
-        auto cell = m_cell_repository.at(cell_id).get();
-        builder.add_cell(cell);
-      }
-      builder.build(rtree_path);
-
-      std::cout << "Built RTree for layer " << layer_id << " with "
-                << cell_ids.size() << " cells" << std::endl;
+    for (size_t i = 0; i < cell_ids.size(); ++i) {
+      const Cell& cell = temp_cell_store.get(cell_ids[i]);
+      rtree_builder.add_cell(&cell);
     }
+    rtree_builder.build(rtree_path);
+
+    std::cout << "Built RTree for layer " << layer_id << " with "
+              << cell_ids.size() << " cells" << std::endl;
+  }
+
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = end_time - start_time;
+
+  // Print timing information
+  std::cout << "INFO: Done building calo geometry. Took " << elapsed.count()
+            << " s (" << m_n_total_cells << " cells in " << m_n_layers
+            << " layers)" << std::endl;
+}
+
+// Method to load geometry
+void CaloGeo::load(const std::string& rtree_base_path, size_t cache_size)
+{
+  // Start timing
+  auto start_time = std::chrono::high_resolution_clock::now();
+
+  // Load the cell store
+  m_cell_store.load(rtree_base_path + "/cellstore");
+
+  // Rebuild the layer cell ID map
+  m_layer_cell_ids.clear();
+  m_n_total_cells = 0;
+  std::unordered_set<unsigned int> unique_layers;
+
+  // Iterate through all cells to rebuild the layer-to-cell mapping
+  for (size_t i = 0; i < m_cell_store.size(); ++i) {
+    const Cell& cell = m_cell_store.get_at_index(i);
+    if (!cell.is_valid()) {
+      throw std::runtime_error("Invalid cell found in cell store");
+    }
+    unsigned int layer_id = cell.layer();
+    unique_layers.insert(layer_id);
+    m_layer_cell_ids[layer_id].push_back(cell.id());
+    m_n_total_cells++;
+
+    // Rebuild layer flags if not already done
+    if (m_layer_flags.find(layer_id) == m_layer_flags.end()) {
+      m_layer_flags[layer_id] = LayerFlags {};
+      m_layer_flags[layer_id].is_barrel = cell.isBarrel();
+
+      // Set coordinate system based on cell flags
+      if (cell.isXYZ()) {
+        m_layer_flags[layer_id].coordinate_system =
+            RTreeHelpers::CoordinateSystem::XYZ;
+      } else if (cell.isEtaPhiR()) {
+        m_layer_flags[layer_id].coordinate_system =
+            RTreeHelpers::CoordinateSystem::EtaPhiR;
+      } else if (cell.isEtaPhiZ()) {
+        m_layer_flags[layer_id].coordinate_system =
+            RTreeHelpers::CoordinateSystem::EtaPhiZ;
+      } else if (cell.isRPhiZ()) {
+        m_layer_flags[layer_id].coordinate_system =
+            RTreeHelpers::CoordinateSystem::RPhiZ;
+      } else {
+        m_layer_flags[layer_id].coordinate_system =
+            RTreeHelpers::CoordinateSystem::Undefined;
+      }
+
+      // Initialize eta extensions
+      m_layer_flags[layer_id].eta_extensions[kEtaPositive].eta_min =
+          std::numeric_limits<double>::max();
+      m_layer_flags[layer_id].eta_extensions[kEtaPositive].eta_max =
+          -std::numeric_limits<double>::max();
+      m_layer_flags[layer_id].eta_extensions[kEtaNegative].eta_min =
+          std::numeric_limits<double>::max();
+      m_layer_flags[layer_id].eta_extensions[kEtaNegative].eta_max =
+          -std::numeric_limits<double>::max();
+    }
+
+    // Update eta extremes for each cell
+    update_eta_extremes(layer_id, cell);
+  }
+
+  m_n_layers = unique_layers.size();
+
+  // Load the RTrees for each layer
+  for (const auto& [layer_id, cell_ids] : m_layer_cell_ids) {
+    auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
+
+    std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
+    std::string rtree_path = rtree_base_path + "/" + rtree_name;
 
     // Load the RTree for querying
     m_layer_rtree_queries[layer_id] = std::make_unique<RTreeQuery>(coord_sys);
@@ -352,7 +425,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo,
   std::chrono::duration<double> elapsed = end_time - start_time;
 
   // Print timing information
-  std::cout << "INFO: Done building calo geometry. Took " << elapsed.count()
+  std::cout << "INFO: Done loading calo geometry. Took " << elapsed.count()
             << " s (" << m_n_total_cells << " cells in " << m_n_layers
             << " layers)" << std::endl;
 }
