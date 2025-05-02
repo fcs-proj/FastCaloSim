@@ -119,6 +119,7 @@ public:
   auto dr() const -> double { return m_data.m_dr; }
   auto is_valid() const -> bool { return m_data.m_is_valid; }
   void invalidate() { m_data.m_is_valid = false; }
+  auto raw() const -> const CellData& { return m_data; }
 
   auto rent() const -> double
   {
