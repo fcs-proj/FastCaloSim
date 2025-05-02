@@ -83,7 +83,6 @@ public:
     if (it == m_index.end()) {
       throw std::runtime_error("Cell ID not found in index: "
                                + std::to_string(id));
-      return m_invalid_cell;
     }
 
     const CellData* cell_data = reinterpret_cast<const CellData*>(
