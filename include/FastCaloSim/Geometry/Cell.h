@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <ostream>
 
 #include <fmt/core.h>
@@ -133,6 +134,20 @@ public:
   }
   auto zent() const -> double
   {
+    std::cout << "zent() called on cell with dz = " << m_data.m_dz << std::endl;
+    std::cout << "isBarrel = " << m_data.m_isBarrel << std::endl;
+    std::cout << "isXYZ = " << m_data.m_isXYZ << std::endl;
+    std::cout << "isEtaPhiR = " << m_data.m_isEtaPhiR << std::endl;
+    std::cout << "isEtaPhiZ = " << m_data.m_isEtaPhiZ << std::endl;
+    std::cout << "isRPhiZ = " << m_data.m_isRPhiZ << std::endl;
+    std::cout << "z() = " << z() << std::endl;
+    std::cout << "dx() = " << dx() << std::endl;
+    std::cout << "dy() = " << dy() << std::endl;
+    std::cout << "dz() = " << dz() << std::endl;
+    std::cout << "deta() = " << deta() << std::endl;
+    std::cout << "dphi() = " << dphi() << std::endl;
+    std::cout << "dr() = " << dr() << std::endl;
+    std::cout << "is_valid() = " << is_valid() << std::endl;
     assert(m_data.m_dz > 0 && "zent() called on cell with dz <= 0. The half-width of the cell seems undefined.");
     return z() < 0 ? z() + m_data.m_dz * 0.5 : z() - m_data.m_dz * 0.5;
   }
