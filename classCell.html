@@ -91,10 +91,14 @@
         <section id="typeless-methods">
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
-            <dt id="aa54ad5b3b8d6d6e450b09776eaade50f">
-              <span class="m-doc-wrap-bumper"><a href="#aa54ad5b3b8d6d6e450b09776eaade50f" class="m-doc-self">Cell</a>(</span><span class="m-doc-wrap">unsigned long long id,
+            <dt id="a394510643e8664cf12b5efaf5cb99f71">
+              <span class="m-doc-wrap-bumper"><a href="#a394510643e8664cf12b5efaf5cb99f71" class="m-doc-self">Cell</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa26c7724069c9984033c89cfc8313d10">
+              <span class="m-doc-wrap-bumper"><a href="#aa26c7724069c9984033c89cfc8313d10" class="m-doc-self">Cell</a>(</span><span class="m-doc-wrap">uint64_t id,
               <a href="structPosition.html" class="m-doc">Position</a> pos,
-              unsigned int layer,
+              uint32_t layer,
               bool isBarrel,
               bool isXYZ,
               bool isEtaPhiR,
@@ -108,29 +112,13 @@
               double dr)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a394510643e8664cf12b5efaf5cb99f71">
-              <span class="m-doc-wrap-bumper"><a href="#a394510643e8664cf12b5efaf5cb99f71" class="m-doc-self">Cell</a>(</span><span class="m-doc-wrap">)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a246d54ef2e569f97000fe94f5524e7ba">
-              <span class="m-doc-wrap-bumper"><a href="#a246d54ef2e569f97000fe94f5524e7ba" class="m-doc-self">~Cell</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">virtual</span></span>
-            </dt>
-            <dd><span></span></dd>
           </dl>
         </section>
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="ab97ea4d566851d382b2dc2c81e9c6fc3">
-              <span class="m-doc-wrap-bumper">auto <a href="#ab97ea4d566851d382b2dc2c81e9c6fc3" class="m-doc-self">is_valid</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="aa30bd301ba645df5aea45b11aa532d25">
-              <span class="m-doc-wrap-bumper">auto <a href="#aa30bd301ba645df5aea45b11aa532d25" class="m-doc-self">invalidate</a>(</span><span class="m-doc-wrap">) -&gt; void</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="acd79e8e1505cefc0cc4c4c6e86b257ed">
-              <span class="m-doc-wrap-bumper">auto <a href="#acd79e8e1505cefc0cc4c4c6e86b257ed" class="m-doc-self">id</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned long long</span>
+            <dt id="ae36a54c37cf46b0ea6be2971e6022de3">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae36a54c37cf46b0ea6be2971e6022de3" class="m-doc-self">id</a>(</span><span class="m-doc-wrap">) const -&gt; uint64_t</span>
             </dt>
             <dd><span></span></dd>
             <dt id="ac34b24f88bad0860d10ac5b73de28db3">
@@ -157,8 +145,8 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a5d448922a6074c75c50243a7a65441d0" class="m-doc-self">r</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a7e2df31b6810062ecb0e69ec407704f8">
-              <span class="m-doc-wrap-bumper">auto <a href="#a7e2df31b6810062ecb0e69ec407704f8" class="m-doc-self">layer</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned int</span>
+            <dt id="a2ebbcdaee20fd568697aca18b4a2c7af">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2ebbcdaee20fd568697aca18b4a2c7af" class="m-doc-self">layer</a>(</span><span class="m-doc-wrap">) const -&gt; uint32_t</span>
             </dt>
             <dd><span></span></dd>
             <dt id="ac277a4792f1839eba9bec12d853b2c56">
@@ -184,7 +172,7 @@
             <dt id="ac441cde10a4676e25a925f837c881bf0">
               <span class="m-doc-wrap-bumper">auto <a href="#ac441cde10a4676e25a925f837c881bf0" class="m-doc-self">dx</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
-            <dd><a href="classCell.html" class="m-doc">Cell</a> size accessors Note: For the hit-&gt;cell matching, only the cell sizes for the coordinate system of the cell are used (e.g. for x,y,z cells, only dx, dy, dz are needed) However: for the extrapolation we currently also take into account the half width of the cell in the other coordinate systems e.g. for TileBar0 (eta,phi,r) we also use dz which is stored in the ROOT file In essence: if you call e.g. <a href="classCell.html#aeb16cd2d053fc94e5f1d29c5624f6ed5" class="m-doc">zent()</a> on any cell it will add whatever dz is stored We might want to revisit the logic in the future to prevent misuse for now, we assert that stored cell widths are non-zero in the case e.g. <a href="classCell.html#aeb16cd2d053fc94e5f1d29c5624f6ed5" class="m-doc">zent()</a> or <a href="classCell.html#ab5ad6a07a67001bee8c9b52dfaa5cbec" class="m-doc">zext()</a> is called.</dd>
+            <dd><span></span></dd>
             <dt id="a22ffa634ae49a346510e9417b9eacaeb">
               <span class="m-doc-wrap-bumper">auto <a href="#a22ffa634ae49a346510e9417b9eacaeb" class="m-doc-self">dy</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
@@ -203,6 +191,18 @@
             <dd><span></span></dd>
             <dt id="aea86c0770844b843cfb3606090a27b3c">
               <span class="m-doc-wrap-bumper">auto <a href="#aea86c0770844b843cfb3606090a27b3c" class="m-doc-self">dr</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab97ea4d566851d382b2dc2c81e9c6fc3">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab97ea4d566851d382b2dc2c81e9c6fc3" class="m-doc-self">is_valid</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab971ae02f22e7c7ff370d87fa41c708a">
+              <span class="m-doc-wrap-bumper">void <a href="#ab971ae02f22e7c7ff370d87fa41c708a" class="m-doc-self">invalidate</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a016ab9a7b3eee15191a735682e061c8a">
+              <span class="m-doc-wrap-bumper">auto <a href="#a016ab9a7b3eee15191a735682e061c8a" class="m-doc-self">raw</a>(</span><span class="m-doc-wrap">) const -&gt; const CellData &amp;</span>
             </dt>
             <dd><span></span></dd>
             <dt id="af0ba890218fa70ee75502fea44d997de">

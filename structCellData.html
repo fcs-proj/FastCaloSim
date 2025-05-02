@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FastCaloSim/Geometry/Cell.h file | FastCaloSim</title>
+  <title>CellData struct | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,7 +49,8 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <span class="m-breadcrumb"><a href="dir_3f8fcdf21b7927755143f31ae66e124e.html">FastCaloSim</a>/</span><span class="m-breadcrumb"><a href="dir_d22115def6822a1b9973e90174884e74.html">Geometry</a>/</span>Cell.h <span class="m-thin">file</span>
+          CellData <span class="m-thin">struct</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="Cell_8h.html">&lt;Cell.h&gt;</a></div>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -58,26 +59,74 @@
             <li>
               Reference
               <ul>
-                <li><a href="#nested-classes">Classes</a></li>
+                <li><a href="#pub-attribs">Public variables</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="nested-classes">
-          <h2><a href="#nested-classes">Classes</a></h2>
+        <section id="pub-attribs">
+          <h2><a href="#pub-attribs">Public variables</a></h2>
           <dl class="m-doc">
-            <dt>
-              struct <a href="structPosition.html" class="m-doc">Position</a>
+            <dt id="ad5b0e5425ba90c4aa3fc64eeac8fe330">
+              uint64_t <a href="#ad5b0e5425ba90c4aa3fc64eeac8fe330" class="m-doc-self">m_id</a>
+            </dt>
+            <dd>Unique identifier for the cell.</dd>
+            <dt id="ae9b61fe0139417c46daf00a7ed0b1b4c">
+              <a href="structPosition.html" class="m-doc">Position</a> <a href="#ae9b61fe0139417c46daf00a7ed0b1b4c" class="m-doc-self">m_pos</a>
+            </dt>
+            <dd><a href="structPosition.html" class="m-doc">Position</a> of the cell in 3D space (x, y, z, eta, phi, r)</dd>
+            <dt id="aee3dbdcdf7a36b5db90050408107b319">
+              uint32_t <a href="#aee3dbdcdf7a36b5db90050408107b319" class="m-doc-self">m_layer</a>
+            </dt>
+            <dd>Layer of the cell.</dd>
+            <dt id="a3eb5819d73f49f09e9a864a603608d21">
+              bool <a href="#a3eb5819d73f49f09e9a864a603608d21" class="m-doc-self">m_isBarrel</a>
+            </dt>
+            <dd>Flag to indicate if the cell is in the barrel.</dd>
+            <dt id="af5b21ee7c849099b5ff7542232943ce7">
+              bool <a href="#af5b21ee7c849099b5ff7542232943ce7" class="m-doc-self">m_isXYZ</a>
+            </dt>
+            <dd>Flags to indicate the coordinate system of the (cuboid) cell.</dd>
+            <dt id="aaabc586c40c8e7cecf9661384cff4d5a">
+              bool <a href="#aaabc586c40c8e7cecf9661384cff4d5a" class="m-doc-self">m_isEtaPhiR</a>
             </dt>
             <dd><span></span></dd>
-            <dt>
-              struct <a href="structCellData.html" class="m-doc">CellData</a>
+            <dt id="aaa84bc661f4ca00096dc2b4ef14655ff">
+              bool <a href="#aaa84bc661f4ca00096dc2b4ef14655ff" class="m-doc-self">m_isEtaPhiZ</a>
             </dt>
             <dd><span></span></dd>
-            <dt>
-              class <a href="classCell.html" class="m-doc">Cell</a>
+            <dt id="acd5974768ee1bc121d41616ac80b2a45">
+              bool <a href="#acd5974768ee1bc121d41616ac80b2a45" class="m-doc-self">m_isRPhiZ</a>
             </dt>
             <dd><span></span></dd>
+            <dt id="a2c4c4035ef30ba802b3da36947d7868f">
+              double <a href="#a2c4c4035ef30ba802b3da36947d7868f" class="m-doc-self">m_dx</a>
+            </dt>
+            <dd><a href="classCell.html" class="m-doc">Cell</a> sizes.</dd>
+            <dt id="a75a1fafc18451145aaa780a6955cc7de">
+              double <a href="#a75a1fafc18451145aaa780a6955cc7de" class="m-doc-self">m_dy</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="addcdbbd711101abea64956b493a92198">
+              double <a href="#addcdbbd711101abea64956b493a92198" class="m-doc-self">m_dz</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a2fcc812446d2dae0ebf4af24c934f1b3">
+              double <a href="#a2fcc812446d2dae0ebf4af24c934f1b3" class="m-doc-self">m_deta</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aaf78cfadcb2784757521f6b71a6d3968">
+              double <a href="#aaf78cfadcb2784757521f6b71a6d3968" class="m-doc-self">m_dphi</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aba14c9bd4b5de9eebc16a2308db3cb4f">
+              double <a href="#aba14c9bd4b5de9eebc16a2308db3cb4f" class="m-doc-self">m_dr</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab5fcd36b77d5bda607e3fea6c93d7e0c">
+              bool <a href="#ab5fcd36b77d5bda607e3fea6c93d7e0c" class="m-doc-self">m_is_valid</a>
+            </dt>
+            <dd>Flag to invalidate cell.</dd>
           </dl>
         </section>
       </div>
