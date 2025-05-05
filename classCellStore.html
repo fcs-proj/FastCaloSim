@@ -68,8 +68,8 @@
         <section id="typeless-methods">
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
-            <dt>
-              <span class="m-doc-wrap-bumper"><a href="#a3d6e82e62ced6a8e05816dab9f922c54" class="m-doc">CellStore</a>(</span><span class="m-doc-wrap">size_t cache_size = 500000)</span>
+            <dt id="aaf6f7fc150c50ddb2254d647be1930fe">
+              <span class="m-doc-wrap-bumper"><a href="#aaf6f7fc150c50ddb2254d647be1930fe" class="m-doc-self">CellStore</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd>Constructor.</dd>
             <dt id="aef101479bfecc4ba107e1e3907316959">
@@ -81,10 +81,11 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="ae74b08508e051524ae22bc22b418a91c">
-              <span class="m-doc-wrap-bumper">void <a href="#ae74b08508e051524ae22bc22b418a91c" class="m-doc-self">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path)</span>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#af98fea6b84435fc58a50b3c2344956b8" class="m-doc">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path,
+              size_t cache_size_bytes = 10*1024*1024)</span>
             </dt>
-            <dd><span></span></dd>
+            <dd>Load cell data and index from the specified base path.</dd>
             <dt id="a71f2065b4dfe1a48ac4316d8029e1fd7">
               <span class="m-doc-wrap-bumper">auto <a href="#a71f2065b4dfe1a48ac4316d8029e1fd7" class="m-doc-self">get</a>(</span><span class="m-doc-wrap">uint64_t id) const -&gt; const Cell &amp;</span>
             </dt>
@@ -101,23 +102,27 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a3d6e82e62ced6a8e05816dab9f922c54"><div>
+          <section class="m-doc-details" id="af98fea6b84435fc58a50b3c2344956b8"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"> CellStore::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3d6e82e62ced6a8e05816dab9f922c54" class="m-doc-self">CellStore</a>(</span><span class="m-doc-wrap">size_t cache_size = 500000)</span></span>
+              <span class="m-doc-wrap-bumper">void CellStore::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af98fea6b84435fc58a50b3c2344956b8" class="m-doc-self">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path,
+              size_t cache_size_bytes = 10*1024*1024)</span></span>
             </h3>
-            <p>Constructor.</p>
+            <p>Load cell data and index from the specified base path.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="width: 1%">cache_size</td>
-                  <td>Size of the LRU cache for frequently accessed cells</td>
+                  <td style="width: 1%">base_path</td>
+                  <td>The base path for the data and index files</td>
+                </tr>
+                <tr>
+                  <td>cache_size_bytes</td>
+                  <td>Cache size in bytes (default 10MB)</td>
                 </tr>
               </tbody>
             </table>
-<aside class="m-note m-info"><h4>Note</h4><p>By default, the location of 500,000 cells is cached</p></aside>
           </div></section>
         </section>
       </div>
