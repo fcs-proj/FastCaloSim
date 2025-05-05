@@ -18,7 +18,7 @@ public:
       throw std::runtime_error("Unable to open output files");
     }
 
-    // Sort by ID
+    // Sort by ID, needed for binary search in lookup
     std::sort(m_cells.begin(),
               m_cells.end(),
               [](const CellData& a, const CellData& b)
