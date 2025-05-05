@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <fstream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -21,12 +22,7 @@ class CellStore
 {
 public:
   /// @brief Constructor
-  /// @param cache_size Size of the LRU cache for frequently accessed cells
-  /// @note By default, the location of 500,000 cells is cached
-  CellStore(size_t cache_size = 500000)
-      : m_cache(cache_size)
-  {
-  }
+  CellStore() = default;
 
   ~CellStore()
   {
@@ -38,8 +34,18 @@ public:
     }
   }
 
-  void load(const std::string& base_path)
+  /// @brief Load cell data and index from the specified base path
+  /// @param base_path The base path for the data and index files
+  /// @param cache_size_bytes Cache size in bytes (default 10MB)
+  void load(const std::string& base_path,
+            size_t cache_size_bytes = 10 * 1024 * 1024)  // 10 MB default cache
   {
+    // Initialize the cache with the specified size
+    // Note 10mb will correspond to ~500k cells
+    size_t num_entries = cache_size_bytes / (sizeof(uint64_t) * 2);
+    m_cache =
+        std::make_unique<cache::CellCache<uint64_t, uint64_t>>(num_entries);
+
     std::string data_path = base_path + ".data";
     std::string index_path = base_path + ".index";
 
@@ -103,22 +109,31 @@ public:
 
   auto get(uint64_t id) const -> const Cell&
   {
+    // Ensure the cache is initialized
+    if (!m_cache) {
+      throw std::runtime_error("CellStore not loaded - call load() first");
+    }
+
     // Check cache first for O(1) lookup in most cases
-    if (m_cache.exists(id)) {
-      return getCellAtOffset(m_cache.get(id));
+    if (m_cache->exists(id)) {
+      return getCellAtOffset(m_cache->get(id));
     }
 
     // If not in cache, need to do binary search in the mapped index file
     uint64_t offset = findOffsetById(id);
 
     // Add to cache for future lookups
-    m_cache.put(id, offset);
+    m_cache->put(id, offset);
 
     return getCellAtOffset(offset);
   }
 
   auto get_at_index(size_t idx) const -> const Cell&
   {
+    if (!m_data) {
+      throw std::runtime_error("CellStore not loaded - call load() first");
+    }
+
     if (idx >= m_n_cells) {
       throw std::runtime_error("Index out of bounds: " + std::to_string(idx));
     }
@@ -199,7 +214,7 @@ private:
   size_t m_n_entries = 0;
 
   /// @brief LRU cache for frequently accessed cells
-  mutable cache::CellCache<uint64_t, uint64_t> m_cache;
+  std::unique_ptr<cache::CellCache<uint64_t, uint64_t>> m_cache;
 
   /// @brief Static fallback Cell instance returned for invalid or missing IDs
   static inline Cell m_invalid_cell {};

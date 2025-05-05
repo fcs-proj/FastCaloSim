@@ -344,13 +344,16 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
 }
 
 // Method to load geometry
-void CaloGeo::load(const std::string& rtree_base_path, size_t cache_size)
+void CaloGeo::load(
+    const std::string& rtree_base_path,
+    size_t rtree_cache_size,  // per-layer r-tree cache size in bytes
+    size_t cell_store_cache_size)  // cell store cache size in bytes
 {
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
 
   // Load the cell store
-  m_cell_store.load(rtree_base_path + "/cellstore");
+  m_cell_store.load(rtree_base_path + "/cellstore", cell_store_cache_size);
 
   // Rebuild the layer cell ID map
   m_layer_cell_ids.clear();
@@ -418,7 +421,7 @@ void CaloGeo::load(const std::string& rtree_base_path, size_t cache_size)
     // Load the RTree for querying
     m_layer_rtree_queries[layer_id] = std::make_unique<RTreeQuery>(coord_sys);
     // Load the RTree from disk with specified cache size
-    m_layer_rtree_queries[layer_id]->load(rtree_path, cache_size);
+    m_layer_rtree_queries[layer_id]->load(rtree_path, rtree_cache_size);
   }
 
   auto end_time = std::chrono::high_resolution_clock::now();
