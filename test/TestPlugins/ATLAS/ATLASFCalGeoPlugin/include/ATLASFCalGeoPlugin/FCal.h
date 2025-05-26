@@ -26,13 +26,21 @@ public:
   // Virtual destructor to ensure proper cleanup
   virtual ~FCal() = default;
 
+  /// @brief Set the geo pointer
+  auto set_geo(CaloGeo* geo) { m_geo = geo; }
+
   /// @brief Get the cell at a specific position
   auto get_cell(unsigned int layer, const Position& pos) const -> const Cell&
   {
     unsigned long long cell_id =
         this->get_fcal_cell_id(layer, pos.x(), pos.y(), pos.z());
+
+    if (cell_id == static_cast<unsigned long long>(-1)) {
+      static Cell invalid_cell;
+      return invalid_cell;
+    }
     // This will get the cell directly from the cell store
-    return CaloGeo::get_cell(cell_id);
+    return m_geo->get_cell(cell_id);
   }
 
   /// @brief Load the real FCal geometry from a file
@@ -232,4 +240,7 @@ protected:
   // https://atlas-sw-doxygen.web.cern.ch/atlas-sw-doxygen/atlas_main--Doxygen/docs/html/d6/d72/FCALChannelMapBuilder_8cxx_source.html
   FCAL_ChannelMap m_FCal_ChannelMap {0};
   std::vector<double> m_FCal_rmin, m_FCal_rmax;
+
+  // Pointer to geo as we use the FastCaloSim cell store
+  CaloGeo* m_geo;
 };

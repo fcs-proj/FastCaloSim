@@ -21,12 +21,10 @@ auto CaloGeo::get_cell(unsigned int layer,
   if (alt_it != m_alt_geo_handlers.end()) {
     // Delegate to alternative geometry handler
     const Cell& cell = alt_it->second->get_cell(layer, pos);
-    // Return an invalid cell if the alternative geometry handler returns -1
+    // Make sure returned cell is valid
     if (!cell.is_valid()) {
       throw std::runtime_error(
           "Invalid cell ID from alternative geometry handler");
-      static Cell invalid_cell;
-      return invalid_cell;
     }
     return cell;
   }
