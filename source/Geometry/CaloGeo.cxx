@@ -19,17 +19,17 @@ auto CaloGeo::get_cell(unsigned int layer,
   // Check if an alternative geometry handler is set for the layer
   auto alt_it = m_alt_geo_handlers.find(layer);
   if (alt_it != m_alt_geo_handlers.end()) {
-    auto cell_id = alt_it->second->get_cell_id(layer, pos);
-    // Return an invalid cell if the alternative geometry handler returns -1
-    if (cell_id == std::numeric_limits<unsigned long long>::max()) {
-      std::runtime_error("Invalid cell ID from alternative geometry handler");
-      static Cell invalid_cell;
-      return invalid_cell;
+    // Delegate to alternative geometry handler
+    const Cell& cell = alt_it->second->get_cell(layer, pos);
+    // Make sure returned cell is valid
+    if (!cell.is_valid()) {
+      throw std::runtime_error(
+          "Invalid cell ID from alternative geometry handler");
     }
-    return get_cell(cell_id);
+    return cell;
   }
 
-  // Else proceed with the default geometry handler
+  // Default path: R-tree + cell store lookup
   auto query_it = m_layer_rtree_queries.find(layer);
   if (query_it == m_layer_rtree_queries.end()) {
     throw std::runtime_error("No RTree loaded for layer "
@@ -249,34 +249,6 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
       processed_layer_flags.insert(layer_id);
     }
 
-    // For RPhiZ cells, we estimate the cell's Δη if it is missing (≤ 0).
-    // RPhiZ cells are defined in cylindrical coordinates (r, φ, z)
-    // and do not have η as a primary coordinate. If deta is not provided in the
-    // input, we compute an approximate Δη by evaluating η at the four (r, z)
-    // corners of the cell and taking the span (η_max - η_min). This gives a
-    // good estimate of the angular extent, especially for projective or
-    // wedge-like cell shapes where both r and z vary.
-    //
-    // We do not apply this approximation to EtaPhiZ or EtaPhiR cells,
-    // since those coordinate systems use η as a fundamental axis
-    // and should have accurate Δη values already present in the input.
-    float deta_val = deta->at(i);
-    if (isRPhiZ->at(i) && deta_val <= 0.0f) {
-      std::array<double, 4> etas;
-      for (int corner = 0; corner < 4; ++corner) {
-        double r_sign = (corner & 1) ? 0.5 : -0.5;
-        double z_sign = (corner & 2) ? 0.5 : -0.5;
-
-        double r_val = r->at(i) + r_sign * dr->at(i);
-        double z_val = z->at(i) + z_sign * dz->at(i);
-        double theta = std::atan2(r_val, z_val);
-        etas[corner] = -std::log(std::tan(theta / 2));
-      }
-
-      auto minmax = std::minmax_element(etas.begin(), etas.end());
-      deta_val = static_cast<float>(*minmax.second - *minmax.first);
-    }
-
     pos.m_x = x->at(i);
     pos.m_y = y->at(i);
     pos.m_z = z->at(i);
@@ -295,7 +267,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
               dx->at(i),
               dy->at(i),
               dz->at(i),
-              deta_val,
+              deta->at(i),
               dphi->at(i),
               dr->at(i));
 

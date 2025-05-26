@@ -51,11 +51,10 @@ protected:
     std::shared_ptr<FCal> fcal_geo = std::make_shared<FCal>();
     // Load the FCal geometry from the files
     fcal_geo->load(AtlasGeoTestsConfig::FCAL_ELECTRODE_FILES);
-    // Cast the FCal geometry handler to the geo interface
-    std::shared_ptr<CaloGeo> fcal_geo_handler =
-        std::static_pointer_cast<CaloGeo>(fcal_geo);
+    // Set the pointer to the main geo to access cell store
+    fcal_geo->set_geo(geo);
     // Set the alternative geometry handler for the FCal layers (21 - 23)
-    geo->set_alt_geo_handler(21, 23, fcal_geo_handler);
+    geo->set_alt_geo_handler(21, 23, fcal_geo);
   }
 
   // Tears down the test suite

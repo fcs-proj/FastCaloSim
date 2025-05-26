@@ -35,14 +35,14 @@ public:
             size_t rtree_cache_size = 5 * 1024 * 1024,
             size_t cell_store_cache_size = 10 * 1024 * 1024);
 
-  // Retrieve the id of the best matching cell for a given position
-  // Alternative geo handlers need to override this method
-  virtual auto get_cell_id(unsigned int layer,
-                           const Position& pos) const -> unsigned long long;
-
   // Retrieve the best matching cell for a given position
-  auto get_cell(unsigned int layer, const Position& pos) const -> const Cell&;
+  // Alternative geo handlers need to override this method
+  virtual auto get_cell(unsigned int layer,
+                        const Position& pos) const -> const Cell&;
 
+  // Retrieve the id of the best matching cell for a given position
+  auto get_cell_id(unsigned int layer,
+                   const Position& pos) const -> unsigned long long;
   /// @brief Get the number of cells in a layer
   auto n_cells(unsigned int layer) const -> unsigned int;
   /// @brief Get the total number of cells
