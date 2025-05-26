@@ -41,7 +41,8 @@ public:
                            const Position& pos) const -> unsigned long long;
 
   // Retrieve the best matching cell for a given position
-  auto get_cell(unsigned int layer, const Position& pos) const -> const Cell&;
+  virtual auto get_cell(unsigned int layer,
+                        const Position& pos) const -> const Cell&;
 
   /// @brief Get the number of cells in a layer
   auto n_cells(unsigned int layer) const -> unsigned int;

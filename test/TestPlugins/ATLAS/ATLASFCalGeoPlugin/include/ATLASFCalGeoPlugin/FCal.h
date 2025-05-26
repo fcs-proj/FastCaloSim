@@ -27,10 +27,12 @@ public:
   virtual ~FCal() = default;
 
   /// @brief Get the cell at a specific position
-  auto get_cell_id(unsigned int layer,
-                   const Position& pos) const -> unsigned long long override
+  auto get_cell(unsigned int layer, const Position& pos) const -> const Cell&
   {
-    return this->get_fcal_cell_id(layer, pos.x(), pos.y(), pos.z());
+    unsigned long long cell_id =
+        this->get_fcal_cell_id(layer, pos.x(), pos.y(), pos.z());
+    // This will get the cell directly from the cell store
+    return CaloGeo::get_cell(cell_id);
   }
 
   /// @brief Load the real FCal geometry from a file
