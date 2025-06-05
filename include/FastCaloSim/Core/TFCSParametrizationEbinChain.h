@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationEbinChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationEbinChain_h
+#ifndef TFCSParametrizationEbinChain_h
+#define TFCSParametrizationEbinChain_h
 
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"

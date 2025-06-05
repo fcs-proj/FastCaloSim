@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionSpline_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunctionSpline_h
+#ifndef TFCS1DFunctionSpline_h
+#define TFCS1DFunctionSpline_h
 
 #include <vector>
 

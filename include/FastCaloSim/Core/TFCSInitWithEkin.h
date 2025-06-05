@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSInitWithEkin_h
-#define ISF_FASTCALOSIMEVENT_TFCSInitWithEkin_h
+#ifndef TFCSInitWithEkin_h
+#define TFCSInitWithEkin_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 

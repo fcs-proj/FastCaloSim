@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h
+#ifndef TFCSEnergyInterpolationSpline_h
+#define TFCSEnergyInterpolationSpline_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 #include "TSpline.h"

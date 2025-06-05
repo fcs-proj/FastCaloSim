@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyBinParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyBinParametrization_h
+#ifndef TFCSEnergyBinParametrization_h
+#define TFCSEnergyBinParametrization_h
 
 #include <map>
 #include <vector>

@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSTruthState_h
-#define ISF_FASTCALOSIMEVENT_TFCSTruthState_h
+#ifndef TFCSTruthState_h
+#define TFCSTruthState_h
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TLorentzVector.h>

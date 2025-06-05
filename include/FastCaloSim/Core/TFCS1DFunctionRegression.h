@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegression_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegression_h
+#ifndef TFCS1DFunctionRegression_h
+#define TFCS1DFunctionRegression_h
 
 #include <vector>
 

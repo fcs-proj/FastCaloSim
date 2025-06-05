@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyParametrization_h
+#ifndef TFCSEnergyParametrization_h
+#define TFCSEnergyParametrization_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 

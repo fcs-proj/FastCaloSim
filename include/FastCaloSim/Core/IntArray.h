@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_IntArray_h
-#define ISF_FASTCALOSIMEVENT_IntArray_h
+#ifndef IntArray_h
+#define IntArray_h
 
 #include "TArrayI.h"
 #include "TObject.h"

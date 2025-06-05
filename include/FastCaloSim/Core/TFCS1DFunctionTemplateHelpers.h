@@ -3,8 +3,8 @@
 
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHelpers_h
-#  define ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHelpers_h
+#ifndef TFCS1DFunctionTemplateHelpers_h
+#  define TFCS1DFunctionTemplateHelpers_h
 
 #  include <algorithm>
 #  include <cmath>

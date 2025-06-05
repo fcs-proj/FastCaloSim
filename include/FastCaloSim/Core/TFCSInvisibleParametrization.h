@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSInvisibleParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSInvisibleParametrization_h
+#ifndef TFCSInvisibleParametrization_h
+#define TFCSInvisibleParametrization_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 

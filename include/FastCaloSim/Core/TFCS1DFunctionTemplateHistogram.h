@@ -2,8 +2,8 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
-#  define ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
+#ifndef TFCS1DFunctionTemplateHistogram_h
+#  define TFCS1DFunctionTemplateHistogram_h
 
 #  include <iostream>
 

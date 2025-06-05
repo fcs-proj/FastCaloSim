@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
+#ifndef TFCSPCAEnergyParametrization_h
+#define TFCSPCAEnergyParametrization_h
 
 #include "FastCaloSim/Core/IntArray.h"
 #include "FastCaloSim/Core/TFCS1DFunction.h"

@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunctionHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS2DFunctionHistogram_h
+#ifndef TFCS2DFunctionHistogram_h
+#define TFCS2DFunctionHistogram_h
 
 #include <vector>
 

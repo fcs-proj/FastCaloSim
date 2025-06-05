@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
-#define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
+#ifndef TFCSExtrapolationState_h
+#define TFCSExtrapolationState_h
 
 #include <map>
 #include <utility>

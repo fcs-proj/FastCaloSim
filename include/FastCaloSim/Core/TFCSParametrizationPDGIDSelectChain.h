@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationPDGIDSelectChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationPDGIDSelectChain_h
+#ifndef TFCSParametrizationPDGIDSelectChain_h
+#define TFCSParametrizationPDGIDSelectChain_h
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
 

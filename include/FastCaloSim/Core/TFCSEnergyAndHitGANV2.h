@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
+#ifndef TFCSEnergyAndHitGANV2_h
+#define TFCSEnergyAndHitGANV2_h
 
 #include <string>
 

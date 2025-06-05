@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
+#ifndef TFCSParametrizationBase_h
+#define TFCSParametrizationBase_h
 
 #include <map>
 #include <mutex>

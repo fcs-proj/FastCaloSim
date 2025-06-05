@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationPiecewiseLinear_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationPiecewiseLinear_h
+#ifndef TFCSEnergyInterpolationPiecewiseLinear_h
+#define TFCSEnergyInterpolationPiecewiseLinear_h
 
 // base class include
 #include "FastCaloSim/Core/TFCSParametrization.h"

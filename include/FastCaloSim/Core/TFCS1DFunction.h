@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunction_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunction_h
+#ifndef TFCS1DFunction_h
+#define TFCS1DFunction_h
 
 // STL includes
 #include <vector>

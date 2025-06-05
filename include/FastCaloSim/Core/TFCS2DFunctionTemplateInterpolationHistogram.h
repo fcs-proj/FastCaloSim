@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateInterpolationHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateInterpolationHistogram_h
+#ifndef TFCS2DFunctionTemplateInterpolationHistogram_h
+#define TFCS2DFunctionTemplateInterpolationHistogram_h
 
 #include <iostream>
 

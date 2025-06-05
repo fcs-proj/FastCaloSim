@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationPlaceholder_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationPlaceholder_h
+#ifndef TFCSParametrizationPlaceholder_h
+#define TFCSParametrizationPlaceholder_h
 
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 

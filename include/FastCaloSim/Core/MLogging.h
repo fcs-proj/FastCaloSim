@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_MLogging_h
-#define ISF_FASTCALOSIMEVENT_MLogging_h
+#ifndef MLogging_h
+#define MLogging_h
 
 #include <iomanip>
 #include <iostream>
