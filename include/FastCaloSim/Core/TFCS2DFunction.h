@@ -9,6 +9,9 @@
 
 class TH2;
 
+namespace FastCaloSim::Core
+{
+
 class TFCS2DFunction : public TFCSFunction
 {
 public:
@@ -31,5 +34,5 @@ public:
 private:
   ClassDef(TFCS2DFunction, 1)  // TFCS2DFunction
 };
-
+}  // namespace FastCaloSim::Core
 #endif

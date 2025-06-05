@@ -8,9 +8,12 @@
 
 #include "FastCaloSim/Core/MLogging.h"
 
+namespace FastCaloSim::Core
+{
+
 class FASTCALOSIM_EXPORT TFCSTruthState
     : public TLorentzVector
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
   TFCSTruthState();
@@ -38,5 +41,6 @@ private:
 
   ClassDef(TFCSTruthState, 3)  // TFCSTruthState
 };
+}  // namespace FastCaloSim::Core
 
 #endif

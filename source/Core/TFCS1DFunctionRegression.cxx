@@ -11,6 +11,7 @@ using namespace std;
 //=============================================
 //======= TFCS1DFunctionRegression =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 double TFCS1DFunctionRegression::regression_value(double uniform) const
 {

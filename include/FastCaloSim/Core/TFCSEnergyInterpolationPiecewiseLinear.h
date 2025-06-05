@@ -10,6 +10,8 @@
 // TBuffer include required for custom class streamer
 #include "TBuffer.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyInterpolationPiecewiseLinear : public TFCSParametrization
 {
 public:
@@ -63,4 +65,5 @@ private:
                    4)  // TFCSEnergyInterpolationPiecewiseLinear
 };
 
+}  // namespace FastCaloSim::Core
 #endif

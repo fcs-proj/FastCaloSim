@@ -19,29 +19,31 @@
 // For throwing exceptions
 #include <stdexcept>
 
+using namespace FastCaloSim::Core;
+
 TFCSONNXHandler::TFCSONNXHandler(const std::string& inputFile)
     : VNetworkBase(inputFile)
 {
-  FCS_MSG_INFO("Setting up from inputFile.");
+  MSG_INFO("Setting up from inputFile.");
   TFCSONNXHandler::setupPersistedVariables();
   TFCSONNXHandler::setupNet();
-  FCS_MSG_DEBUG("Setup from file complete");
+  MSG_DEBUG("Setup from file complete");
 };
 
 TFCSONNXHandler::TFCSONNXHandler(const std::vector<char>& bytes)
     : m_bytes(bytes)
 {
-  FCS_MSG_INFO("Given onnx session bytes as input.");
+  MSG_INFO("Given onnx session bytes as input.");
   // The super constructor got no inputFile,
   // so it won't call setupNet itself
   TFCSONNXHandler::setupNet();
-  FCS_MSG_DEBUG("Setup from session complete");
+  MSG_DEBUG("Setup from session complete");
 };
 
 TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
     : VNetworkBase(copy_from)
 {
-  FCS_MSG_DEBUG("TFCSONNXHandler copy constructor called");
+  MSG_DEBUG("TFCSONNXHandler copy constructor called");
   m_bytes = copy_from.m_bytes;
   // Cannot copy a session
   // m_session = copy_from.m_session;
@@ -63,13 +65,13 @@ TFCSONNXHandler::NetworkOutputs TFCSONNXHandler::compute(
 // Writing out to ttrees
 void TFCSONNXHandler::writeNetToTTree(TTree& tree)
 {
-  FCS_MSG_DEBUG("TFCSONNXHandler writing net to tree.");
+  MSG_DEBUG("TFCSONNXHandler writing net to tree.");
   this->writeBytesToTTree(tree, m_bytes);
 };
 
 std::vector<std::string> TFCSONNXHandler::getOutputLayers() const
 {
-  FCS_MSG_DEBUG("TFCSONNXHandler output layers requested.");
+  MSG_DEBUG("TFCSONNXHandler output layers requested.");
   return m_outputLayers;
 };
 
@@ -77,7 +79,7 @@ void TFCSONNXHandler::deleteAllButNet()
 {
   // As we don't copy the bytes, and the inputFile
   // is at most a name, nothing is needed here.
-  FCS_MSG_DEBUG("Deleted nothing for ONNX.");
+  MSG_DEBUG("Deleted nothing for ONNX.");
 };
 
 void TFCSONNXHandler::print(std::ostream& strm) const
@@ -107,13 +109,13 @@ void TFCSONNXHandler::print(std::ostream& strm) const
 
 void TFCSONNXHandler::setupPersistedVariables()
 {
-  FCS_MSG_DEBUG("Setting up persisted variables for ONNX network.");
+  MSG_DEBUG("Setting up persisted variables for ONNX network.");
   // depending which constructor was called,
   // bytes may already be filled
   if (m_bytes.empty()) {
     m_bytes = getSerializedSession();
   };
-  FCS_MSG_DEBUG("Setup persisted variables for ONNX network.");
+  MSG_DEBUG("Setup persisted variables for ONNX network.");
 };
 
 void TFCSONNXHandler::setupNet()
@@ -125,7 +127,7 @@ void TFCSONNXHandler::setupNet()
 
   // TODO; should I be using m_session_options? see
   // https://github.com/microsoft/onnxruntime-inference-examples/blob/2b42b442526b9454d1e2d08caeb403e28a71da5f/c_cxx/squeezenet/main.cpp#L71
-  FCS_MSG_INFO("Setting up ONNX session.");
+  MSG_INFO("Setting up ONNX session.");
   this->readSerializedSession();
 
   // Need the type from the first node (which will be used to set
@@ -134,7 +136,7 @@ void TFCSONNXHandler::setupNet()
       ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
 
   // iterate over all input nodes
-  FCS_MSG_DEBUG("Getting input nodes.");
+  MSG_DEBUG("Getting input nodes.");
   const int num_input_nodes = m_session->GetInputCount();
   Ort::AllocatorWithDefaultOptions allocator;
   for (int i = 0; i < num_input_nodes; i++) {
@@ -147,7 +149,7 @@ void TFCSONNXHandler::setupNet()
     const char* input_name = m_session->GetInputName(i, allocator);
 #endif
     m_inputNodeNames.push_back(input_name);
-    FCS_MSG_VERBOSE("Found input node named " << input_name);
+    MSG_VERBOSE("Found input node named " << input_name);
 
     Ort::TypeInfo type_info = m_session->GetInputTypeInfo(i);
 
@@ -158,17 +160,16 @@ void TFCSONNXHandler::setupNet()
       first_input_type = tensor_info.GetElementType();
     // Check the type has not changed
     if (tensor_info.GetElementType() != first_input_type) {
-      FCS_MSG_ERROR("First type was " << first_input_type << ". In node " << i
-                                      << " found type "
-                                      << tensor_info.GetElementType());
+      MSG_ERROR("First type was " << first_input_type << ". In node " << i
+                                  << " found type "
+                                  << tensor_info.GetElementType());
       throw std::runtime_error(
           "Networks with varying input types not "
           "yet implemented in TFCSONNXHandler.");
     };
 
     std::vector<int64_t> recieved_dimension = tensor_info.GetShape();
-    FCS_MSG_VERBOSE("There are " << recieved_dimension.size()
-                                 << " dimensions.");
+    MSG_VERBOSE("There are " << recieved_dimension.size() << " dimensions.");
     // This vector sometimes includes a symbolic dimension
     // which is represented by -1
     // A symbolic dimension is usually a conversion error,
@@ -178,9 +179,9 @@ void TFCSONNXHandler::setupNet()
     std::vector<int64_t> dimension_of_node;
     for (int64_t node_dim : recieved_dimension) {
       if (node_dim < 1) {
-        FCS_MSG_WARNING("Found symbolic dimension "
-                        << node_dim << " in node named " << input_name
-                        << ". Will treat this as dimension 1.");
+        MSG_WARNING("Found symbolic dimension "
+                    << node_dim << " in node named " << input_name
+                    << ". Will treat this as dimension 1.");
         dimension_of_node.push_back(1);
       } else {
         dimension_of_node.push_back(node_dim);
@@ -188,7 +189,7 @@ void TFCSONNXHandler::setupNet()
     };
     m_inputNodeDims.push_back(dimension_of_node);
   };
-  FCS_MSG_DEBUG("Finished looping on inputs.");
+  MSG_DEBUG("Finished looping on inputs.");
 
   // Outputs
   // Store the type from the first node (which will be used to set
@@ -198,7 +199,7 @@ void TFCSONNXHandler::setupNet()
 
   // iterate over all output nodes
   int num_output_nodes = m_session->GetOutputCount();
-  FCS_MSG_DEBUG("Getting " << num_output_nodes << " output nodes.");
+  MSG_DEBUG("Getting " << num_output_nodes << " output nodes.");
   for (int i = 0; i < num_output_nodes; i++) {
 #if ORT_API_VERSION > 11
     Ort::AllocatedStringPtr node_names =
@@ -209,7 +210,7 @@ void TFCSONNXHandler::setupNet()
     const char* output_name = m_session->GetOutputName(i, allocator);
 #endif
     m_outputNodeNames.push_back(output_name);
-    FCS_MSG_VERBOSE("Found output node named " << output_name);
+    MSG_VERBOSE("Found output node named " << output_name);
 
     const Ort::TypeInfo type_info = m_session->GetOutputTypeInfo(i);
     auto tensor_info = type_info.GetTensorTypeAndShapeInfo();
@@ -218,25 +219,24 @@ void TFCSONNXHandler::setupNet()
 
     // Check the type has not changed
     if (tensor_info.GetElementType() != first_output_type) {
-      FCS_MSG_ERROR("First type was " << first_output_type << ". In node " << i
-                                      << " found type "
-                                      << tensor_info.GetElementType());
+      MSG_ERROR("First type was " << first_output_type << ". In node " << i
+                                  << " found type "
+                                  << tensor_info.GetElementType());
       throw std::runtime_error(
           "Networks with varying output types not "
           "yet implemented in TFCSONNXHandler.");
     };
 
     const std::vector<int64_t> recieved_dimension = tensor_info.GetShape();
-    FCS_MSG_VERBOSE("There are " << recieved_dimension.size()
-                                 << " dimensions.");
+    MSG_VERBOSE("There are " << recieved_dimension.size() << " dimensions.");
     // Again, check for symbolic dimensions
     std::vector<int64_t> dimension_of_node;
     int node_size = 1;
     for (int64_t node_dim : recieved_dimension) {
       if (node_dim < 1) {
-        FCS_MSG_WARNING("Found symbolic dimension "
-                        << node_dim << " in node named " << output_name
-                        << ". Will treat this as dimension 1.");
+        MSG_WARNING("Found symbolic dimension "
+                    << node_dim << " in node named " << output_name
+                    << ". Will treat this as dimension 1.");
         dimension_of_node.push_back(1);
       } else {
         dimension_of_node.push_back(node_dim);
@@ -251,17 +251,16 @@ void TFCSONNXHandler::setupNet()
       // compose the output name
       std::string layer_name =
           std::string(output_name) + "_" + std::to_string(part_n);
-      FCS_MSG_VERBOSE("Found output layer named " << layer_name);
+      MSG_VERBOSE("Found output layer named " << layer_name);
       m_outputLayers.push_back(layer_name);
     }
   }
-  FCS_MSG_DEBUG("Removing prefix from stored layers.");
+  MSG_DEBUG("Removing prefix from stored layers.");
   removePrefixes(m_outputLayers);
-  FCS_MSG_DEBUG("Finished output nodes.");
+  MSG_DEBUG("Finished output nodes.");
 
-  FCS_MSG_DEBUG("Setting up m_computeLambda with input type "
-                << first_input_type << " and output type "
-                << first_output_type);
+  MSG_DEBUG("Setting up m_computeLambda with input type "
+            << first_input_type << " and output type " << first_output_type);
   if (first_input_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT
       && first_output_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT)
   {
@@ -278,24 +277,24 @@ void TFCSONNXHandler::setupNet()
         "Haven't yet implemented that combination of "
         "input and output types as a subclass of VState.");
   };
-  FCS_MSG_DEBUG("Finished setting lambda function.");
+  MSG_DEBUG("Finished setting lambda function.");
 };
 
 // Needs to also work if the input file is a root file
 std::vector<char> TFCSONNXHandler::getSerializedSession(
     const std::string& tree_name)
 {
-  FCS_MSG_DEBUG("Getting serialized session for ONNX network.");
+  MSG_DEBUG("Getting serialized session for ONNX network.");
 
   if (this->isRootFile()) {
-    FCS_MSG_INFO("Reading bytes from root file.");
+    MSG_INFO("Reading bytes from root file.");
     TFile tfile(this->m_inputFile.c_str(), "READ");
     TTree* tree = (TTree*)tfile.Get(tree_name.c_str());
     std::vector<char> bytes = this->readBytesFromTTree(*tree);
-    FCS_MSG_DEBUG("Found bytes size " << bytes.size());
+    MSG_DEBUG("Found bytes size " << bytes.size());
     return bytes;
   } else {
-    FCS_MSG_INFO("Reading bytes from text file.");
+    MSG_INFO("Reading bytes from text file.");
     // see https://stackoverflow.com/a/50317432
     std::ifstream input(this->m_inputFile, std::ios::binary);
 
@@ -303,14 +302,14 @@ std::vector<char> TFCSONNXHandler::getSerializedSession(
                             (std::istreambuf_iterator<char>()));
 
     input.close();
-    FCS_MSG_DEBUG("Found bytes size " << bytes.size());
+    MSG_DEBUG("Found bytes size " << bytes.size());
     return bytes;
   }
 };
 
 std::vector<char> TFCSONNXHandler::readBytesFromTTree(TTree& tree)
 {
-  FCS_MSG_DEBUG("TFCSONNXHandler reading bytes from tree.");
+  MSG_DEBUG("TFCSONNXHandler reading bytes from tree.");
   std::vector<char> bytes;
   char data;
   tree.SetBranchAddress("serialized_m_session", &data);
@@ -318,14 +317,14 @@ std::vector<char> TFCSONNXHandler::readBytesFromTTree(TTree& tree)
     tree.GetEntry(i);
     bytes.push_back(data);
   };
-  FCS_MSG_DEBUG("TFCSONNXHandler read bytes from tree.");
+  MSG_DEBUG("TFCSONNXHandler read bytes from tree.");
   return bytes;
 };
 
 void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
                                         const std::vector<char>& bytes)
 {
-  FCS_MSG_DEBUG("TFCSONNXHandler writing bytes to tree.");
+  MSG_DEBUG("TFCSONNXHandler writing bytes to tree.");
   char m_session_data;
   tree.Branch(
       "serialized_m_session", &m_session_data, "serialized_m_session/B");
@@ -334,12 +333,12 @@ void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
     tree.Fill();
   };
   tree.Write();
-  FCS_MSG_DEBUG("TFCSONNXHandler written bytes to tree.");
+  MSG_DEBUG("TFCSONNXHandler written bytes to tree.");
 };
 
 void TFCSONNXHandler::readSerializedSession()
 {
-  FCS_MSG_DEBUG("Transforming bytes to session.");
+  MSG_DEBUG("Transforming bytes to session.");
   Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
   Ort::SessionOptions opts;
   opts.SetInterOpNumThreads(1);
@@ -347,7 +346,7 @@ void TFCSONNXHandler::readSerializedSession()
   // Prevent ONNX from spawning additional threads
   m_session =
       std::make_unique<Ort::Session>(env, m_bytes.data(), m_bytes.size(), opts);
-  FCS_MSG_DEBUG("Transformed bytes to session.");
+  MSG_DEBUG("Transformed bytes to session.");
 };
 
 template<typename Tin, typename Tout>
@@ -358,9 +357,9 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
   // https://github.com/microsoft/onnxruntime-inference-examples/blob/main/c_cxx/squeezenet/main.cpp#L71
   //  and
   //  https://github.com/microsoft/onnxruntime-inference-examples/blob/main/c_cxx/MNIST/MNIST.cpp
-  FCS_MSG_DEBUG("Setting up inputs for computation on ONNX network.");
-  FCS_MSG_DEBUG("Input type " << typeid(Tin).name() << " output type "
-                              << typeid(Tout).name());
+  MSG_DEBUG("Setting up inputs for computation on ONNX network.");
+  MSG_DEBUG("Input type " << typeid(Tin).name() << " output type "
+                          << typeid(Tout).name());
 
   //  The inputs must be reformatted to the correct data structure.
   const size_t num_input_nodes = m_inputNodeNames.size();
@@ -375,29 +374,29 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
   // Move along the list of node names gathered in the constructor
   // we need both the node name, and the dimension
   // so we cannot iterate directly on the vector.
-  FCS_MSG_DEBUG("Looping over " << num_input_nodes
-                                << " input nodes of ONNX network.");
+  MSG_DEBUG("Looping over " << num_input_nodes
+                            << " input nodes of ONNX network.");
   for (size_t node_n = 0; node_n < m_inputNodeNames.size(); node_n++) {
-    FCS_MSG_DEBUG("Node n = " << node_n);
+    MSG_DEBUG("Node n = " << node_n);
     node_name = m_inputNodeNames[node_n];
-    FCS_MSG_DEBUG("Node name " << node_name);
+    MSG_DEBUG("Node name " << node_name);
     // Get the shape of this node
     n_dimensions = m_inputNodeDims[node_n].size();
-    FCS_MSG_DEBUG("Node dimensions " << n_dimensions);
+    MSG_DEBUG("Node dimensions " << n_dimensions);
     elements_in_node = 1;
     for (int dimension_len : m_inputNodeDims[node_n]) {
       elements_in_node *= dimension_len;
     };
-    FCS_MSG_DEBUG("Elements in node " << elements_in_node);
+    MSG_DEBUG("Elements in node " << elements_in_node);
     for (auto inp : inputs) {
-      FCS_MSG_DEBUG("Have input named " << inp.first);
+      MSG_DEBUG("Have input named " << inp.first);
     };
     // Get the node content and remove any common prefix from the elements
     const std::map<std::string, double> node_inputs = inputs.at(node_name);
     std::vector<Tin> node_elements(elements_in_node);
 
-    FCS_MSG_DEBUG("Found node named " << node_name << " with "
-                                      << elements_in_node << " elements.");
+    MSG_DEBUG("Found node named " << node_name << " with " << elements_in_node
+                                  << " elements.");
     // Then the rest should be numbers from 0 up
     for (auto element : node_inputs) {
       first_digit = element.first.find_first_of("0123456789");
@@ -409,9 +408,8 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
     }
     input_values[node_n] = node_elements;
 
-    FCS_MSG_DEBUG("Creating ort tensor n_dimensions = "
-                  << n_dimensions
-                  << ", elements_in_node = " << elements_in_node);
+    MSG_DEBUG("Creating ort tensor n_dimensions = "
+              << n_dimensions << ", elements_in_node = " << elements_in_node);
     // Doesn't copy data internally, so vector arguments need to stay alive
     Ort::Value node =
         Ort::Value::CreateTensor<Tin>(m_memoryInfo,
@@ -420,13 +418,13 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
                                       m_inputNodeDims[node_n].data(),
                                       n_dimensions);
     // Problems with the string steam when compiling separately.
-    // FCS_MSG_DEBUG("Created input node " << node << " from values " <<
+    // MSG_DEBUG("Created input node " << node << " from values " <<
     // input_values[node_n]);
 
     node_values.push_back(std::move(node));
   }
 
-  FCS_MSG_DEBUG("Running computation on ONNX network.");
+  MSG_DEBUG("Running computation on ONNX network.");
   // All inputs have been correctly formatted and the net can be run.
   auto output_tensors = m_session->Run(Ort::RunOptions {nullptr},
                                        m_inputNodeNames.data(),
@@ -435,7 +433,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
                                        m_outputNodeNames.data(),
                                        m_outputNodeNames.size());
 
-  FCS_MSG_DEBUG("Sorting outputs from computation on ONNX network.");
+  MSG_DEBUG("Sorting outputs from computation on ONNX network.");
   // Finally, the output must be rearanged in the expected format.
   TFCSONNXHandler::NetworkOutputs outputs;
   // as the output format is just a string to double map
@@ -445,7 +443,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
   for (size_t node_n = 0; node_n < m_outputNodeNames.size(); node_n++) {
     // get a pointer to the data
     output_node = output_tensors[node_n].GetTensorMutableData<Tout>();
-    FCS_MSG_VERBOSE("output node " << output_node);
+    MSG_VERBOSE("output node " << output_node);
     elements_in_node = m_outputNodeSize[node_n];
     node_name = m_outputNodeNames[node_n];
     // Does the GetTensorMutableData really always return a
@@ -453,15 +451,15 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
     // Likely yes, see use of memcopy on line 301 of
     // onnxruntime/core/languge_interop_ops/pyop/pyop.cc
     for (int part_n = 0; part_n < elements_in_node; part_n++) {
-      FCS_MSG_VERBOSE("Node part " << part_n << " contains "
-                                   << output_node[part_n]);
+      MSG_VERBOSE("Node part " << part_n << " contains "
+                               << output_node[part_n]);
       // compose the output name
       output_name = node_name + "_" + std::to_string(part_n);
       outputs[output_name] = static_cast<double>(output_node[part_n]);
     }
   }
   removePrefixes(outputs);
-  FCS_MSG_DEBUG("Returning outputs from computation on ONNX network.");
+  MSG_DEBUG("Returning outputs from computation on ONNX network.");
   return outputs;
 };
 
@@ -473,9 +471,9 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
 // Giving this its own streamer to call setupNet
 void TFCSONNXHandler::Streamer(TBuffer& buf)
 {
-  FCS_MSG_DEBUG("In TFCSONNXHandler streamer.");
+  MSG_DEBUG("In TFCSONNXHandler streamer.");
   if (buf.IsReading()) {
-    FCS_MSG_INFO("Reading buffer in TFCSONNXHandler ");
+    MSG_INFO("Reading buffer in TFCSONNXHandler ");
     // Get the persisted variables filled in
     TFCSONNXHandler::Class()->ReadBuffer(buf, this);
     // Setup the net, creating the non persisted variables
@@ -487,9 +485,9 @@ void TFCSONNXHandler::Streamer(TBuffer& buf)
     this->deleteAllButNet();
 #endif
   } else {
-    FCS_MSG_INFO("Writing buffer in TFCSONNXHandler ");
+    MSG_INFO("Writing buffer in TFCSONNXHandler ");
     // Persist variables
     TFCSONNXHandler::Class()->WriteBuffer(buf, this);
   };
-  FCS_MSG_DEBUG("Finished TFCSONNXHandler streamer.");
+  MSG_DEBUG("Finished TFCSONNXHandler streamer.");
 };

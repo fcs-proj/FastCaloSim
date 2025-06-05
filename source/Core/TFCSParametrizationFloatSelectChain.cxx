@@ -11,14 +11,15 @@
 //=============================================
 //======= TFCSParametrizationFloatSelectChain =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 int TFCSParametrizationFloatSelectChain::push_back_in_bin(
     TFCSParametrizationBase* param, float low, float up)
 {
   if (up < low) {
     // can't handle wrong order of bounds
-    FCS_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
-                                << up << ") not well defined");
+    MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
+                            << up << ") not well defined");
     return -1;
   }
   if (get_number_of_bins() == 0) {
@@ -41,10 +42,10 @@ int TFCSParametrizationFloatSelectChain::push_back_in_bin(
 
   if (ilow < 0 && iup < 0) {
     // can't handle disjunct ranges
-    FCS_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
-                                << up << ") which is outside existing range ["
-                                << m_bin_low_edge[0] << ","
-                                << m_bin_low_edge[get_number_of_bins()] << ")");
+    MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
+                            << up << ") which is outside existing range ["
+                            << m_bin_low_edge[0] << ","
+                            << m_bin_low_edge[get_number_of_bins()] << ")");
     return -1;
   }
 
@@ -74,12 +75,11 @@ int TFCSParametrizationFloatSelectChain::push_back_in_bin(
     return newbin;
   }
 
-  FCS_MSG_ERROR("Cannot add "
-                << param->GetName() << ": range [" << low << "," << up
-                << ") covers more than one bin in existing range ["
-                << m_bin_low_edge[0] << ","
-                << m_bin_low_edge[get_number_of_bins()]
-                << ") or splits an existing bin");
+  MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << "," << up
+                          << ") covers more than one bin in existing range ["
+                          << m_bin_low_edge[0] << ","
+                          << m_bin_low_edge[get_number_of_bins()]
+                          << ") or splits an existing bin");
   return -1;
 }
 
@@ -96,19 +96,19 @@ void TFCSParametrizationFloatSelectChain::push_back_in_bin(
 int TFCSParametrizationFloatSelectChain::val_to_bin(float val) const
 {
   if (val < m_bin_low_edge[0]) {
-    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " < "
-                                  << m_bin_low_edge[0]);
+    MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " < "
+                              << m_bin_low_edge[0]);
     return -1;
   }
   if (val >= m_bin_low_edge[get_number_of_bins()]) {
-    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " >= "
-                                  << m_bin_low_edge[get_number_of_bins()]);
+    MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " >= "
+                              << m_bin_low_edge[get_number_of_bins()]);
     return -1;
   }
 
   auto it = std::upper_bound(m_bin_low_edge.begin(), m_bin_low_edge.end(), val);
   int dist = std::distance(m_bin_low_edge.begin(), it) - 1;
-  FCS_MSG_VERBOSE("val_to_bin(" << val << ")=" << dist);
+  MSG_VERBOSE("val_to_bin(" << val << ")=" << dist);
   return dist;
 }
 

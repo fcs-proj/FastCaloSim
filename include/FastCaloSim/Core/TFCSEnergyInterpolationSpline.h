@@ -8,6 +8,8 @@
 
 class TGraph;
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyInterpolationSpline : public TFCSParametrization
 {
 public:
@@ -77,4 +79,5 @@ private:
                    1)  // TFCSEnergyInterpolationSpline
 };
 
+}  // namespace FastCaloSim::Core
 #endif

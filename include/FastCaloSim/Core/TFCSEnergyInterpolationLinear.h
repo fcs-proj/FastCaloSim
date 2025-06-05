@@ -5,6 +5,8 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyInterpolationLinear : public TFCSParametrization
 {
 public:
@@ -39,5 +41,6 @@ private:
   ClassDefOverride(TFCSEnergyInterpolationLinear,
                    1)  // TFCSEnergyInterpolationLinear
 };
+}  // namespace FastCaloSim::Core
 
 #endif

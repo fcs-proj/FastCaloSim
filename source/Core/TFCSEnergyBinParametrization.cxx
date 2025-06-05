@@ -12,6 +12,7 @@
 //=============================================
 //======= TFCSSelectEnergyBin =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSEnergyBinParametrization::TFCSEnergyBinParametrization(const char* name,
                                                            const char* title)
@@ -30,7 +31,7 @@ bool TFCSEnergyBinParametrization::is_match_Ekin_bin(int Ekin_bin) const
 void TFCSEnergyBinParametrization::resize()
 {
   for (int id : pdgid()) {
-    FCS_MSG_VERBOSE("PDGid=" << id << " resize to " << n_bins() + 1);
+    MSG_VERBOSE("PDGid=" << id << " resize to " << n_bins() + 1);
     m_pdgid_Ebin_probability[id].resize(n_bins() + 1);
   }
   for (auto it = m_pdgid_Ebin_probability.begin();
@@ -73,7 +74,7 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
 {
   add_pdgid(id);
   if (prob.size() != m_pdgid_Ebin_probability[id].size()) {
-    FCS_MSG_ERROR(
+    MSG_ERROR(
         "TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_"
         "probability(): size of vectors does not match! in.size()="
         << prob.size() << " instance=" << m_pdgid_Ebin_probability[id].size());
@@ -101,7 +102,7 @@ bool TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
   std::vector<float> prob;
   prob.reserve(m_pdgid_Ebin_probability[id].size());
   if (probFromFile == nullptr) {
-    FCS_MSG_INFO(
+    MSG_INFO(
         "TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_"
         "probability_from_file(): "
         << prob_object_name << " is null. Using equal PCA probabilities.");
@@ -112,7 +113,7 @@ bool TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
   } else {
     auto size = static_cast<size_t>(probFromFile->GetNoElements());
     if (size != m_pdgid_Ebin_probability[id].size()) {
-      FCS_MSG_ERROR(
+      MSG_ERROR(
           "TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_"
           "file(): size of prob array does not match! in.size()="
           << size << " instance=" << m_pdgid_Ebin_probability[id].size());
@@ -141,8 +142,7 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSEnergyParametrization::Print(option);
@@ -150,18 +150,18 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
     for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
          ++it)
     {
-      FCS_MSG(INFO) << optprint << "  PDGID=" << *it << " : ";
+      MSG(INFO) << optprint << "  PDGID=" << *it << " : ";
       float p = 0;
       for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
         if (iEbin > 0)
-          FCS_MSG(INFO) << ", ";
+          MSG(INFO) << ", ";
         auto mapit = m_pdgid_Ebin_probability.find(*it);
-        FCS_MSG(INFO) << "b" << iEbin << "="
-                      << (mapit->second[iEbin] - p) / mapit->second.back() * 100
-                      << "%";
+        MSG(INFO) << "b" << iEbin << "="
+                  << (mapit->second[iEbin] - p) / mapit->second.back() * 100
+                  << "%";
         p = mapit->second[iEbin];
       }
-      FCS_MSG(INFO) << END_FCS_MSG(INFO);
+      MSG(INFO) << END_MSG(INFO);
     }
   }
 }
@@ -183,9 +183,8 @@ FCSReturnCode TFCSEnergyBinParametrization::simulate(
   else if (is_match_pdgid(0))
     pdgid = 0;
   else {
-    FCS_MSG_ERROR(
-        "TFCSEnergyBinParametrization::simulate(): cannot simulate pdgid="
-        << truth_pdgid);
+    MSG_ERROR("TFCSEnergyBinParametrization::simulate(): cannot simulate pdgid="
+              << truth_pdgid);
     return FCSFatal;
   }
 
@@ -195,7 +194,7 @@ FCSReturnCode TFCSEnergyBinParametrization::simulate(
       TMath::BinarySearch(n_bins() + 1, Ebin_probability.data(), searchRand)
       + 1;
   if (chosenBin < 0) {
-    FCS_MSG_WARNING(
+    MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): chosenBin<0 "
         "(will use chosenBin=0)");
     std::string array = "";
@@ -203,11 +202,11 @@ FCSReturnCode TFCSEnergyBinParametrization::simulate(
       array += prob;
       array += " ";
     }
-    FCS_MSG_WARNING(" E=" << simulstate.E() << " Ebin=" << chosenBin
-                          << " rnd=" << searchRand << " array=" << array);
+    MSG_WARNING(" E=" << simulstate.E() << " Ebin=" << chosenBin
+                      << " rnd=" << searchRand << " array=" << array);
     chosenBin = 0;
   } else if (chosenBin > n_bins()) {
-    FCS_MSG_WARNING(
+    MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): "
         "chosenBin>n_bins() (will use chosenBin=n_bins())");
     std::string array = "";
@@ -215,12 +214,12 @@ FCSReturnCode TFCSEnergyBinParametrization::simulate(
       array += prob;
       array += " ";
     }
-    FCS_MSG_WARNING(" E=" << simulstate.E() << " Ebin=" << chosenBin
-                          << " rnd=" << searchRand << " array=" << array);
+    MSG_WARNING(" E=" << simulstate.E() << " Ebin=" << chosenBin
+                      << " rnd=" << searchRand << " array=" << array);
     chosenBin = n_bins();
   }
   simulstate.set_Ebin(chosenBin);
-  FCS_MSG_DEBUG("Ebin=" << chosenBin);
+  MSG_DEBUG("Ebin=" << chosenBin);
 
   return FCSSuccess;
 }

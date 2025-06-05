@@ -10,10 +10,11 @@
 #include <TObject.h>
 
 #include "FastCaloSim/Core/MLogging.h"
-
+namespace FastCaloSim::Core
+{
 class FASTCALOSIM_EXPORT TFCSExtrapolationState
     : public TObject
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
   TFCSExtrapolationState();
@@ -150,5 +151,5 @@ private:
 
   ClassDef(TFCSExtrapolationState, 2)  // TFCSExtrapolationState
 };
-
+}  // namespace FastCaloSim::Core
 #endif

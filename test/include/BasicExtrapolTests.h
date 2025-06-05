@@ -7,6 +7,9 @@
 #include "AtlasGeoTests.h"
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
 
+using namespace FastCaloSim::Extrapolation;
+using namespace FastCaloSim::Core;
+
 class BasicExtrapolTests : public virtual AtlasGeoTests
 {
 protected:
@@ -20,7 +23,7 @@ protected:
     // Set the geometry of the extrapolator
     extrapolator.set_geometry(AtlasGeoTests::geo);
     // Set the verbosity level
-    extrapolator.setLevel(FCS_MSG::Level::INFO);
+    extrapolator.setLevel(MSG::Level::INFO);
   }
 
   // Per-test-suite tear-down.

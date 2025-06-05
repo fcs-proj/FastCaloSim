@@ -11,6 +11,8 @@
 #  include "FastCaloSim/Core/TFCS1DFunctionTemplateHelpers.h"
 #  include "TH1.h"
 
+namespace FastCaloSim::Core
+{
 template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateHistogram : public TFCS1DFunction
 {
@@ -69,16 +71,15 @@ public:
               == m_HistoBorders.GetBinLowEdge(ihist))
           {
             if (doprint)
-              FCS_MSG_INFO("Skip bin="
-                           << ibin + 1
-                           << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
+              MSG_INFO("Skip bin="
+                       << ibin + 1
+                       << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
+                       << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
             --ihist;
             if (doprint)
-              FCS_MSG_INFO("     bin="
-                           << ibin
-                           << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin)
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
+              MSG_INFO("     bin="
+                       << ibin << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin)
+                       << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
           }
         m_HistoContents.set_fraction(ihist,
                                      temp_HistoContents[ibin] / integral);
@@ -87,27 +88,24 @@ public:
               == m_HistoContents.get_fraction(ihist))
           {
             if (doprint)
-              FCS_MSG_INFO("Skip fbin="
-                           << ihist
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                           << " frac=" << m_HistoContents.get_fraction(ihist));
+              MSG_INFO("Skip fbin="
+                       << ihist << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                       << " frac=" << m_HistoContents.get_fraction(ihist));
             --ihist;
             if (doprint)
-              FCS_MSG_INFO("     fbin="
-                           << ihist
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                           << " frac=" << m_HistoContents.get_fraction(ihist));
+              MSG_INFO("     fbin="
+                       << ihist << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                       << " frac=" << m_HistoContents.get_fraction(ihist));
           }
 
         if (doprint)
-          FCS_MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
-                              << m_HistoBorders.get_nbins() << " x=["
-                              << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
-                              << "," << hist->GetXaxis()->GetBinUpEdge(ibin + 1)
-                              << "] fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                              << " int=" << temp_HistoContents[ibin] / integral
-                              << " frac="
-                              << m_HistoContents.get_fraction(ihist));
+          MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
+                          << m_HistoBorders.get_nbins() << " x=["
+                          << hist->GetXaxis()->GetBinLowEdge(ibin + 1) << ","
+                          << hist->GetXaxis()->GetBinUpEdge(ibin + 1)
+                          << "] fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                          << " int=" << temp_HistoContents[ibin] / integral
+                          << " frac=" << m_HistoContents.get_fraction(ihist));
 
         ++ihist;
       }
@@ -119,7 +117,7 @@ public:
     }
   }
 
-  using TFCS1DFunction::rnd_to_fct;
+  using FastCaloSim::Core::TFCS1DFunction::rnd_to_fct;
 
   /// Function gets random number rnd in the range [0,1) as argument
   /// and returns function value according to a histogram distribution
@@ -129,7 +127,7 @@ public:
       return 0;
     Trandom residual_rnd;
     size_t ibin = m_HistoContents.get_bin(rnd, residual_rnd);
-    // FCS_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
+    // MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
     // frac="<<m_HistoContents.get_fraction(ibin)<<"
     // residual_rnd="<<residual_rnd);
     return m_HistoBorders.position(ibin, residual_rnd);
@@ -252,6 +250,7 @@ public:
   ClassDef(TFCS1DFunctionInt32Int32Histogram,
            1)  // TFCS1DFunctionInt32Int32Histogram
 };
+}  // namespace FastCaloSim::Core
 
 #endif
 

@@ -14,6 +14,8 @@
 //======= TFCS1DFunction =========
 //=============================================
 
+using namespace FastCaloSim::Core;
+
 void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const
 {
   value[0] = rnd_to_fct(rnd[0]);
@@ -54,7 +56,7 @@ double TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1)
 double TFCS1DFunction::CheckAndIntegrate1DHistogram(
     const TH1* hist, std::vector<double>& integral_vec, int& first, int& last)
 {
-  ISF_FCS::MLogging logger;
+  MLogging logger;
   Int_t nbins = hist->GetNbinsX();
 
   float integral = 0;
@@ -65,12 +67,12 @@ double TFCS1DFunction::CheckAndIntegrate1DHistogram(
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
       if (TMath::Abs(fraction) > 1e-5) {
-        FCS_MSG_NOCLASS(logger,
-                        "Warning: bin content is negative in histogram "
-                            << hist->GetName() << " : " << hist->GetTitle()
-                            << " binval=" << binval << " " << fraction * 100
-                            << "% of integral=" << hist->Integral()
-                            << ". Forcing bin to 0.");
+        MSG_NOCLASS(logger,
+                    "Warning: bin content is negative in histogram "
+                        << hist->GetName() << " : " << hist->GetTitle()
+                        << " binval=" << binval << " " << fraction * 100
+                        << "% of integral=" << hist->Integral()
+                        << ". Forcing bin to 0.");
       }
       binval = 0;
     }
@@ -87,10 +89,10 @@ double TFCS1DFunction::CheckAndIntegrate1DHistogram(
   last++;
 
   if (integral <= 0) {
-    FCS_MSG_NOCLASS(logger,
-                    "Error: histogram "
-                        << hist->GetName() << " : " << hist->GetTitle()
-                        << " integral=" << integral << " is <=0");
+    MSG_NOCLASS(logger,
+                "Error: histogram " << hist->GetName() << " : "
+                                    << hist->GetTitle()
+                                    << " integral=" << integral << " is <=0");
   }
   return integral;
 }

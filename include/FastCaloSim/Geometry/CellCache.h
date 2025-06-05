@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <unordered_map>
 
-namespace cache
+namespace FastCaloSim::Geometry::cache
 {
 
 template<typename key_t, typename value_t>
@@ -63,4 +63,4 @@ private:
   size_t _max_size;
 };
 
-}  // namespace cache
+}  // namespace FastCaloSim::Geometry::cache

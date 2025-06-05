@@ -9,6 +9,8 @@
 //=============================================
 //======= TFCSLateralShapeParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
+using FastCaloSim::Geometry::Cell;
 
 TFCSLateralShapeParametrizationHitBase::TFCSLateralShapeParametrizationHitBase(
     const char* name, const char* title)

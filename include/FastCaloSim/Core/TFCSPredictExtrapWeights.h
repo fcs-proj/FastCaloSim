@@ -8,11 +8,13 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
-// forward declare lwtnn dependencies
 namespace lwt
 {
 class LightweightNeuralNetwork;
 }
+namespace FastCaloSim::Core
+{
+// forward declare lwtnn dependencies
 
 class TFCSPredictExtrapWeights : public TFCSLateralShapeParametrizationHitBase
 {
@@ -84,7 +86,7 @@ private:
   // after reading in order to free memory
   std::string* m_input = nullptr;
   std::vector<int>* m_relevantLayers = nullptr;
-  lwt::LightweightNeuralNetwork* m_nn = nullptr;  //! Do not persistify
+  ::lwt::LightweightNeuralNetwork* m_nn = nullptr;  //! Do not persistify
   std::vector<int>* m_normLayers =
       nullptr;  // vector of index layers (-1 corresponds to truth energy)
   std::vector<float>* m_normMeans =
@@ -96,5 +98,5 @@ private:
 
   ClassDefOverride(TFCSPredictExtrapWeights, 1)  // TFCSPredictExtrapWeights
 };
-
+}  // namespace FastCaloSim::Core
 #endif

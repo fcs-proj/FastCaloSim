@@ -5,6 +5,8 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyParametrization : public TFCSParametrization
 {
 public:
@@ -26,5 +28,6 @@ public:
 private:
   ClassDefOverride(TFCSEnergyParametrization, 1)  // TFCSEnergyParametrization
 };
+}  // namespace FastCaloSim::Core
 
 #endif

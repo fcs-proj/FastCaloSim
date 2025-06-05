@@ -3,6 +3,8 @@
 
 #include "FastCaloSim/Geometry/RTree.h"
 
+using namespace FastCaloSim::Geometry;
+
 RTree::RTree(RTreeHelpers::CoordinateSystem coordSys)
     : m_coordinate_system(coordSys)
     , m_builder(std::make_unique<RTreeBuilder>(coordSys))

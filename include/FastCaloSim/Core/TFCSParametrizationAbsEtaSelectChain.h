@@ -5,6 +5,8 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationEtaSelectChain.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSParametrizationAbsEtaSelectChain
     : public TFCSParametrizationEtaSelectChain
 {
@@ -27,5 +29,5 @@ private:
   ClassDefOverride(TFCSParametrizationAbsEtaSelectChain,
                    1)  // TFCSParametrizationAbsEtaSelectChain
 };
-
+}  // namespace FastCaloSim::Core
 #endif

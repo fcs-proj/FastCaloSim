@@ -10,8 +10,12 @@
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
-
+}
+namespace FastCaloSim::Core
+{
 // forward declare lwtnn dependencies
 namespace lwt
 {
@@ -122,5 +126,7 @@ private:
 
   ClassDefOverride(TFCSEnergyAndHitGANV2, 2)  // TFCSEnergyAndHitGANV2
 };
+
+}  // namespace FastCaloSim::Core
 
 #endif

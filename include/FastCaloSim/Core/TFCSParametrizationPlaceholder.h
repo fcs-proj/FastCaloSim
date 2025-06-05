@@ -5,6 +5,9 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 
+namespace FastCaloSim::Core
+{
+
 class TFCSParametrizationPlaceholder : public TFCSParametrizationBase
 {
 public:
@@ -30,5 +33,5 @@ private:
   ClassDefOverride(TFCSParametrizationPlaceholder,
                    1)  // TFCSParametrizationPlaceholder
 };
-
+}  // namespace FastCaloSim::Core
 #endif

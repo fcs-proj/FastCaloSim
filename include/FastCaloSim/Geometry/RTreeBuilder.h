@@ -10,6 +10,8 @@
 
 #include "FastCaloSim/Geometry/Cell.h"
 #include "FastCaloSim/Geometry/RTreeHelpers.h"
+namespace FastCaloSim::Geometry
+{
 
 /**
  * @brief Class responsible for building and persisting R-trees
@@ -45,3 +47,4 @@ private:
   // Store bounding boxes and their associated cell IDs
   std::vector<std::pair<std::array<double, 4>, uint64_t>> m_boxes;
 };
+}  // namespace FastCaloSim::Geometry

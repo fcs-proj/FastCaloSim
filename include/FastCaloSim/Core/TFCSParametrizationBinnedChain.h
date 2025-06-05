@@ -5,6 +5,8 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSParametrizationBinnedChain : public TFCSParametrizationChain
 {
 public:
@@ -57,4 +59,5 @@ private:
                    1)  // TFCSParametrizationBinnedChain
 };
 
+}  // namespace FastCaloSim::Core
 #endif

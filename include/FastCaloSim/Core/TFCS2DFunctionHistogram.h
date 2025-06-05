@@ -9,6 +9,8 @@
 
 class TH2;
 
+namespace FastCaloSim::Core
+{
 class TFCS2DFunctionHistogram : public TFCS2DFunction
 {
 public:
@@ -51,5 +53,7 @@ protected:
 private:
   ClassDef(TFCS2DFunctionHistogram, 1)  // TFCS2DFunctionHistogram
 };
+
+}  // namespace FastCaloSim::Core
 
 #endif

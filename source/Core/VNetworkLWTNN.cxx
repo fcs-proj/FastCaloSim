@@ -10,6 +10,8 @@
 #include "TFile.h"
 #include "TTree.h"
 
+using namespace FastCaloSim::Core;
+
 VNetworkLWTNN::VNetworkLWTNN(const VNetworkLWTNN& copy_from)
     : VNetworkBase(copy_from)
     , m_json(copy_from.m_json)
@@ -29,13 +31,12 @@ VNetworkLWTNN::~VNetworkLWTNN() {};
 void VNetworkLWTNN::setupPersistedVariables()
 {
   if (this->isFile(m_inputFile)) {
-    FCS_MSG_DEBUG("Making an LWTNN network using a file on disk, "
-                  << m_inputFile);
+    MSG_DEBUG("Making an LWTNN network using a file on disk, " << m_inputFile);
     m_printable_name = m_inputFile;
     fillJson();
   } else {
-    FCS_MSG_DEBUG("Making an LWTNN network using a json in memory, length "
-                  << m_inputFile.length());
+    MSG_DEBUG("Making an LWTNN network using a json in memory, length "
+              << m_inputFile.length());
     m_printable_name = "JSON from memory";
     m_json = m_inputFile;
   };
@@ -53,23 +54,23 @@ void VNetworkLWTNN::writeNetToTTree(TTree& tree)
 
 void VNetworkLWTNN::fillJson(std::string const& tree_name)
 {
-  FCS_MSG_VERBOSE("Trying to fill the m_json variable");
+  MSG_VERBOSE("Trying to fill the m_json variable");
   if (this->isRootFile()) {
-    FCS_MSG_VERBOSE("Treating input file as a root file");
+    MSG_VERBOSE("Treating input file as a root file");
     TFile tfile(this->m_inputFile.c_str(), "READ");
     TTree* tree = (TTree*)tfile.Get(tree_name.c_str());
     std::string found = this->readStringFromTTree(*tree);
-    FCS_MSG_DEBUG("Read json from root file, length " << found.length());
+    MSG_DEBUG("Read json from root file, length " << found.length());
     m_json = found;
   } else {
-    FCS_MSG_VERBOSE("Treating input file as a text json file");
+    MSG_VERBOSE("Treating input file as a text json file");
     // The input file is read into a stringstream
     std::ifstream input(m_inputFile);
     std::ostringstream sstr;
     sstr << input.rdbuf();
     m_json = sstr.str();
     input.close();
-    FCS_MSG_DEBUG("Read json from text file");
+    MSG_DEBUG("Read json from text file");
   }
 }
 
@@ -91,15 +92,15 @@ void VNetworkLWTNN::writeStringToTTree(TTree& tree, std::string json_string)
 
 void VNetworkLWTNN::deleteAllButNet()
 {
-  FCS_MSG_DEBUG("Replacing m_inputFile with unknown");
+  MSG_DEBUG("Replacing m_inputFile with unknown");
   m_inputFile.assign("unknown");
   m_inputFile.shrink_to_fit();
-  FCS_MSG_DEBUG("Emptying the m_json string");
+  MSG_DEBUG("Emptying the m_json string");
   m_json.clear();
   m_json.shrink_to_fit();
-  FCS_MSG_VERBOSE("m_json now has capacity "
-                  << m_json.capacity() << ". m_inputFile now has capacity "
-                  << m_inputFile.capacity()
-                  << ". m_printable_name now has capacity "
-                  << m_printable_name.capacity());
+  MSG_VERBOSE("m_json now has capacity "
+              << m_json.capacity() << ". m_inputFile now has capacity "
+              << m_inputFile.capacity()
+              << ". m_printable_name now has capacity "
+              << m_printable_name.capacity());
 };

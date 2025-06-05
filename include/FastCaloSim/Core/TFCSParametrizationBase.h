@@ -11,10 +11,19 @@
 
 #include "FastCaloSim/Core/MLogging.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
+}
+
+namespace FastCaloSim::Core
+{
+
 class TFCSSimulationState;
 class TFCSTruthState;
 class TFCSExtrapolationState;
+
+using FastCaloSim::Geometry::CaloGeo;
 
 /** Base class for all FastCaloSim parametrizations
 Functionality in derivde classes is  provided through the simulate method. The
@@ -48,7 +57,7 @@ enum FCSReturnCode
 
 class FASTCALOSIM_EXPORT TFCSParametrizationBase
     : public TNamed
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
   TFCSParametrizationBase(const char* name = nullptr,
@@ -181,4 +190,5 @@ private:
   ClassDef(TFCSParametrizationBase, 4)  // TFCSParametrizationBase
 };
 
+}  // namespace FastCaloSim::Core
 #endif  // End header guards

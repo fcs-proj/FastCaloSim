@@ -9,6 +9,8 @@
 #include "FastCaloSim/Core/TFCSEnergyParametrization.h"
 #include "TFile.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyBinParametrization : public TFCSEnergyParametrization
 {
 public:
@@ -60,4 +62,5 @@ private:
                    1)  // TFCSEnergyBinParametrization
 };
 
+}  // namespace FastCaloSim::Core
 #endif

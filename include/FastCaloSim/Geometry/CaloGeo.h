@@ -15,6 +15,9 @@
 #include "FastCaloSim/Geometry/CellStore.h"
 #include "FastCaloSim/Geometry/RTree.h"
 
+namespace FastCaloSim::Geometry
+{
+
 class FASTCALOSIM_EXPORT CaloGeo
 {
 public:
@@ -144,3 +147,4 @@ private:
   /// @brief Update the eta extremes of a layer
   void update_eta_extremes(unsigned int layer, const Cell& cell);
 };
+}  // namespace FastCaloSim::Geometry

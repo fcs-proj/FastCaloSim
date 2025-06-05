@@ -6,6 +6,8 @@
 #include "FastCaloSim/Core/TFCSParametrization.h"
 #include "TH1F.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyInterpolationHistogram : public TFCSParametrization
 {
 public:
@@ -52,9 +54,10 @@ private:
   ClassDefOverride(TFCSEnergyInterpolationHistogram,
                    1)  // TFCSEnergyInterpolationHistogram
 };
+}  // namespace FastCaloSim::Core
 
 #if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#  pragma link C++ class TFCSEnergyInterpolationHistogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCSEnergyInterpolationHistogram + ;
 #endif
 
 #endif

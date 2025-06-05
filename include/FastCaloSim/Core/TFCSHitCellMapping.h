@@ -6,8 +6,12 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Geometry/Cell.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
-
+}
+namespace FastCaloSim::Core
+{
 class TFCSHitCellMapping : public TFCSLateralShapeParametrizationHitBase
 {
 public:
@@ -35,5 +39,6 @@ protected:
 private:
   ClassDefOverride(TFCSHitCellMapping, 1)  // TFCSHitCellMapping
 };
+}  // namespace FastCaloSim::Core
 
 #endif

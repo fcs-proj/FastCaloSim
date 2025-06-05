@@ -5,12 +5,15 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
-
+}
 /** The class TFCSEnergyRenormalization ensures that the sum of cell energies in
    every calorimeter layer matches the output of energy simulation
 */
-
+namespace FastCaloSim::Core
+{
 class TFCSEnergyRenormalization : public TFCSParametrization
 {
 public:
@@ -46,5 +49,6 @@ inline bool TFCSEnergyRenormalization::is_match_calosample(
 {
   return true;
 }
+}  // namespace FastCaloSim::Core
 
 #endif

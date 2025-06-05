@@ -7,6 +7,7 @@
 //==========================
 //======= DoubleArray =========
 //==========================
+using namespace FastCaloSim::Core;
 
 DoubleArray::DoubleArray(int n)
     : TArrayD(n)

@@ -6,6 +6,8 @@
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSParametrizationEbinChain : public TFCSParametrizationBinnedChain
 {
 public:
@@ -32,5 +34,6 @@ private:
   ClassDefOverride(TFCSParametrizationEbinChain,
                    1)  // TFCSParametrizationEbinChain
 };
+}  // namespace FastCaloSim::Core
 
 #endif

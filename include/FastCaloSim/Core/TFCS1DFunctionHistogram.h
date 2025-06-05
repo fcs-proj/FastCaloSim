@@ -8,6 +8,8 @@
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 #include "TH1.h"
 
+namespace FastCaloSim::Core
+{
 class TFCS1DFunctionHistogram : public TFCS1DFunction
 {
 public:
@@ -41,5 +43,6 @@ protected:
 
   ClassDef(TFCS1DFunctionHistogram, 1)  // TFCS1DFunctionHistogram
 };
+}  // namespace FastCaloSim::Core
 
 #endif

@@ -6,6 +6,9 @@
 #include "TArrayD.h"
 #include "TObject.h"
 
+namespace FastCaloSim::Core
+{
+
 class DoubleArray
     : public TObject
     , public TArrayD
@@ -18,5 +21,7 @@ public:
 private:
   ClassDef(DoubleArray, 1)
 };
+
+}  // namespace FastCaloSim::Core
 
 #endif

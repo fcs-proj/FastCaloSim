@@ -5,6 +5,8 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSInitWithEkin : public TFCSParametrization
 {
 public:
@@ -30,5 +32,6 @@ public:
 private:
   ClassDefOverride(TFCSInitWithEkin, 1)  // TFCSInitWithEkin
 };
+}  // namespace FastCaloSim::Core
 
 #endif

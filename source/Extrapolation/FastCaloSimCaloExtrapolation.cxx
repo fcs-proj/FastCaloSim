@@ -16,14 +16,18 @@
    -- DEBUG   if CONDITION is True
    -- WARNING if CONDITION is False
  */
-#define FCS_MSG_COND(MSG, CONDITION) \
+#define MSG_COND(MSG, CONDITION) \
   do { \
     if (CONDITION) { \
-      FCS_MSG_DEBUG(MSG); \
+      MSG_DEBUG(MSG); \
     } else { \
-      FCS_MSG_WARNING(MSG); \
+      MSG_WARNING(MSG); \
     } \
   } while (0)
+
+using namespace FastCaloSim::Core;
+using namespace FastCaloSim::Extrapolation;
+using namespace FastCaloSim::Geometry;
 
 FastCaloSimCaloExtrapolation::FastCaloSimCaloExtrapolation()
     : m_geo(nullptr)
@@ -35,14 +39,13 @@ void FastCaloSimCaloExtrapolation::extrapolate(
     const TFCSTruthState* truth,
     const std::vector<G4FieldTrack>& caloSteps) const
 {
-  FCS_MSG_DEBUG("[extrapolate] Initializing extrapolation to ID-Calo boundary");
+  MSG_DEBUG("[extrapolate] Initializing extrapolation to ID-Calo boundary");
   extrapolateToID(result, caloSteps, truth);
 
-  FCS_MSG_DEBUG(
-      "[extrapolate] Initializing extrapolation to calorimeter layers");
+  MSG_DEBUG("[extrapolate] Initializing extrapolation to calorimeter layers");
   extrapolateToLayers(result, caloSteps, truth);
 
-  FCS_MSG_DEBUG("[extrapolate] Extrapolation done");
+  MSG_DEBUG("[extrapolate] Extrapolation done");
 }
 
 void FastCaloSimCaloExtrapolation::extrapolateToID(
@@ -50,7 +53,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
     const std::vector<G4FieldTrack>& caloSteps,
     const TFCSTruthState* truth) const
 {
-  FCS_MSG_DEBUG("Start extrapolateToID()");
+  MSG_DEBUG("Start extrapolateToID()");
 
   // pT threshold of truth particles over which extrapolation failures will be
   // printed as warnings
@@ -73,8 +76,8 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
     double R = m_CaloBoundaryR.at(surfID);
     double Z = m_CaloBoundaryZ.at(surfID);
 
-    FCS_MSG_DEBUG("[ExtrapolateToID] Extrapolating to ID-Calo boundary with ID="
-                  << surfID << " R=" << R << " Z=" << Z);
+    MSG_DEBUG("[ExtrapolateToID] Extrapolating to ID-Calo boundary with ID="
+              << surfID << " R=" << R << " Z=" << Z);
 
     // extrapolated position and momentum direction at IDCaloBoundary
     Vector3D extPos, momDir;
@@ -86,26 +89,24 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
     double tolerance = 0.001;
 
     // test if z inside previous cylinder within some tolerance
-    FCS_MSG_DEBUG(
-        "[ExtrapolateToID] Testing condition 1: hit z=" << extPos.z());
+    MSG_DEBUG("[ExtrapolateToID] Testing condition 1: hit z=" << extPos.z());
     if (surfID > 0
         && std::abs(extPos.z()) < m_CaloBoundaryZ.at(surfID - 1) + tolerance)
       continue;
-    FCS_MSG_DEBUG("[ExtrapolateToID] Passed condition 1.");
+    MSG_DEBUG("[ExtrapolateToID] Passed condition 1.");
 
     // test if r inside next cylinder within some tolerance
-    FCS_MSG_DEBUG(
-        "[ExtrapolateToID] Testing condition 2: hit r=" << extPos.perp());
+    MSG_DEBUG("[ExtrapolateToID] Testing condition 2: hit r=" << extPos.perp());
     if (surfID < m_CaloBoundaryR.size() - 1
         && extPos.perp() < m_CaloBoundaryR.at(surfID + 1) + tolerance)
       continue;
-    FCS_MSG_DEBUG("[ExtrapolateToID] Passed condition 2.");
+    MSG_DEBUG("[ExtrapolateToID] Passed condition 2.");
 
-    FCS_MSG_DEBUG("[ExtrapolateToID] Testing condition 3: hit magnitude="
-                  << extPos.mag());
+    MSG_DEBUG("[ExtrapolateToID] Testing condition 3: hit magnitude="
+              << extPos.mag());
     if (extPosDist >= 0 && extPos.mag() > extPosDist)
       continue;
-    FCS_MSG_DEBUG("[ExtrapolateToID] Passed condition 3.");
+    MSG_DEBUG("[ExtrapolateToID] Passed condition 3.");
 
     extPosDist = extPos.mag();
 
@@ -116,10 +117,10 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
     result.set_IDCaloBoundary_y(extPos.y());
     result.set_IDCaloBoundary_z(extPos.z());
 
-    FCS_MSG_DEBUG("[ExtrapolateToID] Setting IDCaloBoundary to eta="
-                  << extPos.eta() << " phi=" << extPos.phi()
-                  << " r=" << extPos.perp() << " x=" << extPos.x()
-                  << " y=" << extPos.y() << " z=" << extPos.z());
+    MSG_DEBUG("[ExtrapolateToID] Setting IDCaloBoundary to eta="
+              << extPos.eta() << " phi=" << extPos.phi()
+              << " r=" << extPos.perp() << " x=" << extPos.x()
+              << " y=" << extPos.y() << " z=" << extPos.z());
 
     // compute angle between extrapolated position vector and momentum at
     // IDCaloBoundary can be used to correct shower shapes for particles which
@@ -132,7 +133,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
   }  // end of loop over surfaces
 
   if (result.IDCaloBoundary_eta() == -999)
-    FCS_MSG_COND(
+    MSG_COND(
         "[ExtrapolateToID] Failed extrapolation to ID-Calo boundary. "
         "\n[ExtrapolateToID] Particle with truth vertex at ("
             << truth->vertex().X() << "," << truth->vertex().Y() << ","
@@ -143,7 +144,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToID(
             << " E=" << truth->E() << " Ekin_off=" << truth->Ekin_off(),
         truth->Pt() < transverseMomWarningLimit);
 
-  FCS_MSG_DEBUG("[ExtrapolateToID] End extrapolateToID()");
+  MSG_DEBUG("[ExtrapolateToID] End extrapolateToID()");
 }
 
 void FastCaloSimCaloExtrapolation::extrapolateToLayers(
@@ -151,7 +152,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
     const std::vector<G4FieldTrack>& caloSteps,
     const TFCSTruthState* truth) const
 {
-  FCS_MSG_DEBUG("[extrapolateToLayers] Start extrapolate");
+  MSG_DEBUG("[extrapolateToLayers] Start extrapolate");
 
   // pT threshold of truth particles over which extrapolation failures will be
   // printed as warnings
@@ -241,7 +242,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
           result.set_eta(sample, subpos, extPos.eta());
           result.set_r(sample, subpos, extPos.perp());
         } else {
-          FCS_MSG_COND(
+          MSG_COND(
               " [extrapolateToLayers] Extrapolation to cylinder failed. Sample="
                   << sample << " subpos=" << subpos
                   << " eta=" << result.IDCaloBoundary_eta()
@@ -255,7 +256,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
   }  // inside calo
 
   else
-    FCS_MSG_COND(
+    MSG_COND(
         "[extrapolateToLayers] Ups. Not inside calo. "
         "result.IDCaloBoundary_eta()="
             << result.IDCaloBoundary_eta()
@@ -268,7 +269,7 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
             << " E=" << truth->E() << " Ekin_off=" << truth->Ekin_off(),
         truth->Pt() < transverseMomWarningLimit);
 
-  FCS_MSG_DEBUG("[extrapolateToLayers] End extrapolateToLayers()");
+  MSG_DEBUG("[extrapolateToLayers] End extrapolateToLayers()");
 }
 
 bool FastCaloSimCaloExtrapolation::extrapolateToCylinder(
@@ -280,9 +281,9 @@ bool FastCaloSimCaloExtrapolation::extrapolateToCylinder(
 {
   if (caloSteps.size() == 1) {
     Vector3D hitPos = caloSteps.at(0).GetPosition();
-    FCS_MSG_DEBUG("[extrapolateWithPCA(R="
-                  << cylR << ",Z=" << cylZ
-                  << ")] Extrapolating single hit position to surface.");
+    MSG_DEBUG("[extrapolateWithPCA(R="
+              << cylR << ",Z=" << cylZ
+              << ")] Extrapolating single hit position to surface.");
     extPos = projectOnCylinder(cylR, cylZ, hitPos);
     momDir = caloSteps.at(0).GetMomentumDir();
     return true;
@@ -296,15 +297,15 @@ bool FastCaloSimCaloExtrapolation::extrapolateToCylinder(
       : extrapolateWithPCA(caloSteps, cylR, cylZ, extPos, momDir);
 
   if (foundHit) {
-    FCS_MSG_DEBUG("[extrapolateToCylinder(R="
-                  << cylR << ",Z=" << cylZ
-                  << ")::END] Extrapolated to cylinder with R=" << cylR
-                  << " and Z=" << cylZ << " at (" << extPos.x() << ","
-                  << extPos.y() << "," << extPos.z() << ")");
+    MSG_DEBUG("[extrapolateToCylinder(R="
+              << cylR << ",Z=" << cylZ
+              << ")::END] Extrapolated to cylinder with R=" << cylR
+              << " and Z=" << cylZ << " at (" << extPos.x() << "," << extPos.y()
+              << "," << extPos.z() << ")");
   } else {
     // this is not expected to ever happen
-    FCS_MSG_DEBUG("(R=" << cylR << ", Z=" << cylZ
-                        << "::END) Extrapolation to cylinder surface failed!");
+    MSG_DEBUG("(R=" << cylR << ", Z=" << cylZ
+                    << "::END) Extrapolation to cylinder surface failed!");
   }
 
   return foundHit;
@@ -317,9 +318,9 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
     Vector3D& extPos,
     Vector3D& momDir) const
 {
-  FCS_MSG_DEBUG("[extrapolateWithIntersection(R="
-                << cylR << ",Z=" << cylZ
-                << ")] Checking for cylinder intersections of line segments.");
+  MSG_DEBUG("[extrapolateWithIntersection(R="
+            << cylR << ",Z=" << cylZ
+            << ")] Checking for cylinder intersections of line segments.");
 
   // counter for number of computed extrapolations, does not count cases of
   // rejected extrapolations due to close by hit positions
@@ -331,11 +332,11 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
     Vector3D hitPos2 = caloSteps.at(hitID).GetPosition();
     Vector3D hitDir = hitPos2 - hitPos1;
 
-    FCS_MSG_DEBUG(
-        "[extrapolateWithIntersection(R="
-        << cylR << ",Z=" << cylZ << ")] Considering line segment between ("
-        << hitPos1.x() << "," << hitPos1.y() << "," << hitPos1.z() << ") and ("
-        << hitPos2.x() << "," << hitPos2.y() << "," << hitPos2.z() << ")");
+    MSG_DEBUG("[extrapolateWithIntersection(R="
+              << cylR << ",Z=" << cylZ
+              << ")] Considering line segment between (" << hitPos1.x() << ","
+              << hitPos1.y() << "," << hitPos1.z() << ") and (" << hitPos2.x()
+              << "," << hitPos2.y() << "," << hitPos2.z() << ")");
     // get position of the hit positions on the cylinder
     HITPOSITION cylPosHit1 = whereOnCylinder(cylR, cylZ, hitPos1);
     HITPOSITION cylPosHit2 = whereOnCylinder(cylR, cylZ, hitPos2);
@@ -345,9 +346,9 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
       extPos = cylPosHit1 == ON ? hitPos1 : hitPos2;
       momDir = cylPosHit1 == ON ? caloSteps.at(hitID - 1).GetMomentumDir()
                                 : caloSteps.at(hitID).GetMomentumDir();
-      FCS_MSG_DEBUG("[extrapolateWithIntersection(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Hit position already on cylinder surface.");
+      MSG_DEBUG("[extrapolateWithIntersection(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Hit position already on cylinder surface.");
       return true;
     }
 
@@ -423,11 +424,10 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
         extPos = selectedIntersection;
         return true;
       }
-      FCS_MSG_DEBUG("[extrapolateWithIntersection(R="
-                    << cylR << ",Z=" << cylZ << ")] Extrapolated position at ("
-                    << selectedIntersection.x() << ","
-                    << selectedIntersection.y() << ","
-                    << selectedIntersection.z() << ")");
+      MSG_DEBUG("[extrapolateWithIntersection(R="
+                << cylR << ",Z=" << cylZ << ")] Extrapolated position at ("
+                << selectedIntersection.x() << "," << selectedIntersection.y()
+                << "," << selectedIntersection.z() << ")");
     }
   }  // end of loop over hit positions
 
@@ -442,10 +442,10 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithPCA(
     Vector3D& momDir) const
 {
   bool foundHit = false;
-  FCS_MSG_DEBUG("[extrapolateWithPCA(R="
-                << cylR << ",Z=" << cylZ
-                << ")] No forward intersections with cylinder surface. "
-                   "Extrapolating to closest point on surface.");
+  MSG_DEBUG("[extrapolateWithPCA(R="
+            << cylR << ",Z=" << cylZ
+            << ")] No forward intersections with cylinder surface. "
+               "Extrapolating to closest point on surface.");
 
   // here we also need to consider distances from line segments to the cylinder
   double minDistToSurface = 100000;
@@ -453,11 +453,11 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithPCA(
     Vector3D hitPos1 = caloSteps.at(hitID - 1).GetPosition();
     Vector3D hitPos2 = caloSteps.at(hitID).GetPosition();
 
-    FCS_MSG_DEBUG(
-        "[extrapolateWithPCA(R="
-        << cylR << ",Z=" << cylZ << ")] Considering line segment between ("
-        << hitPos1.x() << "," << hitPos1.y() << "," << hitPos1.z() << ") and ("
-        << hitPos2.x() << "," << hitPos2.y() << "," << hitPos2.z() << ")");
+    MSG_DEBUG("[extrapolateWithPCA(R="
+              << cylR << ",Z=" << cylZ
+              << ")] Considering line segment between (" << hitPos1.x() << ","
+              << hitPos1.y() << "," << hitPos1.z() << ") and (" << hitPos2.x()
+              << "," << hitPos2.y() << "," << hitPos2.z() << ")");
 
     Vector3D PCA;
     // find the point of closest approach (PCA) to the cylinder on the line
@@ -467,11 +467,11 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithPCA(
     Vector3D cylinderSurfacePCA = projectOnCylinder(cylR, cylZ, PCA);
     double tmpMinDistToSurface = (PCA - cylinderSurfacePCA).mag();
 
-    FCS_MSG_DEBUG(
-        "[extrapolateWithPCA(R="
-        << cylR << ",Z=" << cylZ << ")] Extrapolated line segment to ("
-        << cylinderSurfacePCA.x() << "," << cylinderSurfacePCA.y() << ","
-        << cylinderSurfacePCA.z() << ") with distance " << tmpMinDistToSurface);
+    MSG_DEBUG("[extrapolateWithPCA(R="
+              << cylR << ",Z=" << cylZ << ")] Extrapolated line segment to ("
+              << cylinderSurfacePCA.x() << "," << cylinderSurfacePCA.y() << ","
+              << cylinderSurfacePCA.z() << ") with distance "
+              << tmpMinDistToSurface);
 
     if (tmpMinDistToSurface < minDistToSurface) {
       foundHit = true;
@@ -624,7 +624,7 @@ void FastCaloSimCaloExtrapolation::getIterativePCA(float cylR,
                                                    Vector3D& BoundB,
                                                    Vector3D& PCA) const
 {
-  FCS_MSG_DEBUG("[getIterativePCA] Finding PCA iteratively.");
+  MSG_DEBUG("[getIterativePCA] Finding PCA iteratively.");
 
   Vector3D boundDir = BoundB - BoundA;
   double distBounds = boundDir.mag();
@@ -718,15 +718,15 @@ auto FastCaloSimCaloExtrapolation::circleLineIntersection2D(
   det = B * B - 4 * A * C;
 
   if (A <= 0.0000001 || det < 0) {
-    FCS_MSG_DEBUG("[circleLineIntersection2D] No intersections.");
+    MSG_DEBUG("[circleLineIntersection2D] No intersections.");
     return 0;
   } else if (std::abs(det) < 0.00001) {
     // one solution, tangential case.
     t = -B / (2 * A);
     intersectA = {pointA.x() + t * dx, pointA.y() + t * dy, pointA.z()};
-    FCS_MSG_DEBUG("[circleLineIntersection2D] One intersection at ("
-                  << intersectA.x() << "," << intersectA.y() << ","
-                  << intersectA.z() << ").");
+    MSG_DEBUG("[circleLineIntersection2D] One intersection at ("
+              << intersectA.x() << "," << intersectA.y() << ","
+              << intersectA.z() << ").");
     return 1;
   } else {
     // two solutions
@@ -734,10 +734,10 @@ auto FastCaloSimCaloExtrapolation::circleLineIntersection2D(
     intersectA = {pointA.x() + t * dx, pointA.y() + t * dy, pointA.z()};
     t = (-B - std::sqrt(det)) / (2 * A);
     intersectB = {pointA.x() + t * dx, pointA.y() + t * dy, pointB.z()};
-    FCS_MSG_DEBUG("[circleLineIntersection2D] Two intersections at ("
-                  << intersectA.x() << "," << intersectA.y() << ","
-                  << intersectA.z() << ") and at (" << intersectB.x() << ","
-                  << intersectB.y() << "," << intersectB.z() << ").");
+    MSG_DEBUG("[circleLineIntersection2D] Two intersections at ("
+              << intersectA.x() << "," << intersectA.y() << ","
+              << intersectA.z() << ") and at (" << intersectB.x() << ","
+              << intersectB.y() << "," << intersectB.z() << ").");
     return 2;
   }
 }
@@ -793,10 +793,9 @@ CylinderIntersections FastCaloSimCaloExtrapolation::getCylinderIntersections(
   unsigned int nCoverIntersections = cylinderLineIntersection(
       cylR, cylZ, hitPos1, hitPos2, intersections.first, intersections.second);
   if (nCoverIntersections == 2) {
-    FCS_MSG_DEBUG(
-        "[getCylinderIntersections(R="
-        << cylR << ",Z=" << cylZ
-        << ")] Found two cylinder intersections through cylinder cover.");
+    MSG_DEBUG("[getCylinderIntersections(R="
+              << cylR << ",Z=" << cylZ
+              << ")] Found two cylinder intersections through cylinder cover.");
     intersections.number = 2;
     return intersections;
   } else if (nCoverIntersections == 1) {
@@ -813,7 +812,7 @@ CylinderIntersections FastCaloSimCaloExtrapolation::getCylinderIntersections(
       // case take the endcap intersection which is further away from the
       // cylinder cover intersection to prevent taking the same intersection
       // twice
-      FCS_MSG_DEBUG(
+      MSG_DEBUG(
           "[getCylinderIntersections(R="
           << cylR << ",Z=" << cylZ
           << ")] Found intersection through cylinder cover and both endcaps. "
@@ -825,24 +824,24 @@ CylinderIntersections FastCaloSimCaloExtrapolation::getCylinderIntersections(
           : negativeEndcapIntersection;
       intersections.number = 2;
     } else if (IsPositiveEndcapIntersection) {
-      FCS_MSG_DEBUG("[getCylinderIntersections(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Found intersection through cylinder cover and "
-                       "positive endcap.");
+      MSG_DEBUG("[getCylinderIntersections(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Found intersection through cylinder cover and "
+                   "positive endcap.");
       intersections.second = positiveEndcapIntersection;
       intersections.number = 2;
     } else if (IsNegativeEndcapIntersection) {
-      FCS_MSG_DEBUG("[getCylinderIntersections(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Found intersection through cylinder cover and "
-                       "negative endcap.");
+      MSG_DEBUG("[getCylinderIntersections(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Found intersection through cylinder cover and "
+                   "negative endcap.");
       intersections.second = negativeEndcapIntersection;
       intersections.number = 2;
     } else {
       // line is tangential to cylinder cover
-      FCS_MSG_DEBUG("[getCylinderIntersections(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Found single intersection through cylinder cover.");
+      MSG_DEBUG("[getCylinderIntersections(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Found single intersection through cylinder cover.");
       intersections.number = 1;
     }
 
@@ -855,32 +854,32 @@ CylinderIntersections FastCaloSimCaloExtrapolation::getCylinderIntersections(
         cylR, cylZ, false, hitPos1, hitPos2, negativeEndcapIntersection);
 
     if (IsPositiveEndcapIntersection && IsNegativeEndcapIntersection) {
-      FCS_MSG_DEBUG("[getCylinderIntersections(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Found intersections through both endcaps.");
+      MSG_DEBUG("[getCylinderIntersections(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Found intersections through both endcaps.");
       intersections.first = positiveEndcapIntersection;
       intersections.second = negativeEndcapIntersection;
       intersections.number = 2;
     } else if (IsPositiveEndcapIntersection) {
       // don't expect this to ever happen
-      FCS_MSG_DEBUG("[getCylinderIntersections(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Found single intersection through positive endcap. "
-                       "This should not happen.");
+      MSG_DEBUG("[getCylinderIntersections(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Found single intersection through positive endcap. "
+                   "This should not happen.");
       intersections.first = positiveEndcapIntersection;
       intersections.number = 1;
     } else if (IsNegativeEndcapIntersection) {
       // don't expect this to ever happen
-      FCS_MSG_DEBUG("[getCylinderIntersections(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Found single intersection through negative endcap. "
-                       "This should not happen.");
+      MSG_DEBUG("[getCylinderIntersections(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Found single intersection through negative endcap. "
+                   "This should not happen.");
       intersections.first = negativeEndcapIntersection;
       intersections.number = 1;
     } else {
-      FCS_MSG_DEBUG("[getCylinderIntersections(R="
-                    << cylR << ",Z=" << cylZ
-                    << ")] Found no cylinder intersections.");
+      MSG_DEBUG("[getCylinderIntersections(R="
+                << cylR << ",Z=" << cylZ
+                << ")] Found no cylinder intersections.");
       // no intersections at all
       intersections.number = 0;
     }
@@ -940,9 +939,9 @@ int FastCaloSimCaloExtrapolation::cylinderLineIntersection(
   double d2 = projPointA.dot(projPointA) - t * t * projDiffNorm2;
 
   if (d2 < 0) {
-    FCS_MSG_COND("[cylinderLineIntersection] Got negative distance (d2="
-                     << d2 << "). Forcing to 0.",
-                 d2 > -0.001);
+    MSG_COND("[cylinderLineIntersection] Got negative distance (d2="
+                 << d2 << "). Forcing to 0.",
+             d2 > -0.001);
     d2 = 0;
   }
 
@@ -1016,7 +1015,7 @@ int FastCaloSimCaloExtrapolation::whichIntersection(
     /* CASE A: one hit position inside and one outside of the cylinder (travel
     through surface), one intersection is on cylinder, take intersection closest
     to line segment */
-    FCS_MSG_DEBUG("[whichIntersection] Travel through surface.");
+    MSG_DEBUG("[whichIntersection] Travel through surface.");
     return getPointLineSegmentDistance(intersectionA, hitPos1, hitPos2)
         > getPointLineSegmentDistance(intersectionB, hitPos1, hitPos2);
   } else if (cylPosHit1 == INSIDE && cylPosHit2 == INSIDE) {
@@ -1025,7 +1024,7 @@ int FastCaloSimCaloExtrapolation::whichIntersection(
     Vector3D dirA = intersectionA - hitPos2;
     Vector3D dirB = intersectionB - hitPos2;
     Vector3D hitDir = hitPos2 - hitPos1;
-    FCS_MSG_DEBUG("[whichIntersection] Both hit positions inside.");
+    MSG_DEBUG("[whichIntersection] Both hit positions inside.");
     return dirA.dot(hitDir) < dirB.dot(hitDir);
   } else {
     // /* CASE C: both hit position outside and the intersections lay on the
@@ -1035,7 +1034,7 @@ int FastCaloSimCaloExtrapolation::whichIntersection(
     // positions */
     double distHitPosIntersectA = (hitPos2 - intersectionA).mag();
     double distHitPosIntersectB = (hitPos2 - intersectionB).mag();
-    FCS_MSG_DEBUG("[whichIntersection] Both hit positions outside.");
+    MSG_DEBUG("[whichIntersection] Both hit positions outside.");
     return distHitPosIntersectA > distHitPosIntersectB;
   }
 }

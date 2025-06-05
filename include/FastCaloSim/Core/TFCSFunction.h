@@ -6,9 +6,12 @@
 #include "FastCaloSim/Core/MLogging.h"
 #include "TObject.h"
 
+namespace FastCaloSim::Core
+{
+
 class TFCSFunction
     : public TObject
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
   TFCSFunction() {};
@@ -29,5 +32,5 @@ public:
 private:
   ClassDef(TFCSFunction, 3)  // TFCSFunction
 };
-
+}  // namespace FastCaloSim::Core
 #endif

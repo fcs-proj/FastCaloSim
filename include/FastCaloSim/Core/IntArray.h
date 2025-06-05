@@ -6,6 +6,8 @@
 #include "TArrayI.h"
 #include "TObject.h"
 
+namespace FastCaloSim::Core
+{
 class IntArray
     : public TObject
     , public TArrayI
@@ -18,5 +20,6 @@ public:
 private:
   ClassDef(IntArray, 1)
 };
+}  // namespace FastCaloSim::Core
 
 #endif

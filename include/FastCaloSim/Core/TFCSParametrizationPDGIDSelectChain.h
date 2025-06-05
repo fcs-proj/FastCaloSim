@@ -5,6 +5,9 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
 
+namespace FastCaloSim::Core
+{
+
 class TFCSParametrizationPDGIDSelectChain : public TFCSParametrizationChain
 {
 public:
@@ -45,5 +48,5 @@ private:
   ClassDefOverride(TFCSParametrizationPDGIDSelectChain,
                    1)  // TFCSParametrizationPDGIDSelectChain
 };
-
+}  // namespace FastCaloSim::Core
 #endif

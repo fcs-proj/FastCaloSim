@@ -7,8 +7,9 @@
 #  define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
 
 #  include "FastCaloSim/Core/TFCSParametrizationBase.h"
-
-class TFCSParametrization : public ::TFCSParametrizationBase
+namespace FastCaloSim::Core
+{
+class TFCSParametrization : public TFCSParametrizationBase
 {
 public:
   TFCSParametrization(const char* name = nullptr, const char* title = nullptr);
@@ -73,7 +74,7 @@ private:
 
   ClassDefOverride(TFCSParametrization, 1)  // TFCSParametrization
 };
-
+}  // namespace FastCaloSim::Core
 #endif
 
 #pragma GCC diagnostic pop

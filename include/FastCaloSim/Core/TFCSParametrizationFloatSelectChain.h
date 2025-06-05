@@ -5,6 +5,9 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 
+namespace FastCaloSim::Core
+{
+
 class TFCSParametrizationFloatSelectChain
     : public TFCSParametrizationBinnedChain
 {
@@ -44,5 +47,5 @@ private:
   ClassDefOverride(TFCSParametrizationFloatSelectChain,
                    1)  // TFCSParametrizationFloatSelectChain
 };
-
+}  // namespace FastCaloSim::Core
 #endif

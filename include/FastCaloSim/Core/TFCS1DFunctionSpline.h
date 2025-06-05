@@ -10,6 +10,10 @@
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 
 class TH1;
+
+namespace FastCaloSim::Core
+{
+
 class TFCS1DFunctionInt32Histogram;
 
 class TFCS1DFunctionSpline : public TFCS1DFunction
@@ -51,7 +55,7 @@ public:
                                     double maxeffsiggoal = 3,
                                     int nsplinepoints = 5);
 
-  using TFCS1DFunction::rnd_to_fct;
+  using FastCaloSim::Core::TFCS1DFunction::rnd_to_fct;
 
   /// Function gets random number rnd in the range [0,1) as argument
   /// and returns function value according to a histogram distribution
@@ -74,4 +78,5 @@ private:
   ClassDef(TFCS1DFunctionSpline, 1)  // TFCS1DFunctionSpline
 };
 
+}  // namespace FastCaloSim::Core
 #endif

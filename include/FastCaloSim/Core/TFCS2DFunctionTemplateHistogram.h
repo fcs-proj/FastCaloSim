@@ -11,6 +11,8 @@
 #include "TH1.h"
 #include "TH2.h"
 
+namespace FastCaloSim::Core
+{
 template<typename Txvec, typename Tyvec, typename Tz, typename Trandom = float>
 class TFCS2DFunctionTemplateHistogram : public TFCS2DFunction
 {
@@ -75,11 +77,11 @@ public:
             ibinx, hist->GetXaxis()->GetBinLowEdge(ibinx + 1));
         //          if(ihist>0)
         //          if(m_HistoBorders.GetBinLowEdge(ihist-1)==m_HistoBorders.GetBinLowEdge(ihist))
-        //          { FCS_MSG_INFO( bin="<<ibin+1<<"
+        //          { MSG_INFO( bin="<<ibin+1<<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist);
         //          --ihist;
-        //          FCS_MSG_INFO("     bin="<<ibin  <<"
+        //          MSG_INFO("     bin="<<ibin  <<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin  )<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
         //          }
@@ -89,11 +91,11 @@ public:
             ibiny, hist->GetYaxis()->GetBinLowEdge(ibiny + 1));
         //          if(ihist>0)
         //          if(m_HistoBorders.GetBinLowEdge(ihist-1)==m_HistoBorders.GetBinLowEdge(ihist))
-        //          { FCS_MSG_INFO("Skip bin="<<ibin+1<<"
+        //          { MSG_INFO("Skip bin="<<ibin+1<<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
         //          --ihist;
-        //          FCS_MSG_INFO("     bin="<<ibin  <<"
+        //          MSG_INFO("     bin="<<ibin  <<"
         //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin  )<<"
         //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
         //          }
@@ -107,16 +109,16 @@ public:
           //          if(ihist>0)
           //          if(m_HistoContents.get_fraction(ihist-1)==m_HistoContents.get_fraction(ihist))
           //          {
-          //            FCS_MSG_INFO("Skip fbin="<<ihist<<"
+          //            MSG_INFO("Skip fbin="<<ihist<<"
           //            fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
           //            frac="<<m_HistoContents.get_fraction(ihist));
           //            --ihist;
-          //            FCS_MSG_INFO("     fbin="<<ihist<<"
+          //            MSG_INFO("     fbin="<<ihist<<"
           //            fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
           //            frac="<<m_HistoContents.get_fraction(ihist));
           //          }
 
-          //          FCS_MSG_INFO("bin="<<ibin+1<<"
+          //          MSG_INFO("bin="<<ibin+1<<"
           //          fbin="<<ihist<<"/"<<m_HistoBorders.get_nbins()<<"
           //          x=["<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<","<<hist->GetXaxis()->GetBinUpEdge(ibin+1)<<"]
           //          fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
@@ -142,16 +144,16 @@ public:
   //          if(ihist>0)
   if(m_HistoContents.get_fraction(ihist-1)==m_HistoContents.get_fraction(ihist))
   {
-  //            FCS_MSG_INFO("Skip fbin="<<ihist<<"
+  //            MSG_INFO("Skip fbin="<<ihist<<"
   fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
   frac="<<m_HistoContents.get_fraction(ihist));
   //            --ihist;
-  //            FCS_MSG_INFO("     fbin="<<ihist<<"
+  //            MSG_INFO("     fbin="<<ihist<<"
   fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
   frac="<<m_HistoContents.get_fraction(ihist));
   //          }
 
-  //          FCS_MSG_INFO("bin="<<ibin+1<<"
+  //          MSG_INFO("bin="<<ibin+1<<"
   fbin="<<ihist<<"/"<<m_HistoBorders.get_nbins()<<"
   x=["<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<","<<hist->GetXaxis()->GetBinUpEdge(ibin+1)<<"]
   fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
@@ -731,119 +733,121 @@ public:
            1)  // TFCS2DFunctionInt32Int32Int32Histogram
 };
 
+}  // namespace FastCaloSim::Core
+
 // clang-format off
 #if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
           < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionTemplateHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, \
+      FastCaloSim::Core::TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
 
-#  pragma link C++ class TFCS2DFunctionInt8Int8Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int8Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int8Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int16Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int16Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int16Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int32Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int32Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int32Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int8Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int8Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int8Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int16Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int16Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int16Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int32Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int32Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt8Int32Int32Histogram + ;
 
-#  pragma link C++ class TFCS2DFunctionInt16Int8Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int8Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int8Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int16Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int16Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int16Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int32Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int32Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int32Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int8Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int8Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int8Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int16Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int16Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int16Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int32Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int32Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt16Int32Int32Histogram + ;
 
-#  pragma link C++ class TFCS2DFunctionInt32Int8Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int8Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int8Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int16Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int16Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int16Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int32Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int32Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int32Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int8Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int8Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int8Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int16Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int16Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int16Int32Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int32Int8Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int32Int16Histogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS2DFunctionInt32Int32Int32Histogram + ;
 
 #endif
 // clang-format on

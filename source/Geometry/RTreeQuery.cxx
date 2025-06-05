@@ -4,6 +4,8 @@
 
 #include "FastCaloSim/Geometry/RTreeQuery.h"
 
+using namespace FastCaloSim::Geometry;
+
 RTreeQuery::RTreeQuery(RTreeHelpers::CoordinateSystem coordSys)
     : m_coordinate_system(coordSys)
 {

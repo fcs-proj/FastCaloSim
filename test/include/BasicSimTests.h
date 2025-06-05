@@ -4,7 +4,9 @@
 #include <gtest/gtest.h>
 
 #include "AtlasGeoTests.h"
+#include "TBufferFile.h"
 #include "TFile.h"
+#include "TInterpreter.h"
 #include "TestConfig/BasicSimTestsConfig.h"
 
 class BasicSimTests : public AtlasGeoTests

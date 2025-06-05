@@ -9,6 +9,8 @@
 #include "TH1.h"
 #include "TTree.h"
 
+namespace FastCaloSim::Core
+{
 class TFCS1DFunctionRegression : public TFCS1DFunction
 {
 public:
@@ -28,5 +30,6 @@ private:
 
   ClassDef(TFCS1DFunctionRegression, 1)  // TFCS1DFunctionRegression
 };
+}  // namespace FastCaloSim::Core
 
 #endif
