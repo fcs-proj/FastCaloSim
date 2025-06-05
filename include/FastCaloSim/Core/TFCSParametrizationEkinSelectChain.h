@@ -1,10 +1,13 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationEkinSelectChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationEkinSelectChain_h
+#ifndef TFCSParametrizationEkinSelectChain_h
+#define TFCSParametrizationEkinSelectChain_h
 
 #include "FastCaloSim/Core/TFCSParametrizationFloatSelectChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+
+namespace FastCaloSim::Core
+{
 
 class TFCSParametrizationEkinSelectChain
     : public TFCSParametrizationFloatSelectChain
@@ -58,5 +61,7 @@ private:
   ClassDefOverride(TFCSParametrizationEkinSelectChain,
                    1)  // TFCSParametrizationEkinSelectChain
 };
+
+}  // namespace FastCaloSim::Core
 
 #endif

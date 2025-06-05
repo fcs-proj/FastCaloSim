@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunction_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunction_h
+#ifndef TFCS1DFunction_h
+#define TFCS1DFunction_h
 
 // STL includes
 #include <vector>
@@ -9,6 +9,9 @@
 #include "FastCaloSim/Core/TFCSFunction.h"
 
 class TH1;
+
+namespace FastCaloSim::Core
+{
 
 class TFCS1DFunction : public TFCSFunction
 {
@@ -56,5 +59,5 @@ public:
 private:
   ClassDef(TFCS1DFunction, 2)  // TFCS1DFunction
 };
-
+}  // namespace FastCaloSim::Core
 #endif

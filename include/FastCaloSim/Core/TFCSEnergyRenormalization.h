@@ -1,16 +1,19 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyRenormalization_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyRenormalization_h
+#ifndef TFCSEnergyRenormalization_h
+#define TFCSEnergyRenormalization_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
-
+}
 /** The class TFCSEnergyRenormalization ensures that the sum of cell energies in
    every calorimeter layer matches the output of energy simulation
 */
-
+namespace FastCaloSim::Core
+{
 class TFCSEnergyRenormalization : public TFCSParametrization
 {
 public:
@@ -46,5 +49,6 @@ inline bool TFCSEnergyRenormalization::is_match_calosample(
 {
   return true;
 }
+}  // namespace FastCaloSim::Core
 
 #endif

@@ -17,6 +17,9 @@ class G4FieldTrack;
 ///
 /// @author Joshua Falco Beirer <joshua.falco.beirer@cern.ch>
 ///
+
+namespace FastCaloSim::Transport
+{
 class FASTCALOSIM_EXPORT G4CaloTransportTool
 {
 public:
@@ -82,5 +85,5 @@ private:
   /// Thread-local holder for G4PropagatorInField instances
   thread_utils::ThreadLocalHolder<G4PropagatorInField> m_propagatorHolder;
 };
-
+}  // namespace FastCaloSim::Transport
 #endif  // G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H

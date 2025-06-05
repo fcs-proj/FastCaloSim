@@ -8,7 +8,8 @@
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
 class TH2;
-
+namespace FastCaloSim::Core
+{
 class TFCSFlatLateralShapeParametrization
     : public TFCSLateralShapeParametrizationHitBase
 {
@@ -75,5 +76,5 @@ inline float TFCSFlatLateralShapeParametrization::scale() const
 {
   return m_scale;
 }
-
+}  // namespace FastCaloSim::Core
 #endif

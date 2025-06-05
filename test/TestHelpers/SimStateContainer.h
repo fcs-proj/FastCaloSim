@@ -14,6 +14,8 @@
 namespace TestHelpers
 {
 
+using FastCaloSim::Core::TFCSSimulationState;
+
 struct SimStateContainerData
 {
   unsigned int state_id;  // The simulation state to which the cell belongs

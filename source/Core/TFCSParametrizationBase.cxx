@@ -8,6 +8,7 @@
 //=============================================
 //======= TFCSParametrizationBase =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSParametrizationBase::TFCSParametrizationBase(const char* name,
                                                  const char* title)
@@ -29,7 +30,7 @@ FCSReturnCode TFCSParametrizationBase::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const
 {
-  FCS_MSG_ERROR(
+  MSG_ERROR(
       "now in TFCSParametrizationBase::simulate(). This should "
       "normally not happen");
   // Force one retry to issue a printout from the chain causing the call to this
@@ -40,7 +41,7 @@ FCSReturnCode TFCSParametrizationBase::simulate(
 bool TFCSParametrizationBase::compare(const TFCSParametrizationBase& ref) const
 {
   if (this == &ref) {
-    FCS_MSG_DEBUG("compare(): identical instances " << this << " == " << &ref);
+    MSG_DEBUG("compare(): identical instances " << this << " == " << &ref);
     return true;
   }
   return false;
@@ -51,40 +52,39 @@ void TFCSParametrizationBase::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 
   if (longprint) {
-    FCS_MSG_INFO(optprint << GetTitle() << " " << IsA()->GetName());
-    FCS_MSG(INFO) << optprint << "  PDGID: ";
+    MSG_INFO(optprint << GetTitle() << " " << IsA()->GetName());
+    MSG(INFO) << optprint << "  PDGID: ";
     if (is_match_all_pdgid()) {
-      FCS_MSG(INFO) << "all";
+      MSG(INFO) << "all";
     } else {
       for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
            ++it)
       {
         if (it != pdgid().begin())
-          FCS_MSG(INFO) << ", ";
-        FCS_MSG(INFO) << *it;
+          MSG(INFO) << ", ";
+        MSG(INFO) << *it;
       }
     }
     if (is_match_all_Ekin()) {
-      FCS_MSG(INFO) << " ; Ekin=all";
+      MSG(INFO) << " ; Ekin=all";
     } else {
-      FCS_MSG(INFO) << " ; Ekin=" << Ekin_nominal() << " [" << Ekin_min()
-                    << " , " << Ekin_max() << ") MeV";
+      MSG(INFO) << " ; Ekin=" << Ekin_nominal() << " [" << Ekin_min() << " , "
+                << Ekin_max() << ") MeV";
     }
     if (is_match_all_eta()) {
-      FCS_MSG(INFO) << " ; eta=all";
+      MSG(INFO) << " ; eta=all";
     } else {
-      FCS_MSG(INFO) << " ; eta=" << eta_nominal() << " [" << eta_min() << " , "
-                    << eta_max() << ")";
+      MSG(INFO) << " ; eta=" << eta_nominal() << " [" << eta_min() << " , "
+                << eta_max() << ")";
     }
-    FCS_MSG(INFO) << END_FCS_MSG(INFO);
+    MSG(INFO) << END_MSG(INFO);
   } else {
-    FCS_MSG_INFO(optprint << GetTitle());
+    MSG_INFO(optprint << GetTitle());
   }
 }
 
@@ -97,14 +97,14 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
       // If param is already in the duplication list, skip over
       auto checkexist = dup.find(param);
       if (checkexist != dup.end()) {
-        FCS_MSG_DEBUG("Found duplicate pointer for: " << param << "="
-                                                      << param->GetName());
+        MSG_DEBUG("Found duplicate pointer for: " << param << "="
+                                                  << param->GetName());
         if (checkexist->second.replace) {
           TFCSParametrizationBase* refparam = checkexist->second.replace;
-          FCS_MSG_DEBUG("Found duplicate pointer: "
-                        << refparam << "=" << refparam->GetName()
-                        << ", duplicate is " << param << "=" << param->GetName()
-                        << " index " << i << " of " << this);
+          MSG_DEBUG("Found duplicate pointer: "
+                    << refparam << "=" << refparam->GetName()
+                    << ", duplicate is " << param << "=" << param->GetName()
+                    << " index " << i << " of " << this);
           dup[refparam].mother.push_back(this);
           dup[refparam].index.push_back(i);
         }
@@ -125,10 +125,10 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
           continue;
         // Check for objects with identical content
         if (*param == *refparam) {
-          FCS_MSG_DEBUG("Found duplicate: "
-                        << refparam << "=" << refparam->GetName()
-                        << ", duplicate is " << param << "=" << param->GetName()
-                        << " index " << i << " of " << this);
+          MSG_DEBUG("Found duplicate: "
+                    << refparam << "=" << refparam->GetName()
+                    << ", duplicate is " << param << "=" << param->GetName()
+                    << " index " << i << " of " << this);
           dup[param].replace = refparam;
           dup[refparam].mother.push_back(this);
           dup[refparam].index.push_back(i);
@@ -152,30 +152,30 @@ void TFCSParametrizationBase::RemoveDuplicates()
       if (onedup.second.mother.empty())
         continue;
       TFCSParametrizationBase* ref = onedup.first;
-      FCS_MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
+      MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
       for (unsigned int i = 0; i < onedup.second.mother.size(); ++i) {
         int index = onedup.second.index[i];
         TFCSParametrizationBase* mother = onedup.second.mother[i];
         TFCSParametrizationBase* delparam = mother->operator[](index);
         unsigned int delcount = dup[delparam].mother.size();
         if (delcount == 0) {
-          FCS_MSG_DEBUG("  - Delete object "
-                        << delparam << "=" << delparam->GetName() << " index "
-                        << index << " of " << mother << ", has " << delcount
-                        << " other replacements attached. Deleting");
+          MSG_DEBUG("  - Delete object "
+                    << delparam << "=" << delparam->GetName() << " index "
+                    << index << " of " << mother << ", has " << delcount
+                    << " other replacements attached. Deleting");
           mother->set_daughter(index, ref);
           dellist.insert(delparam);
         } else {
-          FCS_MSG_WARNING("  - Delete object "
-                          << delparam << "=" << delparam->GetName() << " index "
-                          << index << " of " << mother << ", has " << delcount
-                          << " other replacements attached. Skipping");
+          MSG_WARNING("  - Delete object "
+                      << delparam << "=" << delparam->GetName() << " index "
+                      << index << " of " << mother << ", has " << delcount
+                      << " other replacements attached. Skipping");
         }
       }
     }
   }
 
-  FCS_MSG_INFO("RERUNNING DUPLICATE FINDING");
+  MSG_INFO("RERUNNING DUPLICATE FINDING");
   FindDuplicateClasses_t dupclasses2;
   FindDuplicates(dupclasses2);
 
@@ -184,19 +184,17 @@ void TFCSParametrizationBase::RemoveDuplicates()
     FindDuplicates_t& dup2 = dupclasses2[delparam->GetName()];
     bool present = dup2.find(delparam) != dup2.end();
     if (present) {
-      FCS_MSG_WARNING("- Delete object " << delparam << "="
-                                         << delparam->GetName()
-                                         << " still referenced somewhere!");
+      MSG_WARNING("- Delete object " << delparam << "=" << delparam->GetName()
+                                     << " still referenced somewhere!");
     } else {
-      FCS_MSG_DEBUG("- Delete object " << delparam << "="
-                                       << delparam->GetName());
+      MSG_DEBUG("- Delete object " << delparam << "=" << delparam->GetName());
       ++ndel[delparam->ClassName()];
       delete delparam;
     }
   }
   for (auto& del : ndel)
-    FCS_MSG_INFO("Deleted " << del.second << " duplicate objects of class "
-                            << del.first);
+    MSG_INFO("Deleted " << del.second << " duplicate objects of class "
+                        << del.first);
 }
 
 void TFCSParametrizationBase::RemoveNameTitle()

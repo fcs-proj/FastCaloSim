@@ -13,6 +13,7 @@
 //=============================================
 //======= TFCSFlatLateralShapeParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSFlatLateralShapeParametrization::TFCSFlatLateralShapeParametrization(
     const char* name, const char* title)
@@ -86,9 +87,9 @@ FCSReturnCode TFCSFlatLateralShapeParametrization::simulate_hit(
                   center_z,
                   hit.E() * m_scale);
 
-  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
-                          << " phi=" << hit.phi() << " z=" << hit.z()
-                          << " r=" << r << " alpha=" << alpha);
+  MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+                      << " phi=" << hit.phi() << " z=" << hit.z() << " r=" << r
+                      << " alpha=" << alpha);
 
   return FCSSuccess;
 }
@@ -97,14 +98,13 @@ void TFCSFlatLateralShapeParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
-    FCS_MSG_INFO(optprint << "  dR=" << m_dR << " scale factor=" << m_scale
-                          << ", #hits=" << m_nhits);
+    MSG_INFO(optprint << "  dR=" << m_dR << " scale factor=" << m_scale
+                      << ", #hits=" << m_nhits);
   }
 }

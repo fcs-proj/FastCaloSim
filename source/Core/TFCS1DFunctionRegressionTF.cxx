@@ -5,13 +5,12 @@
 #include "TFile.h"
 #include "TMath.h"
 #include "TString.h"
-using namespace std;
 
 //=============================================
 //======= TFCS1DFunctionRegressionTF =========
 //=============================================
 
-using namespace std;
+using namespace FastCaloSim::Core;
 
 TFCS1DFunctionRegressionTF::TFCS1DFunctionRegressionTF(float rangeval,
                                                        float startval)

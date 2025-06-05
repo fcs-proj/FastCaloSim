@@ -1,11 +1,13 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationHistogram_h
+#ifndef TFCSEnergyInterpolationHistogram_h
+#define TFCSEnergyInterpolationHistogram_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 #include "TH1F.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyInterpolationHistogram : public TFCSParametrization
 {
 public:
@@ -52,9 +54,10 @@ private:
   ClassDefOverride(TFCSEnergyInterpolationHistogram,
                    1)  // TFCSEnergyInterpolationHistogram
 };
+}  // namespace FastCaloSim::Core
 
 #if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#  pragma link C++ class TFCSEnergyInterpolationHistogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCSEnergyInterpolationHistogram + ;
 #endif
 
 #endif

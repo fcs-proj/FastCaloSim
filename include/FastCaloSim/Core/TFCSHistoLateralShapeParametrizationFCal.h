@@ -8,7 +8,8 @@
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
 class TH2;
-
+namespace FastCaloSim::Core
+{
 class TFCSHistoLateralShapeParametrizationFCal
     : public TFCSHistoLateralShapeParametrization
 {
@@ -27,5 +28,5 @@ private:
   ClassDefOverride(TFCSHistoLateralShapeParametrizationFCal,
                    1)  // TFCSHistoLateralShapeParametrizationFCal
 };
-
+}  // namespace FastCaloSim::Core
 #endif

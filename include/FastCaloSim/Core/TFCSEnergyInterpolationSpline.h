@@ -1,13 +1,15 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h
+#ifndef TFCSEnergyInterpolationSpline_h
+#define TFCSEnergyInterpolationSpline_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 #include "TSpline.h"
 
 class TGraph;
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyInterpolationSpline : public TFCSParametrization
 {
 public:
@@ -77,4 +79,5 @@ private:
                    1)  // TFCSEnergyInterpolationSpline
 };
 
+}  // namespace FastCaloSim::Core
 #endif

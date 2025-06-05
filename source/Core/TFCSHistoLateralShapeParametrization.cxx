@@ -16,6 +16,7 @@
 //=============================================
 //======= TFCSHistoLateralShapeParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSHistoLateralShapeParametrization::TFCSHistoLateralShapeParametrization(
     const char* name, const char* title)
@@ -36,9 +37,9 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
     int first_fix_bin = -1;
     for (int i = (int)(m_hist.get_HistoContents().size() - 1); i >= 0; --i) {
       if (std::isnan(m_hist.get_HistoContents()[i])) {
-        FCS_MSG_DEBUG("nan in histo content for "
-                      << GetTitle() << ", bin[" << i
-                      << "]=" << m_hist.get_HistoContents()[i] << " -> 1");
+        MSG_DEBUG("nan in histo content for "
+                  << GetTitle() << ", bin[" << i
+                  << "]=" << m_hist.get_HistoContents()[i] << " -> 1");
         m_hist.get_HistoContents()[i] = 1;
         first_fix_bin = i;
       }
@@ -47,25 +48,25 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
       return;
 
     if (first_fix_bin == 0) {
-      FCS_MSG_WARNING("nan in histo content for "
-                      << GetTitle()
-                      << " for all bins. Fixed to probability 1 causing hits "
-                         "to be deposited in the shower center");
+      MSG_WARNING("nan in histo content for "
+                  << GetTitle()
+                  << " for all bins. Fixed to probability 1 causing hits "
+                     "to be deposited in the shower center");
     } else {
       int last_fix_bin = -1;
       for (size_t i = 0; i < m_hist.get_HistoContents().size(); ++i) {
         if (std::isnan(m_hist.get_HistoContents()[i])) {
-          FCS_MSG_DEBUG("nan in histo content for "
-                        << GetTitle() << ", bin[" << i
-                        << "]=" << m_hist.get_HistoContents()[i] << " -> 0");
+          MSG_DEBUG("nan in histo content for "
+                    << GetTitle() << ", bin[" << i
+                    << "]=" << m_hist.get_HistoContents()[i] << " -> 0");
           m_hist.get_HistoContents()[i] = 0;
           last_fix_bin = i;
         }
       }
-      FCS_MSG_WARNING("nan in histo content for "
-                      << GetTitle() << ". Fixed up to bin " << last_fix_bin
-                      << " with probability 0 and beyond bin " << first_fix_bin
-                      << " with probability 1.");
+      MSG_WARNING("nan in histo content for "
+                  << GetTitle() << ". Fixed up to bin " << last_fix_bin
+                  << " with probability 0 and beyond bin " << first_fix_bin
+                  << " with probability 1.");
     }
   }
 }
@@ -140,15 +141,15 @@ FCSReturnCode TFCSHistoLateralShapeParametrization::simulate_hit(
     m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
   }
   if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
-    FCS_MSG_ERROR("  Histogram: "
-                  << m_hist.get_HistoBordersx().size() - 1 << "*"
-                  << m_hist.get_HistoBordersy().size() - 1
-                  << " bins, #hits=" << m_nhits << " alpha=" << alpha
-                  << " r=" << r << " rnd1=" << rnd1 << " rnd2=" << rnd2);
+    MSG_ERROR("  Histogram: " << m_hist.get_HistoBordersx().size() - 1 << "*"
+                              << m_hist.get_HistoBordersy().size() - 1
+                              << " bins, #hits=" << m_nhits
+                              << " alpha=" << alpha << " r=" << r
+                              << " rnd1=" << rnd1 << " rnd2=" << rnd2);
     alpha = 0;
     r = 0.001;
 
-    FCS_MSG_ERROR("  This error could probably be retried");
+    MSG_ERROR("  This error could probably be retried");
     return FCSFatal;
   }
 
@@ -180,9 +181,9 @@ FCSReturnCode TFCSHistoLateralShapeParametrization::simulate_hit(
   hit.setEtaPhiZE(
       center_eta + delta_eta, center_phi + delta_phi, center_z, hit.E());
 
-  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
-                          << " phi=" << hit.phi() << " z=" << hit.z()
-                          << " r=" << r << " alpha=" << alpha);
+  MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+                      << " phi=" << hit.phi() << " z=" << hit.z() << " r=" << r
+                      << " alpha=" << alpha);
 
   return FCSSuccess;
 }
@@ -224,25 +225,24 @@ void TFCSHistoLateralShapeParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
     if (is_phi_symmetric()) {
-      FCS_MSG_INFO(optprint
-                   << "  Histo: " << m_hist.get_HistoBordersx().size() - 1
-                   << "*" << m_hist.get_HistoBordersy().size() - 1
-                   << " bins, #hits=" << m_nhits << ", r scale=" << m_r_scale
-                   << ", r offset=" << m_r_offset << "mm (phi symmetric)");
+      MSG_INFO(optprint << "  Histo: " << m_hist.get_HistoBordersx().size() - 1
+                        << "*" << m_hist.get_HistoBordersy().size() - 1
+                        << " bins, #hits=" << m_nhits
+                        << ", r scale=" << m_r_scale
+                        << ", r offset=" << m_r_offset << "mm (phi symmetric)");
     } else {
-      FCS_MSG_INFO(optprint
-                   << "  Histo: " << m_hist.get_HistoBordersx().size() - 1
-                   << "*" << m_hist.get_HistoBordersy().size() - 1
-                   << " bins, #hits=" << m_nhits << ", r scale=" << m_r_scale
-                   << ", r offset=" << m_r_offset << "mm (not phi symmetric)");
+      MSG_INFO(optprint << "  Histo: " << m_hist.get_HistoBordersx().size() - 1
+                        << "*" << m_hist.get_HistoBordersy().size() - 1
+                        << " bins, #hits=" << m_nhits << ", r scale="
+                        << m_r_scale << ", r offset=" << m_r_offset
+                        << "mm (not phi symmetric)");
     }
   }
 }

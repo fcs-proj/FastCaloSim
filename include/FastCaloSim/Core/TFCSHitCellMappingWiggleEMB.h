@@ -5,6 +5,9 @@
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
+namespace FastCaloSim::Core
+{
+
 class TFCSHitCellMappingWiggleEMB : public TFCSHitCellMapping
 {
 public:
@@ -33,5 +36,5 @@ private:
   ClassDefOverride(TFCSHitCellMappingWiggleEMB,
                    1)  // TFCSHitCellMappingWiggleEMB
 };
-
+}  // namespace FastCaloSim::Core
 #endif

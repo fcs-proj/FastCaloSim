@@ -18,6 +18,7 @@
 //=============================================
 //======= TFCSPCAEnergyParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char* name,
                                                            const char* title,
@@ -49,21 +50,20 @@ void TFCSPCAEnergyParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSEnergyParametrization::Print(option);
 
   if (longprint) {
-    FCS_MSG(INFO) << optprint << "  #bins=" << m_numberpcabins
-                  << ", Enorm=" << m_total_energy_normalization << ", layers=";
+    MSG(INFO) << optprint << "  #bins=" << m_numberpcabins
+              << ", Enorm=" << m_total_energy_normalization << ", layers=";
     for (unsigned int i = 0; i < m_RelevantLayers.size(); i++) {
       if (i > 0)
-        FCS_MSG(INFO) << ", ";
-      FCS_MSG(INFO) << m_RelevantLayers[i];
+        MSG(INFO) << ", ";
+      MSG(INFO) << m_RelevantLayers[i];
     }
-    FCS_MSG(INFO) << END_FCS_MSG(INFO);
+    MSG(INFO) << END_MSG(INFO);
   }
 }
 
@@ -219,7 +219,7 @@ FCSReturnCode TFCSPCAEnergyParametrization::simulate(
     double total_energy =
         simdata[layerNr.size()] * simulstate.E() / m_total_energy_normalization;
     simulstate.set_E(total_energy);
-    FCS_MSG_DEBUG("set E to total_energy=" << total_energy);
+    MSG_DEBUG("set E to total_energy=" << total_energy);
 
     for (int s = 0; s < m_geo->n_layers(); s++) {
       double energyfrac = 0.0;
@@ -291,7 +291,7 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile* file,
   file->cd(x + "1/pca");
   IntArray* RelevantLayers = (IntArray*)gDirectory->Get("RelevantLayers");
   if (RelevantLayers == nullptr) {
-    FCS_MSG_ERROR(
+    MSG_ERROR(
         "TFCSPCAEnergyParametrization::m_RelevantLayers in first "
         "pcabin is null!");
     load_ok = false;
@@ -314,28 +314,28 @@ bool TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     TVectorD* Gauss_rms = (TVectorD*)gDirectory->Get("Gauss_rms");
 
     if (symCov == nullptr) {
-      FCS_MSG_WARNING("TFCSPCAEnergyParametrization::symCov in pcabin "
-                      << bin << " is null!");
+      MSG_WARNING("TFCSPCAEnergyParametrization::symCov in pcabin "
+                  << bin << " is null!");
       load_ok = false;
     }
     if (MeanValues == nullptr) {
-      FCS_MSG_WARNING("TFCSPCAEnergyParametrization::MeanValues in pcabin "
-                      << bin << " is null!");
+      MSG_WARNING("TFCSPCAEnergyParametrization::MeanValues in pcabin "
+                  << bin << " is null!");
       load_ok = false;
     }
     if (SigmaValues == nullptr) {
-      FCS_MSG_WARNING("TFCSPCAEnergyParametrization::SigmaValues in pcabin "
-                      << bin << " is null!");
+      MSG_WARNING("TFCSPCAEnergyParametrization::SigmaValues in pcabin "
+                  << bin << " is null!");
       load_ok = false;
     }
     if (Gauss_means == nullptr) {
-      FCS_MSG_WARNING("TFCSPCAEnergyParametrization::Gauss_means in pcabin "
-                      << bin << " is null!");
+      MSG_WARNING("TFCSPCAEnergyParametrization::Gauss_means in pcabin "
+                  << bin << " is null!");
       load_ok = false;
     }
     if (Gauss_rms == nullptr) {
-      FCS_MSG_WARNING("TFCSPCAEnergyParametrization::Gause_rms in pcabin "
-                      << bin << " is null!");
+      MSG_WARNING("TFCSPCAEnergyParametrization::Gause_rms in pcabin "
+                  << bin << " is null!");
       load_ok = false;
     }
 

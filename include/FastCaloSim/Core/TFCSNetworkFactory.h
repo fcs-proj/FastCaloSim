@@ -23,6 +23,8 @@
 
 #include "FastCaloSim/Core/VNetworkBase.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSNetworkFactory
 {
 public:
@@ -131,5 +133,6 @@ private:
    **/
   static bool isOnnxFile(std::string const& filename);
 };
+}  // namespace FastCaloSim::Core
 
 #endif  // TFCSNETWORKFACTORY_H

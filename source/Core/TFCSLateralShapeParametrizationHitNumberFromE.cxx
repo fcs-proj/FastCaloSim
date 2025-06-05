@@ -13,6 +13,7 @@
 //=============================================
 //======= TFCSHistoLateralShapeParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSLateralShapeParametrizationHitNumberFromE::
     TFCSLateralShapeParametrizationHitNumberFromE(const char* name,
@@ -54,7 +55,7 @@ double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
   }
 
   if (TMath::IsNaN(energy)) {
-    FCS_MSG_DEBUG("Energy is NaN");
+    MSG_DEBUG("Energy is NaN");
     return 1;
   }
 
@@ -70,7 +71,7 @@ double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
   double sigma2 =
       sigma_stochastic * sigma_stochastic + sigma_hadron * sigma_hadron;
 
-  FCS_MSG_DEBUG("sigma^2 fluctuation=" << sigma2);
+  MSG_DEBUG("sigma^2 fluctuation=" << sigma2);
 
   return sigma2;
 }
@@ -87,7 +88,7 @@ int TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
   float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   int hits = CLHEP::RandPoisson::shoot(simulstate.randomEngine(), 1.0 / sigma2);
 
-  FCS_MSG_DEBUG("#hits=" << hits);
+  MSG_DEBUG("#hits=" << hits);
 
   return hits;
 }
@@ -110,8 +111,8 @@ bool TFCSLateralShapeParametrizationHitNumberFromE::compare(
     const TFCSParametrizationBase& ref) const
 {
   if (IsA() != ref.IsA()) {
-    FCS_MSG_DEBUG("compare(): different class types "
-                  << IsA()->GetName() << " != " << ref.IsA()->GetName());
+    MSG_DEBUG("compare(): different class types "
+              << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
   const TFCSLateralShapeParametrizationHitNumberFromE& ref_typed =
@@ -120,12 +121,12 @@ bool TFCSLateralShapeParametrizationHitNumberFromE::compare(
       || m_stochastic_hadron != ref_typed.m_stochastic_hadron
       || m_constant != ref_typed.m_constant)
   {
-    FCS_MSG_DEBUG("operator==(): different fluctuation model sigma^2=["
-                  << m_stochastic << "/sqrt(E/GeV)]^2 + [" << m_constant
-                  << " + " << m_stochastic_hadron
-                  << "/sqrt(E/GeV)]^2 != sigma^2=[" << ref_typed.m_stochastic
-                  << "/sqrt(E/GeV)]^2 + [" << ref_typed.m_constant << " + "
-                  << ref_typed.m_stochastic_hadron << "/sqrt(E/GeV)]^2");
+    MSG_DEBUG("operator==(): different fluctuation model sigma^2=["
+              << m_stochastic << "/sqrt(E/GeV)]^2 + [" << m_constant << " + "
+              << m_stochastic_hadron << "/sqrt(E/GeV)]^2 != sigma^2=["
+              << ref_typed.m_stochastic << "/sqrt(E/GeV)]^2 + ["
+              << ref_typed.m_constant << " + " << ref_typed.m_stochastic_hadron
+              << "/sqrt(E/GeV)]^2");
     return false;
   }
 
@@ -137,16 +138,15 @@ void TFCSLateralShapeParametrizationHitNumberFromE::Print(
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint)
-    FCS_MSG_INFO(optprint << "  sigma^2=[" << m_stochastic
-                          << "/sqrt(E/GeV)]^2 + [" << m_constant << " + "
-                          << m_stochastic_hadron << "/sqrt(E/GeV)]^2");
+    MSG_INFO(optprint << "  sigma^2=[" << m_stochastic << "/sqrt(E/GeV)]^2 + ["
+                      << m_constant << " + " << m_stochastic_hadron
+                      << "/sqrt(E/GeV)]^2");
 }
 
 #pragma GCC diagnostic pop

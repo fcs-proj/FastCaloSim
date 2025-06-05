@@ -5,8 +5,12 @@
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
-class TFCS1DFunction;
 class TH1;
+
+namespace FastCaloSim::Core
+{
+
+class TFCS1DFunction;
 
 class TFCSHitCellMappingWiggle : public TFCSHitCellMapping
 {
@@ -67,5 +71,7 @@ private:
 
   ClassDefOverride(TFCSHitCellMappingWiggle, 1)  // TFCSHitCellMappingWiggle
 };
+
+}  // namespace FastCaloSim::Core
 
 #endif

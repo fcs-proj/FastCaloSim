@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionInt16Histogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunctionInt16Histogram_h
+#ifndef TFCS1DFunctionInt16Histogram_h
+#define TFCS1DFunctionInt16Histogram_h
 
 #include <vector>
 
@@ -9,6 +9,8 @@
 
 class TH2;
 
+namespace FastCaloSim::Core
+{
 class TFCS1DFunctionInt16Histogram : public TFCS1DFunction
 {
 public:
@@ -21,7 +23,7 @@ public:
 
   void Initialize(const TH1* hist);
 
-  using TFCS1DFunction::rnd_to_fct;
+  using FastCaloSim::Core::TFCS1DFunction::rnd_to_fct;
 
   typedef uint16_t HistoContent_t;
   static const HistoContent_t s_MaxValue;
@@ -48,5 +50,5 @@ protected:
 private:
   ClassDef(TFCS1DFunctionInt16Histogram, 1)  // TFCS1DFunctionInt16Histogram
 };
-
+}  // namespace FastCaloSim::Core
 #endif

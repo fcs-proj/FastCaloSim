@@ -21,7 +21,9 @@
 #include "FastCaloSim/Core/MLogging.h"
 #include "TH2D.h"
 
-class TFCSGANXMLParameters : public ISF_FCS::MLogging
+namespace FastCaloSim::Core
+{
+class TFCSGANXMLParameters : public MLogging
 {
 public:
   typedef std::map<int, TH2D> Binning;
@@ -53,5 +55,5 @@ private:
 
   ClassDef(TFCSGANXMLParameters, 1)  // TFCSGANXMLParameters
 };
-
+}  // namespace FastCaloSim::Core
 #endif  //> !ISF_TFCSGANXMLPARAMETERS_H

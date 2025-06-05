@@ -18,6 +18,7 @@
 //=============================================
 //======= TFCSHitCellMappingWiggle =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSHitCellMappingWiggle::TFCSHitCellMappingWiggle(const char* name,
                                                    const char* title,
@@ -32,7 +33,8 @@ TFCSHitCellMappingWiggle::~TFCSHitCellMappingWiggle()
     delete function;
 }
 
-void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction* func)
+void TFCSHitCellMappingWiggle::initialize(
+    FastCaloSim::Core::TFCS1DFunction* func)
 {
   if (!func)
     return;
@@ -53,9 +55,9 @@ void TFCSHitCellMappingWiggle::initialize(
     const std::vector<float>& bin_low_edges)
 {
   if (functions.size() + 1 != bin_low_edges.size()) {
-    FCS_MSG_ERROR("Using " << functions.size() << " functions needs "
-                           << functions.size() + 1 << " bin low edges, but got "
-                           << bin_low_edges.size() << "bins");
+    MSG_ERROR("Using " << functions.size() << " functions needs "
+                       << functions.size() + 1 << " bin low edges, but got "
+                       << bin_low_edges.size() << "bins");
     return;
   }
   for (const auto* function : m_functions)
@@ -84,9 +86,9 @@ void TFCSHitCellMappingWiggle::initialize(
     float xscale)
 {
   if (histograms.size() + 1 != bin_low_edges.size()) {
-    FCS_MSG_ERROR("Using " << histograms.size() << " histograms needs "
-                           << histograms.size() + 1 << " bins, but got "
-                           << bin_low_edges.size() << "bins");
+    MSG_ERROR("Using " << histograms.size() << " histograms needs "
+                       << histograms.size() + 1 << " bins, but got "
+                       << bin_low_edges.size() << "bins");
     return;
   }
   std::vector<const TFCS1DFunction*> functions(histograms.size());
@@ -131,11 +133,11 @@ FCSReturnCode TFCSHitCellMappingWiggle::simulate_hit(
 
     double wiggle = func->rnd_to_fct(rnd);
 
-    FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << calosample()
-                            << " eta=" << hit.eta() << " phi=" << hit.phi()
-                            << " wiggle=" << wiggle << " bin=" << bin << " ["
-                            << get_bin_low_edge(bin) << ","
-                            << get_bin_up_edge(bin) << "] func=" << func);
+    MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << calosample()
+                        << " eta=" << hit.eta() << " phi=" << hit.phi()
+                        << " wiggle=" << wiggle << " bin=" << bin << " ["
+                        << get_bin_low_edge(bin) << "," << get_bin_up_edge(bin)
+                        << "] func=" << func);
 
     double hit_phi_shifted = hit.phi() + wiggle;
     hit.set_phi_y(TVector2::Phi_mpi_pi(hit_phi_shifted));
@@ -164,34 +166,30 @@ void TFCSHitCellMappingWiggle::Print(Option_t* option) const
   TFCSHitCellMapping::Print(option);
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 
   if (longprint) {
-    FCS_MSG(INFO) << optprint << "  " << get_number_of_bins()
-                  << " functions : ";
+    MSG(INFO) << optprint << "  " << get_number_of_bins() << " functions : ";
     for (unsigned int i = 0; i < get_number_of_bins(); ++i)
-      FCS_MSG(INFO) << get_bin_low_edge(i) << " < (" << get_function(i)
-                    << ") < ";
-    FCS_MSG(INFO) << get_bin_up_edge(get_number_of_bins() - 1)
-                  << END_FCS_MSG(INFO);
+      MSG(INFO) << get_bin_low_edge(i) << " < (" << get_function(i) << ") < ";
+    MSG(INFO) << get_bin_up_edge(get_number_of_bins() - 1) << END_MSG(INFO);
   }
 }
 
 bool TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
 {
   if (IsA() != ref.IsA()) {
-    FCS_MSG_DEBUG("compare(): different class types "
-                  << IsA()->GetName() << " != " << ref.IsA()->GetName());
+    MSG_DEBUG("compare(): different class types "
+              << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
   const TFCSHitCellMappingWiggle& ref_typed =
       static_cast<const TFCSHitCellMappingWiggle&>(ref);
 
   if (m_bin_low_edge != ref_typed.m_bin_low_edge) {
-    FCS_MSG_DEBUG("operator==(): different bin edges");
+    MSG_DEBUG("operator==(): different bin edges");
     return false;
   }
 
@@ -201,18 +199,17 @@ bool TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
     if (!f1 && !f2)
       continue;
     if ((f1 && !f2) || (!f1 && f2)) {
-      FCS_MSG_DEBUG(
-          "compare(): different only one function pointer is nullptr");
+      MSG_DEBUG("compare(): different only one function pointer is nullptr");
       return false;
     }
     if (f1->IsA() != f2->IsA()) {
-      FCS_MSG_DEBUG("compare(): different class types for function "
-                    << i << ": " << f1->IsA()->GetName()
-                    << " != " << f2->IsA()->GetName());
+      MSG_DEBUG("compare(): different class types for function "
+                << i << ": " << f1->IsA()->GetName()
+                << " != " << f2->IsA()->GetName());
       return false;
     }
     if (!(*f1 == *f2)) {
-      FCS_MSG_DEBUG("compare(): difference in functions " << i);
+      MSG_DEBUG("compare(): difference in functions " << i);
       return false;
     }
   }

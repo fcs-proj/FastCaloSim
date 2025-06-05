@@ -10,6 +10,7 @@
 //=============================================
 //======= TFCSHitCellMappingWiggleEMB =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSHitCellMappingWiggleEMB::TFCSHitCellMappingWiggleEMB(const char* name,
                                                          const char* title,
@@ -107,8 +108,8 @@ FCSReturnCode TFCSHitCellMappingWiggleEMB::simulate_hit(
   if (cs < 4 && cs > 0)
     wiggle = doWiggle(CLHEP::RandFlat::shoot(simulstate.randomEngine()));
 
-  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
-                          << " phi=" << hit.phi() << " wiggle=" << wiggle);
+  MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+                      << " phi=" << hit.phi() << " wiggle=" << wiggle);
 
   double hit_phi_shifted = hit.phi() - wiggle;
   hit.set_phi_y(TVector2::Phi_mpi_pi(hit_phi_shifted));

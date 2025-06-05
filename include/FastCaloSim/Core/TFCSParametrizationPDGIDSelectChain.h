@@ -1,9 +1,12 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationPDGIDSelectChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationPDGIDSelectChain_h
+#ifndef TFCSParametrizationPDGIDSelectChain_h
+#define TFCSParametrizationPDGIDSelectChain_h
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
+
+namespace FastCaloSim::Core
+{
 
 class TFCSParametrizationPDGIDSelectChain : public TFCSParametrizationChain
 {
@@ -45,5 +48,5 @@ private:
   ClassDefOverride(TFCSParametrizationPDGIDSelectChain,
                    1)  // TFCSParametrizationPDGIDSelectChain
 };
-
+}  // namespace FastCaloSim::Core
 #endif

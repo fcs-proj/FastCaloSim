@@ -1,14 +1,17 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSFunction_h
-#define ISF_FASTCALOSIMEVENT_TFCSFunction_h
+#ifndef TFCSFunction_h
+#define TFCSFunction_h
 
 #include "FastCaloSim/Core/MLogging.h"
 #include "TObject.h"
 
+namespace FastCaloSim::Core
+{
+
 class TFCSFunction
     : public TObject
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
   TFCSFunction() {};
@@ -29,5 +32,5 @@ public:
 private:
   ClassDef(TFCSFunction, 3)  // TFCSFunction
 };
-
+}  // namespace FastCaloSim::Core
 #endif

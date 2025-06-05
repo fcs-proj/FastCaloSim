@@ -17,6 +17,10 @@
 #include "FCAL_ChannelMap.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
+using FastCaloSim::Geometry::CaloGeo;
+using FastCaloSim::Geometry::Cell;
+using FastCaloSim::Geometry::Position;
+
 class FCal : public CaloGeo
 {
 public:

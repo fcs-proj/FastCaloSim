@@ -12,6 +12,7 @@
 //=============================================
 //======= TFCSHistoLateralShapeWeightHitAndMiss =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSHistoLateralShapeWeightHitAndMiss::TFCSHistoLateralShapeWeightHitAndMiss(
     const char* name, const char* title)
@@ -91,9 +92,8 @@ FCSReturnCode TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
   }
 
   hit.set_E(weight * hit.E());
-  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
-                          << " meanweight=" << meanweight
-                          << " weight=" << weight);
+  MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
+                      << " meanweight=" << meanweight << " weight=" << weight);
 
   return FCSSuccess;
 }

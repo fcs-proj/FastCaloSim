@@ -33,6 +33,8 @@
 // For writing to a tree
 #include "TTree.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSSimpleLWTNNHandler : public VNetworkLWTNN
 {
 public:
@@ -102,7 +104,7 @@ private:
   /**
    * @brief The network that we are wrapping here.
    **/
-  std::unique_ptr<lwt::LightweightNeuralNetwork>
+  std::unique_ptr<::lwt::LightweightNeuralNetwork>
       m_lwtnn_neural;  //! Do not persistify
   /**
    * @brief List of names that index the output layer.
@@ -112,5 +114,5 @@ private:
   // Supplying a ClassDef for writing to file.
   ClassDefOverride(TFCSSimpleLWTNNHandler, 1);
 };
-
+}  // namespace FastCaloSim::Core
 #endif  // TFCSSIMPLELWTNNHANDLER_H

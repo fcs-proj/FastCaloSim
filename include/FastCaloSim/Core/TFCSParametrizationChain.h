@@ -1,9 +1,12 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationChain_h
+#ifndef TFCSParametrizationChain_h
+#define TFCSParametrizationChain_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
+
+namespace FastCaloSim::Core
+{
 
 class TFCSParametrizationChain : public TFCSParametrization
 {
@@ -104,7 +107,7 @@ private:
 
   ClassDefOverride(TFCSParametrizationChain, 2)  // TFCSParametrizationChain
 };
-
+}  // namespace FastCaloSim::Core
 #include "FastCaloSim/Core/TFCSParametrizationChain.icc"
 
 #endif

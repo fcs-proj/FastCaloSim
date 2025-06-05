@@ -9,6 +9,9 @@
 #include "FastCaloSim/Geometry/Cell.h"
 #include "FastCaloSim/Geometry/RTreeHelpers.h"
 
+namespace FastCaloSim::Geometry
+{
+
 /**
  * @brief Class responsible for loading and querying R-trees
  *
@@ -45,3 +48,4 @@ private:
   std::unique_ptr<SpatialIndex::ISpatialIndex> m_tree;
   std::unique_ptr<SpatialIndex::IStorageManager> m_diskfile;
 };
+}  // namespace FastCaloSim::Geometry

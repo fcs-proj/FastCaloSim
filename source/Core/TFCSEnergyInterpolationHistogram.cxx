@@ -23,6 +23,7 @@ constexpr double keV = kiloelectronvolt;
 //=============================================
 //======= TFCSEnergyInterpolation =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSEnergyInterpolationHistogram::TFCSEnergyInterpolationHistogram(
     const char* name, const char* title)
@@ -53,10 +54,10 @@ FCSReturnCode TFCSEnergyInterpolationHistogram::simulate(
   }
 
   if (OnlyScaleEnergy()) {
-    FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin()
-                           << " and E=" << Einit);
+    MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin()
+                       << " and E=" << Einit);
   } else {
-    FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin());
+    MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin());
   }
   simulstate.set_E(Emean);
 
@@ -67,16 +68,14 @@ void TFCSEnergyInterpolationHistogram::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSParametrization::Print(option);
 
   if (longprint)
-    FCS_MSG_INFO(
-        optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
-                 << "histNbins=" << m_hist.GetNbinsX() << " "
-                 << m_hist.GetXaxis()->GetBinLowEdge(1) << "<=Ekin<="
-                 << m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX()));
+    MSG_INFO(optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
+                      << "histNbins=" << m_hist.GetNbinsX() << " "
+                      << m_hist.GetXaxis()->GetBinLowEdge(1) << "<=Ekin<="
+                      << m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX()));
 }

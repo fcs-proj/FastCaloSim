@@ -1,16 +1,19 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSTruthState_h
-#define ISF_FASTCALOSIMEVENT_TFCSTruthState_h
+#ifndef TFCSTruthState_h
+#define TFCSTruthState_h
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TLorentzVector.h>
 
 #include "FastCaloSim/Core/MLogging.h"
 
+namespace FastCaloSim::Core
+{
+
 class FASTCALOSIM_EXPORT TFCSTruthState
     : public TLorentzVector
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
   TFCSTruthState();
@@ -38,5 +41,6 @@ private:
 
   ClassDef(TFCSTruthState, 3)  // TFCSTruthState
 };
+}  // namespace FastCaloSim::Core
 
 #endif

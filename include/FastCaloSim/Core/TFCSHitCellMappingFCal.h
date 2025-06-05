@@ -5,8 +5,14 @@
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
+}
 
+namespace FastCaloSim::Core
+{
+using FastCaloSim::Geometry::CaloGeo;
 class TFCSHitCellMappingFCal : public TFCSHitCellMapping
 {
 public:
@@ -26,5 +32,5 @@ public:
 private:
   ClassDefOverride(TFCSHitCellMappingFCal, 1)  // TFCSHitCellMapping
 };
-
+}  // namespace FastCaloSim::Core
 #endif

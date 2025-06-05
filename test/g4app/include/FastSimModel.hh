@@ -25,6 +25,11 @@ class G4Region;
 class G4FieldTrack;
 class G4Navigator;
 
+using namespace FastCaloSim::Core;
+using FastCaloSim::Extrapolation::FastCaloSimCaloExtrapolation;
+using FastCaloSim::Transport::G4CaloTransportTool;
+
+
 class FastSimModel : public G4VFastSimulationModel
 {
  public:

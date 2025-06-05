@@ -26,7 +26,7 @@
 // Other includes
 #include "tbb/concurrent_unordered_map.h"
 
-namespace thread_utils
+namespace FastCaloSim::Transport::thread_utils
 {
 
 /// @class ThreadLocalHolder
@@ -95,6 +95,6 @@ public:
   }
 };  // class ThreadLocalOwner
 
-}  // namespace thread_utils
+}  // namespace FastCaloSim::Transport::thread_utils
 
 #endif

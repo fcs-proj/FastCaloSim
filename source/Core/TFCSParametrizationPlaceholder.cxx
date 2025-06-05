@@ -5,13 +5,14 @@
 //=============================================
 //======= TFCSParametrizationPlaceholder =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 FCSReturnCode TFCSParametrizationPlaceholder::simulate(
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const
 {
-  FCS_MSG_ERROR(
+  MSG_ERROR(
       "TFCSParametrizationPlaceholder::simulate(). This is a "
       "placeholder and should never get called. Likely a problem in "
       "the reading of the parametrization file occurred and this "
