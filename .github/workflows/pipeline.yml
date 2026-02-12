@@ -36,7 +36,7 @@ jobs:
       image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Lint
       run: cmake -D FORMAT_COMMAND=clang-format -P cmake/lint.cmake
@@ -55,7 +55,7 @@ jobs:
       image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Configure
       run: cmake --preset=ci-coverage
@@ -100,7 +100,7 @@ jobs:
       image: fcsproj/fastcalosim-${{ matrix.os }}:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Configure
       run: cmake "--preset=ci-linux"
@@ -133,7 +133,7 @@ jobs:
         # See https://lcginfo.cern.ch/ for info on available LCG releases
         lcg: [ LCG_106, LCG_107a ]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v4
       with:
@@ -180,7 +180,7 @@ jobs:
       KEY4HEP_VERSION: ${{ matrix.releases }}
       LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - uses: cvmfs-contrib/github-action-cvmfs@v4
 
@@ -229,7 +229,7 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - uses: actions/setup-python@v5
       with: { python-version: "3.12" }
