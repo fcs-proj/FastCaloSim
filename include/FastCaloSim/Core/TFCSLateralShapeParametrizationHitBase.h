@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSLateralShapeParametrizationHitBase_h
 #define TFCSLateralShapeParametrizationHitBase_h
@@ -109,7 +109,7 @@ public:
     inline const auto& x() const { return m_eta_x; };
     inline const auto& y() const { return m_phi_y; };
     inline const auto& E() const { return m_E; };
-    inline const auto& z() const { return m_z; }
+    inline const auto& z() const { return m_z; };
     inline const auto r() const
     {
       if (m_useXYZ)
@@ -129,6 +129,7 @@ public:
     inline void set_phi_y(float phi_y) { m_phi_y = phi_y; }
     inline void set_z(float z) { m_z = z; }
     inline void set_E(float E) { m_E = E; }
+    inline const auto& idx() { return m_hit_index; };
 
   private:
     float m_eta_x;  // eta for barrel and end-cap, x for FCal
@@ -141,6 +142,7 @@ public:
     float m_center_z;
     float m_center_eta;
     float m_center_phi;
+    long unsigned int m_hit_index;
   };
 
   /// simulated one hit position with some energy. As last step in

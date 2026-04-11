@@ -42,6 +42,12 @@
 #include "FastCaloSim/Core/TFCSEnergyParametrization.h"
 #include "FastCaloSim/Core/TFCSPCAEnergyParametrization.h"
 #include "FastCaloSim/Core/TFCSEnergyBinParametrization.h"
+#include "FastCaloSim/Core/TFCSPhiModulationCorrection.h"
+#include "FastCaloSim/Core/TFCSBinnedShowerBase.h"
+#include "FastCaloSim/Core/TFCSBinnedShower.h"
+#include "FastCaloSim/Core/TFCSBinnedShowerONNX.h"
+#include "FastCaloSim/Core/TFCSMLCalorimeterSimulator.h"
+
 #ifndef __FastCaloSimNoLWTNN__
 #include "FastCaloSim/Core/TFCSGANXMLParameters.h"
 #include "FastCaloSim/Core/TFCSGANLWTNNHandler.h"
