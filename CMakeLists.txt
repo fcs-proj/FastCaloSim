@@ -89,8 +89,11 @@ target_include_directories(FastCaloSim_FastCaloSim
         ${Boost_INCLUDE_DIRS}
         ${LWTNN_INCLUDE_DIRS}
 )
+
 # Generate ROOT dictionary for custom classes when building a shared library
-ROOT_GENERATE_DICTIONARY(FastCaloSim_dict MODULE FastCaloSim_FastCaloSim LINKDEF include/FastCaloSim/LinkDef.h)
+set( _dictName "FastCaloSim_dict" )
+set( _libName "FastCaloSim_FastCaloSim" )
+ROOT_GENERATE_DICTIONARY( ${_dictName} MODULE ${_libName} LINKDEF include/FastCaloSim/LinkDef.h )
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list

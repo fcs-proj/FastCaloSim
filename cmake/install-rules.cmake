@@ -34,6 +34,15 @@ install(
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
+# Install ROOT dictionary files alongside the library
+install(
+    FILES
+    "${PROJECT_BINARY_DIR}/lib${_libName}_rdict.pcm"
+    "${PROJECT_BINARY_DIR}/lib${_libName}.rootmap"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    COMPONENT FastCaloSim_Runtime
+)
+
 write_basic_package_version_file(
     "${package}ConfigVersion.cmake"
     COMPATIBILITY SameMajorVersion
