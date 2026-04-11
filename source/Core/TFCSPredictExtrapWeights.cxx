@@ -28,6 +28,9 @@
 //=============================================
 //======= TFCSPredictExtrapWeights =========
 //=============================================
+using namespace FastCaloSim::Core;
+using FastCaloSim::Geometry::CaloGeo;
+using FastCaloSim::Geometry::Cell;
 
 TFCSPredictExtrapWeights::TFCSPredictExtrapWeights(const char* name,
                                                    const char* title,
@@ -66,8 +69,8 @@ bool TFCSPredictExtrapWeights::operator==(
     const TFCSParametrizationBase& ref) const
 {
   if (IsA() != ref.IsA()) {
-    FCS_MSG_DEBUG("operator==: different class types "
-                  << IsA()->GetName() << " != " << ref.IsA()->GetName());
+    MSG_DEBUG("operator==: different class types "
+              << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
   const TFCSPredictExtrapWeights& ref_typed =
@@ -88,7 +91,7 @@ bool TFCSPredictExtrapWeights::operator==(
 bool TFCSPredictExtrapWeights::getNormInputs(
     const std::string& etaBin, const std::string& FastCaloTXTInputFolderName)
 {
-  FCS_MSG_DEBUG(" Getting normalization inputs... ");
+  MSG_DEBUG(" Getting normalization inputs... ");
 
   // Open corresponding TXT file and extract mean/std dev for each variable
   if (m_normLayers != nullptr) {
@@ -108,7 +111,7 @@ bool TFCSPredictExtrapWeights::getNormInputs(
   }
   std::string inputFileName = FastCaloTXTInputFolderName
       + "MeanStdDevEnergyFractions_eta_" + etaBin + ".txt";
-  FCS_MSG_DEBUG(" Opening " << inputFileName);
+  MSG_DEBUG(" Opening " << inputFileName);
   std::ifstream inputTXT(inputFileName);
   if (inputTXT.is_open()) {
     std::string line;
@@ -135,7 +138,7 @@ bool TFCSPredictExtrapWeights::getNormInputs(
     }
     inputTXT.close();
   } else {
-    FCS_MSG_ERROR(" Unable to open file " << inputFileName);
+    MSG_ERROR(" Unable to open file " << inputFileName);
     return false;
   }
 
@@ -162,8 +165,7 @@ std::map<std::string, double> TFCSPredictExtrapWeights::prepareInputs(
             (simulstate.Efrac(ilayer) - std::as_const(m_normMeans)->at(index))
             / std::as_const(m_normStdDevs)->at(index);
       } else {
-        FCS_MSG_ERROR("Normalization information not found for layer "
-                      << ilayer);
+        MSG_ERROR("Normalization information not found for layer " << ilayer);
       }
     }
   }
@@ -197,9 +199,9 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate(
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
         != m_relevantLayers->cend())
     {
-      FCS_MSG_DEBUG("TFCSPredictExtrapWeights::simulate: layer: "
-                    << ilayer << " weight: "
-                    << outputs["extrapWeight_" + std::to_string(ilayer)]);
+      MSG_DEBUG("TFCSPredictExtrapWeights::simulate: layer: "
+                << ilayer << " weight: "
+                << outputs["extrapWeight_" + std::to_string(ilayer)]);
       float weight = outputs["extrapWeight_" + std::to_string(ilayer)];
       // Protections
       if (weight < 0) {
@@ -209,8 +211,7 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate(
       }
       simulstate.setAuxInfo<float>(ilayer, weight);
     } else {  // use weight=0.5 for non-relevant layers
-      FCS_MSG_DEBUG(
-          "Setting weight=0.5 for layer = " << std::to_string(ilayer));
+      MSG_DEBUG("Setting weight=0.5 for layer = " << std::to_string(ilayer));
       simulstate.setAuxInfo<float>(ilayer, float(0.5));
     }
   }
@@ -231,9 +232,8 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
   if (simulstate.hasAuxInfo(cs)) {
     extrapWeight = simulstate.getAuxInfo<float>(cs);
   } else {  // missing AuxInfo
-    FCS_MSG_FATAL(
-        "Simulstate is not decorated with extrapolation weights for cs = "
-        << std::to_string(cs));
+    MSG_FATAL("Simulstate is not decorated with extrapolation weights for cs = "
+              << std::to_string(cs));
     return FCSFatal;
   }
 
@@ -244,10 +244,9 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
   float extrapWeight_for_r_z = extrapWeight;
   if (UseHardcodedWeight()) {
     extrapWeight_for_r_z = 0.5;
-    FCS_MSG_DEBUG(
-        "Will use extrapWeight=0.5 for r and z when constructing a hit");
+    MSG_DEBUG("Will use extrapWeight=0.5 for r and z when constructing a hit");
   } else {
-    FCS_MSG_DEBUG(
+    MSG_DEBUG(
         "Will use predicted extrapWeight also for r and z when "
         "constructing a hit");
   }
@@ -259,22 +258,22 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))
   {
-    FCS_MSG_WARNING(
+    MSG_WARNING(
         "Extrapolator contains NaN or infinite number.\nSetting "
         "center position to calo boundary.");
-    FCS_MSG_WARNING("Before fix: center_r: "
-                    << r << " center_z: " << z << " center_phi: " << phi
-                    << " center_eta: " << eta << " weight: " << extrapWeight
-                    << " cs: " << cs);
+    MSG_WARNING("Before fix: center_r: "
+                << r << " center_z: " << z << " center_phi: " << phi
+                << " center_eta: " << eta << " weight: " << extrapWeight
+                << " cs: " << cs);
     // If extrapolator fails we can set position to calo boundary
     r = extrapol->IDCaloBoundary_r();
     z = extrapol->IDCaloBoundary_z();
     eta = extrapol->IDCaloBoundary_eta();
     phi = extrapol->IDCaloBoundary_phi();
-    FCS_MSG_WARNING("After fix: center_r: "
-                    << r << " center_z: " << z << " center_phi: " << phi
-                    << " center_eta: " << eta << " weight: " << extrapWeight
-                    << " cs: " << cs);
+    MSG_WARNING("After fix: center_r: "
+                << r << " center_z: " << z << " center_phi: " << phi
+                << " center_eta: " << eta << " weight: " << extrapWeight
+                << " cs: " << cs);
   }
 
   hit.setCenter_r(r);
@@ -282,11 +281,11 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
   hit.setCenter_eta(eta);
   hit.setCenter_phi(phi);
 
-  FCS_MSG_DEBUG("TFCSPredictExtrapWeights: center_r: "
-                << hit.center_r() << " center_z: " << hit.center_z()
-                << " center_phi: " << hit.center_phi()
-                << " center_eta: " << hit.center_eta()
-                << " weight: " << extrapWeight << " cs: " << cs);
+  MSG_DEBUG("TFCSPredictExtrapWeights: center_r: "
+            << hit.center_r() << " center_z: " << hit.center_z()
+            << " center_phi: " << hit.center_phi()
+            << " center_eta: " << hit.center_eta()
+            << " weight: " << extrapWeight << " cs: " << cs);
 
   return FCSSuccess;
 }
@@ -298,29 +297,28 @@ bool TFCSPredictExtrapWeights::initializeNetwork(
     const std::string& etaBin,
     const std::string& FastCaloNNInputFolderName)
 {
-  FCS_MSG_INFO(
-      "Using FastCaloNNInputFolderName: " << FastCaloNNInputFolderName);
+  MSG_INFO("Using FastCaloNNInputFolderName: " << FastCaloNNInputFolderName);
   set_pdgid(pid);
 
   std::string inputFileName =
       FastCaloNNInputFolderName + "NN_" + etaBin + ".json";
-  FCS_MSG_DEBUG("Will read JSON file: " << inputFileName);
+  MSG_DEBUG("Will read JSON file: " << inputFileName);
   if (inputFileName.empty()) {
-    FCS_MSG_ERROR("Could not find json file " << inputFileName);
+    MSG_ERROR("Could not find json file " << inputFileName);
     return false;
   } else {
-    FCS_MSG_INFO("For pid: " << pid << " and etaBin" << etaBin
-                             << ", loading json file " << inputFileName);
+    MSG_INFO("For pid: " << pid << " and etaBin" << etaBin
+                         << ", loading json file " << inputFileName);
     std::ifstream input(inputFileName);
     std::stringstream sin;
     sin << input.rdbuf();
     input.close();
-    auto config = lwt::parse_json(sin);
-    m_nn = new lwt::LightweightNeuralNetwork(
+    auto config = ::lwt::parse_json(sin);
+    m_nn = new ::lwt::LightweightNeuralNetwork(
         config.inputs, config.layers, config.outputs);
     if (m_nn == nullptr) {
-      FCS_MSG_ERROR("Could not create LightWeightNeuralNetwork from "
-                    << inputFileName);
+      MSG_ERROR("Could not create LightWeightNeuralNetwork from "
+                << inputFileName);
       return false;
     }
     if (m_input != nullptr) {
@@ -352,8 +350,8 @@ void TFCSPredictExtrapWeights::Streamer(TBuffer& R__b)
     if (m_input && !m_input->empty()) {
       std::stringstream sin;
       sin.str(*m_input);
-      auto config = lwt::parse_json(sin);
-      m_nn = new lwt::LightweightNeuralNetwork(
+      auto config = ::lwt::parse_json(sin);
+      m_nn = new ::lwt::LightweightNeuralNetwork(
           config.inputs, config.layers, config.outputs);
     }
 #ifndef __FastCaloSimStandAlone__
@@ -373,15 +371,13 @@ void TFCSPredictExtrapWeights::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint)
-    FCS_MSG_INFO(optprint << "  m_input (TFCSPredictExtrapWeights): "
-                          << m_input);
+    MSG_INFO(optprint << "  m_input (TFCSPredictExtrapWeights): " << m_input);
   if (longprint)
-    FCS_MSG_INFO(optprint << "  Address of m_nn: " << (void*)m_nn);
+    MSG_INFO(optprint << "  Address of m_nn: " << (void*)m_nn);
 }

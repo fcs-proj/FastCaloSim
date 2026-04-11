@@ -1,10 +1,12 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSInvisibleParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSInvisibleParametrization_h
+#ifndef TFCSInvisibleParametrization_h
+#define TFCSInvisibleParametrization_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSInvisibleParametrization : public TFCSParametrization
 {
 public:
@@ -30,5 +32,6 @@ private:
   ClassDefOverride(TFCSInvisibleParametrization,
                    1)  // TFCSInvisibleParametrization
 };
+}  // namespace FastCaloSim::Core
 
 #endif

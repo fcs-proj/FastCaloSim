@@ -30,13 +30,16 @@
 // For messaging
 #include "FastCaloSim/Core/MLogging.h"
 
+namespace FastCaloSim::Core
+{
+
 /**
  * @brief A template defining the interface to a neural network.
  *
  * Has various subclasses to cover differing network
  * libraries and save formats.
  **/
-class VNetworkBase : public ISF_FCS::MLogging
+class VNetworkBase : public MLogging
 {
 public:
   /**
@@ -309,5 +312,6 @@ private:
   // Supplying a ClassDef for writing to file.
   ClassDef(VNetworkBase, 3);
 };
+}  // namespace FastCaloSim::Core
 
 #endif

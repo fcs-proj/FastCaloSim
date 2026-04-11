@@ -7,6 +7,7 @@
 //=============================================
 //======= TFCSLateralShapeParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSLateralShapeParametrization::TFCSLateralShapeParametrization(
     const char* name, const char* title)
@@ -38,18 +39,18 @@ bool TFCSLateralShapeParametrization::compare(
     const TFCSParametrizationBase& ref) const
 {
   if (IsA() != ref.IsA()) {
-    FCS_MSG_DEBUG("compare(): different class types "
-                  << IsA()->GetName() << " != " << ref.IsA()->GetName());
+    MSG_DEBUG("compare(): different class types "
+              << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
   const TFCSLateralShapeParametrization& ref_typed =
       static_cast<const TFCSLateralShapeParametrization&>(ref);
   if (Ekin_bin() != ref_typed.Ekin_bin()) {
-    FCS_MSG_DEBUG("compare(): different Ekin bin");
+    MSG_DEBUG("compare(): different Ekin bin");
     return false;
   }
   if (calosample() != ref_typed.calosample()) {
-    FCS_MSG_DEBUG("compare(): different calosample");
+    MSG_DEBUG("compare(): different calosample");
     return false;
   }
 
@@ -60,16 +61,15 @@ void TFCSLateralShapeParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSParametrization::Print(option);
   if (longprint) {
     if (Ekin_bin() == -1)
-      FCS_MSG_INFO(optprint << "  Ekin_bin=all ; calosample=" << calosample());
+      MSG_INFO(optprint << "  Ekin_bin=all ; calosample=" << calosample());
     else
-      FCS_MSG_INFO(optprint << "  Ekin_bin=" << Ekin_bin()
-                            << " ; calosample=" << calosample());
+      MSG_INFO(optprint << "  Ekin_bin=" << Ekin_bin()
+                        << " ; calosample=" << calosample());
   }
 }

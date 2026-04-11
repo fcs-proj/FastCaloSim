@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
+#ifndef TFCSPCAEnergyParametrization_h
+#define TFCSPCAEnergyParametrization_h
 
 #include "FastCaloSim/Core/IntArray.h"
 #include "FastCaloSim/Core/TFCS1DFunction.h"
@@ -12,6 +12,9 @@
 #include "TVectorF.h"
 
 class TH1;
+
+namespace FastCaloSim::Core
+{
 
 class TFCSPCAEnergyParametrization : public TFCSEnergyParametrization
 {
@@ -81,7 +84,7 @@ private:
   std::vector<TVectorD*> m_SigmaValues;
   std::vector<TVectorD*> m_Gauss_means;
   std::vector<TVectorD*> m_Gauss_rms;
-  std::vector<std::vector<TFCS1DFunction*>> m_cumulative;
+  std::vector<std::vector<FastCaloSim::Core::TFCS1DFunction*>> m_cumulative;
 
   std::vector<TH1*> m_totalE_probability_ratio;
 
@@ -92,5 +95,5 @@ private:
   ClassDefOverride(TFCSPCAEnergyParametrization,
                    3)  // TFCSPCAEnergyParametrization
 };
-
+}  // namespace FastCaloSim::Core
 #endif

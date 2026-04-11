@@ -6,14 +6,28 @@
 #include <CLHEP/Vector/ThreeVector.h>
 #include <FastCaloSim/FastCaloSim_export.h>
 
+#include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 
-class TFCSTruthState;
 class G4FieldTrack;
-class CaloGeo;
 
-// use CLHEP vector
-using Vector3D = CLHEP::Hep3Vector;
+namespace FastCaloSim::Core
+{
+class TFCSTruthState;
+}
+
+namespace FastCaloSim::Geometry
+{
+class CaloGeo;
+}
+
+namespace FastCaloSim::Extrapolation
+{
+using FastCaloSim::Core::MLogging;
+using FastCaloSim::Core::TFCSExtrapolationState;
+using FastCaloSim::Core::TFCSTruthState;
+using FastCaloSim::Geometry::CaloGeo;
+using Vector3D = ::CLHEP::Hep3Vector;
 
 struct CylinderIntersections
 {
@@ -22,7 +36,7 @@ struct CylinderIntersections
   unsigned int number;
 };
 
-class FASTCALOSIM_EXPORT FastCaloSimCaloExtrapolation : public ISF_FCS::MLogging
+class FASTCALOSIM_EXPORT FastCaloSimCaloExtrapolation : public MLogging
 {
 public:
   FastCaloSimCaloExtrapolation();
@@ -181,5 +195,7 @@ private:
     return v.x() == 0.0 && v.y() == 0.0 && v.z() == 0.0;
   }
 };
+
+}  // namespace FastCaloSim::Extrapolation
 
 #endif  // FastCaloSimCaloExtrapolation_H

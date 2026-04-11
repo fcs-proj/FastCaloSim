@@ -8,8 +8,12 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
-
+}
+namespace FastCaloSim::Core
+{
 class TFCSLateralShapeParametrizationHitChain
     : public TFCSLateralShapeParametrization
 {
@@ -83,7 +87,7 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
-  void PropagateMSGLevel(FCS_MSG::Level level) const;
+  void PropagateMSGLevel(MSG::Level level) const;
 
   Chain_t m_chain;
 
@@ -94,5 +98,5 @@ private:
   ClassDefOverride(TFCSLateralShapeParametrizationHitChain,
                    2)  // TFCSLateralShapeParametrizationHitChain
 };
-
+}  // namespace FastCaloSim::Core
 #endif

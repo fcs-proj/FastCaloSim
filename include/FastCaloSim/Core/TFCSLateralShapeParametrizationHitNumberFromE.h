@@ -6,6 +6,8 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "TH2.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSLateralShapeParametrizationHitNumberFromE
     : public TFCSLateralShapeParametrizationHitBase
 {
@@ -63,5 +65,5 @@ private:
   ClassDefOverride(TFCSLateralShapeParametrizationHitNumberFromE,
                    2)  // TFCSLateralShapeParametrizationHitNumberFromE
 };
-
+}  // namespace FastCaloSim::Core
 #endif

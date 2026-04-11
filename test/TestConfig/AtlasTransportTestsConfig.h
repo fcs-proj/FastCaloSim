@@ -18,8 +18,7 @@ public:
   inline static const bool ZOOM_IN = false;
 
   // Extrapolation debug level
-  inline static const FCS_MSG::Level EXTRAPOLATION_FCS_MSG_LEVEL =
-      FCS_MSG::Level::INFO;
+  inline static const MSG::Level EXTRAPOLATION_MSG_LEVEL = MSG::Level::INFO;
 
   // The output directory for the test
   inline static const std::string OUTPUT_DIR = "output/";

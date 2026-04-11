@@ -1,13 +1,15 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunctionHistogram_h
+#ifndef TFCS1DFunctionHistogram_h
+#define TFCS1DFunctionHistogram_h
 
 #include <vector>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 #include "TH1.h"
 
+namespace FastCaloSim::Core
+{
 class TFCS1DFunctionHistogram : public TFCS1DFunction
 {
 public:
@@ -41,5 +43,6 @@ protected:
 
   ClassDef(TFCS1DFunctionHistogram, 1)  // TFCS1DFunctionHistogram
 };
+}  // namespace FastCaloSim::Core
 
 #endif

@@ -2,6 +2,8 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Core
+{
 inline FCSReturnCode TFCSParametrizationChain::simulate_and_retry(
     TFCSParametrizationBase *parametrization, TFCSSimulationState &simulstate,
     const TFCSTruthState *truth, const TFCSExtrapolationState *extrapol) const {
@@ -9,7 +11,7 @@ inline FCSReturnCode TFCSParametrizationChain::simulate_and_retry(
   int retry = 0;
   for (int i = 0; i <= retry; i++) {
     if (i >= retry_warning)
-      FCS_MSG_WARNING(
+      MSG_WARNING(
           "TFCSParametrizationChain::simulate_and_retry(): Retry simulate call "
           << i << "/" << retry);
 
@@ -31,9 +33,11 @@ inline FCSReturnCode TFCSParametrizationChain::simulate_and_retry(
       return status;
   }
 
-  FCS_MSG_FATAL("TFCSParametrizationChain::simulate_and_retry(): Simulate call "
+  MSG_FATAL("TFCSParametrizationChain::simulate_and_retry(): Simulate call "
                 "failed after "
                 << retry << " retries");
 
   return FCSFatal;
 }
+
+} // namespace FastCaloSim::Core

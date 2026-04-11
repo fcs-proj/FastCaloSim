@@ -4,8 +4,11 @@
 #include <gtest/gtest.h>
 
 #include "AtlasGeoTests.h"
+#include "TBufferFile.h"
 #include "TFile.h"
+#include "TInterpreter.h"
 #include "TestConfig/BasicSimTestsConfig.h"
+#include "TestHelpers/LegacyCompatibility.h"
 
 class BasicSimTests : public AtlasGeoTests
 {
@@ -18,6 +21,9 @@ protected:
   {
     // Call the base setup that sets up the geometry
     AtlasGeoTests::SetUpTestSuite();
+
+    // Enable pre-namespace change compatibility for old param files
+    FastCaloSim::LegacyCompatibility::setupLegacyClassMapping();
 
     // Load the parametrization files for the different regions
     for (const auto& [region, path] : BasicSimTestsConfig::PARAM_FILE_PATHS) {

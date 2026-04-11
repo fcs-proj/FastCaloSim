@@ -5,6 +5,9 @@
 
 #include "FastCaloSim/Geometry/Cell.h"
 
+namespace FastCaloSim::Geometry
+{
+
 class CellStoreBuilder
 {
 public:
@@ -48,3 +51,4 @@ public:
 private:
   std::vector<CellData> m_cells;
 };
+}  // namespace FastCaloSim::Geometry

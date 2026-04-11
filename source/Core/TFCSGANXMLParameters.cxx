@@ -12,6 +12,8 @@
 
 #include "TMath.h"
 
+using namespace FastCaloSim::Core;
+
 TFCSGANXMLParameters::TFCSGANXMLParameters() {}
 
 TFCSGANXMLParameters::~TFCSGANXMLParameters() {}
@@ -117,15 +119,15 @@ bool TFCSGANXMLParameters::ReadBooleanAttribute(const std::string& name,
 
 void TFCSGANXMLParameters::Print() const
 {
-  FCS_MSG_INFO("Parameters taken from XML");
-  FCS_MSG_INFO("  symmetrisedAlpha: " << m_symmetrisedAlpha);
-  FCS_MSG_INFO("  ganVersion:" << m_ganVersion);
-  FCS_MSG_INFO("  latentDim: " << m_latentDim);
-  FCS_MSG(INFO) << "  relevantlayers: ";
+  MSG_INFO("Parameters taken from XML");
+  MSG_INFO("  symmetrisedAlpha: " << m_symmetrisedAlpha);
+  MSG_INFO("  ganVersion:" << m_ganVersion);
+  MSG_INFO("  latentDim: " << m_latentDim);
+  MSG(INFO) << "  relevantlayers: ";
   for (auto l : m_relevantlayers) {
-    FCS_MSG(INFO) << l << " ";
+    MSG(INFO) << l << " ";
   }
-  FCS_MSG(INFO) << END_FCS_MSG(INFO);
+  MSG(INFO) << END_MSG(INFO);
 
   for (auto element : m_binning) {
     int layer = element.first;
@@ -136,15 +138,15 @@ void TFCSGANXMLParameters::Print() const
 
     // If only one bin in r means layer is empty, no value should be added
     if (xBinNum == 1) {
-      FCS_MSG_INFO("layer " << layer << " not used");
+      MSG_INFO("layer " << layer << " not used");
       continue;
     }
-    FCS_MSG_INFO("Binning along r for layer " << layer);
-    FCS_MSG(INFO) << "0,";
+    MSG_INFO("Binning along r for layer " << layer);
+    MSG(INFO) << "0,";
     // First fill energies
     for (int ix = 1; ix <= xBinNum; ++ix) {
-      FCS_MSG(INFO) << x->GetBinUpEdge(ix) << ",";
+      MSG(INFO) << x->GetBinUpEdge(ix) << ",";
     }
-    FCS_MSG(INFO) << END_FCS_MSG(INFO);
+    MSG(INFO) << END_MSG(INFO);
   }
 }

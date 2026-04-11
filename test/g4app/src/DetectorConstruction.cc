@@ -17,6 +17,7 @@
 #include "TestHelpers/GeoPluginLoader.h"
 #include "TestHelpers/MagFieldPlugin.h"
 
+
 DetectorConstruction::DetectorConstruction()
     : G4VUserDetectorConstruction()
 {

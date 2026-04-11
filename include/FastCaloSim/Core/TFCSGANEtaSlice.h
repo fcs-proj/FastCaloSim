@@ -24,7 +24,9 @@
 
 #include "FastCaloSim/Core/TFCSGANLWTNNHandler.h"
 
-class TFCSGANEtaSlice : public ISF_FCS::MLogging
+namespace FastCaloSim::Core
+{
+class TFCSGANEtaSlice : public MLogging
 {
 public:
   TFCSGANEtaSlice();
@@ -84,5 +86,6 @@ private:
 
   ClassDef(TFCSGANEtaSlice, 5)  // TFCSGANEtaSlice
 };
+}  // namespace FastCaloSim::Core
 
 #endif  //> !ISF_TFCSGANETASLICE_H

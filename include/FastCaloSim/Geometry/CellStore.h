@@ -15,6 +15,9 @@
 #include "FastCaloSim/Geometry/Cell.h"
 #include "FastCaloSim/Geometry/CellCache.h"
 
+namespace FastCaloSim::Geometry
+{
+
 /**
  * @brief A memory-mapped read-only store of CellData, indexed by ID.
  */
@@ -219,3 +222,4 @@ private:
   /// @brief Static fallback Cell instance returned for invalid or missing IDs
   static inline Cell m_invalid_cell {};
 };
+}  // namespace FastCaloSim::Geometry

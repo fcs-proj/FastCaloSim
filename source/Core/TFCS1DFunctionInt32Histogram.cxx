@@ -10,6 +10,7 @@
 //=============================================
 //======= TFCS1DFunctionInt32Histogram =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 const TFCS1DFunctionInt32Histogram::HistoContent_t
     TFCS1DFunctionInt32Histogram::s_MaxValue = UINT32_MAX;
@@ -30,11 +31,11 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
       if (TMath::Abs(fraction) > 1e-5) {
-        FCS_MSG_WARNING("bin content is negative in histogram "
-                        << hist->GetName() << " : " << hist->GetTitle()
-                        << " binval=" << binval << " " << fraction * 100
-                        << "% of integral=" << hist->Integral()
-                        << ". Forcing bin to 0.");
+        MSG_WARNING("bin content is negative in histogram "
+                    << hist->GetName() << " : " << hist->GetTitle()
+                    << " binval=" << binval << " " << fraction * 100
+                    << "% of integral=" << hist->Integral()
+                    << ". Forcing bin to 0.");
       }
       binval = 0;
     }
@@ -43,8 +44,8 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
     ++ibin;
   }
   if (integral <= 0) {
-    FCS_MSG_ERROR("histogram " << hist->GetName() << " : " << hist->GetTitle()
-                               << " integral=" << integral << " is <=0");
+    MSG_ERROR("histogram " << hist->GetName() << " : " << hist->GetTitle()
+                           << " integral=" << integral << " is <=0");
     m_HistoBorders.resize(0);
     m_HistoContents.resize(0);
     return;

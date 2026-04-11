@@ -10,6 +10,8 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
+using namespace FastCaloSim::Core;
+
 TEST_F(BasicSimTests, ReadParamFile)
 {
   Long64_t bytes_read = param_files["barrel"]->GetBytesRead();
@@ -33,7 +35,7 @@ TEST_F(BasicSimTests, DoDummySimulation)
   // Set up the geometry
   param->set_geometry(AtlasGeoTests::geo);
   // Set logging level
-  param->setLevel(FCS_MSG::Level::VERBOSE);
+  param->setLevel(MSG::Level::VERBOSE);
 
   // Set up a random engine
   std::unique_ptr<CLHEP::RanluxEngine> rnd_engine =

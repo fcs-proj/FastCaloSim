@@ -11,6 +11,9 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 
+namespace FastCaloSim::Geometry
+{
+
 struct Position
 {
   double m_x, m_y, m_z;
@@ -283,3 +286,4 @@ public:
 private:
   CellData m_data;
 };
+}  // namespace FastCaloSim::Geometry

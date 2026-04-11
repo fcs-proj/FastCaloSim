@@ -33,6 +33,8 @@
 // For storing the lambda function
 #include <functional>
 
+namespace FastCaloSim::Core
+{
 /**
  * @brief A handler specific for an ONNX network
  *
@@ -323,5 +325,5 @@ private:
   // For the streamer
   ClassDefOverride(TFCSONNXHandler, 1);
 };
-
+}  // namespace FastCaloSim::Core
 #endif  // TFCSONNXHANDLER_H

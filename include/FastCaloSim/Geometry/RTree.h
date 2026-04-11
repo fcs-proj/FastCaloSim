@@ -9,6 +9,9 @@
 #include "FastCaloSim/Geometry/RTreeHelpers.h"
 #include "FastCaloSim/Geometry/RTreeQuery.h"
 
+namespace FastCaloSim::Geometry
+{
+
 /**
  * @brief Main R-tree class providing a unified interface
  *
@@ -67,3 +70,4 @@ private:
   std::unique_ptr<RTreeBuilder> m_builder;
   std::unique_ptr<RTreeQuery> m_query;
 };
+}  // namespace FastCaloSim::Geometry

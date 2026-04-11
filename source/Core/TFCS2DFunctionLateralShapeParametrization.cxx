@@ -14,6 +14,7 @@
 //=============================================
 //======= TFCS2DFunctionLateralShapeParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCS2DFunctionLateralShapeParametrization::
     TFCS2DFunctionLateralShapeParametrization(const char* name,
@@ -50,7 +51,7 @@ int TFCS2DFunctionLateralShapeParametrization::get_number_of_hits(
     return -1;
   }
 
-  return CLHEP::RandPoisson::shoot(simulstate.randomEngine(), m_nhits);
+  return ::CLHEP::RandPoisson::shoot(simulstate.randomEngine(), m_nhits);
 }
 
 void TFCS2DFunctionLateralShapeParametrization::set_number_of_hits(float nhits)
@@ -87,8 +88,8 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   }
 
   float alpha, r, rnd1, rnd2;
-  rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
-  rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  rnd1 = ::CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  rnd2 = ::CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
     if (rnd2 >= 0.5) {  // Fill negative phi half of shape
       rnd2 -= 0.5;
@@ -103,13 +104,13 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
     m_function->rnd_to_fct(alpha, r, rnd1, rnd2);
   }
   if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
-    FCS_MSG_ERROR("  2D function, #hits=" << m_nhits << " alpha=" << alpha
-                                          << " r=" << r << " rnd1=" << rnd1
-                                          << " rnd2=" << rnd2);
+    MSG_ERROR("  2D function, #hits=" << m_nhits << " alpha=" << alpha
+                                      << " r=" << r << " rnd1=" << rnd1
+                                      << " rnd2=" << rnd2);
     alpha = 0;
     r = 0.001;
 
-    FCS_MSG_ERROR("  This error could probably be retried");
+    MSG_ERROR("  This error could probably be retried");
     return FCSFatal;
   }
 
@@ -136,9 +137,9 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   hit.setEtaPhiZE(
       center_eta + delta_eta, center_phi + delta_phi, center_z, hit.E());
 
-  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
-                          << " phi=" << hit.phi() << " z=" << hit.z()
-                          << " r=" << r << " alpha=" << alpha);
+  MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
+                      << " phi=" << hit.phi() << " z=" << hit.z() << " r=" << r
+                      << " alpha=" << alpha);
 
   return FCSSuccess;
 }
@@ -162,19 +163,18 @@ void TFCS2DFunctionLateralShapeParametrization::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
     if (is_phi_symmetric()) {
-      FCS_MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
-                            << " (phi symmetric)");
+      MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
+                        << " (phi symmetric)");
     } else {
-      FCS_MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
-                            << " (not phi symmetric)");
+      MSG_INFO(optprint << "  2D function, #hits=" << m_nhits
+                        << " (not phi symmetric)");
     }
   }
 }

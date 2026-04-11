@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
+#ifndef TFCSEnergyAndHitGANV2_h
+#define TFCSEnergyAndHitGANV2_h
 
 #include <string>
 
@@ -10,8 +10,12 @@
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
+namespace FastCaloSim::Geometry
+{
 class CaloGeo;
-
+}
+namespace FastCaloSim::Core
+{
 // forward declare lwtnn dependencies
 namespace lwt
 {
@@ -122,5 +126,7 @@ private:
 
   ClassDefOverride(TFCSEnergyAndHitGANV2, 2)  // TFCSEnergyAndHitGANV2
 };
+
+}  // namespace FastCaloSim::Core
 
 #endif

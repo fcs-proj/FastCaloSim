@@ -7,7 +7,7 @@
 
 #include "FastCaloSim/Geometry/Cell.h"
 
-namespace RTreeHelpers
+namespace FastCaloSim::Geometry::RTreeHelpers
 {
 enum class CoordinateSystem
 {
@@ -62,4 +62,4 @@ inline std::array<double, 4> build_xy_box(double x,
   return std::array<double, 4> {
       x - half_dx, y - half_dy, x + half_dx, y + half_dy};
 }
-}  // namespace RTreeHelpers
+}  // namespace FastCaloSim::Geometry::RTreeHelpers

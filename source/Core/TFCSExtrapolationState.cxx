@@ -7,6 +7,7 @@
 //=============================================
 //======= TFCSExtrapolationState =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSExtrapolationState::TFCSExtrapolationState()
 {
@@ -16,20 +17,20 @@ TFCSExtrapolationState::TFCSExtrapolationState()
 void TFCSExtrapolationState::Print(Option_t*) const
 {
   // Print the IDCaloBoundary information
-  FCS_MSG_INFO("IDCalo: eta="
-               << m_IDCaloBoundary_eta << " phi=" << m_IDCaloBoundary_phi
-               << " r=" << m_IDCaloBoundary_r << " z=" << m_IDCaloBoundary_z);
+  MSG_INFO("IDCalo: eta=" << m_IDCaloBoundary_eta << " phi="
+                          << m_IDCaloBoundary_phi << " r=" << m_IDCaloBoundary_r
+                          << " z=" << m_IDCaloBoundary_z);
 
   // Iterate over the unordered_map to print layer/subpos info
   for (const auto& [key, ok] : m_CaloOK) {
     int layer = key.first;
     int subpos = key.second;
     if (ok) {
-      FCS_MSG_INFO("  layer " << layer << " subpos " << subpos
-                              << " MID eta=" << m_etaCalo.at({layer, subpos})
-                              << " phi=" << m_phiCalo.at({layer, subpos})
-                              << " r=" << m_rCalo.at({layer, subpos})
-                              << " z=" << m_zCalo.at({layer, subpos}));
+      MSG_INFO("  layer " << layer << " subpos " << subpos
+                          << " MID eta=" << m_etaCalo.at({layer, subpos})
+                          << " phi=" << m_phiCalo.at({layer, subpos})
+                          << " r=" << m_rCalo.at({layer, subpos})
+                          << " z=" << m_zCalo.at({layer, subpos}));
     }
   }
 }

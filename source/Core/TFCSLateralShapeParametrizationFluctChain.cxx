@@ -11,6 +11,7 @@
 //=============================================
 //======= TFCSLateralShapeParametrizationFluctChain =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSLateralShapeParametrizationFluctChain::
     TFCSLateralShapeParametrizationFluctChain(const char* name,
@@ -50,14 +51,14 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const
 {
-  FCS_MSG::Level old_level = level();
-  const bool debug = msgLvl(FCS_MSG::DEBUG);
+  MSG::Level old_level = level();
+  const bool debug = msgLvl(MSG::DEBUG);
 
   // Execute the first get_nr_of_init() simulate calls only once. Used for
   // example to initialize the center position
   TFCSLateralShapeParametrizationHitBase::Hit hit;
   if (init_hit(hit, simulstate, truth, extrapol) != FCSSuccess) {
-    FCS_MSG_ERROR("init_hit() failed");
+    MSG_ERROR("init_hit() failed");
     return FCSFatal;
   }
 
@@ -65,14 +66,14 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
   // energy
   const float Elayer = simulstate.E(calosample());
   if (Elayer == 0) {
-    FCS_MSG_VERBOSE("Elayer=0, nothing to do");
+    MSG_VERBOSE("Elayer=0, nothing to do");
     return FCSSuccess;
   }
 
   // Call get_sigma2_fluctuation only once, as it could contain a random number
   float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   if (sigma2 >= s_max_sigma2_fluctuation) {
-    FCS_MSG_ERROR(
+    MSG_ERROR(
         "TFCSLateralShapeParametrizationFluctChain::simulate(): "
         "fluctuation of hits could not be calculated");
     return FCSFatal;
@@ -93,8 +94,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
 
   if (debug) {
     PropagateMSGLevel(old_level);
-    FCS_MSG_DEBUG("E(" << calosample() << ")=" << Elayer
-                       << " sigma2=" << sigma2);
+    MSG_DEBUG("E(" << calosample() << ")=" << Elayer << " sigma2=" << sigma2);
   }
 
   auto hitloopstart = m_chain.begin() + get_nr_of_init();
@@ -114,7 +114,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
     if (debug)
       if (ihit == 2) {
         // Switch debug output back to INFO to avoid huge logs
-        PropagateMSGLevel(FCS_MSG::INFO);
+        PropagateMSGLevel(MSG::INFO);
       }
     for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
       TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
@@ -149,7 +149,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
         error2 = error2_sumEhit / sumEhit2;
     } else {
       if (ifail >= retry) {
-        FCS_MSG_ERROR(
+        MSG_ERROR(
             "TFCSLateralShapeParametrizationFluctChain::simulate(): "
             "simulate_hit call failed after "
             << ifail << "/" << retry << "retries, total fails=" << itotalfail);
@@ -158,7 +158,7 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
         return FCSFatal;
       }
       if (ifail >= retry_warning) {
-        FCS_MSG_WARNING(
+        MSG_WARNING(
             "TFCSLateralShapeParametrizationFluctChain::simulate():"
             " retry simulate_hit calls "
             << ifail << "/" << retry << ", total fails=" << itotalfail);
@@ -168,12 +168,12 @@ FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
 
   if (debug) {
     PropagateMSGLevel(old_level);
-    FCS_MSG_DEBUG("E(" << calosample() << ")=" << Elayer << " sumE=" << sumEhit
-                       << "+-" << TMath::Sqrt(error2_sumEhit) << " ~ "
-                       << TMath::Sqrt(error2_sumEhit) / sumEhit * 100
-                       << "% rel error^2=" << error2 << " sigma^2=" << sigma2
-                       << " ~ " << TMath::Sqrt(sigma2) * 100
-                       << "% hits=" << ihit << " fail=" << itotalfail);
+    MSG_DEBUG("E(" << calosample() << ")=" << Elayer << " sumE=" << sumEhit
+                   << "+-" << TMath::Sqrt(error2_sumEhit) << " ~ "
+                   << TMath::Sqrt(error2_sumEhit) / sumEhit * 100
+                   << "% rel error^2=" << error2 << " sigma^2=" << sigma2
+                   << " ~ " << TMath::Sqrt(sigma2) * 100 << "% hits=" << ihit
+                   << " fail=" << itotalfail);
   }
 
   return FCSSuccess;
@@ -183,14 +183,13 @@ void TFCSLateralShapeParametrizationFluctChain::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitChain::Print(option);
 
   if (longprint)
-    FCS_MSG_INFO(optprint << "  hit energy fluctuation RMS=" << m_RMS);
+    MSG_INFO(optprint << "  hit energy fluctuation RMS=" << m_RMS);
 }
 
 #pragma GCC diagnostic pop

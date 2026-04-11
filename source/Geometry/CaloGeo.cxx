@@ -13,6 +13,8 @@
 
 #include "FastCaloSim/Geometry/CellStoreBuilder.h"
 
+using namespace FastCaloSim::Geometry;
+
 auto CaloGeo::get_cell(unsigned int layer,
                        const Position& pos) const -> const Cell&
 {

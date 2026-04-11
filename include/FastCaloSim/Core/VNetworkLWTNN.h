@@ -23,6 +23,9 @@
 
 #include "TTree.h"
 
+namespace FastCaloSim::Core
+{
+
 /**
  * @brief A template defining the interface to a lwtnn network.
  *
@@ -148,5 +151,6 @@ private:
   // Supplying a ClassDef for writing to file.
   ClassDefOverride(VNetworkLWTNN, 1);
 };
+}  // namespace FastCaloSim::Core
 
 #endif

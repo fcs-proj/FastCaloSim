@@ -6,7 +6,8 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
 class TH1;
-
+namespace FastCaloSim::Core
+{
 class TFCSHistoLateralShapeWeight
     : public TFCSLateralShapeParametrizationHitBase
 {
@@ -44,5 +45,5 @@ protected:
   ClassDefOverride(TFCSHistoLateralShapeWeight,
                    2)  // TFCSHistoLateralShapeWeight
 };
-
+}  // namespace FastCaloSim::Core
 #endif

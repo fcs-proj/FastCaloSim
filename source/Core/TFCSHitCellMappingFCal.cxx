@@ -11,6 +11,9 @@
 //=============================================
 //======= TFCSHitCellMappingFCal =========
 //=============================================
+using namespace FastCaloSim::Core;
+using FastCaloSim::Geometry::CaloGeo;
+using FastCaloSim::Geometry::Position;
 
 FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
     Hit& hit,
@@ -18,8 +21,8 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/)
 {
-  FCS_MSG_DEBUG("Got hit with E=" << hit.E() << " x=" << hit.x()
-                                  << " y=" << hit.y());
+  MSG_DEBUG("Got hit with E=" << hit.E() << " x=" << hit.x()
+                              << " y=" << hit.y());
 
   // Position where we perform the lookup
   // The z position here is used to determine the side
@@ -32,13 +35,13 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
   }
   // Get the best matching cell
   const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
-  FCS_MSG_DEBUG(cell);
+  MSG_DEBUG(cell);
 
   /// Could not find a cell, retry simulation up to 5 times
   if (!cell.is_valid()) {
-    FCS_MSG_WARNING("Hit in layer " << calosample() << " with E = " << hit.E()
-                                    << " x = " << hit.x() << " y = " << hit.y()
-                                    << " could not be matched to a cell");
+    MSG_WARNING("Hit in layer " << calosample() << " with E = " << hit.E()
+                                << " x = " << hit.x() << " y = " << hit.y()
+                                << " could not be matched to a cell");
     return (FCSReturnCode)(FCSRetry + 5);
   }
 
@@ -47,7 +50,7 @@ FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
   // > 0 means we are outside the cell
   double proximity = cell.boundary_proximity(lookup_pos);
 
-  FCS_MSG_DEBUG("Hit-cell distance in x-y is: " << proximity);
+  MSG_DEBUG("Hit-cell distance in x-y is: " << proximity);
 
   // If the distance is positive then we are using the nearest cell rather than
   // are inside a cell If we are more than 2.25mm from the nearest cell we don't

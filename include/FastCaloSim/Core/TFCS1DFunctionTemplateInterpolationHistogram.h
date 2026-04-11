@@ -1,9 +1,12 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateInterpolationHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateInterpolationHistogram_h
+#ifndef TFCS1DFunctionTemplateInterpolationHistogram_h
+#define TFCS1DFunctionTemplateInterpolationHistogram_h
 
 #include "FastCaloSim/Core/TFCS1DFunctionTemplateHistogram.h"
+
+namespace FastCaloSim::Core
+{
 
 template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateInterpolationHistogram
@@ -13,7 +16,7 @@ public:
   TFCS1DFunctionTemplateInterpolationHistogram(TH1* hist = nullptr)
       : TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>(hist) {};
 
-  using TFCS1DFunction::rnd_to_fct;
+  using FastCaloSim::Core::TFCS1DFunction::rnd_to_fct;
   using TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>::get_nbins;
   using TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>::m_HistoContents;
   using TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>::m_HistoBorders;
@@ -80,7 +83,7 @@ public:
     } else
       m = 0;
 
-    // FCS_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
+    // MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
     // frac="<<m_HistoContents.get_fraction(ibin)<<" dfracprev="<<dfracprev<<"
     // dfrac="<<dfrac<<" dfracnext="<<dfracnext<<"
     // dfracprev-dfrac="<<dfracprev-dfrac<<"
@@ -161,25 +164,27 @@ public:
            1)  // TFCS1DFunctionInt16Int32InterpolationHistogram
 };
 
+}  // namespace FastCaloSim::Core
+
 // clang-format off
 #if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionTemplateInterpolationHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
       uint8_t, float> + ;
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionTemplateInterpolationHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt8BinEdges, \
       uint16_t, float> + ;
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionTemplateInterpolationHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
       uint16_t, float> + ;
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionTemplateInterpolationHistogram \
+          < FastCaloSim::Core::TFCS1DFunction_HistogramInt16BinEdges, \
       uint32_t, float> + ;
 
-#  pragma link C++ class TFCS1DFunctionInt8Int8InterpolationHistogram + ;
-#  pragma link C++ class TFCS1DFunctionInt8Int16InterpolationHistogram + ;
-#  pragma link C++ class TFCS1DFunctionInt16Int16InterpolationHistogram + ;
-#  pragma link C++ class TFCS1DFunctionInt16Int32InterpolationHistogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionInt8Int8InterpolationHistogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionInt8Int16InterpolationHistogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionInt16Int16InterpolationHistogram + ;
+#  pragma link C++ class FastCaloSim::Core::TFCS1DFunctionInt16Int32InterpolationHistogram + ;
 
 #endif
 // clang-format on

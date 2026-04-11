@@ -6,7 +6,8 @@
 #include "FastCaloSim/Core/TFCSHistoLateralShapeWeight.h"
 
 class TH1;
-
+namespace FastCaloSim::Core
+{
 class TFCSHistoLateralShapeGausLogWeightHitAndMiss
     : public TFCSHistoLateralShapeWeight
 {
@@ -27,5 +28,5 @@ private:
   ClassDefOverride(TFCSHistoLateralShapeGausLogWeightHitAndMiss,
                    1)  // TFCSHistoLateralShapeGausLogWeightHitAndMiss
 };
-
+}  // namespace FastCaloSim::Core
 #endif

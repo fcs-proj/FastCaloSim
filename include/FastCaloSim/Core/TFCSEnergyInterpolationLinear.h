@@ -1,10 +1,12 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationLinear_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationLinear_h
+#ifndef TFCSEnergyInterpolationLinear_h
+#define TFCSEnergyInterpolationLinear_h
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSEnergyInterpolationLinear : public TFCSParametrization
 {
 public:
@@ -39,5 +41,6 @@ private:
   ClassDefOverride(TFCSEnergyInterpolationLinear,
                    1)  // TFCSEnergyInterpolationLinear
 };
+}  // namespace FastCaloSim::Core
 
 #endif

@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
-#define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
+#ifndef TFCSExtrapolationState_h
+#define TFCSExtrapolationState_h
 
 #include <map>
 #include <utility>
@@ -10,10 +10,11 @@
 #include <TObject.h>
 
 #include "FastCaloSim/Core/MLogging.h"
-
+namespace FastCaloSim::Core
+{
 class FASTCALOSIM_EXPORT TFCSExtrapolationState
     : public TObject
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
   TFCSExtrapolationState();
@@ -150,5 +151,5 @@ private:
 
   ClassDef(TFCSExtrapolationState, 2)  // TFCSExtrapolationState
 };
-
+}  // namespace FastCaloSim::Core
 #endif

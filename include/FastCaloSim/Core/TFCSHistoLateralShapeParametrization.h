@@ -9,6 +9,9 @@
 
 class TH2;
 
+namespace FastCaloSim::Core
+{
+
 class TFCSHistoLateralShapeParametrization
     : public TFCSLateralShapeParametrizationHitBase
 {
@@ -89,4 +92,5 @@ private:
                    2)  // TFCSHistoLateralShapeParametrization
 };
 
+}  // namespace FastCaloSim::Core
 #endif

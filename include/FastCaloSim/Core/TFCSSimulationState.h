@@ -1,7 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
-#define ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
+#ifndef TFCSSimulationState_h
+#define TFCSSimulationState_h
 
 #include <cstdint>
 #include <set>
@@ -11,24 +11,26 @@
 #include <TObject.h>
 
 #include "FastCaloSim/Core/MLogging.h"
-class TFCSParametrizationBase;
-
 namespace CLHEP
 {
 class HepRandomEngine;
 }
+namespace FastCaloSim::Core
+{
+
+class TFCSParametrizationBase;
 
 constexpr std::uint32_t operator"" _FCShash(char const* s, std::size_t count);
 
 class FASTCALOSIM_EXPORT TFCSSimulationState
     : public TObject
-    , public ISF_FCS::MLogging
+    , public MLogging
 {
 public:
-  TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine = nullptr);
+  TFCSSimulationState(::CLHEP::HepRandomEngine* randomEngine = nullptr);
 
-  CLHEP::HepRandomEngine* randomEngine() { return m_randomEngine; }
-  void setRandomEngine(CLHEP::HepRandomEngine* engine)
+  ::CLHEP::HepRandomEngine* randomEngine() { return m_randomEngine; }
+  void setRandomEngine(::CLHEP::HepRandomEngine* engine)
   {
     m_randomEngine = engine;
   }
@@ -72,7 +74,7 @@ public:
   void clear();
 
 private:
-  CLHEP::HepRandomEngine* m_randomEngine;
+  ::CLHEP::HepRandomEngine* m_randomEngine;
 
   int m_Ebin;
   double m_Etot;
@@ -202,7 +204,9 @@ inline void TFCSSimulationState::AuxInfo_t::set<void*>(void* val)
 // human readable indices to the AuxInfo
 constexpr std::uint32_t operator"" _FCShash(char const* s, std::size_t count)
 {
-  return TFCSSimulationState::fnv1a_32(s, count);
+  return FastCaloSim::Core::TFCSSimulationState::fnv1a_32(s, count);
 }
+
+}  // namespace FastCaloSim::Core
 
 #endif

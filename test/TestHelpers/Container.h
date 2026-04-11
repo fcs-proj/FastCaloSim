@@ -13,6 +13,8 @@
 namespace TestHelpers
 {
 
+using FastCaloSim::Geometry::CaloGeo;
+
 template<typename ElementType, typename SerializedType>
 class Container
 {

@@ -11,6 +11,8 @@
 /*Pieciewise linear interpolation class include*/
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSLateralShapeTuning : public TFCSLateralShapeParametrizationHitBase
 {
   typedef std::map<std::string, TFCSEnergyInterpolationPiecewiseLinear*>
@@ -45,5 +47,5 @@ private:
 
   ClassDefOverride(TFCSLateralShapeTuning, 1)  // TFCSLateralShapeTuning
 };
-
+}  // namespace FastCaloSim::Core
 #endif

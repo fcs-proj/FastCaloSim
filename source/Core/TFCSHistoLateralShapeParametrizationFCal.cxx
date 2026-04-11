@@ -12,6 +12,7 @@
 //=============================================
 //======= TFCSHistoLateralShapeParametrizationFCal =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSHistoLateralShapeParametrizationFCal::
     TFCSHistoLateralShapeParametrizationFCal(const char* name,
@@ -65,15 +66,15 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
     m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
   }
   if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
-    FCS_MSG_ERROR("  Histogram: "
-                  << m_hist.get_HistoBordersx().size() - 1 << "*"
-                  << m_hist.get_HistoBordersy().size() - 1
-                  << " bins, #hits=" << m_nhits << " alpha=" << alpha
-                  << " r=" << r << " rnd1=" << rnd1 << " rnd2=" << rnd2);
+    MSG_ERROR("  Histogram: " << m_hist.get_HistoBordersx().size() - 1 << "*"
+                              << m_hist.get_HistoBordersy().size() - 1
+                              << " bins, #hits=" << m_nhits
+                              << " alpha=" << alpha << " r=" << r
+                              << " rnd1=" << rnd1 << " rnd2=" << rnd2);
     alpha = 0;
     r = 0.001;
 
-    FCS_MSG_ERROR("  This error could probably be retried");
+    MSG_ERROR("  This error could probably be retried");
     return FCSFatal;
   }
 
@@ -88,9 +89,9 @@ FCSReturnCode TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
 
   hit.setXYZE(hit_r * cos(hit_phi), hit_r * sin(hit_phi), center_z, hit.E());
 
-  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " x=" << hit.x()
-                          << " y=" << hit.y() << " z=" << hit.z() << " r=" << r
-                          << " alpha=" << alpha);
+  MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " x=" << hit.x()
+                      << " y=" << hit.y() << " z=" << hit.z() << " r=" << r
+                      << " alpha=" << alpha);
 
   return FCSSuccess;
 }

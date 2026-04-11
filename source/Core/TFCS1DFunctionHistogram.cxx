@@ -11,6 +11,7 @@ using namespace std;
 //=============================================
 //======= TFCS1DFunctionHistogram =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCS1DFunctionHistogram::TFCS1DFunctionHistogram(TH1* hist, double cut_maxdev)
 {
@@ -106,9 +107,9 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
     maxdev *= 100.0;
 
     if (i % 100 == 0)
-      FCS_MSG_INFO("Iteration nr. " << i << " -----> change " << change
-                                    << " bins " << h_out->GetNbinsX()
-                                    << " -> maxdev=" << maxdev);
+      MSG_INFO("Iteration nr. " << i << " -----> change " << change << " bins "
+                                << h_out->GetNbinsX()
+                                << " -> maxdev=" << maxdev);
 
     if (maxdev < cut_maxdev && h_out->GetNbinsX() > 5 && i < 1000) {
       delete h_input;
@@ -123,8 +124,8 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
     }
   }
 
-  FCS_MSG_INFO("Info: Rebinned histogram has " << h_output->GetNbinsX()
-                                               << " bins.");
+  MSG_INFO("Info: Rebinned histogram has " << h_output->GetNbinsX()
+                                           << " bins.");
 
   // store:
 

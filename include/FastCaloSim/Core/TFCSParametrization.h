@@ -3,12 +3,13 @@
 
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrization_h
-#  define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
+#ifndef TFCSParametrization_h
+#  define TFCSParametrization_h
 
 #  include "FastCaloSim/Core/TFCSParametrizationBase.h"
-
-class TFCSParametrization : public ::TFCSParametrizationBase
+namespace FastCaloSim::Core
+{
+class TFCSParametrization : public TFCSParametrizationBase
 {
 public:
   TFCSParametrization(const char* name = nullptr, const char* title = nullptr);
@@ -73,7 +74,7 @@ private:
 
   ClassDefOverride(TFCSParametrization, 1)  // TFCSParametrization
 };
-
+}  // namespace FastCaloSim::Core
 #endif
 
 #pragma GCC diagnostic pop

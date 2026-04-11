@@ -8,6 +8,9 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/Cell.h"
 
+using namespace FastCaloSim::Core;
+using namespace FastCaloSim::Geometry;
+
 TEST_F(TFCSSimulationStateTest, Initialization)
 {
   TFCSSimulationState sim_state;

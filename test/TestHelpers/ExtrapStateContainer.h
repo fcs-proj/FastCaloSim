@@ -13,6 +13,8 @@
 
 namespace TestHelpers
 {
+using FastCaloSim::Core::TFCSExtrapolationState;
+using FastCaloSim::Geometry::Cell;
 
 struct ExtrapStateContainerData
 {

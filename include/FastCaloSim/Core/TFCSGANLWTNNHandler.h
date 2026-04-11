@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+namespace FastCaloSim::Core
+{
 class TFCSGANLWTNNHandler : public VNetworkLWTNN
 {
 public:
@@ -103,7 +105,7 @@ private:
   /**
    * @brief The network that we are wrapping here.
    **/
-  std::unique_ptr<lwt::LightweightGraph> m_lwtnn_graph;  //! Do not persistify
+  std::unique_ptr<::lwt::LightweightGraph> m_lwtnn_graph;  //! Do not persistify
 
   /**
    * @brief List of names that index the output layer.
@@ -119,4 +121,5 @@ private:
   ClassDefOverride(TFCSGANLWTNNHandler, 6);
 };
 
+}  // namespace FastCaloSim::Core
 #endif  // TFCSGANLWTNNHANDLER_H

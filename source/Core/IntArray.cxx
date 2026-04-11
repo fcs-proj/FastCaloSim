@@ -7,6 +7,7 @@
 //==========================
 //======= IntArray =========
 //==========================
+using namespace FastCaloSim::Core;
 
 IntArray::IntArray(int n)
     : TArrayI(n)

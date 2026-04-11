@@ -2,23 +2,21 @@
 
 #include "FastCaloSim/Core/MLogging.h"
 
-// Declare the class in a namespace
-namespace ISF_FCS
-{
+using namespace FastCaloSim::Core;
 
 /// Update outputlevel
 void MLogging::setLevel(int level)
 {
-  level = (level >= FCS_MSG::NUM_LEVELS) ? FCS_MSG::ALWAYS
-      : (level < FCS_MSG::NIL)           ? FCS_MSG::NIL
-                                         : level;
-  m_level = FCS_MSG::Level(level);
+  level = (level >= MSG::NUM_LEVELS) ? MSG::ALWAYS
+      : (level < MSG::NIL)           ? MSG::NIL
+                                     : level;
+  m_level = MSG::Level(level);
 }
 
 // startMsg defined at base of file.
 
 /// Return a stream for sending messages (incomplete decoration)
-MsgStream& MLogging::msg(const FCS_MSG::Level lvl) const
+MsgStream& MLogging::msg(const MSG::Level lvl) const
 {
   return this->stream(lvl, "", -1);
 };
@@ -28,9 +26,7 @@ MsgStream& MLogging::msg(const FCS_MSG::Level lvl) const
 // if the proposed streamer doesn't match the current one
 // end any running lines and start a new decorated line
 // provide the stream at the end
-MsgStream& MLogging::stream(FCS_MSG::Level lvl,
-                            std::string file,
-                            int line) const
+MsgStream& MLogging::stream(MSG::Level lvl, std::string file, int line) const
 {
   // If we shouldn't print this just return a dummy stream.
   if (!this->msgLvl(lvl))
@@ -47,16 +43,16 @@ MsgStream& MLogging::stream(FCS_MSG::Level lvl,
 }
 
 /// Check whether the logging system is active at the provided verbosity level
-bool MLogging::msgLvl(const FCS_MSG::Level lvl) const
+bool MLogging::msgLvl(const MSG::Level lvl) const
 {
-  if (lvl == FCS_MSG::VERBOSE || lvl == FCS_MSG::DEBUG)
+  if (lvl == MSG::VERBOSE || lvl == MSG::DEBUG)
     return m_level <= lvl;
   // All other messages print always
   return true;
 }
 
 /// Print a whole log message and then end the line.
-void MLogging::print(FCS_MSG::Level lvl,
+void MLogging::print(MSG::Level lvl,
                      std::string file,
                      int line,
                      std::string message) const
@@ -67,7 +63,7 @@ void MLogging::print(FCS_MSG::Level lvl,
 }
 
 /// Update and end the line if we print this level
-std::string MLogging::streamerEndLine(FCS_MSG::Level lvl) const
+std::string MLogging::streamerEndLine(MSG::Level lvl) const
 {
   if (this->msgLvl(lvl)) {
     m_streamer_in_line = false;
@@ -83,7 +79,7 @@ void MLogging::streamerInLine(bool is_in_line) const
 }
 
 /// Check if a new start should be done (changed file or level)
-bool MLogging::streamerNeedStart(FCS_MSG::Level lvl, std::string file) const
+bool MLogging::streamerNeedStart(MSG::Level lvl, std::string file) const
 {
   // Are we in the middle of a stream of the same level from the same file.
   if (lvl == m_streamer_has_lvl && file == m_streamer_from_file
@@ -97,7 +93,7 @@ bool MLogging::streamerNeedStart(FCS_MSG::Level lvl, std::string file) const
 
 // This is the same either way.
 /// Print a message for the start of logging
-std::string MLogging::startMsg(FCS_MSG::Level lvl,
+std::string MLogging::startMsg(MSG::Level lvl,
                                const std::string& file,
                                int line)
 {
@@ -111,7 +107,7 @@ std::string MLogging::startMsg(FCS_MSG::Level lvl,
   if (total_len - path_len > col1_len)
     trim_point = total_len - col1_len;
   std::string trimmed_name = file.substr(trim_point);
-  const char* LevelNames[FCS_MSG::NUM_LEVELS] = {
+  const char* LevelNames[MSG::NUM_LEVELS] = {
       "NIL", "VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "ALWAYS"};
   std::string level = LevelNames[lvl];
   std::string level_string = std::string("(") + level + ") ";
@@ -121,5 +117,3 @@ std::string MLogging::startMsg(FCS_MSG::Level lvl,
          << std::right << level_string;
   return output.str();
 }
-
-}  // namespace ISF_FCS

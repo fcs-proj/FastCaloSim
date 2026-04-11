@@ -11,6 +11,8 @@
 #include "G4PathFinder.hh"
 #include "G4TransportationManager.hh"
 
+using namespace FastCaloSim::Transport;
+
 G4CaloTransportTool::G4CaloTransportTool() = default;
 
 G4CaloTransportTool::~G4CaloTransportTool()

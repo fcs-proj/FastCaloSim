@@ -12,6 +12,7 @@
 //=============================================
 //======= TFCSHistoLateralShapeGausLogWeightHitAndMiss =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSHistoLateralShapeGausLogWeightHitAndMiss::
     TFCSHistoLateralShapeGausLogWeightHitAndMiss(const char* name,
@@ -83,8 +84,7 @@ FCSReturnCode TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
       hit.set_E(0);
   }
 
-  FCS_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
-                          << " meanweight=" << meanweight
-                          << " weight=" << weight);
+  MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm
+                      << " meanweight=" << meanweight << " weight=" << weight);
   return FCSSuccess;
 }

@@ -4,7 +4,8 @@
 #define TFCSLateralShapeParametrizationFluctChain_h
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitChain.h"
-
+namespace FastCaloSim::Core
+{
 class TFCSLateralShapeParametrizationFluctChain
     : public TFCSLateralShapeParametrizationHitChain
 {
@@ -38,5 +39,5 @@ private:
   ClassDefOverride(TFCSLateralShapeParametrizationFluctChain,
                    1)  // TFCSLateralShapeParametrizationFluctChain
 };
-
+}  // namespace FastCaloSim::Core
 #endif

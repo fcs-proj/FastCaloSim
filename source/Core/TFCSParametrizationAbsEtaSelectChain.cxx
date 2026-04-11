@@ -9,6 +9,7 @@
 //=============================================
 //======= TFCSParametrizationAbsEtaSelectChain =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 int TFCSParametrizationAbsEtaSelectChain::get_bin(
     TFCSSimulationState&,

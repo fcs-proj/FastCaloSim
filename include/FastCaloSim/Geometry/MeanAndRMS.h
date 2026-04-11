@@ -5,6 +5,9 @@
 
 #include <math.h>
 
+namespace FastCaloSim::Geometry
+{
+
 class MeanAndRMS
 {
 public:
@@ -88,4 +91,5 @@ protected:
   double m_wx, m_wx2;
 };
 
+}  // namespace FastCaloSim::Geometry
 #endif

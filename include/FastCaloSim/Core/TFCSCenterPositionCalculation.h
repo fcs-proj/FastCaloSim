@@ -5,6 +5,8 @@
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
+namespace FastCaloSim::Core
+{
 class TFCSCenterPositionCalculation
     : public TFCSLateralShapeParametrizationHitBase
 {
@@ -27,5 +29,6 @@ private:
   ClassDefOverride(TFCSCenterPositionCalculation,
                    1)  // TFCSCenterPositionCalculation
 };
+}  // namespace FastCaloSim::Core
 
 #endif

@@ -9,6 +9,7 @@
 //=============================================
 //======= TFCSParametrizationEtaSelectChain =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 void TFCSParametrizationEtaSelectChain::recalc()
 {

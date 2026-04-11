@@ -9,6 +9,7 @@
 //=============================================
 //======= TFCSParametrizationEbinChain =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 const std::string TFCSParametrizationEbinChain::get_variable_text(
     TFCSSimulationState& simulstate,

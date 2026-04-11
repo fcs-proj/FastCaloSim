@@ -12,6 +12,7 @@
 //=============================================
 //======= TFCSParametrizationEkinSelectChain =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 void TFCSParametrizationEkinSelectChain::recalc()
 {
@@ -82,12 +83,12 @@ int TFCSParametrizationEkinSelectChain::get_bin(
 
     if (numerator / denominator < rnd)
       bin = prevbin;
-    FCS_MSG_DEBUG("logEkin="
-                  << logEkin << " logEkin_previous=" << logEkin_previous
-                  << " logEkin_nominal=" << logEkin_nominal
-                  << " (rnd=" << 1 - rnd
-                  << " < p(previous)=" << (1 - numerator / denominator)
-                  << ")? => orgbin=" << prevbin + 1 << " selbin=" << bin);
+    MSG_DEBUG("logEkin=" << logEkin << " logEkin_previous=" << logEkin_previous
+                         << " logEkin_nominal=" << logEkin_nominal
+                         << " (rnd=" << 1 - rnd
+                         << " < p(previous)=" << (1 - numerator / denominator)
+                         << ")? => orgbin=" << prevbin + 1
+                         << " selbin=" << bin);
   } else {
     if (bin == (int)get_number_of_bins() - 1)
       return bin;
@@ -110,11 +111,11 @@ int TFCSParametrizationEkinSelectChain::get_bin(
 
     if (rnd < numerator / denominator)
       bin = nextbin;
-    FCS_MSG_DEBUG("logEkin="
-                  << logEkin << " logEkin_nominal=" << logEkin_nominal
-                  << " logEkin_next=" << logEkin_next << " (rnd=" << rnd
-                  << " < p(next)=" << numerator / denominator
-                  << ")? => orgbin=" << nextbin - 1 << " selbin=" << bin);
+    MSG_DEBUG("logEkin=" << logEkin << " logEkin_nominal=" << logEkin_nominal
+                         << " logEkin_next=" << logEkin_next << " (rnd=" << rnd
+                         << " < p(next)=" << numerator / denominator
+                         << ")? => orgbin=" << nextbin - 1
+                         << " selbin=" << bin);
   }
 
   return bin;

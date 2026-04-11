@@ -7,6 +7,7 @@
 //=============================================
 //======= TFCSTruthState =========
 //=============================================
+using FastCaloSim::Core::TFCSTruthState;
 
 TFCSTruthState::TFCSTruthState()
     : TLorentzVector()
@@ -25,7 +26,6 @@ TFCSTruthState::TFCSTruthState(
 
 void TFCSTruthState::Print(Option_t*) const
 {
-  FCS_MSG_INFO("PDGID=" << m_pdgid << " pT=" << Pt() << " eta=" << Eta()
-                        << " phi=" << Phi() << " E=" << E()
-                        << " Ekin_off=" << Ekin_off());
+  MSG_INFO("PDGID=" << m_pdgid << " pT=" << Pt() << " eta=" << Eta() << " phi="
+                    << Phi() << " E=" << E() << " Ekin_off=" << Ekin_off());
 }

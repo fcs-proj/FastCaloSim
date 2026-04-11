@@ -5,6 +5,7 @@
 //=============================================
 //======= TFCSEnergyParametrization =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 TFCSEnergyParametrization::TFCSEnergyParametrization(const char* name,
                                                      const char* title)

@@ -15,6 +15,7 @@
 //=============================================
 //======= TFCSParametrizationChain =========
 //=============================================
+using namespace FastCaloSim::Core;
 
 void TFCSParametrizationChain::recalc_pdgid_intersect()
 {
@@ -167,9 +168,8 @@ FCSReturnCode TFCSParametrizationChain::simulate(
   FCSReturnCode status = FCSSuccess;
   for (int i = 0; i <= retry; i++) {
     if (i >= retry_warning)
-      FCS_MSG_WARNING(
-          "TFCSParametrizationChain::simulate(): Retry simulate call "
-          << i << "/" << retry);
+      MSG_WARNING("TFCSParametrizationChain::simulate(): Retry simulate call "
+                  << i << "/" << retry);
     for (const auto& param : m_chain) {
       status = simulate_and_retry(param, simulstate, truth, extrapol);
 
@@ -189,7 +189,7 @@ FCSReturnCode TFCSParametrizationChain::simulate(
   }
 
   if (status != FCSSuccess) {
-    FCS_MSG_FATAL(
+    MSG_FATAL(
         "TFCSParametrizationChain::simulate(): Simulate call failed after "
         << retry << " retries");
     return FCSFatal;
@@ -203,7 +203,7 @@ void TFCSParametrizationChain::Print(Option_t* option) const
   TFCSParametrization::Print(option);
   TString opt(option);
   // bool shortprint=opt.Index("short")>=0;
-  // bool longprint=msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) &&
+  // bool longprint=msgLvl(MSG::DEBUG) || (msgLvl(MSG::INFO) &&
   // !shortprint);
 
   char count = 'A';

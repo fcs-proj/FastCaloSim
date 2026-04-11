@@ -11,6 +11,8 @@
 //=============================================
 //======= TFCSEnergyRenormalization =========
 //=============================================
+using namespace FastCaloSim::Core;
+using FastCaloSim::Geometry::Cell;
 
 TFCSEnergyRenormalization::TFCSEnergyRenormalization(const char* name,
                                                      const char* title,
@@ -56,14 +58,14 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     if (energies[layer] == 0 && simulstate.E(layer) != 0) {
       if (simulstate.E(layer) > 8.0 * approxLayerNoise.at(layer) && layer != 5
           && layer != 6 && layer != 7)
-        FCS_MSG_INFO(
+        MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
             << " simulated: " << energies[layer]);
       if (simulstate.E(layer) > 1500.0
           && (layer == 5 || layer == 6 || layer == 7))
-        FCS_MSG_INFO(
+        MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
@@ -82,11 +84,11 @@ FCSReturnCode TFCSEnergyRenormalization::simulate(
     cell_iter.second *= scalefactor[layer];
   }
 
-  if (msgLvl(FCS_MSG::DEBUG)) {
-    FCS_MSG_DEBUG("Apply scale factors : ");
+  if (msgLvl(MSG::DEBUG)) {
+    MSG_DEBUG("Apply scale factors : ");
     for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
-      FCS_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
-                         << energies[layer] << " -> " << simulstate.E(layer));
+      MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
+                     << energies[layer] << " -> " << simulstate.E(layer));
     }
   }
 

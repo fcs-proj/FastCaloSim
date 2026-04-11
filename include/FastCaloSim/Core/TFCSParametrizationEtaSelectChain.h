@@ -1,9 +1,12 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationEtaSelectChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationEtaSelectChain_h
+#ifndef TFCSParametrizationEtaSelectChain_h
+#define TFCSParametrizationEtaSelectChain_h
 
 #include "FastCaloSim/Core/TFCSParametrizationFloatSelectChain.h"
+
+namespace FastCaloSim::Core
+{
 
 class TFCSParametrizationEtaSelectChain
     : public TFCSParametrizationFloatSelectChain
@@ -36,5 +39,5 @@ private:
   ClassDefOverride(TFCSParametrizationEtaSelectChain,
                    1)  // TFCSParametrizationEtaSelectChain
 };
-
+}  // namespace FastCaloSim::Core
 #endif
