@@ -1,17 +1,18 @@
-# Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+# Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 FROM ubuntu:24.04
 
-# Install ROOT dependencies
-# Note: Taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu2310/packages.txt
+# Install extra packages and ROOT dependencies
+COPY extra_packages.txt extra_packages.txt
+# Note: Taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu2404/packages.txt
 COPY root_dependencies.txt root_dependencies.txt
 
 RUN apt-get update -qq \
- && ln -sf /usr/share/zoneinfo/UTC /etc/localtime  \
- && apt-get -y install $(cat root_dependencies.txt) --no-install-recommends \
+ && ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
+ && apt-get -y install $(cat extra_packages.txt) $(cat root_dependencies.txt) --no-install-recommends \
  && apt-get autoremove -y \
  && apt-get clean -y \
  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
- && rm root_dependencies.txt
+ && rm extra_packages.txt root_dependencies.txt
 
 # Build CMake from source
 ARG CMAKE_VERSION=3.29.2
@@ -39,11 +40,10 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
 # Build Geant4 from source with GDML support and installed data
 # See https://geant4-userdoc.web.cern.ch/UsersGuides/InstallationGuide/html/buildtools.html for build instructions
 ARG GEANT4_VERSION=11.2.1
-RUN apt-get update -qq && apt-get -y install libxerces-c-dev \
- && git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
+RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_BUILD_TYPE=Debug ../geant4_src \
- && cmake --build . --config RelWithDebInfo --target install -j$(nproc)  \
+ && cmake --build . --config Debug --target install -j$(nproc)  \
  && rm -rf ../geant4_build
 
 # Build onnxruntime for inference from source
@@ -73,16 +73,6 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../clhep_src \
  && cmake --build . --config RelWithDebInfo --target install -j$(nproc) \
  && rm -rf ../clhep_build
-
-# Install extra packages
-COPY extra_packages.txt extra_packages.txt
-
-RUN apt-get update -qq \
- && apt-get -y install $(cat extra_packages.txt) --no-install-recommends \
- && apt-get autoremove -y \
- && apt-get clean -y \
- && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
- && rm extra_packages.txt
 
 # Configure the clang-tidy version
 RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 180

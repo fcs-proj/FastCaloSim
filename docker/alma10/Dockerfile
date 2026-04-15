@@ -1,7 +1,8 @@
-# Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+# Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 FROM gitlab-registry.cern.ch/linuxsupport/alma10-base
 
-# Install ROOT dependencies
+# Install extra packages and ROOT dependencies
+COPY extra_packages.txt extra_packages.txt
 # Note: Taken from https://github.com/root-project/root-ci-images/blob/main/alma10/packages.txt
 COPY root_dependencies.txt root_dependencies.txt
 
@@ -9,9 +10,10 @@ RUN dnf update -y \
  && dnf install -y epel-release \
  && dnf install -y 'dnf-command(config-manager)' \
  && crb enable \
- && dnf install -y --skip-broken --setopt=install_weak_deps=False $(cat root_dependencies.txt) \
+ && dnf install -y --skip-broken --setopt=install_weak_deps=False \
+    $(cat extra_packages.txt) $(cat root_dependencies.txt) \
  && dnf clean all \
- && rm -rf root_dependencies.txt /var/cache/dnf
+ && rm -rf extra_packages.txt root_dependencies.txt /var/cache/dnf
 
 # Build CMake from source
 ARG CMAKE_VERSION=3.29.2
@@ -39,11 +41,10 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
 # Build Geant4 from source with GDML support and installed data
 # See https://geant4-userdoc.web.cern.ch/UsersGuides/InstallationGuide/html/buildtools.html for build instructions
 ARG GEANT4_VERSION=11.2.1
-RUN dnf install -y expat-devel xerces-c-devel \
- && git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
+RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_BUILD_TYPE=Debug ../geant4_src \
- && cmake --build . --config RelWithDebInfo --target install -j$(nproc)  \
+ && cmake --build . --config Debug --target install -j$(nproc)  \
  && rm -rf ../geant4_build
 
 # Build onnxruntime for inference from source
@@ -73,14 +74,6 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../clhep_src \
  && cmake --build . --config RelWithDebInfo --target install -j$(nproc) \
  && rm -rf ../clhep_build
-
-# Install extra packages
-COPY extra_packages.txt extra_packages.txt
-
-RUN  dnf clean all && dnf update -y \
- && dnf install -y --setopt=install_weak_deps=False $(cat extra_packages.txt) \
- && dnf clean all \
- && rm -rf extra_packages.txt /var/cache/dnf
 
 # Create a virtual environment
 ENV VIRT_ENV=/opt/venv
