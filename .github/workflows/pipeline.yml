@@ -176,7 +176,7 @@ jobs:
         releases: [ 2025-01-28 ]
 
     env:
-      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma10
+      KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
       KEY4HEP_VERSION: ${{ matrix.releases }}
       LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
     steps:
