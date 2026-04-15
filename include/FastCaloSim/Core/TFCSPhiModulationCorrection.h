@@ -14,7 +14,7 @@
 #include <RtypesCore.h>
 #include <TMath.h>
 
-class ICaloGeometry;
+class CaloGeo;
 
 class TFCSPhiModulationCorrection
     : public TFCSLateralShapeParametrizationHitBase
@@ -101,13 +101,13 @@ public:
   std::tuple<int, long unsigned int, long unsigned int> get_eta_and_phi_index(
       float phi, float eta, long unsigned int layer_index) const;
 
-  void set_geometry(ICaloGeometry* geo) override
+  void set_geometry(CaloGeo* geo) override
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
   };
 
-  ICaloGeometry* get_geometry() const { return m_geo; };
+  CaloGeo* get_geometry() const { return m_geo; };
 
   virtual FCSReturnCode simulate_hit(
       Hit& hit,
@@ -116,7 +116,7 @@ public:
       const TFCSExtrapolationState* extrapol) override;
 
 protected:
-  ICaloGeometry* m_geo;  //! do not persistify
+  CaloGeo* m_geo;  //! do not persistify
 
 private:
   // Needed to reapply the phi modulation

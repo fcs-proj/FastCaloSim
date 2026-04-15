@@ -15,7 +15,7 @@
 #include <RtypesCore.h>
 #include <TMath.h>
 
-class ICaloGeometry;
+class CaloGeo;
 
 class TFCSBinnedShowerBase : public TFCSLateralShapeParametrizationHitBase
 {
@@ -51,9 +51,9 @@ public:
       const TFCSTruthState* truth,
       const TFCSExtrapolationState* extrapol) override;
 
-  ICaloGeometry* get_geometry() { return m_geo; };
+  CaloGeo* get_geometry() { return m_geo; };
 
-  virtual void set_geometry(ICaloGeometry* geo) override
+  virtual void set_geometry(CaloGeo* geo) override
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
@@ -71,7 +71,7 @@ public:
   }
 
 protected:
-  ICaloGeometry* m_geo;  //! do not persistify
+  CaloGeo* m_geo;  //! do not persistify
 
   // Called at the beginning of the simulation to store and or generate the
   // needed shower data for the current event
@@ -101,8 +101,6 @@ protected:
   virtual void delete_event(TFCSSimulationState& simulstate) const = 0;
 
 private:
-  const long unsigned int m_n_layers =
-      CaloCell_ID_FCS::CaloSample_FCS::MaxSample;
   ClassDefOverride(TFCSBinnedShowerBase, 1)  // TFCSBinnedShowerBase
 };
 
