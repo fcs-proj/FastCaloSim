@@ -1,8 +1,8 @@
 # Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
-FROM gitlab-registry.cern.ch/linuxsupport/alma9-base
+FROM gitlab-registry.cern.ch/linuxsupport/alma10-base
 
 # Install ROOT dependencies
-# Note: Taken from https://github.com/root-project/root-ci-images/blob/main/alma9/packages.txt
+# Note: Taken from https://github.com/root-project/root-ci-images/blob/main/alma10/packages.txt
 COPY root_dependencies.txt root_dependencies.txt
 
 RUN dnf update -y \
