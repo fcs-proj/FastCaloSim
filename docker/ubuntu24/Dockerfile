@@ -48,7 +48,7 @@ RUN apt-get update -qq && apt-get -y install libxerces-c-dev \
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
-ARG ONNXRUNTIME_VERSION=1.16.3
+ARG ONNXRUNTIME_VERSION=1.24.4
 RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
  && mkdir onnx_build && cd onnx_build \
  && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel $(nproc) --skip_submodule_sync --skip_tests --build_dir . \
