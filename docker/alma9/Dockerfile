@@ -74,6 +74,16 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
  && cmake --build . --config RelWithDebInfo --target install -j$(nproc) \
  && rm -rf ../clhep_build
 
+# Build HDF5 from source with C++ support
+ARG HDF5_VERSION=1.14.6
+RUN wget https://github.com/HDFGroup/hdf5/releases/download/hdf5_${HDF5_VERSION}/hdf5-${HDF5_VERSION}.tar.gz \
+ && tar -xzf hdf5-${HDF5_VERSION}.tar.gz \
+ && cd hdf5-${HDF5_VERSION} \
+ && ./configure --prefix=/usr/local --enable-cxx \
+ && make -j$(nproc) \
+ && make install \
+ && cd .. && rm -rf hdf5-${HDF5_VERSION} hdf5-${HDF5_VERSION}.tar.gz
+
 # Install extra packages
 COPY extra_packages.txt extra_packages.txt
 
