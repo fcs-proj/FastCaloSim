@@ -51,7 +51,7 @@ RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/ge
 ARG ONNXRUNTIME_VERSION=1.24.4
 RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
  && mkdir onnx_build && cd onnx_build \
- && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel $(nproc) --skip_submodule_sync --skip_tests --build_dir . \
+ && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel $(nproc) --compile_no_warning_as_error --skip_submodule_sync --skip_tests --build_dir . \
  && make install -C RelWithDebInfo \
  && rm -rf ../onnx_build
 
