@@ -1,6 +1,9 @@
 # Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 FROM gitlab-registry.cern.ch/linuxsupport/alma10-base
 
+# Build type for dependencies
+ARG BUILD_TYPE=RelWithDebInfo
+
 # Install extra packages and ROOT dependencies
 COPY extra_packages.txt extra_packages.txt
 # Note: Taken from https://github.com/root-project/root-ci-images/blob/main/alma10/packages.txt
@@ -10,7 +13,7 @@ RUN dnf update -y \
  && dnf install -y epel-release \
  && dnf install -y 'dnf-command(config-manager)' \
  && crb enable \
- && dnf install -y --skip-broken --setopt=install_weak_deps=False \
+ && dnf install -y --setopt=install_weak_deps=False \
     $(cat extra_packages.txt) $(cat root_dependencies.txt) \
  && dnf clean all \
  && rm -rf extra_packages.txt root_dependencies.txt /var/cache/dnf
@@ -34,8 +37,8 @@ ARG ROOT_VERSION=6-30-06
 RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-project/root.git root_src \
  && mkdir root_build \
  && cd root_build \
- && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../root_src -D mathmore=ON -D clad=OFF \
- && cmake --build . --config RelWithDebInfo --target install -j$(nproc) \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ../root_src -D mathmore=ON -D clad=OFF \
+ && cmake --build . --target install -j$(nproc) \
  && rm -rf ../root_build
 
 # Build Geant4 from source with GDML support and installed data
@@ -43,8 +46,8 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
 ARG GEANT4_VERSION=11.2.1
 RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
- && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_BUILD_TYPE=Debug ../geant4_src \
- && cmake --build . --config Debug --target install -j$(nproc)  \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON ../geant4_src \
+ && cmake --build . --target install -j$(nproc)  \
  && rm -rf ../geant4_build
 
 # Build onnxruntime for inference from source
@@ -52,8 +55,8 @@ RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/ge
 ARG ONNXRUNTIME_VERSION=1.24.4
 RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
  && mkdir onnx_build && cd onnx_build \
- && ../onnx_src/build.sh --allow_running_as_root --config RelWithDebInfo --build_shared_lib --parallel $(nproc) --compile_no_warning_as_error --skip_submodule_sync --skip_tests --build_dir . \
- && make install -C RelWithDebInfo \
+ && ../onnx_src/build.sh --allow_running_as_root --config ${BUILD_TYPE} --build_shared_lib --parallel $(nproc) --compile_no_warning_as_error --skip_submodule_sync --skip_tests --build_dir . \
+ && make install -C ${BUILD_TYPE} \
  && rm -rf ../onnx_build
 
 # Build lwtnn for inference from source
@@ -61,7 +64,7 @@ RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Mi
 ARG LWTNN_VERSION=2.13
 RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtnn.git lwtnn_src \
  && mkdir lwtnn_build && cd lwtnn_build \
- && cmake -DBUILTIN_BOOST=true -DBUILTIN_EIGEN=true -DCMAKE_INSTALL_PREFIX=/usr/local ../lwtnn_src \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILTIN_BOOST=true -DBUILTIN_EIGEN=true -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ../lwtnn_src \
  && make -j$(nproc) \
  && make install \
  && rm -rf ../lwtnn_build
@@ -71,8 +74,8 @@ RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtn
 ARG CLHEP_VERSION=2_4_7_1
 RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERSION} clhep_src \
  && mkdir clhep_build && cd clhep_build \
- && cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../clhep_src \
- && cmake --build . --config RelWithDebInfo --target install -j$(nproc) \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ../clhep_src \
+ && cmake --build . --target install -j$(nproc) \
  && rm -rf ../clhep_build
 
 # Create a virtual environment
