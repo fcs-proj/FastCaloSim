@@ -54,9 +54,10 @@ RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/ge
 ARG ONNXRUNTIME_VERSION=1.24.4
 RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
  && mkdir onnx_build && cd onnx_build \
- && ../onnx_src/build.sh --allow_running_as_root --config ${BUILD_TYPE} --build_shared_lib --parallel $(nproc) --compile_no_warning_as_error --skip_submodule_sync --skip_tests --build_dir . \
- && make install -C ${BUILD_TYPE} \
- && rm -rf ../onnx_build
+ && ../onnx_src/build.sh --allow_running_as_root --config ${BUILD_TYPE} --build_shared_lib --parallel $(nproc) --compile_no_warning_as_error --skip_submodule_sync --skip_tests --build_dir . --cmake_extra_defines CMAKE_INSTALL_PREFIX=/usr/local \
+ && cd ${BUILD_TYPE} \
+ && cmake --build . --target install -j$(nproc) \
+ && rm -rf ../../onnx_build
 
 # Build lwtnn for inference from source
 # See https://github.com/lwtnn/lwtnn for instructions
@@ -64,8 +65,7 @@ ARG LWTNN_VERSION=2.13
 RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtnn.git lwtnn_src \
  && mkdir lwtnn_build && cd lwtnn_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILTIN_BOOST=true -DBUILTIN_EIGEN=true -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ../lwtnn_src \
- && make -j$(nproc) \
- && make install \
+ && cmake --build . --target install -j$(nproc) \
  && rm -rf ../lwtnn_build
 
 # Build CLHEP from source
