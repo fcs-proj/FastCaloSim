@@ -13,8 +13,8 @@
 
 #include "FastCaloSim/Geometry/CellStoreBuilder.h"
 
-auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
-    -> const Cell&
+auto CaloGeo::get_cell(unsigned int layer,
+                       const Position& pos) const -> const Cell&
 {
   // Check if an alternative geometry handler is set for the layer
   auto alt_it = m_alt_geo_handlers.find(layer);
@@ -43,8 +43,8 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
   return get_cell(cell_id);
 }
 
-auto CaloGeo::get_cell_id(unsigned int layer, const Position& pos) const
-    -> unsigned long long
+auto CaloGeo::get_cell_id(unsigned int layer,
+                          const Position& pos) const -> unsigned long long
 {
   const Cell& cell = get_cell(layer, pos);
   return cell.id();
@@ -74,8 +74,8 @@ auto CaloGeo::get_cell(unsigned long long id) const -> const Cell&
   return m_cell_store.get(id);
 }
 
-auto CaloGeo::get_cell_at_idx(unsigned int layer, size_t idx) const
-    -> const Cell&
+auto CaloGeo::get_cell_at_idx(unsigned int layer,
+                              size_t idx) const -> const Cell&
 {
   auto layer_it = m_layer_cell_ids.find(layer);
   if (layer_it == m_layer_cell_ids.end() || idx >= layer_it->second.size()) {

@@ -37,12 +37,12 @@ public:
 
   // Retrieve the best matching cell for a given position
   // Alternative geo handlers need to override this method
-  virtual auto get_cell(unsigned int layer, const Position& pos) const
-      -> const Cell&;
+  virtual auto get_cell(unsigned int layer,
+                        const Position& pos) const -> const Cell&;
 
   // Retrieve the id of the best matching cell for a given position
-  auto get_cell_id(unsigned int layer, const Position& pos) const
-      -> unsigned long long;
+  auto get_cell_id(unsigned int layer,
+                   const Position& pos) const -> unsigned long long;
   /// @brief Get the number of cells in a layer
   auto n_cells(unsigned int layer) const -> unsigned int;
   /// @brief Get the total number of cells
@@ -65,11 +65,13 @@ public:
   auto is_eta_phi_z(unsigned int layer) const -> bool;
 
   /// @brief Get the z position of a cell in a layer at a given position
-  auto zpos(unsigned int layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto zpos(unsigned int layer,
+            const Position& pos,
+            Cell::SubPos subpos) const -> double;
   /// @brief Get the r position of a cell in a layer at a given position
-  auto rpos(unsigned int layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto rpos(unsigned int layer,
+            const Position& pos,
+            Cell::SubPos subpos) const -> double;
 
   /// @brief Get the min eta extent of a layer on a given detector side
   auto min_eta(unsigned int layer, DetectorSide side) const -> double;
