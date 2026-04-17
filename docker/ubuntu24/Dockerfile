@@ -42,11 +42,18 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
 
 # Build Geant4 from source with GDML support and installed data
 # See https://geant4-userdoc.web.cern.ch/UsersGuides/InstallationGuide/html/buildtools.html for build instructions
+# Note: -ffp-contract=off -fno-fast-math ensures floating point reproducibility across optimization levels
 ARG GEANT4_VERSION=11.2.1
 RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
- && cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DGEANT4_INSTALL_DATA_TIMEOUT=3600 ../geant4_src \
- && cmake --build . --target install -j$(nproc)  \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
+          -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DCMAKE_CXX_FLAGS="-ffp-contract=off -fno-fast-math" \
+          -DGEANT4_USE_GDML=ON \
+          -DGEANT4_INSTALL_DATA=ON \
+          -DGEANT4_INSTALL_DATA_TIMEOUT=3600 \
+          ../geant4_src \
+ && cmake --build . --target install -j$(nproc) \
  && rm -rf ../geant4_build
 
 # Build onnxruntime for inference from source
@@ -79,6 +86,9 @@ RUN git clone https://gitlab.cern.ch/CLHEP/CLHEP.git --branch CLHEP_${CLHEP_VERS
 
 # Configure the clang-tidy version
 RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 180
+
+# Update dynamic linker cache for libraries installed in /usr/local
+RUN ldconfig
 
 # Create a virtual environment
 ENV VIRT_ENV=/opt/venv
