@@ -9,6 +9,7 @@ set(
     -d "${PROJECT_BINARY_DIR}"
     --include "${PROJECT_SOURCE_DIR}/*"
     CACHE STRING
+    --ignore-errors mismatch
     "; separated command to generate a trace for the 'coverage' target"
 )
 
