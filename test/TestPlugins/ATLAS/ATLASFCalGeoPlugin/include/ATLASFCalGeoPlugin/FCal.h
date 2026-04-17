@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma once
 
@@ -154,12 +154,9 @@ public:
       }
   }
 
-  auto getClosestFCalCellIndex(int layer,
-                               float x,
-                               float y,
-                               int& ieta,
-                               int& iphi,
-                               int* steps) const -> bool
+  auto getClosestFCalCellIndex(
+      int layer, float x, float y, int& ieta, int& iphi, int* steps) const
+      -> bool
   {
     double rmin = m_FCal_rmin[layer - 21];
     double rmax = m_FCal_rmax[layer - 21];
