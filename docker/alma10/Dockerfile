@@ -103,6 +103,22 @@ RUN git clone --branch CLHEP_${CLHEP_VERSION} --depth=1 https://gitlab.cern.ch/C
  && cmake --build . --target install -j$(nproc) \
  && rm -rf ../clhep_build
 
+# Build HDF5 from source with C++ and high-level bindings
+# See https://github.com/HDFGroup/hdf5 for instructions
+ARG HDF5_VERSION=1.14.6
+RUN git clone --branch hdf5_${HDF5_VERSION} --depth=1 https://github.com/HDFGroup/hdf5.git hdf5_src \
+ && mkdir hdf5_build && cd hdf5_build \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
+          -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DBUILD_STATIC_LIBS=OFF \
+          -DHDF5_BUILD_CPP_LIB=ON \
+          -DHDF5_BUILD_TOOLS=OFF \
+          -DHDF5_BUILD_EXAMPLES=OFF \
+          -DBUILD_TESTING=OFF \
+          ../hdf5_src \
+ && cmake --build . --target install -j$(nproc) \
+ && rm -rf ../hdf5_build
+
 # Create a virtual environment
 ENV VIRT_ENV=/opt/venv
 RUN python3 -m venv $VIRT_ENV
