@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-24.04
     # If pull request with Docker file changes: use PR image, else use main
     container:
-      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
+      image: fcsproj/fastcalosim-alma10:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
 
     steps:
     - uses: actions/checkout@v6
@@ -52,7 +52,7 @@ jobs:
 
     # If pull request with Docker file changes: use PR image, else use main
     container:
-      image: fcsproj/fastcalosim-alma9:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
+      image: fcsproj/fastcalosim-alma10:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
 
     steps:
     - uses: actions/checkout@v6
@@ -92,7 +92,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ alma9, ubuntu24 ]
+        os: [ alma10, ubuntu24 ]
         platform: [ amd64, arm64 ]
 
     # If pull request with Docker file changes: use PR image, else use main

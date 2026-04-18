@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma once
 
@@ -81,9 +81,8 @@ public:
     throw std::runtime_error("No intersection found with ID-Calo boundary");
   };
 
-  inline auto discreteEtaSample(int pid,
-                                float ekin,
-                                std::vector<float> etas) -> ParticleContainer
+  inline auto discreteEtaSample(int pid, float ekin, std::vector<float> etas)
+      -> ParticleContainer
   {
     ParticleContainer particles;
     for (const auto& eta : etas) {
@@ -129,8 +128,8 @@ public:
 private:
   IDCaloBoundary m_IDCaloBoundary;
 
-  static inline auto intersects(Cylinder& cylinder,
-                                const G4ThreeVector& dir) -> IntersectionResult
+  static inline auto intersects(Cylinder& cylinder, const G4ThreeVector& dir)
+      -> IntersectionResult
   {
     IntersectionResult result;
     result.intersects = false;

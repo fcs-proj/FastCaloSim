@@ -1,21 +1,22 @@
 # Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
-FROM ubuntu:24.04
+FROM gitlab-registry.cern.ch/linuxsupport/alma10-base
 
 # Build type for all dependencies
 ARG BUILD_TYPE=RelWithDebInfo
 
 # Install extra packages and ROOT dependencies
-# Note: ROOT packages taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu2404/packages.txt
+# Note: ROOT packages taken from https://github.com/root-project/root-ci-images/blob/main/alma10/packages.txt
 COPY extra_packages.txt extra_packages.txt
 COPY root_dependencies.txt root_dependencies.txt
 
-RUN apt-get update -qq \
- && ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
- && apt-get -y install $(cat extra_packages.txt) $(cat root_dependencies.txt) --no-install-recommends \
- && apt-get autoremove -y \
- && apt-get clean -y \
- && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
- && rm extra_packages.txt root_dependencies.txt
+RUN dnf update -y \
+ && dnf install -y epel-release \
+ && dnf install -y 'dnf-command(config-manager)' \
+ && crb enable \
+ && dnf install -y --setopt=install_weak_deps=False \
+    $(cat extra_packages.txt) $(cat root_dependencies.txt) \
+ && dnf clean all \
+ && rm -rf extra_packages.txt root_dependencies.txt /var/cache/dnf
 
 # Build CMake from source
 # See https://cmake.org/install/ for build instructions
@@ -101,12 +102,6 @@ RUN git clone --branch CLHEP_${CLHEP_VERSION} --depth=1 https://gitlab.cern.ch/C
           ../clhep_src \
  && cmake --build . --target install -j$(nproc) \
  && rm -rf ../clhep_build
-
-# Configure the clang-tidy version
-RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 180
-
-# Update dynamic linker cache for libraries installed in /usr/local
-RUN ldconfig
 
 # Create a virtual environment
 ENV VIRT_ENV=/opt/venv

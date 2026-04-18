@@ -3,10 +3,12 @@ eigen3-devel
 boost-devel
 lcov
 cppcheck
-libasan
 libubsan
 xrootd
 gnupg
 doxygen
 gdb
 clang-tools-extra
+patch
+expat-devel
+xerces-c-devel

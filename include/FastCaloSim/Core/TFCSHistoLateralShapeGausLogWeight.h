@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSHistoLateralShapeGausLogWeight_h
 #define TFCSHistoLateralShapeGausLogWeight_h
@@ -22,10 +22,10 @@ public:
       const TFCSExtrapolationState* extrapol) override;
 
 protected:
-  ClassDefOverride(TFCSHistoLateralShapeGausLogWeight,
-                   1)  // TFCSHistoLateralShapeGausLogWeight
+ClassDefOverride(TFCSHistoLateralShapeGausLogWeight,
+                 1)  // TFCSHistoLateralShapeGausLogWeight
 
-      private:
+    private:
 };
 
 #endif
