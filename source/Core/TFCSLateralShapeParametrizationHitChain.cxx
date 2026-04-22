@@ -34,6 +34,21 @@ TFCSLateralShapeParametrizationHitChain::
   m_chain.push_back(hitsim);
 }
 
+bool TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
+    TFCSLateralShapeParametrizationHitBase::Hit& hit,
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol,
+    bool success) const
+{
+  (void)hit;
+  (void)simulstate;
+  (void)truth;
+  (void)extrapol;
+  (void)success;
+  return false;
+}
+
 unsigned int TFCSLateralShapeParametrizationHitChain::size() const
 {
   if (m_number_of_hits_simul)
