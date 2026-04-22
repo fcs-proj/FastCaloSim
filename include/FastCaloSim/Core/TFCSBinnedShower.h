@@ -3,7 +3,6 @@
 #ifndef TFCSBinnedShower_h
 #define TFCSBinnedShower_h
 
-#include <fstream>
 #include <tuple>
 #include <vector>
 

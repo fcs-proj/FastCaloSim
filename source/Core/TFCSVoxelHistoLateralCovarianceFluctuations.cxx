@@ -1,7 +1,5 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#include <string>
-
 #include "FastCaloSim/Core/TFCSVoxelHistoLateralCovarianceFluctuations.h"
 
 #include "CLHEP/Random/RandFlat.h"

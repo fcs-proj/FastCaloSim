@@ -8,9 +8,7 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
 // External includes
-#include <fstream>
 #include <tuple>
-#include <vector>
 
 #include <RtypesCore.h>
 #include <TMath.h>

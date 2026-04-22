@@ -1,7 +1,5 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#include <chrono>
-
 #include "FastCaloSim/Core/TFCSMLCalorimeterSimulator.h"
 
 #include "CLHEP/Random/RandGauss.h"

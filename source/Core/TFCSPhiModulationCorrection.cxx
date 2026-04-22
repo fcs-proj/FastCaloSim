@@ -15,11 +15,6 @@
 #include <TMath.h>
 #include <TParameter.h>
 
-// Standard includes
-#include <fstream>
-#include <tuple>
-#include <vector>
-
 //=============================================
 //======= TFCSPhiModulationCorrection =========
 //=============================================

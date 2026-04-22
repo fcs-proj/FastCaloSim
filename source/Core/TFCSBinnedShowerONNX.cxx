@@ -1,13 +1,8 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#include <algorithm>
 #include <cmath>
 #include <cstdlib>
-#include <iostream>
-#include <map>
 #include <regex>
-#include <string>
-#include <vector>
 
 #include "FastCaloSim/Core/TFCSBinnedShowerONNX.h"
 

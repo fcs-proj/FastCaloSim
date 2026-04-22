@@ -3,9 +3,6 @@
 #ifndef TFCSMLCALORIMETERSIMULATOR_H
 #define TFCSMLCALORIMETERSIMULATOR_H
 
-// ISF includes
-#include <fstream>
-#include <map>
 #include <string>
 #include <vector>
 
