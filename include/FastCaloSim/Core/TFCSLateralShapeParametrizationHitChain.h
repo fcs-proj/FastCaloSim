@@ -3,8 +3,6 @@
 #ifndef TFCSLateralShapeParametrizationHitChain_h
 #define TFCSLateralShapeParametrizationHitChain_h
 
-#include <vector>
-
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 

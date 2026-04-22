@@ -121,6 +121,8 @@ public:
     inline const auto& center_z() const { return m_center_z; }
     inline const auto& center_eta() const { return m_center_eta; }
     inline const auto& center_phi() const { return m_center_phi; }
+    inline const auto& idx() { return m_hit_index; };
+
     inline void setCenter_r(float r) { m_center_r = r; }
     inline void setCenter_z(float z) { m_center_z = z; }
     inline void setCenter_eta(float eta) { m_center_eta = eta; }
@@ -129,7 +131,10 @@ public:
     inline void set_phi_y(float phi_y) { m_phi_y = phi_y; }
     inline void set_z(float z) { m_z = z; }
     inline void set_E(float E) { m_E = E; }
-    inline const auto& idx() { return m_hit_index; };
+    inline void set_idx(long unsigned int hit_index)
+    {
+      m_hit_index = hit_index;
+    }
 
   private:
     float m_eta_x;  // eta for barrel and end-cap, x for FCal
