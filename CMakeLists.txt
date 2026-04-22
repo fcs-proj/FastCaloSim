@@ -46,6 +46,7 @@ find_package(TBB REQUIRED)
 # libspatialindex for geometry
 find_package(libspatialindex REQUIRED)
 # HDF5 for binned shower
+find_package(MPI)
 find_package(HDF5 REQUIRED COMPONENTS CXX)
 if(NOT HDF5_FOUND)
   message(FATAL_ERROR "HDF5 not found")
