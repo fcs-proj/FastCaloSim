@@ -45,6 +45,11 @@ find_package(Eigen3 REQUIRED)
 find_package(TBB REQUIRED)
 # libspatialindex for geometry
 find_package(libspatialindex REQUIRED)
+# HDF5 for binned shower
+find_package(HDF5 REQUIRED COMPONENTS CXX)
+if(NOT HDF5_FOUND)
+  message(FATAL_ERROR "HDF5 not found")
+endif()
 
 # Boost for geometry (headers only)
 find_package(Boost REQUIRED)
@@ -71,6 +76,7 @@ target_link_libraries(
     FastCaloSim_FastCaloSim
     PUBLIC
         ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
+        HDF5::HDF5
         fmt::fmt-header-only
         CLHEP::CLHEP
         ${Geant4_LIBRARIES}
