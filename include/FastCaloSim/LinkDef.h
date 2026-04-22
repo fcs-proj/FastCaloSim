@@ -607,6 +607,11 @@
 #pragma link C++ class TFCSEnergyParametrization + ;
 #pragma link C++ class TFCSPCAEnergyParametrization - ;
 #pragma link C++ class TFCSEnergyBinParametrization + ;
+#pragma link C++ class TFCSPhiModulationCorrection + ;
+#pragma link C++ class TFCSBinnedShowerBase + ;
+#pragma link C++ class TFCSBinnedShower - ;
+#pragma link C++ class TFCSBinnedShowerONNX - ;
+#pragma link C++ class TFCSMLCalorimeterSimulator + ;
 #ifndef __FastCaloSimNoLWTNN__
 #pragma link C++ class TFCSGANXMLParameters + ;
 #pragma link C++ class TFCSGANLWTNNHandler - ;
