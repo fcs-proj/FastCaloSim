@@ -47,7 +47,7 @@ find_package(TBB REQUIRED)
 find_package(libspatialindex REQUIRED)
 # MPI is not used directly, but the key4hep HDF5 build was compiled with MPI
 # support, so MPI must be found first to satisfy HDF5's CMake dependencies
-find_package(MPI)
+find_package(MPI COMPONENTS C CXX)
 # HDF5 for binned shower
 find_package(HDF5 REQUIRED COMPONENTS CXX)
 if(NOT HDF5_FOUND)
