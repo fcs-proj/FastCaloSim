@@ -67,6 +67,7 @@
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitChain.h"
+#include "FastCaloSim/Core/TFCSLateralShapeParametrizationFixedHitChain.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFluctChain.h"
 #include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 #include "FastCaloSim/Core/TFCSFlatLateralShapeParametrization.h"
@@ -82,6 +83,7 @@
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggle.h"
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggleEMB.h"
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
+#include "FastCaloSim/Core/TFCSVoxelHistoLateralCovarianceFluctuations.h"
 
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
@@ -628,6 +630,7 @@
 #pragma link C++ class TFCSLateralShapeParametrization + ;
 #pragma link C++ class TFCSLateralShapeParametrizationHitBase + ;
 #pragma link C++ class TFCSLateralShapeParametrizationHitChain + ;
+#pragma link C++ class TFCSLateralShapeParametrizationFixedHitChain + ;
 #pragma link C++ class TFCSLateralShapeParametrizationFluctChain + ;
 #pragma link C++ class TFCSCenterPositionCalculation + ;
 #pragma link C++ class TFCSFlatLateralShapeParametrization + ;
@@ -645,6 +648,7 @@
 #pragma link C++ class TFCSHitCellMappingWiggle + ;
 #pragma link C++ class TFCSHitCellMappingWiggleEMB + ;
 #pragma link C++ class TFCSEnergyRenormalization + ;
+#pragma link C++ class TFCSVoxelHistoLateralCovarianceFluctuations + ;
 
 #pragma link C++ class TFCSTruthState + ;
 #pragma link C++ class TFCSExtrapolationState + ;
