@@ -3,7 +3,6 @@
 #ifndef TFCSVoxelHistoLateralCovarianceFluctuations_h
 #define TFCSVoxelHistoLateralCovarianceFluctuations_h
 
-#include "FastCaloSim/Core/FastCaloSim_CaloCell_ID.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "TH2.h"
 #include "TMatrixD.h"
@@ -20,8 +19,8 @@ public:
                                               const char* title = nullptr);
   virtual ~TFCSVoxelHistoLateralCovarianceFluctuations();
 
-  virtual void set_geometry(ICaloGeometry* geo) override { m_geo = geo; };
-  ICaloGeometry* get_geometry() { return m_geo; };
+  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  CaloGeo* get_geometry() { return m_geo; };
 
   bool initialize(TFile* inputfile, const std::string& folder);
 
@@ -41,12 +40,7 @@ public:
       const TFCSExtrapolationState* extrapol) override;
 
 protected:
-  ICaloGeometry* m_geo;  //! do not persistify
-
-  static const std::uint32_t
-      s_layer_hash[CaloCell_ID_FCS::MaxSample];  //! do not persistify
-  static const std::uint32_t
-      s_layer_hash_geo[CaloCell_ID_FCS::MaxSample];  //! do not persistify
+  CaloGeo* m_geo;  //! do not persistify
 
   typedef std::vector<std::vector<float>> weight_t;
 

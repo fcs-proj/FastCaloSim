@@ -15,8 +15,9 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "TFCSBinnedShowerBase.h"
 
-class ICaloGeometry;
+class CaloGeo;
 
 class TFCSBinnedShower : public TFCSBinnedShowerBase
 {
@@ -198,10 +199,6 @@ protected:
   virtual void delete_event(TFCSSimulationState& simulstate) const override;
 
 private:
-  // Number of calorimeter layers
-  const long unsigned int m_n_layers =
-      CaloCell_ID_FCS::CaloSample_FCS::MaxSample;
-
   // What should be the average energy per hit in the library
   float m_default_hit_energy = 4.;
   // What is the mamimum number of hits per voxel (for runtime reasons)

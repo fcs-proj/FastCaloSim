@@ -17,13 +17,13 @@ bool TFCSMLCalorimeterSimulator::loadSimulator(std::string filename)
   try {
     m_onnx_model = TFCSNetworkFactory::create(filename);
   } catch (std::exception& e) {
-    ATH_MSG_ERROR("Failed to load simulator from file "
+    FCS_MSG_ERROR("Failed to load simulator from file "
                   << filename << " with error " << e.what());
     return false;
   }
 
   if (m_onnx_model == nullptr) {
-    ATH_MSG_ERROR("Failed to load simulator from file " << filename);
+    FCS_MSG_ERROR("Failed to load simulator from file " << filename);
     return false;
   }
 
@@ -101,11 +101,11 @@ TFCSMLCalorimeterSimulator::event_t TFCSMLCalorimeterSimulator::getEvent(
     int retry = 0;
     while (contains_nan) {
       if (retry > 5) {
-        ATH_MSG_WARNING("Network output contains NaN. Giving up.");
+        FCS_MSG_WARNING("Network output contains NaN. Giving up.");
         break;
       }
 
-      ATH_MSG_WARNING("Network output contains NaN. Retrying.");
+      FCS_MSG_WARNING("Network output contains NaN. Retrying.");
       outputs = predictVoxels(simulstate, eta, energy);
       first_output = outputs.begin()->second;
       contains_nan = std::isnan(first_output);
@@ -195,16 +195,16 @@ VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels() const
     i++;
   }
 
-  ATH_MSG_DEBUG(VNetworkBase::representNetworkInputs(inputs, 1000));
+  FCS_MSG_DEBUG(VNetworkBase::representNetworkInputs(inputs, 1000));
 
   VNetworkBase::NetworkOutputs outputs = m_onnx_model->compute(inputs);
 
-  ATH_MSG_DEBUG(VNetworkBase::representNetworkOutputs(outputs, 1000));
+  FCS_MSG_DEBUG(VNetworkBase::representNetworkOutputs(outputs, 1000));
 
   return outputs;
 }
 
 void TFCSMLCalorimeterSimulator::Print() const
 {
-  ATH_MSG_INFO("ONNX AICalorimeterSimulator");
+  FCS_MSG_INFO("ONNX AICalorimeterSimulator");
 }

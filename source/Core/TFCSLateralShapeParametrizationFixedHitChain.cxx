@@ -38,7 +38,7 @@ bool TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
   int nhit_signed = simulstate.getAuxInfo<int>("FCSHitChainNHits"_FCShash);
 
   if (nhit_signed < 0) {
-    ATH_MSG_ERROR(
+    FCS_MSG_ERROR(
         "The number of hits to simulate is not defined - aborting simulation!");
     return true;
   }

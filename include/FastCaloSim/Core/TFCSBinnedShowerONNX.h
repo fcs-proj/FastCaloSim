@@ -1,23 +1,23 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSBinnedShowerONNX_h
-#  define TTFCSBinnedShowerONNX_h
+#define TFCSBinnedShowerONNX_h
 
-#  include <fstream>
-#  include <tuple>
-#  include <vector>
+#include <fstream>
+#include <tuple>
+#include <vector>
 
-#  include <RtypesCore.h>
-#  include <TMath.h>
-#  include <hdf5.h>
+#include <RtypesCore.h>
+#include <TMath.h>
+#include <hdf5.h>
 
-#  include "FastCaloSim/Core/TFCSBinnedShowerBase.h"
-#  include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
-#  include "FastCaloSim/Core/TFCSMLCalorimeterSimulator.h"
-#  include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
-#  include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Core/TFCSBinnedShowerBase.h"
+#include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
+#include "FastCaloSim/Core/TFCSMLCalorimeterSimulator.h"
+#include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
+#include "FastCaloSim/Core/TFCSSimulationState.h"
 
-class ICaloGeometry;
+class CaloGeo;
 
 class TFCSBinnedShowerONNX : public TFCSBinnedShowerBase
 {
@@ -134,10 +134,6 @@ protected:
   virtual void delete_event(TFCSSimulationState& simulstate) const override;
 
 private:
-  // Number of calorimeter layers
-  const long unsigned int m_n_layers =
-      CaloCell_ID_FCS::CaloSample_FCS::MaxSample;
-
   // What should be the average energy per hit in the library
   float m_default_hit_energy = 4.;
   // What is the mamimum number of hits per voxel (for runtime reasons)

@@ -3,10 +3,10 @@
 // Local includes
 #include "FastCaloSim/Core/TFCSPhiModulationCorrection.h"
 
-#include "FastCaloSim/Core/ICaloGeometry.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 
 // External includes
 #include <RtypesCore.h>
@@ -114,7 +114,7 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
 
   energy_shifts.at(eta_index) = energy_shift;
 
-  ATH_MSG_DEBUG("Loading phi modulation correction from " << filename);
+  FCS_MSG_DEBUG("Loading phi modulation correction from " << filename);
 
   TFile* muon_corr = TFile::Open(filename.c_str());
   TH2F* muon_corr_hist = (TH2F*)muon_corr->Get("hWt_Layer0");
@@ -158,16 +158,16 @@ TFCSPhiModulationCorrection::get_eta_and_phi_index(
       std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1;
 
   if (eta_index >= m_min_eta.at(layer_index).size() - 1) {
-    ATH_MSG_ERROR("Found invalid eta index for phi modulation");
-    ATH_MSG_ERROR("Layer: " << layer_index);
-    ATH_MSG_ERROR("Eta: " << eta);
-    ATH_MSG_ERROR("Min eta:" << m_min_eta.at(layer_index).at(0) << " Max eta: "
+    FCS_MSG_ERROR("Found invalid eta index for phi modulation");
+    FCS_MSG_ERROR("Layer: " << layer_index);
+    FCS_MSG_ERROR("Eta: " << eta);
+    FCS_MSG_ERROR("Min eta:" << m_min_eta.at(layer_index).at(0) << " Max eta: "
                              << m_min_eta.at(layer_index).back());
-    ATH_MSG_ERROR("Eta index: " << eta_index);
-    ATH_MSG_ERROR("Number of eta bins: " << m_min_eta.at(layer_index).size());
-    ATH_MSG_ERROR("Eta bin boundaries: ");
+    FCS_MSG_ERROR("Eta index: " << eta_index);
+    FCS_MSG_ERROR("Number of eta bins: " << m_min_eta.at(layer_index).size());
+    FCS_MSG_ERROR("Eta bin boundaries: ");
     for (const auto& eta_min : m_min_eta.at(layer_index)) {
-      ATH_MSG_ERROR("  " << eta_min);
+      FCS_MSG_ERROR("  " << eta_min);
     }
     return std::make_tuple(1, 0, 0);  // Error code 1: Invalid eta index
   }
@@ -175,21 +175,24 @@ TFCSPhiModulationCorrection::get_eta_and_phi_index(
   if (m_min_eta.at(layer_index).at(eta_index) > eta_abs
       || m_min_eta.at(layer_index).at(eta_index + 1) < eta_abs)
   {
-    ATH_MSG_ERROR(
+    FCS_MSG_ERROR(
         "Found eta outside of the specified eta range for the phi modulation");
-    ATH_MSG_ERROR("Layer: " << layer_index);
-    ATH_MSG_ERROR("Eta: " << eta);
-    ATH_MSG_ERROR("Phi: " << phi);
-    ATH_MSG_ERROR("Eta min of bin: "
+    FCS_MSG_ERROR("Layer: " << layer_index);
+    FCS_MSG_ERROR("Eta: " << eta);
+    FCS_MSG_ERROR("Phi: " << phi);
+    FCS_MSG_ERROR("Eta min of bin: "
                   << m_min_eta.at(layer_index).at(eta_index)
                   << " Eta max of bin: "
                   << m_min_eta.at(layer_index).at(eta_index + 1));
     return std::make_tuple(2, 0, 0);  // Error code 2: Eta outside of range
   }
 
-  const CaloDetDescrElement* cellele = m_geo->getDDE(layer_index, eta, phi);
+  Position pos {};
+  pos.m_eta = eta;
+  pos.m_phi = phi;
+  const auto& cell = m_geo->get_cell(layer_index, pos);
 
-  float cell_phi = cellele->phi();
+  float cell_phi = cell.phi();
 
   float phi_within_cell = phi - cell_phi;
 
@@ -214,16 +217,16 @@ TFCSPhiModulationCorrection::get_eta_and_phi_index(
   long unsigned int phi_index = std::distance(phi_mins.begin(), phi_it) - 1;
 
   if (phi_index >= modulation.size()) {
-    ATH_MSG_ERROR("Found bin "
+    FCS_MSG_ERROR("Found bin "
                   << phi_index
                   << " outside of the modulation correction vector");
-    ATH_MSG_ERROR("Phi: " << phi << " Cell phi: " << cell_phi
+    FCS_MSG_ERROR("Phi: " << phi << " Cell phi: " << cell_phi
                           << " Phi within cell: " << phi_within_cell);
-    ATH_MSG_ERROR("Eta: " << eta);
-    ATH_MSG_ERROR("Phi cell size: " << phi_cell_size);
-    ATH_MSG_ERROR("Modulation correction size: " << modulation.size());
-    ATH_MSG_ERROR("Phi bin boundaries size: " << phi_mins.size());
-    ATH_MSG_ERROR("Last Phi bin boundary: " << phi_mins.back());
+    FCS_MSG_ERROR("Eta: " << eta);
+    FCS_MSG_ERROR("Phi cell size: " << phi_cell_size);
+    FCS_MSG_ERROR("Modulation correction size: " << modulation.size());
+    FCS_MSG_ERROR("Phi bin boundaries size: " << phi_mins.size());
+    FCS_MSG_ERROR("Last Phi bin boundary: " << phi_mins.back());
 
     return std::make_tuple(
         3, 0, 0);  // Error code 3: Phi index outside of modulation vector
@@ -259,7 +262,7 @@ float TFCSPhiModulationCorrection::add_phi_modulation(
   float eta = hit.eta();
 
   float reweighted_energy = add_phi_modulation(energy, phi, eta, layer_index);
-  hit.E() = reweighted_energy;
+  hit.set_E(reweighted_energy);
 
   return reweighted_energy;
 }
@@ -327,7 +330,7 @@ float TFCSPhiModulationCorrection::remove_phi_modulation(
 
   float reweighted_energy =
       remove_phi_modulation(energy, phi, eta, layer_index);
-  hit.E() = reweighted_energy;
+  hit.set_E(reweighted_energy);
 
   return reweighted_energy;
 }

@@ -12,12 +12,12 @@
 #include <TH2.h>
 
 #include "CLHEP/Random/RandFlat.h"
-#include "FastCaloSim/Core/ICaloGeometry.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
-#include "HepPDT/ParticleData.hh"
+#include "FastCaloSim/Definitions/ParticleData.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TBuffer.h"
 #include "TClass.h"
 
@@ -40,18 +40,18 @@ FCSReturnCode TFCSBinnedShowerBase::simulate(
 {
   // select a random event from the library
   float eta_center, phi_center;
-  long unsigned int reference_layer_index =
-      CaloCell_ID_FCS::CaloSample_FCS::EMB2;
-  eta_center =
-      extrapol->eta(reference_layer_index, TFCSExtrapolationState::SUBPOS_MID);
+  // NOTE: This is ATLAS specific
+  // layer 2 is EMB2
+  long unsigned int reference_layer_index = 2;
+  eta_center = extrapol->eta(reference_layer_index, Cell::SubPos::MID);
   if (eta_center > 1.4) {  // Endcap becomes more relevant
-    reference_layer_index = CaloCell_ID_FCS::CaloSample_FCS::EME2;
+    // NOTE: This is ATLAS specific
+    // layer 6 is EME2
+    reference_layer_index = 6;
   }
   // TODO: What about the endcap?
-  eta_center =
-      extrapol->eta(reference_layer_index, TFCSExtrapolationState::SUBPOS_MID);
-  phi_center =
-      extrapol->phi(reference_layer_index, TFCSExtrapolationState::SUBPOS_MID);
+  eta_center = extrapol->eta(reference_layer_index, Cell::SubPos::MID);
+  phi_center = extrapol->phi(reference_layer_index, Cell::SubPos::MID);
 
   // Fill the total energy and layer energies into simulstate
   float Einit;
@@ -67,8 +67,7 @@ FCSReturnCode TFCSBinnedShowerBase::simulate(
 
   get_event(simulstate, eta_center, phi_center, Einit, reference_layer_index);
 
-  for (long unsigned int layer_index = 0;
-       layer_index < CaloCell_ID_FCS::MaxSample;
+  for (long unsigned int layer_index = 0; layer_index < m_geo->n_layers();
        ++layer_index)
   {
     float layer_energy = get_layer_energy(simulstate, layer_index);
@@ -79,7 +78,7 @@ FCSReturnCode TFCSBinnedShowerBase::simulate(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < CaloCell_ID_FCS::MaxSample; ++ilayer) {
+    for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }
@@ -96,7 +95,7 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
   (void)extrapol;
 
   const int pdgId = truth->pdgid();
-  const float charge = HepPDT::ParticleID(pdgId).charge();
+  const float charge = ParticleData::charge(pdgId);
   long unsigned int layer_index = calosample();
 
   const double center_eta = hit.center_eta();
@@ -104,7 +103,7 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  ATH_MSG_VERBOSE(" Layer " << layer_index << " Extrap eta " << center_eta
+  FCS_MSG_VERBOSE(" Layer " << layer_index << " Extrap eta " << center_eta
                             << " phi " << center_phi << " R " << center_r);
 
   const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
@@ -119,9 +118,11 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
       get_hit_position_and_energy(simulstate, layer_index, hit_index);
 
   hit.reset();
-  hit.E() = E;
+  hit.set_E(E);
 
-  if (layer_index <= CaloCell_ID_FCS::CaloSample_FCS::FCAL0) {
+  // NOTE: this is ATLAS dependent
+  // layer 21 is FCAL0
+  if (layer_index <= 21) {
     float delta_eta_mm = r * cos(alpha);
     float delta_phi_mm = r * sin(alpha);
 
@@ -142,10 +143,10 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
     const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
     const float delta_phi = delta_phi_mm / center_r;
 
-    hit.eta() = center_eta + delta_eta;
-    hit.phi() = TVector2::Phi_mpi_pi(center_phi + delta_phi);
+    hit.set_eta_x(center_eta + delta_eta);
+    hit.set_phi_y(TVector2::Phi_mpi_pi(center_phi + delta_phi));
 
-    ATH_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
+    FCS_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                 << " layer " << layer_index);
 
   } else {  // FCAL is in (x,y,z)
@@ -158,10 +159,11 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
     if ((charge < 0. && pdgId != 11) || pdgId == -11)
       delta_phi = -delta_phi;
     const float hit_phi = TVector2::Phi_mpi_pi(center_phi + delta_phi);
-    hit.x() = hit_r * cos(hit_phi);
-    hit.y() = hit_r * sin(hit_phi);
-    hit.z() = center_z;
-    ATH_MSG_VERBOSE(" Hit x " << hit.x() << " y " << hit.y() << " layer "
+    hit.set_eta_x(hit_r * cos(hit_phi));
+    hit.set_phi_y(hit_r * sin(hit_phi));
+    hit.set_z(center_z);
+
+    FCS_MSG_VERBOSE(" Hit x " << hit.x() << " y " << hit.y() << " layer "
                               << layer_index);
   }
 

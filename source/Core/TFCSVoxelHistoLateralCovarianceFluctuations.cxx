@@ -6,10 +6,10 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
-#include "FastCaloSim/Core/ICaloGeometry.h"
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 #include "FastCaloSim/Core/TFCS1DFunctionTemplateHistogram.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TFile.h"
 #include "TH2.h"
 #include "TMath.h"
@@ -21,31 +21,17 @@
 //======= TFCSVoxelHistoLateralCovarianceFluctuations =========
 //=============================================
 
-const std::uint32_t TFCSVoxelHistoLateralCovarianceFluctuations::s_layer_hash
-    [CaloCell_ID_FCS::MaxSample] = {
-        "PreSamplerB"_FCShash, "EMB1"_FCShash,        "EMB2"_FCShash,
-        "EMB3"_FCShash,        "PreSamplerE"_FCShash, "EME1"_FCShash,
-        "EME2"_FCShash,        "EME3"_FCShash,        "HEC0"_FCShash,
-        "HEC1"_FCShash,        "HEC2"_FCShash,        "HEC3"_FCShash,
-        "TileBar0"_FCShash,    "TileBar1"_FCShash,    "TileBar2"_FCShash,
-        "TileGap1"_FCShash,    "TileGap2"_FCShash,    "TileGap3"_FCShash,
-        "TileExt0"_FCShash,    "TileExt1"_FCShash,    "TileExt2"_FCShash,
-        "FCAL0"_FCShash,       "FCAL1"_FCShash,       "FCAL2"_FCShash};
-
-const std::uint32_t TFCSVoxelHistoLateralCovarianceFluctuations::
-    s_layer_hash_geo[CaloCell_ID_FCS::MaxSample] = {
-        "PreSamplerB_geo"_FCShash, "EMB1_geo"_FCShash,
-        "EMB2_geo"_FCShash,        "EMB3_geo"_FCShash,
-        "PreSamplerE_geo"_FCShash, "EME1_geo"_FCShash,
-        "EME2_geo"_FCShash,        "EME3_geo"_FCShash,
-        "HEC0_geo"_FCShash,        "HEC1_geo"_FCShash,
-        "HEC2_geo"_FCShash,        "HEC3_geo"_FCShash,
-        "TileBar0_geo"_FCShash,    "TileBar1_geo"_FCShash,
-        "TileBar2_geo"_FCShash,    "TileGap1_geo"_FCShash,
-        "TileGap2_geo"_FCShash,    "TileGap3_geo"_FCShash,
-        "TileExt0_geo"_FCShash,    "TileExt1_geo"_FCShash,
-        "TileExt2_geo"_FCShash,    "FCAL0_geo"_FCShash,
-        "FCAL1_geo"_FCShash,       "FCAL2_geo"_FCShash};
+namespace
+{
+std::uint32_t layer_hash(unsigned int layer)
+{
+  return static_cast<std::uint32_t>(layer);
+}
+std::uint32_t layer_hash_geo(unsigned int layer)
+{
+  return static_cast<std::uint32_t>(layer) | 0x80000000u;
+}
+}  // namespace
 
 TFCSVoxelHistoLateralCovarianceFluctuations::
     TFCSVoxelHistoLateralCovarianceFluctuations(const char* name,
@@ -76,7 +62,7 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   TH2* temp = dynamic_cast<TH2*>(
       inputfile->Get(Form("voxel_template_cs%d_pca%d", cs, bin)));
   if (!temp) {
-    ATH_MSG_ERROR("Template hist not found for cs " + std::to_string(cs));
+    FCS_MSG_ERROR("Template hist not found for cs " + std::to_string(cs));
     return false;
   }
   m_voxel_template.push_back(temp);
@@ -93,11 +79,11 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
 
     TObject* obj = inputfile->Get(("parMeans" + label).c_str());
     if (!obj) {
-      ATH_MSG_ERROR("parMeans" + label + " not found");
+      FCS_MSG_ERROR("parMeans" + label + " not found");
       return false;
     }
-    if (msgLvl(MSG::DEBUG)) {
-      ATH_MSG_DEBUG("parMeans");
+    if (msgLvl(FCS_MSG::DEBUG)) {
+      FCS_MSG_DEBUG("parMeans");
       obj->Print();
     }
     parMeans.ResizeTo(m_nDim_x * m_nDim_y);
@@ -106,7 +92,7 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
 
     obj = inputfile->Get(("covMatrix" + label).c_str());
     if (!obj) {
-      ATH_MSG_ERROR("covMatrix" + label + " not found");
+      FCS_MSG_ERROR("covMatrix" + label + " not found");
       return false;
     }
     TMatrixTSym<double> covMatrix = *dynamic_cast<TMatrixTSym<double>*>(obj);
@@ -119,15 +105,15 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
     EigenValues = eigenvariances.GetEigenValues();
     m_EigenValues.push_back(EigenValues);
 
-    if (msgLvl(MSG::DEBUG)) {
-      ATH_MSG_DEBUG("eigenvariances");
+    if (msgLvl(FCS_MSG::DEBUG)) {
+      FCS_MSG_DEBUG("eigenvariances");
       eigenvariances.GetEigenValues().Print();
       eigenvariances.GetEigenVectors().Print();
     }
-    if (msgLvl(MSG::DEBUG)) {
-      ATH_MSG_DEBUG("m_EigenValues");
+    if (msgLvl(FCS_MSG::DEBUG)) {
+      FCS_MSG_DEBUG("m_EigenValues");
       EigenValues.Print();
-      ATH_MSG_DEBUG("m_EigenVectors");
+      FCS_MSG_DEBUG("m_EigenVectors");
       EigenVectors.Print();
     }
 
@@ -139,7 +125,7 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
         std::string histname = Form("hist_%d_%d%s", x, y, label.c_str());
         TH1* hist = (TH1*)inputfile->Get(histname.c_str());
         if (!hist) {
-          ATH_MSG_ERROR("Histogram " << histname << " not found");
+          FCS_MSG_ERROR("Histogram " << histname << " not found");
           return false;
         }
         TFCS1DFunctionInt32Int32Histogram* func =
@@ -170,13 +156,13 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
     double variance = m_EigenValues[Ebin - 1][iPar];
     // check for positive-definiteness of covMatrix
     if (variance < 0) {
-      ATH_MSG_ERROR("Got a negative eigenvariance (" << variance
+      FCS_MSG_ERROR("Got a negative eigenvariance (" << variance
                                                      << ") on iPar = " << iPar);
       variance = 0;
     }
     genPars[iPar] = CLHEP::RandGauss::shoot(
         simulstate.randomEngine(), rotParMeans[iPar], sqrt(variance));
-    ATH_MSG_DEBUG("genPars[" << iPar << "]=" << genPars[iPar]
+    FCS_MSG_DEBUG("genPars[" << iPar << "]=" << genPars[iPar]
                              << " rotParMeans[iPar]=" << rotParMeans[iPar]
                              << " sqrt(variance)=" << sqrt(variance));
   }
@@ -192,8 +178,8 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     return FCSFatal;
   }
 
-  if (msgLvl(MSG::DEBUG)) {
-    ATH_MSG_DEBUG("simulstate before clearing AuxInfo");
+  if (msgLvl(FCS_MSG::DEBUG)) {
+    FCS_MSG_DEBUG("simulstate before clearing AuxInfo");
     simulstate.Print();
   }
 
@@ -202,27 +188,27 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
 
   int Ebin = simulstate.Ebin();
 
-  for (int ilayer = 0; ilayer < CaloCell_ID_FCS::MaxSample; ++ilayer) {
-    if (simulstate.hasAuxInfo(s_layer_hash[ilayer])) {
+  for (unsigned int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+    if (simulstate.hasAuxInfo(layer_hash(ilayer))) {
       weightvec = static_cast<weight_t*>(
-          simulstate.getAuxInfo<void*>(s_layer_hash[ilayer]));
+          simulstate.getAuxInfo<void*>(layer_hash(ilayer)));
       if (weightvec) {
         delete weightvec;
-        simulstate.setAuxInfo<void*>(s_layer_hash[ilayer], nullptr);
+        simulstate.setAuxInfo<void*>(layer_hash(ilayer), nullptr);
       }
     }
-    if (simulstate.hasAuxInfo(s_layer_hash_geo[ilayer])) {
+    if (simulstate.hasAuxInfo(layer_hash_geo(ilayer))) {
       voxel_temp = static_cast<TH2*>(
-          simulstate.getAuxInfo<void*>(s_layer_hash_geo[ilayer]));
+          simulstate.getAuxInfo<void*>(layer_hash_geo(ilayer)));
       if (voxel_temp) {
         delete voxel_temp;
-        simulstate.setAuxInfo<void*>(s_layer_hash_geo[ilayer], nullptr);
+        simulstate.setAuxInfo<void*>(layer_hash_geo(ilayer), nullptr);
       }
     }
   }
 
-  if (msgLvl(MSG::DEBUG)) {
-    ATH_MSG_DEBUG("simulstate after clearing AuxInfo");
+  if (msgLvl(FCS_MSG::DEBUG)) {
+    FCS_MSG_DEBUG("simulstate after clearing AuxInfo");
     simulstate.Print();
   }
   // if(m_parMeans[Ebin-1].GetNrows()<1) {
@@ -259,7 +245,7 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
       (*weightvec)[x][y] = orig_val;
       ++count;
 
-      ATH_MSG_DEBUG("CELL x=" << x << " y=" << y << " : cdf_val=" << cdf_val
+      FCS_MSG_DEBUG("CELL x=" << x << " y=" << y << " : cdf_val=" << cdf_val
                               << " orig_val=" << orig_val);
     }
   }
@@ -267,11 +253,11 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   voxel_temp = static_cast<TH2*>(m_voxel_template[0]->Clone());
 
   // For now simulating only the layer calosample()
-  simulstate.setAuxInfo<void*>(s_layer_hash[calosample()], weightvec);
-  simulstate.setAuxInfo<void*>(s_layer_hash_geo[calosample()], voxel_temp);
+  simulstate.setAuxInfo<void*>(layer_hash(calosample()), weightvec);
+  simulstate.setAuxInfo<void*>(layer_hash_geo(calosample()), voxel_temp);
 
-  if (msgLvl(MSG::DEBUG)) {
-    ATH_MSG_DEBUG("simulstate after storing weight " << weightvec
+  if (msgLvl(FCS_MSG::DEBUG)) {
+    FCS_MSG_DEBUG("simulstate after storing weight " << weightvec
                                                      << " in AuxInfo");
     simulstate.Print();
   }
@@ -292,21 +278,22 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
 
   int cs = calosample();
   weight_t* weightvec = nullptr;
-  if (simulstate.hasAuxInfo(s_layer_hash[cs]))
+  if (simulstate.hasAuxInfo(layer_hash(cs)))
     weightvec =
-        static_cast<weight_t*>(simulstate.getAuxInfo<void*>(s_layer_hash[cs]));
+        static_cast<weight_t*>(simulstate.getAuxInfo<void*>(layer_hash(cs)));
 
   if (!weightvec) {
-    ATH_MSG_ERROR("Weights not stored in simulstate for calosample=" << cs);
+    FCS_MSG_ERROR("Weights not stored in simulstate for calosample=" << cs);
     return FCSFatal;
   }
 
   TH2* voxel_template = nullptr;
-  if (simulstate.hasAuxInfo(s_layer_hash_geo[cs]))
+  if (simulstate.hasAuxInfo(layer_hash_geo(cs)))
     voxel_template =
-        static_cast<TH2*>(simulstate.getAuxInfo<void*>(s_layer_hash_geo[cs]));
+        static_cast<TH2*>(simulstate.getAuxInfo<void*>(layer_hash_geo(cs)));
+
   if (!voxel_template) {
-    ATH_MSG_ERROR(
+    FCS_MSG_ERROR(
         "Voxel geometry not stored in simulstate for calosample=" << cs);
     return FCSFatal;
   }
@@ -388,9 +375,10 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     }
   }
 
-  hit.E() *= weight;
+  double new_E = hit.E() * weight;
+  hit.set_E(new_E);
 
-  ATH_MSG_DEBUG("HIT: E=" << hit.E() << ", alpha = " << alpha_mm
+  FCS_MSG_DEBUG("HIT: E=" << hit.E() << ", alpha = " << alpha_mm
                           << ", r = " << center_r << ", ix = " << ix
                           << ", iy = " << iy << ", weight = " << weight);
 

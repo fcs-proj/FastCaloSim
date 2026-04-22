@@ -27,8 +27,8 @@
 #include "FastCaloSim/Core/TFCSPhiModulationCorrection.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
-#include "HepPDT/ParticleData.hh"
-#include "ISF_FastCaloSimEvent/ICaloGeometry.h"
+#include "FastCaloSim/Definitions/ParticleData.h"
+#include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TBuffer.h"
 #include "TClass.h"
 
@@ -91,8 +91,10 @@ void TFCSBinnedShower::set_shower_center_information(
   // Compute phi_mod
   float phi_cell_size = TFCSPhiModulationCorrection::get_phi_cell_size(
       reference_layer_index, eta_center);
-  float phi_cell =
-      m_geo->getDDE(reference_layer_index, eta_center, phi_center)->phi();
+  Position pos {};
+  pos.m_eta = eta_center;
+  pos.m_phi = phi_center;
+  float phi_cell = m_geo->get_cell(reference_layer_index, pos).phi();
   float phi_within_cell = fmod(phi_center - phi_cell, phi_cell_size);
   if (phi_within_cell < 0) {
     phi_within_cell += phi_cell_size;
@@ -119,12 +121,14 @@ long unsigned int TFCSBinnedShower::find_best_match(
   float phi_cell_size, phi_within_cell;
 
   if (phi_mod_matching) {
-    const CaloDetDescrElement* cellele =
-        m_geo->getDDE(reference_layer_index, eta_center, phi_center);
+    Position pos {};
+    pos.m_eta = eta_center;
+    pos.m_phi = phi_center;
+    const auto& cell = m_geo->get_cell(reference_layer_index, pos);
     phi_cell_size = TFCSPhiModulationCorrection::get_phi_cell_size(
         reference_layer_index, eta_center);
 
-    float phi_cell = cellele->phi();
+    float phi_cell = cell.phi();
     phi_within_cell = phi_center - phi_cell;
 
     phi_within_cell = fmod(phi_within_cell, phi_cell_size);
@@ -165,9 +169,9 @@ long unsigned int TFCSBinnedShower::find_best_match(
   }
 
   if (best_match == m_eventlibrary.size() + 1) {
-    ATH_MSG_ERROR("No best match found");
+    FCS_MSG_ERROR("No best match found");
   } else {
-    ATH_MSG_INFO("Best match found for eta "
+    FCS_MSG_INFO("Best match found for eta "
                  << eta_center << " / "
                  << m_eventlibrary.at(best_match).center_eta << " with energy "
                  << e_init << " / " << m_eventlibrary.at(best_match).e_init);
@@ -183,7 +187,7 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
                                  long unsigned int reference_layer_index) const
 {
   if (m_eventlibrary.empty()) {
-    ATH_MSG_ERROR(
+    FCS_MSG_ERROR(
         "No event library loaded. Please load an event library for "
         "TFCSBinnedShower::get_event.");
     return;
@@ -212,7 +216,7 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
         simulstate.randomEngine(), 0, m_eventlibrary.size()));
   }
 
-  ATH_MSG_DEBUG("Using event index " << event_index << " for eta " << eta_center
+  FCS_MSG_DEBUG("Using event index " << event_index << " for eta " << eta_center
                                      << " and phi " << phi_center);
 
   // Store a pointer to the event
@@ -275,7 +279,7 @@ long unsigned int TFCSBinnedShower::get_n_hits(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
 
   if (!hits_per_layer_ptr) {
-    ATH_MSG_ERROR("Invalid hits per layer information");
+    FCS_MSG_ERROR("Invalid hits per layer information");
     return 0;
   }
 
@@ -288,7 +292,7 @@ float TFCSBinnedShower::get_layer_energy(TFCSSimulationState& simulstate,
   std::vector<float>* elayer_ptr = static_cast<std::vector<float>*>(
       simulstate.getAuxInfo<void*>("BSELayer"_FCShash));
   if (!elayer_ptr) {
-    ATH_MSG_ERROR("Invalid layer energy information");
+    FCS_MSG_ERROR("Invalid layer energy information");
     return 0.0f;
   }
   if (layer_index >= elayer_ptr->size()) {
@@ -306,12 +310,12 @@ long unsigned int TFCSBinnedShower::get_energy_index(
       static_cast<std::vector<std::vector<long unsigned int>>*>(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
   if (!hits_per_layer_ptr) {
-    ATH_MSG_ERROR("Invalid hits per layer information");
+    FCS_MSG_ERROR("Invalid hits per layer information");
     return 0;
   }
 
   if (layer_index >= hits_per_layer_ptr->size()) {
-    ATH_MSG_ERROR("Layer index out of bounds: " << layer_index << " >= "
+    FCS_MSG_ERROR("Layer index out of bounds: " << layer_index << " >= "
                                                 << hits_per_layer_ptr->size());
     return 0;
   }
@@ -323,12 +327,12 @@ long unsigned int TFCSBinnedShower::get_energy_index(
   long unsigned int energy_index = std::distance(hits.begin(), it);
 
   if (energy_index >= hits.size()) {
-    ATH_MSG_ERROR("Energy index out of bounds: " << energy_index
+    FCS_MSG_ERROR("Energy index out of bounds: " << energy_index
                                                  << " >= " << hits.size());
     // Print full hits for debugging
-    ATH_MSG_ERROR("Hits per layer: ");
+    FCS_MSG_ERROR("Hits per layer: ");
     for (const auto& hit : hits) {
-      ATH_MSG_ERROR("Hit: " << hit);
+      FCS_MSG_ERROR("Hit: " << hit);
     }
     return 0;
   }
@@ -487,7 +491,7 @@ std::tuple<float, float, float> TFCSBinnedShower::get_hit_position_and_energy(
   float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
 
   if (layer_index >= event->event_data.size()) {
-    ATH_MSG_ERROR("Layer index out of bounds: " << layer_index << " >= "
+    FCS_MSG_ERROR("Layer index out of bounds: " << layer_index << " >= "
                                                 << event->event_data.size());
     return std::make_tuple(0.0f, 0.0f, 0.0f);
   }
@@ -527,7 +531,7 @@ void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
     delete static_cast<event_t*>(event_ptr);
     simulstate.setAuxInfo<void*>("BSEventData"_FCShash, nullptr);
   } else {
-    ATH_MSG_ERROR("No event data found to delete.");
+    FCS_MSG_ERROR("No event data found to delete.");
   }
 
   void* n_hits_ptr = simulstate.getAuxInfo<void*>("BSNHits"_FCShash);
@@ -536,7 +540,7 @@ void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
         n_hits_ptr);
     simulstate.setAuxInfo<void*>("BSNHits"_FCShash, nullptr);
   } else {
-    ATH_MSG_ERROR("No event hits data found to delete.");
+    FCS_MSG_ERROR("No event hits data found to delete.");
   }
 
   void* elayer_ptr = simulstate.getAuxInfo<void*>("BSELayer"_FCShash);
@@ -544,7 +548,7 @@ void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
     delete static_cast<std::vector<float>*>(elayer_ptr);
     simulstate.setAuxInfo<void*>("BSELayer"_FCShash, nullptr);
   } else {
-    ATH_MSG_ERROR("No event layer energy data found to delete.");
+    FCS_MSG_ERROR("No event layer energy data found to delete.");
   }
 
   return;
@@ -567,7 +571,7 @@ void TFCSBinnedShower::load_event_library(
 
   // layer dependent variables
   for (long unsigned int layer_index : layers) {
-    ATH_MSG_INFO("Loading layer " << layer_index << " from file: " << filename);
+    FCS_MSG_INFO("Loading layer " << layer_index << " from file: " << filename);
 
     // Load the bin boundaries for this layer
     load_bin_boundaries(filename, layer_index);
@@ -633,7 +637,7 @@ void TFCSBinnedShower::load_layer_energy(const std::string& filename,
   bool success;
   std::tie(data, dims, success) = load_hdf5_dataset(filename, datasetname);
   if (!success) {
-    ATH_MSG_ERROR("Error while extracting the layer energy for layer "
+    FCS_MSG_ERROR("Error while extracting the layer energy for layer "
                   << layer_index << " from " << filename << ".");
     return;
   }
@@ -685,7 +689,7 @@ void TFCSBinnedShower::load_bin_boundaries(const std::string& filename,
     bool success;
     std::tie(data, dims, success) = load_hdf5_dataset(filename, datasetname);
     if (!success) {
-      ATH_MSG_ERROR("Error while extracting the bin boundaries for layer "
+      FCS_MSG_ERROR("Error while extracting the bin boundaries for layer "
                     << layer_index << " from " << filename << "."
                     << "Specifically, the key " << datasetname
                     << " could not be loaded.");
@@ -733,7 +737,7 @@ void TFCSBinnedShower::load_shower_center_information(
         // just skip this dataset
         continue;
       } else {
-        ATH_MSG_ERROR(
+        FCS_MSG_ERROR(
             "Error while extracting the shower center information from "
             << filename << "."
             << "Specifically, the key " << datasetname
@@ -770,21 +774,21 @@ void TFCSBinnedShower::Streamer(TBuffer& R__b)
     // Load the event library from file
     if (!m_hdf5_file.empty()) {
       std::vector<long unsigned int> layers;
-      for (long unsigned int i = 0; i < m_n_layers; ++i) {
+      for (long unsigned int i = 0; i < m_geo->n_layers(); ++i) {
         layers.push_back(i);
       }
-      ATH_MSG_INFO("Loading event library from " << m_hdf5_file);
+      FCS_MSG_INFO("Loading event library from " << m_hdf5_file);
       ((TFCSBinnedShower*)this)->load_event_library(m_hdf5_file, layers);
-      ATH_MSG_INFO("Size after loading" << m_eventlibrary.size());
+      FCS_MSG_INFO("Size after loading" << m_eventlibrary.size());
     } else {
-      ATH_MSG_INFO(
+      FCS_MSG_INFO(
           "Using existing event library of size: " << m_eventlibrary.size());
     }
 
   } else {
     // Remove the event library again, if it was loaded from file
     if (!m_hdf5_file.empty()) {
-      ATH_MSG_DEBUG("Clear event library before saving");
+      FCS_MSG_DEBUG("Clear event library before saving");
       m_eventlibrary.resize(0);
     }
 
