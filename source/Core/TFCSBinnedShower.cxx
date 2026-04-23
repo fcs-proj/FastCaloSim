@@ -191,7 +191,19 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
 
   long unsigned int event_index;
   if (simulstate.hasAuxInfo("EventNr"_FCShash) && m_use_event_matching) {
-    event_index = simulstate.getAuxInfo<int>("EventNr"_FCShash);
+    int requested = simulstate.getAuxInfo<int>("EventNr"_FCShash);
+    if (requested < 0
+        || static_cast<long unsigned int>(requested) >= m_eventlibrary.size())
+    {
+      FCS_MSG_WARNING("EventNr "
+                      << requested
+                      << " is outside the loaded event library of size "
+                      << m_eventlibrary.size() << " — falling back to random");
+      event_index = std::floor(CLHEP::RandFlat::shoot(
+          simulstate.randomEngine(), 0, m_eventlibrary.size()));
+    } else {
+      event_index = static_cast<long unsigned int>(requested);
+    }
   } else if (m_use_event_cherry_picking || m_use_eta_matching) {
     // dphi/deta
     event_index = find_best_match(eta_center,
