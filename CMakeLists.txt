@@ -1,6 +1,6 @@
 # Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.19)
 
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
@@ -45,6 +45,12 @@ find_package(Eigen3 REQUIRED)
 find_package(TBB REQUIRED)
 # libspatialindex for geometry
 find_package(libspatialindex REQUIRED)
+# MPI is not used directly, but the key4hep HDF5 build was compiled with MPI
+# support, so MPI must be found first to satisfy HDF5's CMake dependencies
+enable_language(C)
+find_package(MPI COMPONENTS C CXX)
+# HDF5 for binned shower
+find_package(HDF5 REQUIRED COMPONENTS CXX)
 
 # Boost for geometry (headers only)
 find_package(Boost REQUIRED)
@@ -71,6 +77,7 @@ target_link_libraries(
     FastCaloSim_FastCaloSim
     PUBLIC
         ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
+        HDF5::HDF5
         fmt::fmt-header-only
         CLHEP::CLHEP
         ${Geant4_LIBRARIES}
