@@ -100,25 +100,32 @@ TFCSMLCalorimeterSimulator::event_t TFCSMLCalorimeterSimulator::getEvent(
         "predictVoxels returned empty outputs; returning empty event");
     return event_t {};
   }
-  // check if the output contains a nan
-  // If yes: retry up to 5 times
-  float first_output = outputs.begin()->second;
-  bool contains_nan = std::isnan(first_output);
-  if (contains_nan) {
-    int retry = 0;
-    while (contains_nan) {
-      if (retry > 5) {
-        FCS_MSG_WARNING("Network output contains NaN. Giving up.");
-        break;
-      }
 
-      FCS_MSG_WARNING("Network output contains NaN. Retrying.");
-      outputs = predictVoxels(simulstate, eta, energy);
-      first_output = outputs.begin()->second;
-      contains_nan = std::isnan(first_output);
-
-      retry++;
+  // Check if any output contains NaN; retry up to 5 times if so
+  auto has_nan = [](const VNetworkBase::NetworkOutputs& out)
+  {
+    for (const auto& kv : out) {
+      if (std::isnan(kv.second))
+        return true;
     }
+    return false;
+  };
+
+  int retry = 0;
+  while (has_nan(outputs)) {
+    if (retry >= 5) {
+      FCS_MSG_WARNING("Network output still contains NaN after "
+                      << retry << " retries. Giving up.");
+      break;
+    }
+    FCS_MSG_WARNING("Network output contains NaN. Retrying (attempt "
+                    << retry + 1 << ").");
+    outputs = predictVoxels(simulstate, eta, energy);
+    if (outputs.empty()) {
+      FCS_MSG_ERROR("predictVoxels returned empty outputs on retry; giving up");
+      return event_t {};
+    }
+    retry++;
   }
 
   // Fill the event structure with the voxel energies
