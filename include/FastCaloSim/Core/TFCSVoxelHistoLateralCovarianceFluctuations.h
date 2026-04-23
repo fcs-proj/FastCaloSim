@@ -3,6 +3,8 @@
 #ifndef TFCSVoxelHistoLateralCovarianceFluctuations_h
 #define TFCSVoxelHistoLateralCovarianceFluctuations_h
 
+#include <string>
+
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "TH2.h"
 #include "TMatrixD.h"

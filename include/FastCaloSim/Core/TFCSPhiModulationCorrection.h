@@ -7,7 +7,7 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
 // External includes
-#include <fstream>
+#include <string>
 #include <tuple>
 #include <vector>
 
