@@ -44,10 +44,23 @@ public:
   void setInputShapes(std::vector<long unsigned int> layer_boundaries,
                       std::vector<long unsigned int> used_layers)
   {
-    m_layer_boundaries = layer_boundaries;
-    m_used_layers = used_layers;
-    m_nVoxels = layer_boundaries.back();
-    m_nLayers = used_layers.size();
+    if (layer_boundaries.empty() || used_layers.empty()) {
+      FCS_MSG_ERROR(
+          "setInputShapes requires non-empty layer_boundaries "
+          "and used_layers");
+      return;
+    }
+    if (layer_boundaries.size() != used_layers.size() + 1) {
+      FCS_MSG_ERROR("setInputShapes: layer_boundaries size ("
+                    << layer_boundaries.size()
+                    << ") must equal used_layers size (" << used_layers.size()
+                    << ") + 1");
+      return;
+    }
+    m_layer_boundaries = std::move(layer_boundaries);
+    m_used_layers = std::move(used_layers);
+    m_nVoxels = m_layer_boundaries.back();
+    m_nLayers = m_used_layers.size();
   };
 
 private:
