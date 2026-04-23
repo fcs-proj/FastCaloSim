@@ -8,6 +8,7 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
 // External includes
+#include <cassert>
 #include <tuple>
 
 #include <RtypesCore.h>
@@ -35,6 +36,22 @@ public:
   void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
 
   void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
+
+  void set_default_hit_energy(float energy)
+  {
+    assert(energy > 0.F && "default hit energy must be > 0");
+    m_default_hit_energy = energy;
+  }
+
+  void set_max_hits_per_voxel(int max_hits)
+  {
+    assert(max_hits > 0 && "max hits per voxel must be > 0");
+    m_max_hits_per_voxel = max_hits;
+  }
+
+  float get_default_hit_energy() const { return m_default_hit_energy; }
+
+  int get_max_hits_per_voxel() const { return m_max_hits_per_voxel; }
 
   // Fill layer energies
   virtual FCSReturnCode simulate(
@@ -97,6 +114,11 @@ protected:
 
   // Delete all pointers that were created in get_event()
   virtual void delete_event(TFCSSimulationState& simulstate) const = 0;
+
+  // What should be the average energy per hit in the library
+  float m_default_hit_energy = 4.;
+  // What is the maximum number of hits per voxel (for runtime reasons)
+  int m_max_hits_per_voxel = 100;
 
 private:
   ClassDefOverride(TFCSBinnedShowerBase, 1)  // TFCSBinnedShowerBase

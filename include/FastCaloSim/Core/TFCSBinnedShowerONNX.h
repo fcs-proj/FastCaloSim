@@ -43,11 +43,6 @@ public:
   void enable_upscaling() { m_use_upscaling = true; };
   void disable_upscaling() { m_use_upscaling = false; };
 
-  void set_default_hit_energy(float energy) { m_default_hit_energy = energy; }
-  float get_default_hit_energy() const { return m_default_hit_energy; }
-  void set_max_hits_per_voxel(int max_hits) { m_max_hits_per_voxel = max_hits; }
-  int get_max_hits_per_voxel() const { return m_max_hits_per_voxel; }
-
   // Loads the ONNX model for the calorimeter simulation.
   void load_simulator(const std::string& filename)
   {
@@ -133,11 +128,6 @@ protected:
   virtual void delete_event(TFCSSimulationState& simulstate) const override;
 
 private:
-  // What should be the average energy per hit in the library
-  float m_default_hit_energy = 4.;
-  // What is the mamimum number of hits per voxel (for runtime reasons)
-  int m_max_hits_per_voxel = 100;
-
   // Store the used event library
   event_bins_t m_coordinates;
 
