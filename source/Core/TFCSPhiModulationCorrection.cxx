@@ -111,8 +111,17 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
 
   FCS_MSG_DEBUG("Loading phi modulation correction from " << filename);
 
-  TFile* muon_corr = TFile::Open(filename.c_str());
-  TH2F* muon_corr_hist = (TH2F*)muon_corr->Get("hWt_Layer0");
+  std::unique_ptr<TFile> muon_corr(TFile::Open(filename.c_str()));
+  if (!muon_corr || muon_corr->IsZombie()) {
+    FCS_MSG_ERROR("Failed to open phi modulation file: " << filename);
+    return;
+  }
+
+  TH2F* muon_corr_hist = dynamic_cast<TH2F*>(muon_corr->Get("hWt_Layer0"));
+  if (!muon_corr_hist) {
+    FCS_MSG_ERROR("Failed to load hWt_Layer0 histogram from " << filename);
+    return;
+  }
 
   int n_bins = muon_corr_hist->GetNbinsX();
 
@@ -128,13 +137,11 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
   }
 
   TParameter<double>* param =
-      (TParameter<double>*)muon_corr->Get("energy_shift");
+      dynamic_cast<TParameter<double>*>(muon_corr->Get("energy_shift"));
   if (param) {
     energy_shifts.at(eta_index) = param->GetVal();
-    std::cout << "Energy shift: " << energy_shifts.at(eta_index) << std::endl;
+    FCS_MSG_DEBUG("Energy shift: " << energy_shifts.at(eta_index));
   }
-
-  muon_corr->Close();
 
   return;
 }
