@@ -64,7 +64,7 @@ public:
   {
     if (layer <= 3) {
       return 2 * TMath::Pi() / 1024;
-    } else if (eta < 2.5) {
+    } else if (std::abs(eta) < 2.5) {
       return 2 * TMath::Pi() / 768;
     } else {
       return 2 * TMath::Pi() / 256;
