@@ -516,8 +516,6 @@ void TFCSBinnedShowerONNX::delete_event(TFCSSimulationState& simulstate) const
   if (event_ptr) {
     delete static_cast<TFCSMLCalorimeterSimulator::event_t*>(event_ptr);
     simulstate.setAuxInfo<void*>("BSEventData"_FCShash, nullptr);
-  } else {
-    FCS_MSG_ERROR("No event data found to delete.");
   }
 
   void* n_hits_ptr = simulstate.getAuxInfo<void*>("BSNHits"_FCShash);
@@ -525,21 +523,14 @@ void TFCSBinnedShowerONNX::delete_event(TFCSSimulationState& simulstate) const
     delete static_cast<std::vector<std::vector<long unsigned int>>*>(
         n_hits_ptr);
     simulstate.setAuxInfo<void*>("BSNHits"_FCShash, nullptr);
-  } else {
-    FCS_MSG_ERROR("No event hits data found to delete.");
   }
 
   void* elayer_ptr = simulstate.getAuxInfo<void*>("BSELayer"_FCShash);
   if (elayer_ptr) {
     delete static_cast<std::vector<float>*>(elayer_ptr);
     simulstate.setAuxInfo<void*>("BSELayer"_FCShash, nullptr);
-  } else {
-    FCS_MSG_ERROR("No event layer energy data found to delete.");
   }
-
-  return;
 }
-
 void TFCSBinnedShowerONNX::load_sub_bin_distribution(
     const std::string& filename)
 {

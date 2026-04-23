@@ -237,6 +237,12 @@ void TFCSBinnedShower::compute_n_hits_and_elayer(
 {
   event_t* event = static_cast<event_t*>(
       simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  if (!event) {
+    FCS_MSG_ERROR(
+        "compute_n_hits_and_elayer called without BSEventData; "
+        "get_event must run first");
+    return;
+  }
   float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
 
   // Loop over all layers
@@ -540,8 +546,6 @@ void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
   if (event_ptr) {
     delete static_cast<event_t*>(event_ptr);
     simulstate.setAuxInfo<void*>("BSEventData"_FCShash, nullptr);
-  } else {
-    FCS_MSG_ERROR("No event data found to delete.");
   }
 
   void* n_hits_ptr = simulstate.getAuxInfo<void*>("BSNHits"_FCShash);
@@ -549,19 +553,13 @@ void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
     delete static_cast<std::vector<std::vector<long unsigned int>>*>(
         n_hits_ptr);
     simulstate.setAuxInfo<void*>("BSNHits"_FCShash, nullptr);
-  } else {
-    FCS_MSG_ERROR("No event hits data found to delete.");
   }
 
   void* elayer_ptr = simulstate.getAuxInfo<void*>("BSELayer"_FCShash);
   if (elayer_ptr) {
     delete static_cast<std::vector<float>*>(elayer_ptr);
     simulstate.setAuxInfo<void*>("BSELayer"_FCShash, nullptr);
-  } else {
-    FCS_MSG_ERROR("No event layer energy data found to delete.");
   }
-
-  return;
 }
 
 void TFCSBinnedShower::load_event_library(

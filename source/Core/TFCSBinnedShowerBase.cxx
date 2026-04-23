@@ -37,6 +37,9 @@ FCSReturnCode TFCSBinnedShowerBase::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const
 {
+  // Clean up any event data from a previous simulation call
+  delete_event(simulstate);
+
   // select a random event from the library
   float eta_center, phi_center;
   // NOTE: This is ATLAS specific
