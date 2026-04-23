@@ -116,7 +116,7 @@ public:
       const TFCSExtrapolationState* extrapol) override;
 
 protected:
-  CaloGeo* m_geo;  //! do not persistify
+  CaloGeo* m_geo = nullptr;  //! do not persistify
 
 private:
   // Needed to reapply the phi modulation

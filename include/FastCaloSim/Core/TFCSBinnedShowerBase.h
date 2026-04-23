@@ -86,7 +86,7 @@ public:
   }
 
 protected:
-  CaloGeo* m_geo;  //! do not persistify
+  CaloGeo* m_geo = nullptr;  //! do not persistify
 
   // Called at the beginning of the simulation to store and or generate the
   // needed shower data for the current event

@@ -40,7 +40,7 @@ public:
       const TFCSExtrapolationState* extrapol) override;
 
 protected:
-  CaloGeo* m_geo;  //! do not persistify
+  CaloGeo* m_geo = nullptr;  //! do not persistify
 
   typedef std::vector<std::vector<float>> weight_t;
 
