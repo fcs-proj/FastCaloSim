@@ -205,6 +205,12 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
   TFCSMLCalorimeterSimulator::event_t* event =
       static_cast<TFCSMLCalorimeterSimulator::event_t*>(
           simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  if (!event) {
+    FCS_MSG_ERROR(
+        "compute_n_hits_and_elayer called without BSEventData; "
+        "get_event must run first");
+    return;
+  }
   float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
 
   // Loop over all layers
@@ -462,6 +468,10 @@ TFCSBinnedShowerONNX::get_hit_position_and_energy(
   TFCSMLCalorimeterSimulator::event_t* event =
       static_cast<TFCSMLCalorimeterSimulator::event_t*>(
           simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  if (!event) {
+    FCS_MSG_ERROR("No BSEventData available in get_hit_position_and_energy");
+    return std::make_tuple(0.0f, 0.0f, 0.0f);
+  }
 
   float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
 

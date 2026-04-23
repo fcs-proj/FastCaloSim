@@ -493,6 +493,10 @@ std::tuple<float, float, float> TFCSBinnedShower::get_hit_position_and_energy(
 {
   event_t* event = static_cast<event_t*>(
       simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  if (!event) {
+    FCS_MSG_ERROR("No BSEventData available in get_hit_position_and_energy");
+    return std::make_tuple(0.0f, 0.0f, 0.0f);
+  }
 
   float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
 
