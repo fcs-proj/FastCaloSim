@@ -145,7 +145,15 @@ TFCSMLCalorimeterSimulator::event_t TFCSMLCalorimeterSimulator::getEvent(
       layer = m_used_layers.at(layer_index);
     }
 
-    float voxel_energy = outputs[std::to_string(voxel_index)];
+    const std::string key = std::to_string(voxel_index);
+    auto it = outputs.find(key);
+    if (it == outputs.end()) {
+      FCS_MSG_ERROR("Voxel key '"
+                    << key << "' not found in network outputs. "
+                    << "Available keys e.g.: " << outputs.begin()->first);
+      return event_t {};
+    }
+    float voxel_energy = it->second;
 
     if (voxel_energy > 0) {
       if (event.event_data.size() <= layer) {
