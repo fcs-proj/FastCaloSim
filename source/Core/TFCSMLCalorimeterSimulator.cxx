@@ -80,6 +80,10 @@ VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels(
   }
 
   // Compute the network outputs
+  if (!m_onnx_model) {
+    FCS_MSG_ERROR("predictVoxels called before a simulator was loaded");
+    return {};
+  }
   VNetworkBase::NetworkOutputs outputs = m_onnx_model->compute(inputs);
 
   return outputs;
@@ -91,6 +95,11 @@ TFCSMLCalorimeterSimulator::event_t TFCSMLCalorimeterSimulator::getEvent(
   // Get the voxel energies
   VNetworkBase::NetworkOutputs outputs = predictVoxels(simulstate, eta, energy);
 
+  if (outputs.empty()) {
+    FCS_MSG_ERROR(
+        "predictVoxels returned empty outputs; returning empty event");
+    return event_t {};
+  }
   // check if the output contains a nan
   // If yes: retry up to 5 times
   float first_output = outputs.begin()->second;
@@ -194,6 +203,11 @@ VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels() const
   }
 
   FCS_MSG_DEBUG(VNetworkBase::representNetworkInputs(inputs, 1000));
+
+  if (!m_onnx_model) {
+    FCS_MSG_ERROR("predictVoxels called before a simulator was loaded");
+    return {};
+  }
 
   VNetworkBase::NetworkOutputs outputs = m_onnx_model->compute(inputs);
 

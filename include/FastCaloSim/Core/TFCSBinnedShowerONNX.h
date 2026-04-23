@@ -44,11 +44,19 @@ public:
   void disable_upscaling() { m_use_upscaling = false; };
 
   // Loads the ONNX model for the calorimeter simulation.
-  void load_simulator(const std::string& filename)
+  bool load_simulator(const std::string& filename)
   {
-    // TODO: Do I have to delete it again?
+    if (m_ai_simulator) {
+      delete m_ai_simulator;
+      m_ai_simulator = nullptr;
+    }
     m_ai_simulator = new TFCSMLCalorimeterSimulator();
-    m_ai_simulator->loadSimulator(filename);
+    if (!m_ai_simulator->loadSimulator(filename)) {
+      delete m_ai_simulator;
+      m_ai_simulator = nullptr;
+      return false;
+    }
+    return true;
   }
 
   // Loads the voxel boundaries and (potentially) the average showers for the
