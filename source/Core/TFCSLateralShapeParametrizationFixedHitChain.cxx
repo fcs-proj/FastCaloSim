@@ -35,6 +35,11 @@ bool TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
   (void)truth;  // unused parameter
   (void)extrapol;  // unused parameter
 
+  if (!simulstate.hasAuxInfo("FCSHitChainNHits"_FCShash)) {
+    FCS_MSG_ERROR("FCSHitChainNHits aux-info not set - aborting simulation!");
+    return true;
+  }
+
   int nhit_signed = simulstate.getAuxInfo<int>("FCSHitChainNHits"_FCShash);
 
   if (nhit_signed < 0) {
