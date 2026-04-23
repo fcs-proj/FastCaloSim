@@ -216,6 +216,12 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     return FCSSuccess;
   }
 
+  if (static_cast<size_t>(Ebin) > m_parMeans.size()) {
+    FCS_MSG_ERROR("Ebin " << Ebin << " exceeds loaded PCA tables (size "
+                          << m_parMeans.size() << ")");
+    return FCSFatal;
+  }
+
   // TODO: the following code should be executed for all relevant calo layers,
   // possibly simulating correlated fluctuations between layers depending on the
   // PCA bin
