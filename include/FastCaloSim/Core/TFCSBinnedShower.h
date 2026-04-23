@@ -177,8 +177,7 @@ protected:
   // Used to precompute the number of hits for all layers in the event.
   virtual void compute_n_hits_and_elayer(TFCSSimulationState& simulstate) const;
 
-  // Returns the position and energy of the corresponding hit in the given
-  // event, layer and bin
+  // Returns the total deposited energy in the given layer for the current event
   virtual float get_layer_energy(TFCSSimulationState& simulstate,
                                  long unsigned int layer_index) const override;
 
