@@ -26,6 +26,7 @@ class FASTCALOSIM_EXPORT TFCSSimulationState
 {
 public:
   TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine = nullptr);
+  virtual ~TFCSSimulationState();
 
   CLHEP::HepRandomEngine* randomEngine() { return m_randomEngine; }
   void setRandomEngine(CLHEP::HepRandomEngine* engine)

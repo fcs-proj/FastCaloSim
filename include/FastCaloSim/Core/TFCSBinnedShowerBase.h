@@ -115,6 +115,15 @@ protected:
   // Delete all pointers that were created in get_event()
   virtual void delete_event(TFCSSimulationState& simulstate) const = 0;
 
+  // Called by TFCSSimulationState::DoAuxInfoCleanup() to free heap-allocated
+  // aux-info objects. Invoked automatically on simulstate destruction so that
+  // the BSEventData/BSNHits/BSELayer pointers are never leaked even when no
+  // subsequent simulate() call cleans them up first.
+  virtual void CleanAuxInfo(TFCSSimulationState& simulstate) const override
+  {
+    delete_event(simulstate);
+  }
+
   // What should be the average energy per hit in the library
   float m_default_hit_energy = 4.;
   // What is the maximum number of hits per voxel (for runtime reasons)

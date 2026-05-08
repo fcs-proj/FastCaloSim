@@ -21,10 +21,15 @@ TFCSSimulationState::TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine)
   clear();
 }
 
+TFCSSimulationState::~TFCSSimulationState()
+{
+  DoAuxInfoCleanup();
+}
+
 void TFCSSimulationState::clear()
 {
   set_SF(1);
-  m_Ebin = -1;
+
   m_Etot = 0;
   m_E.clear();
   m_Efrac.clear();

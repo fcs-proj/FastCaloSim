@@ -67,6 +67,12 @@ FCSReturnCode TFCSBinnedShowerBase::simulate(
   // Reset the total energy
   simulstate.set_E(0);
 
+  // Register this object as a cleanup handler so that DoAuxInfoCleanup()
+  // (called from ~TFCSSimulationState) will invoke CleanAuxInfo() ->
+  // delete_event() even if no subsequent simulate() call runs first.
+  // AddAuxInfoCleanup uses a set, so repeated calls are idempotent.
+  simulstate.AddAuxInfoCleanup(this);
+
   get_event(simulstate, eta_center, phi_center, Einit, reference_layer_index);
 
   for (long unsigned int layer_index = 0; layer_index < m_geo->n_layers();
