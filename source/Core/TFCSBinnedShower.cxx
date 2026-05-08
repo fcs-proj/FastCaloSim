@@ -809,7 +809,7 @@ void TFCSBinnedShower::load_sub_bin_distribution(const std::string& filename)
   m_use_upscaling = true;
   TFile* file = TFile::Open(filename.c_str(), "READ");
   if (!file || file->IsZombie()) {
-    std::cerr << "Failed to open file: " << filename << std::endl;
+    FCS_MSG_ERROR("Failed to open file: " << filename);
     return;
   }
 
@@ -861,13 +861,12 @@ void TFCSBinnedShower::load_sub_bin_distribution(const std::string& filename)
     data.push_back(std::move(layer_vec));
   }
 
-  // Example output
   for (size_t i = 0; i < energies.size(); ++i) {
-    std::cout << "Energy index " << i << ": " << energies[i] << " GeV\n";
+    FCS_MSG_DEBUG("Energy index " << i << ": " << energies[i] << " GeV");
     for (size_t j = 0; j < data[i].size(); ++j) {
       if (!data[i][j].empty()) {
-        std::cout << "  Layer " << j << " Shape: (" << data[i][j].size() << ", "
-                  << data[i][j][0].size() << ")\n";
+        FCS_MSG_DEBUG("  Layer " << j << " Shape: (" << data[i][j].size()
+                                 << ", " << data[i][j][0].size() << ")");
       }
     }
   }

@@ -171,7 +171,6 @@ void TFCSBinnedShowerONNX::load_bin_boundaries(const std::string& filename,
   }
 }
 
-// TODO: Could probably be removed in the end
 void TFCSBinnedShowerONNX::Streamer(TBuffer& R__b)
 {
   // Stream an object of class TFCSBinnedShowerONNX
@@ -343,7 +342,12 @@ std::tuple<float, float> TFCSBinnedShowerONNX::get_coordinates(
         simulstate, R_min, R_max, alpha_min, alpha_max, layer_index, bin_index);
   }
 
-  float R = CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
+  float R;
+  if (TMath::Abs(R_max - R_min) > std::numeric_limits<float>::epsilon()) {
+    R = CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
+  } else {
+    R = R_min;  // If the range is too small, just use the minimum value
+  }
   float alpha =
       CLHEP::RandFlat::shoot(simulstate.randomEngine(), alpha_min, alpha_max);
 
@@ -537,7 +541,7 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
   m_use_upscaling = true;
   TFile* file = TFile::Open(filename.c_str(), "READ");
   if (!file || file->IsZombie()) {
-    std::cerr << "Failed to open file: " << filename << std::endl;
+    FCS_MSG_ERROR("Failed to open file: " << filename);
     return;
   }
 
@@ -589,13 +593,12 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
     data.push_back(std::move(layer_vec));
   }
 
-  // Example output
   for (size_t i = 0; i < energies.size(); ++i) {
-    std::cout << "Energy index " << i << ": " << energies[i] << " GeV\n";
+    FCS_MSG_DEBUG("Energy index " << i << ": " << energies[i] << " GeV");
     for (size_t j = 0; j < data[i].size(); ++j) {
       if (!data[i][j].empty()) {
-        std::cout << "  Layer " << j << " Shape: (" << data[i][j].size() << ", "
-                  << data[i][j][0].size() << ")\n";
+        FCS_MSG_DEBUG("  Layer " << j << " Shape: (" << data[i][j].size()
+                                 << ", " << data[i][j][0].size() << ")");
       }
     }
   }

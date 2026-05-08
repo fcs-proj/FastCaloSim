@@ -51,7 +51,6 @@ FCSReturnCode TFCSBinnedShowerBase::simulate(
     // layer 6 is EME2
     reference_layer_index = 6;
   }
-  // TODO: What about the endcap?
   eta_center = extrapol->eta(reference_layer_index, Cell::SubPos::MID);
   phi_center = extrapol->phi(reference_layer_index, Cell::SubPos::MID);
 

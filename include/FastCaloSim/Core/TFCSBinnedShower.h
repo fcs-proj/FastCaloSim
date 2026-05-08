@@ -15,7 +15,6 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "TFCSBinnedShowerBase.h"
 
 class CaloGeo;
 

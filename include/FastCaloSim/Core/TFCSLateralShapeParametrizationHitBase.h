@@ -121,7 +121,7 @@ public:
     inline const auto& center_z() const { return m_center_z; }
     inline const auto& center_eta() const { return m_center_eta; }
     inline const auto& center_phi() const { return m_center_phi; }
-    inline const auto& idx() { return m_hit_index; };
+    inline const auto& idx() const { return m_hit_index; };
 
     inline void setCenter_r(float r) { m_center_r = r; }
     inline void setCenter_z(float z) { m_center_z = z; }
