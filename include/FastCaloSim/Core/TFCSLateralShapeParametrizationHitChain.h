@@ -1,9 +1,7 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSLateralShapeParametrizationHitChain_h
 #define TFCSLateralShapeParametrizationHitChain_h
-
-#include <vector>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -84,6 +82,13 @@ public:
 
 protected:
   void PropagateMSGLevel(FCS_MSG::Level level) const;
+
+  virtual bool check_all_hits_simulated(
+      TFCSLateralShapeParametrizationHitBase::Hit& hit,
+      TFCSSimulationState& simulstate,
+      const TFCSTruthState* truth,
+      const TFCSExtrapolationState* extrapol,
+      bool success) const;
 
   Chain_t m_chain;
 

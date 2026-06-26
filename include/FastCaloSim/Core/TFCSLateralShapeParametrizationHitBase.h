@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSLateralShapeParametrizationHitBase_h
 #define TFCSLateralShapeParametrizationHitBase_h
@@ -109,7 +109,7 @@ public:
     inline const auto& x() const { return m_eta_x; };
     inline const auto& y() const { return m_phi_y; };
     inline const auto& E() const { return m_E; };
-    inline const auto& z() const { return m_z; }
+    inline const auto& z() const { return m_z; };
     inline const auto r() const
     {
       if (m_useXYZ)
@@ -121,6 +121,8 @@ public:
     inline const auto& center_z() const { return m_center_z; }
     inline const auto& center_eta() const { return m_center_eta; }
     inline const auto& center_phi() const { return m_center_phi; }
+    inline const auto& idx() { return m_hit_index; };
+
     inline void setCenter_r(float r) { m_center_r = r; }
     inline void setCenter_z(float z) { m_center_z = z; }
     inline void setCenter_eta(float eta) { m_center_eta = eta; }
@@ -129,6 +131,10 @@ public:
     inline void set_phi_y(float phi_y) { m_phi_y = phi_y; }
     inline void set_z(float z) { m_z = z; }
     inline void set_E(float E) { m_E = E; }
+    inline void set_idx(long unsigned int hit_index)
+    {
+      m_hit_index = hit_index;
+    }
 
   private:
     float m_eta_x;  // eta for barrel and end-cap, x for FCal
@@ -141,6 +147,7 @@ public:
     float m_center_z;
     float m_center_eta;
     float m_center_phi;
+    long unsigned int m_hit_index;
   };
 
   /// simulated one hit position with some energy. As last step in

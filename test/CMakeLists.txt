@@ -1,6 +1,6 @@
 # Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.19)
 
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
