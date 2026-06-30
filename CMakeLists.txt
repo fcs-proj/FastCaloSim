@@ -65,6 +65,7 @@ endif()
 add_library(FastCaloSim_FastCaloSim SHARED "")
 
 # Add the source files
+add_subdirectory(source/Definitions)
 add_subdirectory(source/Core)
 add_subdirectory(source/Geometry)
 add_subdirectory(source/Transport)
