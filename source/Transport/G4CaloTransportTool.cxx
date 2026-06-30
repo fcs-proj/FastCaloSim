@@ -37,7 +37,13 @@ bool G4CaloTransportTool::initializeGeometry()
   // race that can produce duplicate world volumes and subtly different
   // navigation between threads. Building it once on the master thread also
   // keeps the Geant4 split-class per-thread data for the world correctly sized
-  // across all workers.
+  // across all workers. std::call_once guarantees once-only execution but not
+  // which thread runs it, so restrict the actual creation to the master thread;
+  // worker threads only report whether the shared world is ready.
+  if (!G4Threading::IsMasterThread()) {
+    return m_worldVolume != nullptr;
+  }
+
   std::call_once(m_worldVolumeOnceFlag,
                  [this]()
                  {
