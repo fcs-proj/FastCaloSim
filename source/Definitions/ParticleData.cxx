@@ -50,9 +50,9 @@ auto setProvider(std::shared_ptr<const Provider> provider) -> void
                               : std::make_shared<const DefaultProvider>();
 }
 
-auto getProvider() -> const Provider&
+auto getProvider() -> std::shared_ptr<const Provider>
 {
-  return *activeProvider();
+  return activeProvider();
 }
 
 }  // namespace ParticleData
