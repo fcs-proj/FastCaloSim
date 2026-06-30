@@ -318,14 +318,13 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
 // Method to load geometry
 void CaloGeo::load(
     const std::string& rtree_base_path,
-    size_t rtree_cache_size,  // per-layer r-tree cache size in bytes
-    size_t cell_store_cache_size)  // cell store cache size in bytes
+    size_t rtree_cache_size)  // per-layer r-tree cache size in bytes
 {
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
 
   // Load the cell store
-  m_cell_store.load(rtree_base_path + "/cellstore", cell_store_cache_size);
+  m_cell_store.load(rtree_base_path + "/cellstore");
 
   // Rebuild the layer cell ID map
   m_layer_cell_ids.clear();

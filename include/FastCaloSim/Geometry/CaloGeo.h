@@ -32,8 +32,7 @@ public:
 
   // Method to load geometry
   void load(const std::string& rtree_base_path,
-            size_t rtree_cache_size = 5 * 1024 * 1024,
-            size_t cell_store_cache_size = 10 * 1024 * 1024);
+            size_t rtree_cache_size = 5 * 1024 * 1024);
 
   // Retrieve the best matching cell for a given position
   // Alternative geo handlers need to override this method

@@ -53,10 +53,7 @@ public:
 
   /// @brief Load cell data and index from the specified base path
   /// @param base_path The base path for the data and index files
-  /// @param cache_size_bytes Unused: the OS page cache supersedes the former
-  ///        user-space LRU cache. Kept for API compatibility.
-  void load(const std::string& base_path,
-            [[maybe_unused]] size_t cache_size_bytes = 10 * 1024 * 1024)
+  void load(const std::string& base_path)
   {
     // Release any mappings from a previous load() so reloading does not leak
     unmap();
