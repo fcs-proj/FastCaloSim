@@ -21,8 +21,9 @@ RTreeQuery::TreeHandle& RTreeQuery::localTree() const
   TreeHandle& h = m_perThread.local();
   if (!h.tree) {
     try {
-      std::string filename = m_base_path;  // loadDiskStorageManager takes
-                                           // non-const ref
+      // Copy: loadDiskStorageManager's API takes a non-const std::string&,
+      // though it does not conceptually modify the path.
+      std::string filename = m_base_path;
       h.diskfile.reset(
           SpatialIndex::StorageManager::loadDiskStorageManager(filename));
       h.buffer.reset(

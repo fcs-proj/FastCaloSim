@@ -28,10 +28,24 @@ public:
 
   ~RTreeQuery() = default;
 
+  // Holds per-thread, non-copyable handles (unique_ptr inside an
+  // enumerable_thread_specific). Copying/moving is neither needed nor safe,
+  // so it is disabled explicitly to make the intent unambiguous.
+  RTreeQuery(const RTreeQuery&) = delete;
+  auto operator=(const RTreeQuery&) -> RTreeQuery& = delete;
+  RTreeQuery(RTreeQuery&&) = delete;
+  auto operator=(RTreeQuery&&) -> RTreeQuery& = delete;
+
   /**
    * @brief Load an R-tree from disk with caching
    * @param base_path Path to the R-tree index file
    * @param cache_size Size of the cache in bytes (default: 256KB)
+   *
+   * @note Eagerly initializes and validates the R-tree on the calling thread,
+   *       so a bad path throws here. Each additional worker thread initializes
+   *       its own handle lazily on first query_point(); if the underlying index
+   *       files become unreadable after load(), that failure surfaces on the
+   *       first access from such a thread rather than from load().
    */
   void load(const std::string& base_path, size_t cache_size = 262144);
 

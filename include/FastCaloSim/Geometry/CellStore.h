@@ -58,6 +58,9 @@ public:
   void load(const std::string& base_path,
             [[maybe_unused]] size_t cache_size_bytes = 10 * 1024 * 1024)
   {
+    // Release any mappings from a previous load() so reloading does not leak
+    unmap();
+
     std::string data_path = base_path + ".data";
     std::string index_path = base_path + ".index";
 
@@ -115,6 +118,10 @@ public:
     }
   }
 
+  /// @brief Return the cell with a given ID.
+  /// @note The returned reference aliases a per-thread scratch Cell that is
+  ///       overwritten by the next get()/get_at_index() call on the same
+  ///       thread. Copy the Cell if you need to hold more than one at a time.
   auto get(uint64_t id) const -> const Cell&
   {
     if (m_data == nullptr || m_index_data == nullptr) {
@@ -123,6 +130,10 @@ public:
     return getCellAtOffset(findOffsetById(id));
   }
 
+  /// @brief Return the cell at a given dense index.
+  /// @note The returned reference aliases a per-thread scratch Cell that is
+  ///       overwritten by the next get()/get_at_index() call on the same
+  ///       thread. Copy the Cell if you need to hold more than one at a time.
   auto get_at_index(size_t idx) const -> const Cell&
   {
     if (!m_data) {
@@ -181,14 +192,22 @@ private:
   }
 
   /// @brief Release any memory-mapped regions
+  ///
+  /// Safe to call repeatedly: pointers and sizes are reset so that a
+  /// subsequent call (or a destructor after a move) is a no-op.
   void unmap() noexcept
   {
     if (m_data != nullptr) {
       munmap(m_data, m_file_size);
+      m_data = nullptr;
     }
     if (m_index_data != nullptr) {
       munmap(m_index_data, m_index_size);
+      m_index_data = nullptr;
     }
+    m_file_size = 0;
+    m_index_size = 0;
+    m_n_cells = 0;
   }
 
   /// @brief Get a cell at the specified offset in the data file
