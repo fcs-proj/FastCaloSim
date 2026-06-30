@@ -27,16 +27,17 @@ G4CaloTransportTool::~G4CaloTransportTool()
   }
 }
 
-void G4CaloTransportTool::initializePropagator()
+bool G4CaloTransportTool::initializeGeometry()
 {
-  G4cout << "Initializing G4PropagatorInField for thread "
-         << G4Threading::G4GetThreadId() << G4endl;
-
   // The world volume is shared by all threads' navigators and must be created
-  // exactly once. getWorldVolume() registers a G4PVPlacement into the global
-  // Geant4 geometry stores in the simplified-geometry case, so creating it
-  // concurrently from multiple worker threads is a data race that can produce
-  // duplicate world volumes and subtly different navigation between threads.
+  // exactly once, on the master thread. getWorldVolume() registers a
+  // G4PVPlacement into the global Geant4 geometry stores in the
+  // simplified-geometry case; doing so concurrently from multiple worker
+  // threads (as the previous per-worker initializePropagator() did) is a data
+  // race that can produce duplicate world volumes and subtly different
+  // navigation between threads. Building it once on the master thread also
+  // keeps the Geant4 split-class per-thread data for the world correctly sized
+  // across all workers.
   std::call_once(m_worldVolumeOnceFlag,
                  [this]()
                  {
@@ -44,12 +45,12 @@ void G4CaloTransportTool::initializePropagator()
                    m_worldVolume = getWorldVolume();
 
                    if (!m_worldVolume) {
-                     G4Exception("G4CaloTransportTool",
+                     G4Exception("G4CaloTransportTool::initializeGeometry",
                                  "FailedToGetWorldVolume",
-                                 FatalException,
+                                 JustWarning,
                                  "G4CaloTransportTool: Failed to get world "
                                  "volume.");
-                     abort();
+                     return;
                    }
                    G4cout << "Using world volume: " << m_worldVolume->GetName()
                           << G4endl;
@@ -60,17 +61,36 @@ void G4CaloTransportTool::initializePropagator()
                           << m_maxSteps << G4endl;
                  });
 
-  // Check if we already have propagator set up for the current thread
+  return m_worldVolume != nullptr;
+}
+
+bool G4CaloTransportTool::initializePropagator()
+{
+  // The shared world volume must have been created on the master thread by
+  // initializeGeometry() before any worker builds its thread-local propagator.
+  if (!m_worldVolume) {
+    G4Exception("G4CaloTransportTool::initializePropagator",
+                "WorldVolumeNotInitialized",
+                JustWarning,
+                "G4CaloTransportTool: world volume is not initialized. "
+                "initializeGeometry() must be called on the master thread "
+                "before initializePropagator().");
+    return false;
+  }
+
+  // Check if we already have a propagator set up for the current thread. This
+  // method is idempotent so it can also be used as a lazy guard before
+  // transport(); it only logs and builds a propagator the first time it runs on
+  // a given thread.
   auto* propagator = m_propagatorHolder.get();
-  // If not, we create one
   if (!propagator) {
+    G4cout << "Initializing G4PropagatorInField for thread "
+           << G4Threading::G4GetThreadId() << G4endl;
     propagator = makePropagator();
     m_propagatorHolder.set(propagator);
-  } else {
-    G4cerr << "G4CaloTransportTool::initializePropagator() Propagator already "
-              "initialized!"
-           << G4endl;
   }
+
+  return true;
 }
 
 auto G4CaloTransportTool::getWorldVolume() -> G4VPhysicalVolume*
@@ -81,6 +101,20 @@ auto G4CaloTransportTool::getWorldVolume() -> G4VPhysicalVolume*
     // Get the logical world volume of the simplified geometry by name
     G4LogicalVolume* logVol = G4LogicalVolumeStore::GetInstance()->GetVolume(
         m_simplifiedWorldLogName);
+
+    if (!logVol) {
+      G4ExceptionDescription description;
+      description << "G4CaloTransportTool: simplified world logical volume '"
+                  << m_simplifiedWorldLogName
+                  << "' was not found in the G4LogicalVolumeStore. Ensure the "
+                     "simplified transport geometry is loaded before "
+                     "initializeGeometry() runs.";
+      G4Exception("G4CaloTransportTool::getWorldVolume",
+                  "MissingSimplifiedWorldLog",
+                  JustWarning,
+                  description);
+      return nullptr;
+    }
 
     // Create the physical volume of the simplified world
     return new G4PVPlacement(
@@ -158,11 +192,25 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack)
 std::vector<G4FieldTrack> G4CaloTransportTool::transport(
     const G4Track& G4InputTrack)
 {
-  // Get the navigator for the current thread
-  auto* navigator = m_propagatorHolder.get()->GetNavigatorForPropagating();
-
   // Create a vector to store the output steps
   std::vector<G4FieldTrack> outputStepVector;
+
+  // The thread-local propagator must have been built by initializePropagator()
+  // before transport() is called on this thread. Fail loudly instead of
+  // dereferencing a null propagator.
+  auto* propagator = m_propagatorHolder.get();
+  if (!propagator) {
+    G4Exception("G4CaloTransportTool::transport",
+                "PropagatorNotInitialized",
+                JustWarning,
+                "G4CaloTransportTool: no propagator for this thread. "
+                "initializeGeometry() (master) and initializePropagator() "
+                "(per thread) must be called before transport().");
+    return outputStepVector;
+  }
+
+  // Get the navigator for the current thread
+  auto* navigator = propagator->GetNavigatorForPropagating();
   // Initialize the tmpFieldTrack with the input track
   G4FieldTrack tmpFieldTrack('0');
   G4FieldTrackUpdator::Update(&tmpFieldTrack, &G4InputTrack);
