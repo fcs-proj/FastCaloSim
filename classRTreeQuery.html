@@ -77,11 +77,27 @@
               <span class="m-doc-wrap-bumper"><a href="#ac4876e6237ec9923fbe1aa2defb5b6c7" class="m-doc-self">~RTreeQuery</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
+            <dt id="a8ec5e475a72791631a18f0241d30565a">
+              <span class="m-doc-wrap-bumper"><a href="#a8ec5e475a72791631a18f0241d30565a" class="m-doc-self">RTreeQuery</a>(</span><span class="m-doc-wrap">const <a href="classRTreeQuery.html" class="m-doc">RTreeQuery</a>&amp;) <span class="m-label m-flat m-danger">deleted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae3fb1aa7dece148ed9c0f629c3fbcf4d">
+              <span class="m-doc-wrap-bumper"><a href="#ae3fb1aa7dece148ed9c0f629c3fbcf4d" class="m-doc-self">RTreeQuery</a>(</span><span class="m-doc-wrap"><a href="classRTreeQuery.html" class="m-doc">RTreeQuery</a>&amp;&amp;) <span class="m-label m-flat m-danger">deleted</span></span>
+            </dt>
+            <dd><span></span></dd>
           </dl>
         </section>
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="a2a8b9e0b3d0dac499ab17b64951a40d6">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2a8b9e0b3d0dac499ab17b64951a40d6" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classRTreeQuery.html" class="m-doc">RTreeQuery</a>&amp;) -&gt; RTreeQuery &amp; <span class="m-label m-flat m-danger">deleted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa89254df436cacfb9182707949cfee70">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa89254df436cacfb9182707949cfee70" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classRTreeQuery.html" class="m-doc">RTreeQuery</a>&amp;&amp;) -&gt; RTreeQuery &amp; <span class="m-label m-flat m-danger">deleted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt>
               <span class="m-doc-wrap-bumper">void <a href="#a823a5048594565f5c4d465af09f081d8" class="m-doc">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path,
               size_t cache_size = 262144)</span>
@@ -133,6 +149,7 @@
                 </tr>
               </tbody>
             </table>
+<aside class="m-note m-info"><h4>Note</h4><p>Eagerly initializes and validates the R-tree on the calling thread, so a bad path throws here. Each additional worker thread initializes its own handle lazily on first <a href="classRTreeQuery.html#a2be1c21def821fad33b54c3ebaa0230e" class="m-doc">query_<wbr />point()</a>; if the underlying index files become unreadable after <a href="classRTreeQuery.html#a823a5048594565f5c4d465af09f081d8" class="m-doc">load()</a>, that failure surfaces on the first access from such a thread rather than from <a href="classRTreeQuery.html#a823a5048594565f5c4d465af09f081d8" class="m-doc">load()</a>.</p></aside>
           </div></section>
           <section class="m-doc-details" id="a2be1c21def821fad33b54c3ebaa0230e"><div>
             <h3>
