@@ -32,23 +32,33 @@ void G4CaloTransportTool::initializePropagator()
   G4cout << "Initializing G4PropagatorInField for thread "
          << G4Threading::G4GetThreadId() << G4endl;
 
-  if (!m_worldVolume) {
-    // If not set, get either the simplified or full world volume
-    m_worldVolume = getWorldVolume();
+  // The world volume is shared by all threads' navigators and must be created
+  // exactly once. getWorldVolume() registers a G4PVPlacement into the global
+  // Geant4 geometry stores in the simplified-geometry case, so creating it
+  // concurrently from multiple worker threads is a data race that can produce
+  // duplicate world volumes and subtly different navigation between threads.
+  std::call_once(m_worldVolumeOnceFlag,
+                 [this]()
+                 {
+                   // Get either the simplified or full world volume
+                   m_worldVolume = getWorldVolume();
 
-    if (!m_worldVolume) {
-      G4Exception("G4CaloTransportTool",
-                  "FailedToGetWorldVolume",
-                  FatalException,
-                  "G4CaloTransportTool: Failed to get world volume.");
-      abort();
-    }
-    G4cout << "Using world volume: " << m_worldVolume->GetName() << G4endl;
-    G4cout << "Transport will be stopped at volume: " << m_transportLimitVolume
-           << G4endl;
-    G4cout << "Maximum allowed number of steps in particle transport: "
-           << m_maxSteps << G4endl;
-  }
+                   if (!m_worldVolume) {
+                     G4Exception("G4CaloTransportTool",
+                                 "FailedToGetWorldVolume",
+                                 FatalException,
+                                 "G4CaloTransportTool: Failed to get world "
+                                 "volume.");
+                     abort();
+                   }
+                   G4cout << "Using world volume: " << m_worldVolume->GetName()
+                          << G4endl;
+                   G4cout << "Transport will be stopped at volume: "
+                          << m_transportLimitVolume << G4endl;
+                   G4cout << "Maximum allowed number of steps in particle "
+                             "transport: "
+                          << m_maxSteps << G4endl;
+                 });
 
   // Check if we already have propagator set up for the current thread
   auto* propagator = m_propagatorHolder.get();

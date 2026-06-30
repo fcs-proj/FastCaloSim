@@ -3,6 +3,8 @@
 #ifndef G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H
 #define G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H
 
+#include <mutex>
+
 #include <FastCaloSim/FastCaloSim_export.h>
 
 #include "FastCaloSim/Transport/ThreadLocalHolder.h"
@@ -64,8 +66,14 @@ private:
   void doStep(G4FieldTrack& fieldTrack);
 
   /// Pointer to the physical volume of the world (either simplified or full
-  /// geometry)
+  /// geometry). Shared across all threads; created exactly once via
+  /// m_worldVolumeOnceFlag.
   G4VPhysicalVolume* m_worldVolume {};
+
+  /// Guards one-time creation of the shared world volume. Required because
+  /// initializePropagator() is called concurrently by each worker thread in
+  /// AthenaMT and getWorldVolume() mutates global Geant4 geometry stores.
+  std::once_flag m_worldVolumeOnceFlag;
 
   /// Whether to use simplified geometry for particle transport
   bool m_useSimplifiedGeo = true;
