@@ -82,8 +82,12 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="ad11890e070a357ad6c4292d94e1a656f">
-              <span class="m-doc-wrap-bumper">void <a href="#ad11890e070a357ad6c4292d94e1a656f" class="m-doc-self">initializePropagator</a>(</span><span class="m-doc-wrap">)</span>
+            <dt id="a29bf31fc8609af00a5a933f04cb1c7f7">
+              <span class="m-doc-wrap-bumper">auto <a href="#a29bf31fc8609af00a5a933f04cb1c7f7" class="m-doc-self">initializeGeometry</a>(</span><span class="m-doc-wrap">) -&gt; bool</span>
+            </dt>
+            <dd>Create the shared world volume. Must be called on the master thread, exactly once, after the (simplified) transport geometry has been loaded into the global Geant4 geometry stores. Building the world here (rather than lazily on a worker thread) keeps the Geant4 split-class per-thread data for the world volume correctly sized across all workers. Idempotent: guarded by m_worldVolumeOnceFlag. Returns true on success (i.e. a valid world volume is available).</dd>
+            <dt id="a2895ab40021f52cbe12fbc0a67dae42c">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2895ab40021f52cbe12fbc0a67dae42c" class="m-doc-self">initializePropagator</a>(</span><span class="m-doc-wrap">) -&gt; bool</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a3d563822cba625c82d3ff809fa59ddf0">
