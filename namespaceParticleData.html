@@ -50,7 +50,6 @@
       <div class="m-col-l-10 m-push-l-1">
         <h1>
           ParticleData <span class="m-thin">namespace</span>
-          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="ParticleData_8h.html">&lt;FastCaloSim/Definitions/ParticleData.h&gt;</a></div>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -59,19 +58,61 @@
             <li>
               Reference
               <ul>
+                <li><a href="#nested-classes">Classes</a></li>
                 <li><a href="#func-members">Functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
+        <section id="nested-classes">
+          <h2><a href="#nested-classes">Classes</a></h2>
+          <dl class="m-doc">
+            <dt>
+              class <a href="classParticleData_1_1Provider.html" class="m-doc">Provider</a>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
         <section id="func-members">
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
-            <dt id="a6f257c8127a27a51368ea3a1ef6c0558">
-              <span class="m-doc-wrap-bumper">auto <a href="#a6f257c8127a27a51368ea3a1ef6c0558" class="m-doc-self">charge</a>(</span><span class="m-doc-wrap">const int pdgID) -&gt; double <span class="m-label m-flat m-primary">constexpr</span></span>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#ac900c4a52f81f94d4bf14cf5c121a26e" class="m-doc">setProvider</a>(</span><span class="m-doc-wrap">std::shared_ptr&lt;const <a href="classParticleData_1_1Provider.html" class="m-doc">Provider</a>&gt; provider) -&gt; void -&gt; FASTCALOSIM_EXPORT auto</span>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a92051328db246c7f9b0d345884679e7f" class="m-doc">getProvider</a>(</span><span class="m-doc-wrap">) -&gt; std::shared_ptr&lt; const Provider &gt; -&gt; FASTCALOSIM_EXPORT auto</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#ad040fcfcf3419f636a74a1cb461fdaf8" class="m-doc">charge</a>(</span><span class="m-doc-wrap">int pdgID) -&gt; double</span>
+            </dt>
+            <dd>Convenience accessor: electric charge of the given PDG id, in units of e.</dd>
           </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="ac900c4a52f81f94d4bf14cf5c121a26e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">FASTCALOSIM_EXPORT auto ParticleData::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac900c4a52f81f94d4bf14cf5c121a26e" class="m-doc-self">setProvider</a>(</span><span class="m-doc-wrap">std::shared_ptr&lt;const <a href="classParticleData_1_1Provider.html" class="m-doc">Provider</a>&gt; provider) -&gt; void</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="ParticleData_8h.html">&lt;FastCaloSim/Definitions/ParticleData.h&gt;</a></div>
+            </h3>
+<p>Install the provider used by all subsequent particle data queries.</p><p>Intended to be called once during experiment initialization, before any simulation runs. Passing nullptr restores the built-in default provider. Not safe to call concurrently with simulation.</p>
+          </div></section>
+          <section class="m-doc-details" id="a92051328db246c7f9b0d345884679e7f"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">FASTCALOSIM_EXPORT auto ParticleData::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a92051328db246c7f9b0d345884679e7f" class="m-doc-self">getProvider</a>(</span><span class="m-doc-wrap">) -&gt; std::shared_ptr&lt; const Provider &gt;</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="ParticleData_8h.html">&lt;FastCaloSim/Definitions/ParticleData.h&gt;</a></div>
+            </h3>
+<p>The currently installed provider, or the built-in default if none was set. Returned by shared_ptr so the provider stays alive for the caller even if setProvider replaces it concurrently.</p>
+          </div></section>
+          <section class="m-doc-details" id="ad040fcfcf3419f636a74a1cb461fdaf8"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto ParticleData::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ad040fcfcf3419f636a74a1cb461fdaf8" class="m-doc-self">charge</a>(</span><span class="m-doc-wrap">int pdgID) -&gt; double</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="ParticleData_8h.html">&lt;FastCaloSim/Definitions/ParticleData.h&gt;</a></div>
+            </h3>
+            <p>Convenience accessor: electric charge of the given PDG id, in units of e.</p>
+          </div></section>
         </section>
       </div>
     </div>
