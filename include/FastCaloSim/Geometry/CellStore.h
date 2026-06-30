@@ -13,7 +13,6 @@
 #include <unistd.h>
 
 #include "FastCaloSim/Geometry/Cell.h"
-#include "FastCaloSim/Geometry/CellCache.h"
 
 /**
  * @brief A memory-mapped read-only store of CellData, indexed by ID.
@@ -24,40 +23,52 @@ public:
   /// @brief Constructor
   CellStore() = default;
 
-  ~CellStore()
+  ~CellStore() { unmap(); }
+
+  // CellStore owns mmap'd regions, so it must not be copied (a shallow copy
+  // would double-munmap). It is movable: ownership of the mappings transfers
+  // and the source is left empty.
+  CellStore(const CellStore&) = delete;
+  auto operator=(const CellStore&) -> CellStore& = delete;
+
+  CellStore(CellStore&& other) noexcept { *this = std::move(other); }
+
+  auto operator=(CellStore&& other) noexcept -> CellStore&
   {
-    if (m_data != nullptr) {
-      munmap(m_data, m_file_size);
+    if (this != &other) {
+      unmap();
+      m_data = other.m_data;
+      m_file_size = other.m_file_size;
+      m_n_cells = other.m_n_cells;
+      m_index_data = other.m_index_data;
+      m_index_size = other.m_index_size;
+      other.m_data = nullptr;
+      other.m_index_data = nullptr;
+      other.m_file_size = 0;
+      other.m_index_size = 0;
+      other.m_n_cells = 0;
     }
-    if (m_index_data != nullptr) {
-      munmap(m_index_data, m_index_size);
-    }
+    return *this;
   }
 
   /// @brief Load cell data and index from the specified base path
   /// @param base_path The base path for the data and index files
-  /// @param cache_size_bytes Cache size in bytes (default 10MB)
+  /// @param cache_size_bytes Unused: the OS page cache supersedes the former
+  ///        user-space LRU cache. Kept for API compatibility.
   void load(const std::string& base_path,
-            size_t cache_size_bytes = 10 * 1024 * 1024)  // 10 MB default cache
+            [[maybe_unused]] size_t cache_size_bytes = 10 * 1024 * 1024)
   {
-    // Initialize the cache with the specified size
-    // Note 10mb will correspond to ~500k cells
-    size_t num_entries = cache_size_bytes / (sizeof(uint64_t) * 2);
-    m_cache =
-        std::make_unique<cache::CellCache<uint64_t, uint64_t>>(num_entries);
+    // Release any mappings from a previous load() so reloading does not leak
+    unmap();
 
     std::string data_path = base_path + ".data";
     std::string index_path = base_path + ".index";
 
-    // Read index file to get size
+    // Verify the index file exists/opens before mapping anything
     std::ifstream index_file(index_path, std::ios::binary);
     if (!index_file) {
       throw std::runtime_error("Failed to open index file: " + index_path);
     }
-
-    index_file.seekg(0, std::ios::end);
-    std::streampos index_size = index_file.tellg();
-    m_n_entries = index_size / (sizeof(uint64_t) * 2);
 
     // Open and memory map the data file
     int fd = ::open(data_path.c_str(), O_RDONLY);
@@ -107,27 +118,22 @@ public:
     }
   }
 
+  /// @brief Return the cell with a given ID.
+  /// @note The returned reference aliases a per-thread scratch Cell that is
+  ///       overwritten by the next get()/get_at_index() call on the same
+  ///       thread. Copy the Cell if you need to hold more than one at a time.
   auto get(uint64_t id) const -> const Cell&
   {
-    // Ensure the cache is initialized
-    if (!m_cache) {
+    if (m_data == nullptr || m_index_data == nullptr) {
       throw std::runtime_error("CellStore not loaded - call load() first");
     }
-
-    // Check cache first for O(1) lookup in most cases
-    if (m_cache->exists(id)) {
-      return getCellAtOffset(m_cache->get(id));
-    }
-
-    // If not in cache, need to do binary search in the mapped index file
-    uint64_t offset = findOffsetById(id);
-
-    // Add to cache for future lookups
-    m_cache->put(id, offset);
-
-    return getCellAtOffset(offset);
+    return getCellAtOffset(findOffsetById(id));
   }
 
+  /// @brief Return the cell at a given dense index.
+  /// @note The returned reference aliases a per-thread scratch Cell that is
+  ///       overwritten by the next get()/get_at_index() call on the same
+  ///       thread. Copy the Cell if you need to hold more than one at a time.
   auto get_at_index(size_t idx) const -> const Cell&
   {
     if (!m_data) {
@@ -185,6 +191,25 @@ private:
                              + std::to_string(id));
   }
 
+  /// @brief Release any memory-mapped regions
+  ///
+  /// Safe to call repeatedly: pointers and sizes are reset so that a
+  /// subsequent call (or a destructor after a move) is a no-op.
+  void unmap() noexcept
+  {
+    if (m_data != nullptr) {
+      munmap(m_data, m_file_size);
+      m_data = nullptr;
+    }
+    if (m_index_data != nullptr) {
+      munmap(m_index_data, m_index_size);
+      m_index_data = nullptr;
+    }
+    m_file_size = 0;
+    m_index_size = 0;
+    m_n_cells = 0;
+  }
+
   /// @brief Get a cell at the specified offset in the data file
   auto getCellAtOffset(uint64_t offset) const -> const Cell&
   {
@@ -210,12 +235,4 @@ private:
   void* m_index_data = nullptr;
   /// @brief Size of the index file in bytes
   size_t m_index_size = 0;
-  /// @brief Total number of index entries
-  size_t m_n_entries = 0;
-
-  /// @brief LRU cache for frequently accessed cells
-  std::unique_ptr<cache::CellCache<uint64_t, uint64_t>> m_cache;
-
-  /// @brief Static fallback Cell instance returned for invalid or missing IDs
-  static inline Cell m_invalid_cell {};
 };

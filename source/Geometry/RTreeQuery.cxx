@@ -11,28 +11,36 @@ RTreeQuery::RTreeQuery(RTreeHelpers::CoordinateSystem coordSys)
 
 void RTreeQuery::load(const std::string& base_path, size_t cache_size)
 {
-  try {
-    std::string filename = base_path;
-    SpatialIndex::IStorageManager* diskfile =
-        SpatialIndex::StorageManager::loadDiskStorageManager(filename);
+  m_base_path = base_path;
+  m_cache_size = cache_size;
+  localTree();  // validate now; throws on bad path as before
+}
 
-    SpatialIndex::IStorageManager* cache =
-        SpatialIndex::StorageManager::createNewRandomEvictionsBuffer(
-            *diskfile, cache_size, false);
-
-    SpatialIndex::id_type indexId = 1;
-    m_tree.reset(SpatialIndex::RTree::loadRTree(*cache, indexId));
-    m_diskfile.reset(cache);
-  } catch (Tools::Exception& e) {
-    throw std::runtime_error(std::string("Error loading RTree: ") + e.what());
+RTreeQuery::TreeHandle& RTreeQuery::localTree() const
+{
+  TreeHandle& h = m_perThread.local();
+  if (!h.tree) {
+    try {
+      // Copy: loadDiskStorageManager's API takes a non-const std::string&,
+      // though it does not conceptually modify the path.
+      std::string filename = m_base_path;
+      h.diskfile.reset(
+          SpatialIndex::StorageManager::loadDiskStorageManager(filename));
+      h.buffer.reset(
+          SpatialIndex::StorageManager::createNewRandomEvictionsBuffer(
+              *h.diskfile, m_cache_size, false));
+      SpatialIndex::id_type indexId = 1;
+      h.tree.reset(SpatialIndex::RTree::loadRTree(*h.buffer, indexId));
+    } catch (Tools::Exception& e) {
+      throw std::runtime_error(std::string("Error loading RTree: ") + e.what());
+    }
   }
+  return h;
 }
 
 auto RTreeQuery::query_point(const Position& pos) const -> uint64_t
 {
-  if (!m_tree) {
-    throw std::logic_error("Tree not loaded yet. Call load() first.");
-  }
+  auto& tree = *localTree().tree;
 
   // Convert position to query point
   double coords[2];
@@ -69,7 +77,7 @@ auto RTreeQuery::query_point(const Position& pos) const -> uint64_t
 
   try {
     // Execute nearest neighbor query
-    m_tree->nearestNeighborQuery(1, query, visitor);
+    tree.nearestNeighborQuery(1, query, visitor);
 
     // Check if we got a result
     if (visitor.found) {

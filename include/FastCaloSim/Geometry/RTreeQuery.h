@@ -1,10 +1,12 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
 #include <spatialindex/SpatialIndex.h>
+#include <tbb/enumerable_thread_specific.h>
 
 #include "FastCaloSim/Geometry/Cell.h"
 #include "FastCaloSim/Geometry/RTreeHelpers.h"
@@ -26,10 +28,24 @@ public:
 
   ~RTreeQuery() = default;
 
+  // Holds per-thread, non-copyable handles (unique_ptr inside an
+  // enumerable_thread_specific). Copying/moving is neither needed nor safe,
+  // so it is disabled explicitly to make the intent unambiguous.
+  RTreeQuery(const RTreeQuery&) = delete;
+  auto operator=(const RTreeQuery&) -> RTreeQuery& = delete;
+  RTreeQuery(RTreeQuery&&) = delete;
+  auto operator=(RTreeQuery&&) -> RTreeQuery& = delete;
+
   /**
    * @brief Load an R-tree from disk with caching
    * @param base_path Path to the R-tree index file
    * @param cache_size Size of the cache in bytes (default: 256KB)
+   *
+   * @note Eagerly initializes and validates the R-tree on the calling thread,
+   *       so a bad path throws here. Each additional worker thread initializes
+   *       its own handle lazily on first query_point(); if the underlying index
+   *       files become unreadable after load(), that failure surfaces on the
+   *       first access from such a thread rather than from load().
    */
   void load(const std::string& base_path, size_t cache_size = 262144);
 
@@ -42,6 +58,21 @@ public:
 
 private:
   RTreeHelpers::CoordinateSystem m_coordinate_system;
-  std::unique_ptr<SpatialIndex::ISpatialIndex> m_tree;
-  std::unique_ptr<SpatialIndex::IStorageManager> m_diskfile;
+  std::string m_base_path;
+  std::size_t m_cache_size {262144};
+
+  // Per-thread view of the shared, read-only on-disk index files.
+  // Declaration order matters: tree depends on buffer depends on diskfile,
+  // so they must destruct in reverse (tree, buffer, diskfile) — which this
+  // member order gives.
+  struct TreeHandle
+  {
+    std::unique_ptr<SpatialIndex::IStorageManager> diskfile;
+    std::unique_ptr<SpatialIndex::IStorageManager> buffer;
+    std::unique_ptr<SpatialIndex::ISpatialIndex> tree;
+  };
+  mutable tbb::enumerable_thread_specific<TreeHandle> m_perThread;
+
+  // Lazily initialize and return this thread's handle.
+  TreeHandle& localTree() const;
 };
