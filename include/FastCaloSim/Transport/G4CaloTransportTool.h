@@ -25,8 +25,19 @@ public:
   G4CaloTransportTool();
   ~G4CaloTransportTool();
 
-  // Initialize propagator for the current thread
-  void initializePropagator();
+  /// @brief Create the shared world volume. Must be called on the master
+  /// thread, exactly once, after the (simplified) transport geometry has been
+  /// loaded into the global Geant4 geometry stores. Building the world here
+  /// (rather than lazily on a worker thread) keeps the Geant4 split-class
+  /// per-thread data for the world volume correctly sized across all workers.
+  /// Idempotent: guarded by m_worldVolumeOnceFlag. Returns true on success
+  /// (i.e. a valid world volume is available).
+  bool initializeGeometry();
+
+  // Initialize the thread-local propagator for the current thread. Requires
+  // initializeGeometry() to have run first; returns false (without building a
+  // propagator) if the shared world volume is not available.
+  bool initializePropagator();
 
   // Transport input track through the geometry
   auto transport(const G4Track& G4InputTrack) -> std::vector<G4FieldTrack>;
@@ -70,9 +81,10 @@ private:
   /// m_worldVolumeOnceFlag.
   G4VPhysicalVolume* m_worldVolume {};
 
-  /// Guards one-time creation of the shared world volume. Required because
-  /// initializePropagator() is called concurrently by each worker thread in
-  /// AthenaMT and getWorldVolume() mutates global Geant4 geometry stores.
+  /// Guards one-time creation of the shared world volume in
+  /// initializeGeometry(). getWorldVolume() mutates the global Geant4 geometry
+  /// stores, so the world must be built exactly once (on the master thread);
+  /// the flag also protects against any accidental concurrent call.
   std::once_flag m_worldVolumeOnceFlag;
 
   /// Whether to use simplified geometry for particle transport
