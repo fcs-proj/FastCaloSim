@@ -1,10 +1,12 @@
 // Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
 #include <spatialindex/SpatialIndex.h>
+#include <tbb/enumerable_thread_specific.h>
 
 #include "FastCaloSim/Geometry/Cell.h"
 #include "FastCaloSim/Geometry/RTreeHelpers.h"
@@ -42,6 +44,21 @@ public:
 
 private:
   RTreeHelpers::CoordinateSystem m_coordinate_system;
-  std::unique_ptr<SpatialIndex::ISpatialIndex> m_tree;
-  std::unique_ptr<SpatialIndex::IStorageManager> m_diskfile;
+  std::string m_base_path;
+  std::size_t m_cache_size {262144};
+
+  // Per-thread view of the shared, read-only on-disk index files.
+  // Declaration order matters: tree depends on buffer depends on diskfile,
+  // so they must destruct in reverse (tree, buffer, diskfile) — which this
+  // member order gives.
+  struct TreeHandle
+  {
+    std::unique_ptr<SpatialIndex::IStorageManager> diskfile;
+    std::unique_ptr<SpatialIndex::IStorageManager> buffer;
+    std::unique_ptr<SpatialIndex::ISpatialIndex> tree;
+  };
+  mutable tbb::enumerable_thread_specific<TreeHandle> m_perThread;
+
+  // Lazily initialize and return this thread's handle.
+  TreeHandle& localTree() const;
 };
