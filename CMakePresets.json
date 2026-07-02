@@ -133,6 +133,17 @@
         "linux",
         "dev-mode"
       ]
+    },
+    {
+      "name": "ci-static",
+      "inherits": [
+        "ci-build",
+        "linux"
+      ],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": "OFF",
+        "FastCaloSim_BUILD_EMBED_TEST": "ON"
+      }
     }
   ]
 }

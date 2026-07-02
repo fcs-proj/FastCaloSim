@@ -23,6 +23,16 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
+# ---- Library type ----
+
+# Default to a shared library for standalone builds, but let an embedding project
+# choose a static build via the standard -DBUILD_SHARED_LIBS=OFF. A static,
+# position-independent archive can be absorbed into a consumer's own shared
+# library that links its dependencies statically and exposes a single copy of them.
+if(PROJECT_IS_TOP_LEVEL AND NOT DEFINED BUILD_SHARED_LIBS)
+  set(BUILD_SHARED_LIBS ON)
+endif()
+
 # ---- Project dependencies ----
 
 # ROOT is a required dependency for FastCaloSim
@@ -61,8 +71,8 @@ endif()
 
 # ---- Declare library ----
 
-# Create a shared library
-add_library(FastCaloSim_FastCaloSim SHARED "")
+# Library type follows BUILD_SHARED_LIBS (shared by default for standalone builds).
+add_library(FastCaloSim_FastCaloSim "")
 
 # Add the source files
 add_subdirectory(source/Definitions)
@@ -98,7 +108,11 @@ target_include_directories(FastCaloSim_FastCaloSim
         ${LWTNN_INCLUDE_DIRS}
 )
 
-# Generate ROOT dictionary for custom classes when building a shared library
+# Generate ROOT dictionary for custom classes. The dictionary source is compiled
+# into the target, so it is generated for both shared and static builds; the
+# TFCS* classes must have a dictionary at runtime to read the parametrization
+# file. (The accompanying .rootmap is only shipped for the shared build; see the
+# install rules for why it is skipped in a static build.)
 set( _dictName "FastCaloSim_dict" )
 set( _libName "FastCaloSim_FastCaloSim" )
 ROOT_GENERATE_DICTIONARY( ${_dictName} MODULE ${_libName} LINKDEF include/FastCaloSim/LinkDef.h )
@@ -117,6 +131,7 @@ generate_export_header(
 
 set_target_properties(
     FastCaloSim_FastCaloSim PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN YES
     VERSION "${PROJECT_VERSION}"
@@ -154,6 +169,22 @@ endif()
 
 if(NOT CMAKE_SKIP_INSTALL_RULES)
     include(cmake/install-rules.cmake)
+endif()
+
+# ---- Embed test ----
+
+# Optional check that the library can be absorbed, whole-archive, into a single
+# consumer shared library with its ROOT dictionary still self-registering at
+# runtime. This is the configuration used when the library is built as a static,
+# position-independent archive (BUILD_SHARED_LIBS=OFF). It is deliberately kept
+# separate from developer-mode tests, whose shared helper libraries would each
+# pull in their own copy of a static library.
+if(PROJECT_IS_TOP_LEVEL)
+  option(FastCaloSim_BUILD_EMBED_TEST "Build the embed dictionary check" OFF)
+  if(FastCaloSim_BUILD_EMBED_TEST)
+    enable_testing()
+    add_subdirectory(test/static-embed)
+  endif()
 endif()
 
 # ---- Developer mode ----
