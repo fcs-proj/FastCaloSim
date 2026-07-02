@@ -8,6 +8,7 @@
 #include <set>
 
 #include <FastCaloSim/FastCaloSim_export.h>
+#include <TNamed.h>
 
 #include "FastCaloSim/Core/MLogging.h"
 
