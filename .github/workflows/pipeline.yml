@@ -122,6 +122,49 @@ jobs:
         if-no-files-found: error
         retention-days: 90
 
+  # Build FastCaloSim as a static, position-independent archive and verify it can
+  # be absorbed into a single shared library with its ROOT dictionary intact.
+  test_static:
+    needs: [docker-check, docker-build]
+    # Allow skipping docker-build if no Docker files changed
+    if: always() && !failure() && !cancelled()
+    runs-on: ubuntu-24.04
+
+    # If pull request with Docker file changes: use PR image, else use main
+    container:
+      image: fcsproj/fastcalosim-alma10:${{ (github.event_name == 'pull_request' && needs.docker-check.outputs.docker_changed == 'true') && format('pr-{0}', github.event.pull_request.number) || 'main' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Configure
+      run: cmake "--preset=ci-static"
+
+    - name: Build
+      run: cmake --build build --config Release -j 4
+
+    - name: Verify a static archive was produced
+      run: |
+        find build -name 'libFastCaloSim.a' | grep -q . \
+          || { echo 'ERROR: libFastCaloSim.a not found'; exit 1; }
+        if find build \( -name 'libFastCaloSim.so' -o -name 'libFastCaloSim.so.*' \) | grep -q .; then
+          echo 'ERROR: a shared libFastCaloSim was produced in a static build'; exit 1
+        fi
+
+    - name: Test
+      run: ctest --test-dir build --output-on-failure --no-tests=error -C Release -j 4
+
+    - name: Install
+      run: cmake --install build --config Release --prefix prefix
+
+    - name: Verify the static build ships no autoload rootmap
+      run: |
+        if find prefix -name 'libFastCaloSim_FastCaloSim.rootmap' | grep -q .; then
+          echo 'ERROR: a core .rootmap was installed for the static build'; exit 1
+        fi
+        find prefix -name 'libFastCaloSim_FastCaloSim_rdict.pcm' | grep -q . \
+          || { echo 'ERROR: dictionary pcm was not installed'; exit 1; }
+
   # Test against LCG releases
   test_lcg:
     env:
@@ -221,7 +264,7 @@ jobs:
 
   docs:
     # Deploy docs after all other jobs are successful (allow skipping)
-    needs: [lint, coverage, test, test_lcg, test_key4hep]
+    needs: [lint, coverage, test, test_static, test_lcg, test_key4hep]
     if: always() && !failure() && !cancelled() && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository_owner == 'fcs-proj'
     runs-on: ubuntu-24.04
 

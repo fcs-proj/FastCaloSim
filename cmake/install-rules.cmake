@@ -34,14 +34,24 @@ install(
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
-# Install ROOT dictionary files alongside the library
+# Install ROOT dictionary files alongside the library. The precompiled module
+# carries the dictionary payload and is needed at runtime in both build modes.
 install(
-    FILES
-    "${PROJECT_BINARY_DIR}/lib${_libName}_rdict.pcm"
-    "${PROJECT_BINARY_DIR}/lib${_libName}.rootmap"
+    FILES "${PROJECT_BINARY_DIR}/lib${_libName}_rdict.pcm"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     COMPONENT FastCaloSim_Runtime
 )
+
+# Autoloading only makes sense for a shared library; in a static build the
+# classes are compiled directly into the consumer, so skip the .rootmap that
+# would otherwise point at a nonexistent libFastCaloSim.so.
+if(BUILD_SHARED_LIBS)
+  install(
+      FILES "${PROJECT_BINARY_DIR}/lib${_libName}.rootmap"
+      DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+      COMPONENT FastCaloSim_Runtime
+  )
+endif()
 
 write_basic_package_version_file(
     "${package}ConfigVersion.cmake"
