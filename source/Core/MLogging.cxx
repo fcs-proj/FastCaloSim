@@ -1,5 +1,7 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
+#include <sstream>
+
 #include "FastCaloSim/Core/MLogging.h"
 
 // Declare the class in a namespace

@@ -171,19 +171,22 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
     include(cmake/install-rules.cmake)
 endif()
 
-# ---- Embed test ----
+# ---- Embed tests ----
 
-# Optional check that the library can be absorbed, whole-archive, into a single
-# consumer shared library with its ROOT dictionary still self-registering at
-# runtime. This is the configuration used when the library is built as a static,
-# position-independent archive (BUILD_SHARED_LIBS=OFF). It is deliberately kept
-# separate from developer-mode tests, whose shared helper libraries would each
-# pull in their own copy of a static library.
+# Optional checks for the two corners of embedding the library as a static,
+# position-independent archive (BUILD_SHARED_LIBS=OFF): test/static-embed
+# absorbs the whole archive into a single consumer shared library and requires
+# the ROOT dictionary to still self-register at runtime; test/static-light
+# links only the lightweight logging class and requires that it does not drag
+# in the heavy dependency closure. They are deliberately kept separate from
+# developer-mode tests, whose shared helper libraries would each pull in their
+# own copy of a static library.
 if(PROJECT_IS_TOP_LEVEL)
   option(FastCaloSim_BUILD_EMBED_TEST "Build the embed dictionary check" OFF)
   if(FastCaloSim_BUILD_EMBED_TEST)
     enable_testing()
     add_subdirectory(test/static-embed)
+    add_subdirectory(test/static-light)
   endif()
 endif()
 

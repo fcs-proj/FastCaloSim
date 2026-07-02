@@ -5,9 +5,9 @@
 
 #include <iomanip>
 #include <iostream>
+#include <string>
 
 #include <FastCaloSim/FastCaloSim_export.h>
-#include <TNamed.h>  //for ClassDef
 
 namespace FCS_MSG
 {
@@ -71,6 +71,10 @@ typedef std::ostream MsgStream;
 // Force a new line, and end any stream
 #define FCS_ENDMSG this->streamerEndLine(FCS_MSG::INFO)
 
+// This transient mixin is deliberately kept out of the ROOT dictionary (no
+// ClassDef): a dictionary entry would tie its vtable to the library's single
+// dictionary translation unit, forcing consumers that only want logging to
+// link the full dependency closure of the heavy parametrization classes.
 class FASTCALOSIM_EXPORT MLogging
 {
 public:
@@ -135,9 +139,6 @@ private:
   mutable FCS_MSG::Level m_streamer_has_lvl =
       FCS_MSG::NIL;  //! Do not persistify!
   mutable std::string m_streamer_from_file = "";  //! Do not persistify!
-
-  // Version number 0 to tell ROOT not to store this.
-  ClassDef(MLogging, 0)
 };
 }  // namespace ISF_FCS
 
