@@ -25,7 +25,7 @@ const char* const kClasses[] = {
 }  // namespace
 
 // Returns the number of expected dictionaries that are missing (0 == success).
-static auto fcs_count_missing_dictionaries() -> int
+auto fcs_count_missing_dictionaries() -> int
 {
   int missing = 0;
   for (const char* name : kClasses) {
