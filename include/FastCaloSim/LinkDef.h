@@ -20,6 +20,7 @@
 #include "FastCaloSim/Core/TFCS2DFunctionTemplateInterpolationHistogram.h"
 #include "FastCaloSim/Core/TFCS2DFunctionTemplateInterpolationExpHistogram.h"
 
+#include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 #include "FastCaloSim/Core/TFCSParametrizationPlaceholder.h"
 #include "FastCaloSim/Core/TFCSParametrization.h"
@@ -586,6 +587,7 @@
 
 #pragma link C++ class TFCS2DFunction + ;
 #pragma link C++ class TFCS2DFunctionHistogram + ;
+#pragma link C++ class ISF_FCS::MLogging + ;
 #pragma link C++ class TFCSParametrizationBase + ;
 #pragma link C++ class TFCSParametrizationPlaceholder + ;
 #pragma link C++ class TFCSParametrization + ;
