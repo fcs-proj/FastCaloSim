@@ -27,7 +27,7 @@ public:
   virtual void rnd_to_fct(float value[], const float rnd[]) const = 0;
 
 private:
-  ClassDef(TFCSFunction, 3)  // TFCSFunction
+  ClassDef(TFCSFunction, 4)  // TFCSFunction
 };
 
 #endif
