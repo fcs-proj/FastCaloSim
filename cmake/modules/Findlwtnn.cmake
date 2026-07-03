@@ -49,6 +49,18 @@ if(LWTNN_LIBRARY)
    set(LWTNN_LIBRARY_DIRS ${LWTNN_LIBRARY_DIR})
 endif()
 
+# Expose a relocatable imported target (mirrors FindONNXRuntime.cmake) so that
+# consumers link against a namespaced target instead of a build-tree-specific
+# absolute path. The flat LWTNN_* variables above are kept intact for any code
+# that still reads them; this is purely additive.
+if(LWTNN_LIBRARY AND NOT TARGET lwtnn::lwtnn)
+   add_library(lwtnn::lwtnn UNKNOWN IMPORTED)
+   set_target_properties(lwtnn::lwtnn PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${LWTNN_INCLUDE_DIRS}"
+      IMPORTED_LOCATION "${LWTNN_LIBRARY}"
+   )
+endif()
+
 # Debug messages
 message(STATUS "LWTNN_ROOT: ${LWTNN_ROOT}")
 message(STATUS "LWTNN_INCLUDE_DIR: ${LWTNN_INCLUDE_DIR}")

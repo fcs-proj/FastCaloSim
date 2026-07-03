@@ -1,5 +1,3 @@
+# Locate the pinned libxml-2.0 API via pkg-config and expose it as a target.
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(LibXml2 REQUIRED libxml-2.0)
-include_directories(${LibXml2_INCLUDE_DIRS})
-link_directories(${LibXml2_LIBRARY_DIRS})
-add_definitions(${LibXml2_CFLAGS_OTHER})
+pkg_check_modules(LibXml2 REQUIRED IMPORTED_TARGET libxml-2.0)

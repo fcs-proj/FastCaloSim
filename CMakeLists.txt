@@ -96,16 +96,17 @@ target_link_libraries(
         libspatialindex::spatialindex
     PRIVATE
         ONNXRuntime::ONNXRuntime
-        ${LWTNN_LIBRARIES}
-        ${LibXml2_LIBRARIES}
+        lwtnn::lwtnn
+        PkgConfig::LibXml2
 )
 
-# Add the include directory to the target
+# Add the include directory to the target. lwtnn's include dirs now arrive via
+# the lwtnn::lwtnn interface, and libxml2's via PkgConfig::LibXml2, so neither
+# needs a manual entry here.
 target_include_directories(FastCaloSim_FastCaloSim
     PRIVATE
         ${CMAKE_SOURCE_DIR}/include/FastCaloSim
         ${Boost_INCLUDE_DIRS}
-        ${LWTNN_INCLUDE_DIRS}
 )
 
 # Generate ROOT dictionary for custom classes. The dictionary source is compiled
