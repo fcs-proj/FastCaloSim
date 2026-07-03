@@ -82,7 +82,7 @@ private:
 
   TFCSGANXMLParameters m_param;
 
-  ClassDef(TFCSGANEtaSlice, 6)  // TFCSGANEtaSlice
+  ClassDef(TFCSGANEtaSlice, 5)  // TFCSGANEtaSlice
 };
 
 #endif  //> !ISF_TFCSGANETASLICE_H

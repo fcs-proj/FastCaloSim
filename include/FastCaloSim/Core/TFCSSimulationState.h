@@ -157,7 +157,7 @@ private:
   std::set<const TFCSParametrizationBase*>
       m_AuxInfoCleanup;  //! Do not persistify
 
-  ClassDef(TFCSSimulationState, 4)  // TFCSSimulationState
+  ClassDef(TFCSSimulationState, 3)  // TFCSSimulationState
 };
 
 // Explicit template implementations for template<class T> void
