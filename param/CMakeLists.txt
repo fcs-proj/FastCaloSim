@@ -35,18 +35,21 @@ target_link_libraries(
         FastCaloSim::FastCaloSim
 )
 
-# Generate ROOT dictionary for custom classes when building a shared library
-ROOT_GENERATE_DICTIONARY(FastCaloSimParam_dict MODULE FastCaloSim_Param LINKDEF include/FastCaloSimParam/LinkDef.h)
-
-# Deacticate checks for the generated dictionary
-deactivate_checks(FastCaloSimParam_dict FastCaloSim_Param)
-
-# Add include directories for the generated dictionary
+# Add include directories for the generated dictionary. This MUST precede the
+# ROOT_GENERATE_DICTIONARY call below: the ROOT macro reads the module target's
+# INCLUDE_DIRECTORIES property at call time to build the dictionary's include
+# path, so the property has to be populated first.
 target_include_directories(
     FastCaloSim_Param ${warning_guard}
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
 )
+
+# Generate ROOT dictionary for custom classes when building a shared library
+ROOT_GENERATE_DICTIONARY(FastCaloSimParam_dict MODULE FastCaloSim_Param LINKDEF include/FastCaloSimParam/LinkDef.h)
+
+# Deacticate checks for the generated dictionary
+deactivate_checks(FastCaloSimParam_dict FastCaloSim_Param)
 
 # Set the shared library properties
 set_target_properties(
