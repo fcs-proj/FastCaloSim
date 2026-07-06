@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
 #define ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
@@ -25,7 +25,11 @@ public:
                         const char* title = nullptr,
                         CaloGeo* geo = nullptr);
 
-  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  virtual void set_geometry(CaloGeo* geo) override
+  {
+    m_geo = geo;
+    TFCSParametrizationBase::set_geometry(geo);
+  };
 
   virtual ~TFCSEnergyAndHitGANV2();
 
