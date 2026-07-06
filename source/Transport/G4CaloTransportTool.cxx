@@ -3,6 +3,7 @@
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
 
 // Geant4 includes for for particle extrapolation
+#include "G4FieldManagerStore.hh"
 #include "G4FieldTrack.hh"
 #include "G4FieldTrackUpdator.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -220,6 +221,22 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
   // Initialize the tmpFieldTrack with the input track
   G4FieldTrack tmpFieldTrack('0');
   G4FieldTrackUpdator::Update(&tmpFieldTrack, &G4InputTrack);
+
+  // Make the transport result depend only on the input track, not on whatever
+  // was transported previously on this thread. The propagator accumulates
+  // state across calls (zero-step counters, cached safety values used by the
+  // intersection locator), the chord finders of the field managers cache the
+  // last step-size estimate, and the navigator caches the last located point
+  // for relative searches. Normal Geant4 tracking clears all of this at the
+  // start of every track (G4Transportation::StartTracking); without the
+  // equivalent reset here, transporting the same particle can give slightly
+  // different results depending on the processing history of the calling
+  // thread, breaking single-threaded vs multi-threaded reproducibility.
+  propagator->ClearPropagatorState();
+  G4FieldManagerStore::GetInstance()->ClearAllChordFindersState();
+  navigator->LocateGlobalPointAndSetup(
+      tmpFieldTrack.GetPosition(), nullptr, /*relativeSearch=*/false);
+
   // Fill with the initial particle position
   outputStepVector.push_back(tmpFieldTrack);
 
