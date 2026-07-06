@@ -35,9 +35,18 @@ public:
 
   bool is_valid() const { return m_Ebin >= 0; };
   double E() const { return m_Etot; };
-  // NOTE: in the current implementation layers without energy are not stored
-  double E(int sample) const { return m_E.at(sample); };
-  double Efrac(int sample) const { return m_Efrac.at(sample); };
+  // NOTE: layers without energy are not stored in the maps; as for the
+  // original array-based implementation, such layers read as 0 energy.
+  double E(int sample) const
+  {
+    auto it = m_E.find(sample);
+    return it != m_E.end() ? it->second : 0.;
+  };
+  double Efrac(int sample) const
+  {
+    auto it = m_Efrac.find(sample);
+    return it != m_Efrac.end() ? it->second : 0.;
+  };
   int Ebin() const { return m_Ebin; };
 
   void set_Ebin(int bin) { m_Ebin = bin; };

@@ -36,18 +36,16 @@ void TFCSExtrapolationState::Print(Option_t*) const
 
 void TFCSExtrapolationState::clear()
 {
-  // Clear all unordered_maps and reset with default values
-  for (int layer = 0; layer < m_CaloOK.size(); ++layer) {
-    for (int subpos = 0; subpos < NumSubPos; ++subpos) {
-      m_CaloOK[{layer, subpos}] = false;
-      m_etaCalo[{layer, subpos}] = -999;
-      m_phiCalo[{layer, subpos}] = -999;
-      m_rCalo[{layer, subpos}] = 0;
-      m_zCalo[{layer, subpos}] = 0;
-      m_dCalo[{layer, subpos}] = 0;
-      m_distetaCaloBorder[{layer, subpos}] = 0;
-    }
-  }
+  // Drop all stored layer/subpos entries. The getters return the default
+  // values (OK=false, eta/phi=-999, r/z/d/detaBorder=0) for entries that are
+  // not stored, so no pre-filling is needed.
+  m_CaloOK.clear();
+  m_etaCalo.clear();
+  m_phiCalo.clear();
+  m_rCalo.clear();
+  m_zCalo.clear();
+  m_dCalo.clear();
+  m_distetaCaloBorder.clear();
 
   // Reset IDCaloBoundary variables
   m_IDCaloBoundary_eta = -999;
