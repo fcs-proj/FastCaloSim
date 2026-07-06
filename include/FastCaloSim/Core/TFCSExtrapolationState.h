@@ -66,37 +66,58 @@ public:
 
   auto OK(int layer, int subpos) const -> bool
   {
-    return m_CaloOK.at({layer, subpos});
+    // layers/subpositions never reached by the extrapolation are not stored;
+    // read as the pre-map default
+    auto it = m_CaloOK.find({layer, subpos});
+    return it != m_CaloOK.end() ? it->second : false;
   }
 
   auto eta(int layer, int subpos) const -> double
   {
-    return m_etaCalo.at({layer, subpos});
+    // layers/subpositions never reached by the extrapolation are not stored;
+    // read as the pre-map default
+    auto it = m_etaCalo.find({layer, subpos});
+    return it != m_etaCalo.end() ? it->second : -999;
   }
 
   auto phi(int layer, int subpos) const -> double
   {
-    return m_phiCalo.at({layer, subpos});
+    // layers/subpositions never reached by the extrapolation are not stored;
+    // read as the pre-map default
+    auto it = m_phiCalo.find({layer, subpos});
+    return it != m_phiCalo.end() ? it->second : -999;
   }
 
   auto r(int layer, int subpos) const -> double
   {
-    return m_rCalo.at({layer, subpos});
+    // layers/subpositions never reached by the extrapolation are not stored;
+    // read as the pre-map default
+    auto it = m_rCalo.find({layer, subpos});
+    return it != m_rCalo.end() ? it->second : 0;
   }
 
   auto z(int layer, int subpos) const -> double
   {
-    return m_zCalo.at({layer, subpos});
+    // layers/subpositions never reached by the extrapolation are not stored;
+    // read as the pre-map default
+    auto it = m_zCalo.find({layer, subpos});
+    return it != m_zCalo.end() ? it->second : 0;
   }
 
   auto d(int layer, int subpos) const -> double
   {
-    return m_dCalo.at({layer, subpos});
+    // layers/subpositions never reached by the extrapolation are not stored;
+    // read as the pre-map default
+    auto it = m_dCalo.find({layer, subpos});
+    return it != m_dCalo.end() ? it->second : 0;
   }
 
   auto detaBorder(int layer, int subpos) const -> double
   {
-    return m_distetaCaloBorder.at({layer, subpos});
+    // layers/subpositions never reached by the extrapolation are not stored;
+    // read as the pre-map default
+    auto it = m_distetaCaloBorder.find({layer, subpos});
+    return it != m_distetaCaloBorder.end() ? it->second : 0;
   }
 
   // Boundary getters
