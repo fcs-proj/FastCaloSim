@@ -234,6 +234,14 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
   // thread, breaking single-threaded vs multi-threaded reproducibility.
   propagator->ClearPropagatorState();
   G4FieldManagerStore::GetInstance()->ClearAllChordFindersState();
+  // ResetStackAndState clears the navigator state the relocation below does
+  // not: the zero-step/push machinery (fLastStepWasZero, fPushed,
+  // fNumberZeroSteps, fLocatedOnEdge) and the navigator's own cached safety.
+  // Normal tracking clears these per track via ResetHierarchyAndLocate ->
+  // ResetState in G4SteppingManager::SetInitialStep; without the equivalent
+  // here they persist across transport() calls and can alter the stuck-track
+  // push behavior of the next transport, i.e. carry state across events.
+  navigator->ResetStackAndState();
   navigator->LocateGlobalPointAndSetup(
       tmpFieldTrack.GetPosition(), nullptr, /*relativeSearch=*/false);
 
