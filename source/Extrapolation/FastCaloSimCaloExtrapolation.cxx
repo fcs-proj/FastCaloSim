@@ -182,8 +182,9 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
           // extrapolation else extrapolate to cylinder with symmetrized maximum
           // Z bounds set eta to a dummy value of 1000 and -1000 to force
           // detector side
-          Position pos_eta, neg_eta;
-          pos_eta.m_phi, neg_eta.m_phi = result.IDCaloBoundary_phi();
+          Position pos_eta {}, neg_eta {};
+          pos_eta.m_phi = result.IDCaloBoundary_phi();
+          neg_eta.m_phi = result.IDCaloBoundary_phi();
           pos_eta.m_eta = 1000;
           neg_eta.m_eta = -1000;
           if (sample < 4) {
