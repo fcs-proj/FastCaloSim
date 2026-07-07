@@ -3,6 +3,11 @@
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
 
 // Geant4 includes for for particle extrapolation
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
+#include "FastCaloSim/Core/FCSDebugPrint.h"
 #include "G4FieldManagerStore.hh"
 #include "G4FieldTrack.hh"
 #include "G4FieldTrackUpdator.hh"
@@ -221,6 +226,31 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
   G4FieldTrack tmpFieldTrack('0');
   G4FieldTrackUpdator::Update(&tmpFieldTrack, &G4InputTrack);
 
+  // FCS_DEBUG_EXTRAPOL_EVENT + FCS_DEBUG_POS_FILTER_FILE-gated: dump every
+  // step's position for specific, already-identified particles (matched by
+  // their pre-transport position) to localize exactly where an ST-vs-MT
+  // caloSteps.size() mismatch (same input, same final IDCaloBoundary
+  // crossing, different step count) first diverges.
+  const bool fcsDebugThisTransport = std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
+      && fcsDebugShouldPrintPos(G4InputTrack.GetPosition().x(),
+                                G4InputTrack.GetPosition().y(),
+                                G4InputTrack.GetPosition().z());
+  const auto fcsDebugPrintStep = [&](int stepIdx)
+  {
+    if (!fcsDebugThisTransport)
+      return;
+    std::ostringstream oss;
+    oss << std::setprecision(17) << "[FCS_DEBUG_TRANSPORT] joinPos=("
+        << G4InputTrack.GetPosition().x() << ","
+        << G4InputTrack.GetPosition().y() << ","
+        << G4InputTrack.GetPosition().z() << ") step=" << stepIdx << " pos=("
+        << tmpFieldTrack.GetPosition().x() << ","
+        << tmpFieldTrack.GetPosition().y() << ","
+        << tmpFieldTrack.GetPosition().z() << ")\n";
+    std::lock_guard<std::mutex> lock(fcsDebugPrintMutex());
+    std::cout << oss.str() << std::flush;
+  };
+
   // Establish the starting location with an absolute (non-relative) search so
   // the first step does not depend on any prior navigator history.
   navigator.LocateGlobalPointAndSetup(
@@ -228,6 +258,7 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
 
   // Fill with the initial particle position
   outputStepVector.push_back(tmpFieldTrack);
+  fcsDebugPrintStep(0);
 
   // Iterate until we reach the maximum number of steps or the requested volume
   for (unsigned int iStep = 0; iStep < m_maxSteps; iStep++) {
@@ -235,6 +266,7 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
     doStep(propagator, tmpFieldTrack);
     // Fill the output vector with the updated track
     outputStepVector.push_back(tmpFieldTrack);
+    fcsDebugPrintStep(static_cast<int>(iStep) + 1);
     // Get the name of the volume in which the particle is located
     auto volume = navigator.LocateGlobalPointAndSetup(
         tmpFieldTrack.GetPosition(), nullptr);

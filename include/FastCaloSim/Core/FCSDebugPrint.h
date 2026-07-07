@@ -1,10 +1,13 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #pragma once
 
+#include <cmath>
 #include <cstdlib>
 #include <fstream>
 #include <mutex>
+#include <tuple>
 #include <unordered_set>
+#include <vector>
 
 // Debug-only instrumentation helper (FCS_DEBUG_EXTRAPOL_EVENT investigation).
 // inline + function-local static gives a single mutex instance shared across
@@ -56,4 +59,44 @@ inline bool fcsDebugShouldPrint(double phi)
 {
   const auto& filter = fcsDebugPhiFilter();
   return filter.empty() || filter.count(phi) > 0;
+}
+
+// FCS_DEBUG_POS_FILTER_FILE=<path>: optional file of "x y z" triples (one
+// per line, space-separated, e.g. from an earlier FCS_DEBUG_EXTRAPOL_EVENT
+// pass' pre-transport pos=(...) values), used to restrict transport()-level
+// step-by-step instrumentation to specific already-identified particles.
+// transport() runs before extrapolateToID() computes IDCaloBoundary_phi, so
+// the phi-based filter above isn't available yet at that point -- this is
+// the equivalent keyed on the primary track's pre-transport position
+// instead. Exact-match comparison, same round-trip-safe rationale as the
+// phi filter above (setprecision(17) both sides). Absent env var / empty
+// file => filter is empty => match everything.
+inline const std::vector<std::tuple<double, double, double>>&
+fcsDebugPosFilter()
+{
+  static const std::vector<std::tuple<double, double, double>> filter = []
+  {
+    std::vector<std::tuple<double, double, double>> v;
+    const char* path = std::getenv("FCS_DEBUG_POS_FILTER_FILE");
+    if (path) {
+      std::ifstream in(path);
+      double x, y, z;
+      while (in >> x >> y >> z)
+        v.emplace_back(x, y, z);
+    }
+    return v;
+  }();
+  return filter;
+}
+
+inline bool fcsDebugShouldPrintPos(double x, double y, double z)
+{
+  const auto& filter = fcsDebugPosFilter();
+  if (filter.empty())
+    return true;
+  for (const auto& [fx, fy, fz] : filter) {
+    if (fx == x && fy == y && fz == z)
+      return true;
+  }
+  return false;
 }
