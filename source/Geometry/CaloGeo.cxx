@@ -3,6 +3,8 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <optional>
@@ -38,6 +40,26 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
 
   // Query the RTree to get the cell ID directly
   auto cell_id = query_it->second->query_point(pos);
+
+  // FCS_DEBUG_EXTRAPOL_EVENT-gated (any value), restricted to the layers
+  // implicated by the extrapolateToLayers fix and by the observed diff-root
+  // divergence (EMB0-3, EME1 reference layer, TileBar0-2) to keep volume
+  // manageable: directly tests whether the RTree nearest-neighbor query is
+  // deterministic for a given (layer, eta, phi) -- i.e. whether ST and MT's
+  // independently-loaded per-thread copies of "the same" tree ever resolve a
+  // query point to a different cell_id. The extrapolateToLayers()
+  // reference-surface lookup always queries layer 5 with eta==+1000 or
+  // eta==-1000 (a distinctive dummy value, easy to filter for downstream);
+  // any other (layer, eta) here is a real hit-cell lookup from the shower
+  // simulation stage sharing this same code path.
+  if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
+      && (layer == 0 || layer == 1 || layer == 2 || layer == 3 || layer == 5
+          || layer == 12 || layer == 13 || layer == 14))
+  {
+    std::cout << std::setprecision(17) << "[FCS_DEBUG_RTREE] layer=" << layer
+              << " eta=" << pos.eta() << " phi=" << pos.phi()
+              << " cell_id=" << cell_id << std::endl;
+  }
 
   // Look up the cell in the repository
   return get_cell(cell_id);

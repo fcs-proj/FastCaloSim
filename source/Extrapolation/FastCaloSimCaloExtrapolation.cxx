@@ -10,6 +10,10 @@
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 /* G4FieldTrack used to store transportation steps */
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+
 #include "G4FieldTrack.hh"
 
 /* Preprocessor macro to use
@@ -198,6 +202,18 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
                    + std::abs(m_geo->zpos(
                        sample, neg_eta, static_cast<Cell::SubPos>(subpos))));
           }
+          // FCS_DEBUG_EXTRAPOL_EVENT-gated (any value): dump the EMB
+          // reference-surface lookup this fix touches, at full precision.
+          // result.IDCaloBoundary_phi() is the join key back to the
+          // FastCaloSim::DoIt()-level debug print (already confirmed
+          // bit-identical between ST/MT for the target event).
+          if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")) {
+            std::cout << std::setprecision(17) << "[FCS_DEBUG_LAYERS] joinPhi="
+                      << result.IDCaloBoundary_phi()
+                      << " joinEta=" << result.IDCaloBoundary_eta()
+                      << " sample=" << sample << " subpos=" << subpos
+                      << " cylZ=" << cylZ << " cylR=" << cylR << std::endl;
+          }
         } else {
           // if we are not at barrel surface, extrapolate to cylinder with
           // maximum R to reduce extrapolation length
@@ -241,7 +257,36 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
           result.set_z(sample, subpos, extPos.z());
           result.set_eta(sample, subpos, extPos.eta());
           result.set_r(sample, subpos, extPos.perp());
+
+          // Restricted to the samples implicated by this fix (EMB0-3, EME1
+          // reference layer, TileBar0-2) to keep log volume manageable.
+          if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
+              && (sample == 0 || sample == 1 || sample == 2 || sample == 3
+                  || sample == 5 || sample == 12 || sample == 13
+                  || sample == 14))
+          {
+            std::cout << std::setprecision(17) << "[FCS_DEBUG_RESULT] joinPhi="
+                      << result.IDCaloBoundary_phi()
+                      << " joinEta=" << result.IDCaloBoundary_eta()
+                      << " sample=" << sample << " subpos=" << subpos
+                      << " OK=1 scale=" << scale
+                      << " eta=" << result.eta(sample, subpos)
+                      << " phi=" << result.phi(sample, subpos)
+                      << " z=" << result.z(sample, subpos)
+                      << " r=" << result.r(sample, subpos) << std::endl;
+          }
         } else {
+          if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
+              && (sample == 0 || sample == 1 || sample == 2 || sample == 3
+                  || sample == 5 || sample == 12 || sample == 13
+                  || sample == 14))
+          {
+            std::cout << std::setprecision(17) << "[FCS_DEBUG_RESULT] joinPhi="
+                      << result.IDCaloBoundary_phi()
+                      << " joinEta=" << result.IDCaloBoundary_eta()
+                      << " sample=" << sample << " subpos=" << subpos << " OK=0"
+                      << std::endl;
+          }
           FCS_MSG_COND(
               " [extrapolateToLayers] Extrapolation to cylinder failed. Sample="
                   << sample << " subpos=" << subpos
