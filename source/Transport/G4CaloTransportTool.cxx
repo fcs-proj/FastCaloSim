@@ -16,6 +16,7 @@
 #include "G4PVPlacement.hh"
 #include "G4PropagatorInField.hh"
 #include "G4Threading.hh"
+#include "G4Track.hh"
 #include "G4TransportationManager.hh"
 
 G4CaloTransportTool::G4CaloTransportTool() = default;
