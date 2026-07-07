@@ -9,7 +9,10 @@
 
 #include "FastCaloSim/Core/FCSDebugPrint.h"
 #include "G4AtlasRK4.hh"
+#include "G4ChargeState.hh"
 #include "G4ChordFinder.hh"
+#include "G4DynamicParticle.hh"
+#include "G4EquationOfMotion.hh"
 #include "G4FieldManagerStore.hh"
 #include "G4FieldTrack.hh"
 #include "G4FieldTrackUpdator.hh"
@@ -254,6 +257,35 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
   G4FieldManager* fieldMgr =
       G4TransportationManager::GetTransportationManager()->GetFieldManager();
   G4PropagatorInField propagator(&navigator, fieldMgr);
+
+  // Configure the (thread-persistent, shared) equation of motion with THIS
+  // particle's charge/mass/moments before stepping. Real Geant4 tracking does
+  // this on every single step (see
+  // G4Transportation::AlongStepGetPhysicalInteractionLength, which builds a
+  // fresh G4ChargeState from the current track and calls
+  // equationOfMotion->SetChargeMomentumMass(...) each time) -- this hand-rolled
+  // loop never did it at all. Since the equation of motion lives on the same
+  // shared, thread-persistent chain as the chord finder/stepper (not rebuilt
+  // by the fresh navigator+propagator above), it silently kept using whatever
+  // charge/mass was configured by whichever track last used it: real G4
+  // tracking of some other particle on this thread, or FastCaloSim's own
+  // previous transport() call. Unlike the momentum-magnitude cache in
+  // G4AtlasRK4 (a small numerical perturbation when stale), a wrong charge
+  // changes the Lorentz-force curvature direction/magnitude outright -- a
+  // completely different trajectory from the very first integration step,
+  // not a subtle one. This must be set before every transport() call
+  // regardless of what ran before it.
+  const G4DynamicParticle* inputDynamicParticle =
+      G4InputTrack.GetDynamicParticle();
+  const G4ParticleDefinition* inputParticleDef =
+      inputDynamicParticle->GetDefinition();
+  G4ChargeState chargeState(inputDynamicParticle->GetCharge(),
+                            inputDynamicParticle->GetMagneticMoment(),
+                            inputParticleDef->GetPDGSpin());
+  propagator.GetCurrentEquationOfMotion()->SetChargeMomentumMass(
+      chargeState,
+      inputDynamicParticle->GetTotalMomentum(),
+      inputDynamicParticle->GetMass());
 
   // The chord finder lives on the (thread-local) field manager, not on the
   // freshly built propagator, so it is the one piece of state not already reset
