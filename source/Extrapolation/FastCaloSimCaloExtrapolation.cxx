@@ -13,7 +13,9 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
+#include "FastCaloSim/Core/FCSDebugPrint.h"
 #include "G4FieldTrack.hh"
 
 /* Preprocessor macro to use
@@ -207,12 +209,22 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
           // result.IDCaloBoundary_phi() is the join key back to the
           // FastCaloSim::DoIt()-level debug print (already confirmed
           // bit-identical between ST/MT for the target event).
-          if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")) {
-            std::cout << std::setprecision(17) << "[FCS_DEBUG_LAYERS] joinPhi="
-                      << result.IDCaloBoundary_phi()
-                      << " joinEta=" << result.IDCaloBoundary_eta()
-                      << " sample=" << sample << " subpos=" << subpos
-                      << " cylZ=" << cylZ << " cylR=" << cylR << std::endl;
+          if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
+              && fcsDebugShouldPrint(result.IDCaloBoundary_phi()))
+          {
+            // Assembled into a string and printed under a mutex: MT calls
+            // this from multiple worker threads concurrently, and
+            // std::cout's operator<< chains are not atomic across threads --
+            // without this, lines from different threads interleave
+            // mid-number and corrupt each other.
+            std::ostringstream oss;
+            oss << std::setprecision(17)
+                << "[FCS_DEBUG_LAYERS] joinPhi=" << result.IDCaloBoundary_phi()
+                << " joinEta=" << result.IDCaloBoundary_eta()
+                << " sample=" << sample << " subpos=" << subpos
+                << " cylZ=" << cylZ << " cylR=" << cylR << "\n";
+            std::lock_guard<std::mutex> lock(fcsDebugPrintMutex());
+            std::cout << oss.str() << std::flush;
           }
         } else {
           // if we are not at barrel surface, extrapolate to cylinder with
@@ -263,29 +275,37 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
           if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
               && (sample == 0 || sample == 1 || sample == 2 || sample == 3
                   || sample == 5 || sample == 12 || sample == 13
-                  || sample == 14))
+                  || sample == 14)
+              && fcsDebugShouldPrint(result.IDCaloBoundary_phi()))
           {
-            std::cout << std::setprecision(17) << "[FCS_DEBUG_RESULT] joinPhi="
-                      << result.IDCaloBoundary_phi()
-                      << " joinEta=" << result.IDCaloBoundary_eta()
-                      << " sample=" << sample << " subpos=" << subpos
-                      << " OK=1 scale=" << scale
-                      << " eta=" << result.eta(sample, subpos)
-                      << " phi=" << result.phi(sample, subpos)
-                      << " z=" << result.z(sample, subpos)
-                      << " r=" << result.r(sample, subpos) << std::endl;
+            std::ostringstream oss;
+            oss << std::setprecision(17)
+                << "[FCS_DEBUG_RESULT] joinPhi=" << result.IDCaloBoundary_phi()
+                << " joinEta=" << result.IDCaloBoundary_eta()
+                << " sample=" << sample << " subpos=" << subpos
+                << " OK=1 scale=" << scale
+                << " eta=" << result.eta(sample, subpos)
+                << " phi=" << result.phi(sample, subpos)
+                << " z=" << result.z(sample, subpos)
+                << " r=" << result.r(sample, subpos) << "\n";
+            std::lock_guard<std::mutex> lock(fcsDebugPrintMutex());
+            std::cout << oss.str() << std::flush;
           }
         } else {
           if (std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
               && (sample == 0 || sample == 1 || sample == 2 || sample == 3
                   || sample == 5 || sample == 12 || sample == 13
-                  || sample == 14))
+                  || sample == 14)
+              && fcsDebugShouldPrint(result.IDCaloBoundary_phi()))
           {
-            std::cout << std::setprecision(17) << "[FCS_DEBUG_RESULT] joinPhi="
-                      << result.IDCaloBoundary_phi()
-                      << " joinEta=" << result.IDCaloBoundary_eta()
-                      << " sample=" << sample << " subpos=" << subpos << " OK=0"
-                      << std::endl;
+            std::ostringstream oss;
+            oss << std::setprecision(17)
+                << "[FCS_DEBUG_RESULT] joinPhi=" << result.IDCaloBoundary_phi()
+                << " joinEta=" << result.IDCaloBoundary_eta()
+                << " sample=" << sample << " subpos=" << subpos << " OK=0"
+                << "\n";
+            std::lock_guard<std::mutex> lock(fcsDebugPrintMutex());
+            std::cout << oss.str() << std::flush;
           }
           FCS_MSG_COND(
               " [extrapolateToLayers] Extrapolation to cylinder failed. Sample="
