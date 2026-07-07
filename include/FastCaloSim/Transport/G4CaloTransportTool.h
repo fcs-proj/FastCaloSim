@@ -4,15 +4,16 @@
 #define G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H
 
 #include <mutex>
+#include <string>
+#include <vector>
 
 #include <FastCaloSim/FastCaloSim_export.h>
-
-#include "FastCaloSim/Transport/ThreadLocalHolder.h"
-#include "G4PropagatorInField.hh"
 
 class G4Track;
 class G4VPhysicalVolume;
 class G4FieldTrack;
+class G4Navigator;
+class G4PropagatorInField;
 
 /// @class G4CaloTransportTool
 /// @brief A tool which transports particles through the Geant4 geometry.
@@ -34,9 +35,11 @@ public:
   /// (i.e. a valid world volume is available).
   bool initializeGeometry();
 
-  // Initialize the thread-local propagator for the current thread. Requires
-  // initializeGeometry() to have run first; returns false (without building a
-  // propagator) if the shared world volume is not available.
+  // Confirm that the current thread is ready to transport particles. Requires
+  // initializeGeometry() to have run (on the master thread) first; returns
+  // false if the shared world volume is not available. transport() builds its
+  // own navigator/propagator per call, so this no longer caches any per-thread
+  // state; it is kept as an explicit readiness check for callers.
   bool initializePropagator();
 
   // Transport input track through the geometry
@@ -70,11 +73,9 @@ private:
   /// @brief Obtain the world volume in which particle transport is performed
   auto getWorldVolume() -> G4VPhysicalVolume*;
 
-  /// @brief Create and return a new G4PropagatorInField.
-  auto makePropagator() -> G4PropagatorInField*;
-
-  /// @brief Advance the track by one Geant4 step in the geometry
-  void doStep(G4FieldTrack& fieldTrack);
+  /// @brief Advance the track by one Geant4 step in the geometry, using the
+  /// propagator (and its navigator) supplied by transport().
+  void doStep(G4PropagatorInField& propagator, G4FieldTrack& fieldTrack);
 
   /// Pointer to the physical volume of the world (either simplified or full
   /// geometry). Shared across all threads; created exactly once via
@@ -98,9 +99,6 @@ private:
 
   /// Maximum number of steps allowed in particle transport
   unsigned int m_maxSteps = 100;
-
-  /// Thread-local holder for G4PropagatorInField instances
-  thread_utils::ThreadLocalHolder<G4PropagatorInField> m_propagatorHolder;
 };
 
 #endif  // G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H

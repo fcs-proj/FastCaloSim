@@ -9,22 +9,19 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4Navigator.hh"
 #include "G4PVPlacement.hh"
-#include "G4PathFinder.hh"
+#include "G4PropagatorInField.hh"
+#include "G4Threading.hh"
 #include "G4TransportationManager.hh"
 
 G4CaloTransportTool::G4CaloTransportTool() = default;
 
 G4CaloTransportTool::~G4CaloTransportTool()
 {
-  // Delete the world volume if we created it
+  // Delete the world volume if we created it. The per-call navigator and
+  // propagator built inside transport() are stack-scoped and clean up
+  // themselves, so there is no per-thread transport state to release here.
   if (m_useSimplifiedGeo) {
     delete m_worldVolume;
-  }
-
-  // Delete the navigators and propagators for each thread
-  for (auto& mapPair : m_propagatorHolder.getMap()) {
-    delete mapPair.second->GetNavigatorForPropagating();
-    delete mapPair.second;
   }
 }
 
@@ -74,7 +71,9 @@ bool G4CaloTransportTool::initializeGeometry()
 bool G4CaloTransportTool::initializePropagator()
 {
   // The shared world volume must have been created on the master thread by
-  // initializeGeometry() before any worker builds its thread-local propagator.
+  // initializeGeometry() before any worker transports a particle. transport()
+  // now builds its own navigator/propagator per call (see the rationale there),
+  // so there is nothing to cache here; this is purely a readiness check.
   if (!m_worldVolume) {
     G4Exception("G4CaloTransportTool::initializePropagator",
                 "WorldVolumeNotInitialized",
@@ -83,18 +82,6 @@ bool G4CaloTransportTool::initializePropagator()
                 "initializeGeometry() must be called on the master thread "
                 "before initializePropagator().");
     return false;
-  }
-
-  // Check if we already have a propagator set up for the current thread. This
-  // method is idempotent so it can also be used as a lazy guard before
-  // transport(); it only logs and builds a propagator the first time it runs on
-  // a given thread.
-  auto* propagator = m_propagatorHolder.get();
-  if (!propagator) {
-    G4cout << "Initializing G4PropagatorInField for thread "
-           << G4Threading::G4GetThreadId() << G4endl;
-    propagator = makePropagator();
-    m_propagatorHolder.set(propagator);
   }
 
   return true;
@@ -142,27 +129,11 @@ auto G4CaloTransportTool::getWorldVolume() -> G4VPhysicalVolume*
   }
 }
 
-auto G4CaloTransportTool::makePropagator() -> G4PropagatorInField*
+void G4CaloTransportTool::doStep(G4PropagatorInField& propagator,
+                                 G4FieldTrack& fieldTrack)
 {
-  // Create a new navigator
-  G4Navigator* navigator = new G4Navigator();
-  // Set world volume in which the navigator will operate
-  navigator->SetWorldVolume(m_worldVolume);
-  // Get the global field manager
-  G4FieldManager* fieldMgr =
-      G4TransportationManager::GetTransportationManager()->GetFieldManager();
-  // Create a new magnetic field propagator
-  G4PropagatorInField* propagator =
-      new G4PropagatorInField(navigator, fieldMgr);
-
-  return propagator;
-}
-
-void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack)
-{
-  // Get the propagator and navigator for the current thread
-  auto propagator = m_propagatorHolder.get();
-  auto navigator = propagator->GetNavigatorForPropagating();
+  // Use the navigator owned by the propagator built for this transport() call
+  auto* navigator = propagator.GetNavigatorForPropagating();
 
   G4double retSafety = -1.0;
   G4double currentMinimumStep = 10.0 * CLHEP::m;
@@ -191,7 +162,7 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack)
 
   } else {
     /* Charged particles: transport with magnetic field propagator */
-    propagator->ComputeStep(
+    propagator.ComputeStep(
         fieldTrack, currentMinimumStep, retSafety, currentPhysVol);
   }
 }
@@ -202,47 +173,57 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
   // Create a vector to store the output steps
   std::vector<G4FieldTrack> outputStepVector;
 
-  // The thread-local propagator must have been built by initializePropagator()
-  // before transport() is called on this thread. Fail loudly instead of
-  // dereferencing a null propagator.
-  auto* propagator = m_propagatorHolder.get();
-  if (!propagator) {
+  // The shared world volume must have been created on the master thread by
+  // initializeGeometry() before any particle is transported. Fail loudly
+  // instead of navigating a null world.
+  if (!m_worldVolume) {
     G4Exception("G4CaloTransportTool::transport",
-                "PropagatorNotInitialized",
+                "WorldVolumeNotInitialized",
                 JustWarning,
-                "G4CaloTransportTool: no propagator for this thread. "
-                "initializeGeometry() (master) and initializePropagator() "
-                "(per thread) must be called before transport().");
+                "G4CaloTransportTool: world volume is not initialized. "
+                "initializeGeometry() must be called on the master thread "
+                "before transport().");
     return outputStepVector;
   }
 
-  // Get the navigator for the current thread
-  auto* navigator = propagator->GetNavigatorForPropagating();
+  // Build a fresh navigator and propagator for this single transport() call.
+  //
+  // Rationale: previously one propagator/navigator was cached per thread and
+  // reset at the top of every call. Making that reset bit-for-bit equivalent to
+  // a freshly constructed propagator proved impractical -- Geant4 spreads
+  // per-track state across the propagator (looping/zero-step counters,
+  // intersection-locator caches, first/last-step-in-volume flags), its
+  // navigator (located-point and safety caches, zero-step/push machinery) and
+  // the field manager's chord finder, and any field the reset misses leaks
+  // between calls. Because the mapping of events to worker threads differs
+  // between single- and multi-threaded running, such leakage makes a shower
+  // depend on which events the thread processed before it, which breaks single-
+  // vs multi-threaded reproducibility. Constructing the state fresh per call
+  // removes that dependency by construction: each transport() sees only the
+  // input track. The cost (one navigator + propagator per transported particle)
+  // is negligible next to the field-integration steps below, and it mirrors how
+  // every Geant4 worker owns a private navigator over the shared, read-only
+  // geometry. The objects are stack-scoped and destruct in reverse declaration
+  // order (propagator before navigator), so there is nothing to clean up.
+  G4Navigator navigator;
+  navigator.SetWorldVolume(m_worldVolume);
+  G4FieldManager* fieldMgr =
+      G4TransportationManager::GetTransportationManager()->GetFieldManager();
+  G4PropagatorInField propagator(&navigator, fieldMgr);
+
+  // The chord finder lives on the (thread-local) field manager, not on the
+  // freshly built propagator, so it is the one piece of state not already reset
+  // by construction above. Clear its cached last step-size estimate so field
+  // propagation does not depend on the previous transport on this thread.
+  G4FieldManagerStore::GetInstance()->ClearAllChordFindersState();
+
   // Initialize the tmpFieldTrack with the input track
   G4FieldTrack tmpFieldTrack('0');
   G4FieldTrackUpdator::Update(&tmpFieldTrack, &G4InputTrack);
 
-  // Make the transport result depend only on the input track, not on whatever
-  // was transported previously on this thread. The propagator accumulates
-  // state across calls (zero-step counters, cached safety values used by the
-  // intersection locator), the chord finders of the field managers cache the
-  // last step-size estimate, and the navigator caches the last located point
-  // for relative searches. Normal Geant4 tracking clears all of this at the
-  // start of every track (G4Transportation::StartTracking); without the
-  // equivalent reset here, transporting the same particle can give slightly
-  // different results depending on the processing history of the calling
-  // thread, breaking single-threaded vs multi-threaded reproducibility.
-  propagator->ClearPropagatorState();
-  G4FieldManagerStore::GetInstance()->ClearAllChordFindersState();
-  // ResetStackAndState clears the navigator state the relocation below does
-  // not: the zero-step/push machinery (fLastStepWasZero, fPushed,
-  // fNumberZeroSteps, fLocatedOnEdge) and the navigator's own cached safety.
-  // Normal tracking clears these per track via ResetHierarchyAndLocate ->
-  // ResetState in G4SteppingManager::SetInitialStep; without the equivalent
-  // here they persist across transport() calls and can alter the stuck-track
-  // push behavior of the next transport, i.e. carry state across events.
-  navigator->ResetStackAndState();
-  navigator->LocateGlobalPointAndSetup(
+  // Establish the starting location with an absolute (non-relative) search so
+  // the first step does not depend on any prior navigator history.
+  navigator.LocateGlobalPointAndSetup(
       tmpFieldTrack.GetPosition(), nullptr, /*relativeSearch=*/false);
 
   // Fill with the initial particle position
@@ -251,11 +232,11 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
   // Iterate until we reach the maximum number of steps or the requested volume
   for (unsigned int iStep = 0; iStep < m_maxSteps; iStep++) {
     // Perform a single Geant4 step
-    doStep(tmpFieldTrack);
+    doStep(propagator, tmpFieldTrack);
     // Fill the output vector with the updated track
     outputStepVector.push_back(tmpFieldTrack);
     // Get the name of the volume in which the particle is located
-    auto volume = navigator->LocateGlobalPointAndSetup(
+    auto volume = navigator.LocateGlobalPointAndSetup(
         tmpFieldTrack.GetPosition(), nullptr);
     if (volume != nullptr) {
       std::string volName = volume->GetName();
