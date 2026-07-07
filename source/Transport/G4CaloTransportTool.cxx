@@ -8,6 +8,8 @@
 #include <sstream>
 
 #include "FastCaloSim/Core/FCSDebugPrint.h"
+#include "G4AtlasRK4.hh"
+#include "G4ChordFinder.hh"
 #include "G4FieldManagerStore.hh"
 #include "G4FieldTrack.hh"
 #include "G4FieldTrackUpdator.hh"
@@ -18,6 +20,42 @@
 #include "G4Threading.hh"
 #include "G4Track.hh"
 #include "G4TransportationManager.hh"
+#include "G4VIntegrationDriver.hh"
+
+namespace
+{
+// RAII guard: forces G4AtlasRK4 to recompute its cached momentum-to-force
+// conversion factor (m_cof/m_imom, derived from the momentum magnitude
+// m_mom) on every Stepper() call for the lifetime of this guard, then
+// restores whatever tolerance was configured before. See the long comment
+// in transport() for why this exists. No-op if the stepper isn't a
+// G4AtlasRK4 (e.g. a differently-configured job) or is null.
+struct ScopedAtlasRK4CacheDisable
+{
+  G4AtlasRK4* stepper;
+  G4double savedFraction;
+
+  explicit ScopedAtlasRK4CacheDisable(G4AtlasRK4* s)
+      : stepper(s)
+      , savedFraction(s ? s->GetChangeFraction() : 0.0)
+  {
+    if (stepper) {
+      stepper->SetChangeFraction(0.0);
+    }
+  }
+
+  ~ScopedAtlasRK4CacheDisable()
+  {
+    if (stepper) {
+      stepper->SetChangeFraction(savedFraction);
+    }
+  }
+
+  ScopedAtlasRK4CacheDisable(const ScopedAtlasRK4CacheDisable&) = delete;
+  ScopedAtlasRK4CacheDisable& operator=(const ScopedAtlasRK4CacheDisable&) =
+      delete;
+};
+}  // namespace
 
 G4CaloTransportTool::G4CaloTransportTool() = default;
 
@@ -222,6 +260,71 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
   // by construction above. Clear its cached last step-size estimate so field
   // propagation does not depend on the previous transport on this thread.
   G4FieldManagerStore::GetInstance()->ClearAllChordFindersState();
+
+  // The stepper itself (owned by the chord finder, which lives on the
+  // thread-persistent field manager -- NOT rebuilt fresh above, and NOT
+  // touched by ClearAllChordFindersState()) can carry its own leftover
+  // per-track state across calls. Concretely: G4AtlasRK4 (ATLAS's default
+  // field stepper, "Sim.G4Stepper"="AtlasRK4") caches the momentum
+  // magnitude of whichever track last used it (m_mom, and the derived
+  // m_cof/m_imom force-scaling factors) and only recomputes them if the new
+  // track's momentum differs by more than a relative tolerance
+  // (GetChangeFraction(), default 1e-7) -- a valid optimization *within* one
+  // track's own step sequence (momentum magnitude barely changes step to
+  // step in a magnetic field) but not across the boundary into an unrelated
+  // track. Since transport() is called once per particle and the stepper is
+  // shared across the whole thread's lifetime, if this new particle's
+  // momentum happens to coincidentally fall within that tolerance of
+  // whatever the thread's previous particle left behind, the stale
+  // force-scaling factor gets reused for this particle's first RK4
+  // sub-steps -- a tiny perturbation that an adaptive stepper responds to
+  // with a different step count, without changing where the track
+  // ultimately ends up (matches the observed symptom exactly: identical
+  // IDCaloBoundary crossing point, different caloSteps.size() between ST
+  // and MT for a small fraction of particles).
+  G4AtlasRK4* atlasStepper = nullptr;
+  if (G4ChordFinder* chordFinder = fieldMgr->GetChordFinder()) {
+    if (G4VIntegrationDriver* driver = chordFinder->GetIntegrationDriver()) {
+      atlasStepper = dynamic_cast<G4AtlasRK4*>(driver->GetStepper());
+    }
+  }
+
+  // FCS_DEBUG_EXTRAPOL_EVENT + FCS_DEBUG_POS_FILTER_FILE-gated confirmation:
+  // log the current particle's momentum against whatever is cached in the
+  // stepper *before* the fix below touches anything, to directly show
+  // whether the two coincidentally nearly match (the trigger condition for
+  // the bug described above).
+  if (atlasStepper && std::getenv("FCS_DEBUG_EXTRAPOL_EVENT")
+      && fcsDebugShouldPrintPos(G4InputTrack.GetPosition().x(),
+                                G4InputTrack.GetPosition().y(),
+                                G4InputTrack.GetPosition().z()))
+  {
+    std::ostringstream oss;
+    oss << std::setprecision(17) << "[FCS_DEBUG_STEPPER_CACHE] joinPos=("
+        << G4InputTrack.GetPosition().x() << ","
+        << G4InputTrack.GetPosition().y() << ","
+        << G4InputTrack.GetPosition().z()
+        << ") curMom=" << G4InputTrack.GetMomentum().mag()
+        << " cachedMom=" << atlasStepper->GetCachedMomentum()
+        << " fraction=" << atlasStepper->GetChangeFraction() << "\n";
+    std::lock_guard<std::mutex> lock(fcsDebugPrintMutex());
+    std::cout << oss.str() << std::flush;
+  }
+
+  // The fix: force every Stepper() call during this transport() to recompute
+  // the momentum-derived scaling factors fresh from this particle's own
+  // momentum, regardless of what the stepper's cache holds on entry. This
+  // makes this transport() call's result depend only on its own input, never
+  // on which particle happened to run on this thread before it. Restored to
+  // whatever it was on scope exit, so this only affects FastCaloSim's own
+  // re-transport, not the shared field manager's behavior for any other
+  // (e.g. real G4 tracking) use on this thread.
+  //
+  // FCS_DISABLE_STEPPER_FIX=1 skips applying it (confirmation print above
+  // still fires), so the natural bug can be caught directly instead of
+  // simultaneously being masked by this same run's fix.
+  ScopedAtlasRK4CacheDisable stepperCacheGuard(
+      std::getenv("FCS_DISABLE_STEPPER_FIX") ? nullptr : atlasStepper);
 
   // Initialize the tmpFieldTrack with the input track
   G4FieldTrack tmpFieldTrack('0');
