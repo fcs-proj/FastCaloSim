@@ -2,7 +2,10 @@
 
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
 
-// Geant4 includes for for particle extrapolation
+// Geant4 includes for particle extrapolation
+#include "G4ChargeState.hh"
+#include "G4DynamicParticle.hh"
+#include "G4EquationOfMotion.hh"
 #include "G4FieldManagerStore.hh"
 #include "G4FieldTrack.hh"
 #include "G4FieldTrackUpdator.hh"
@@ -11,6 +14,7 @@
 #include "G4PVPlacement.hh"
 #include "G4PropagatorInField.hh"
 #include "G4Threading.hh"
+#include "G4Track.hh"
 #include "G4TransportationManager.hh"
 
 G4CaloTransportTool::G4CaloTransportTool() = default;
@@ -31,13 +35,13 @@ bool G4CaloTransportTool::initializeGeometry()
   // exactly once, on the master thread. getWorldVolume() registers a
   // G4PVPlacement into the global Geant4 geometry stores in the
   // simplified-geometry case; doing so concurrently from multiple worker
-  // threads (as the previous per-worker initializePropagator() did) is a data
-  // race that can produce duplicate world volumes and subtly different
-  // navigation between threads. Building it once on the master thread also
-  // keeps the Geant4 split-class per-thread data for the world correctly sized
-  // across all workers. std::call_once guarantees once-only execution but not
-  // which thread runs it, so restrict the actual creation to the master thread;
-  // worker threads only report whether the shared world is ready.
+  // threads is a data race that can produce duplicate world volumes and
+  // subtly different navigation between threads. Building it once on the
+  // master thread also keeps the Geant4 split-class per-thread data for the
+  // world correctly sized across all workers. std::call_once guarantees
+  // once-only execution but not which thread runs it, so restrict the actual
+  // creation to the master thread; worker threads only report whether the
+  // shared world is ready.
   if (!G4Threading::IsMasterThread()) {
     return m_worldVolume != nullptr;
   }
@@ -71,9 +75,9 @@ bool G4CaloTransportTool::initializeGeometry()
 bool G4CaloTransportTool::initializePropagator()
 {
   // The shared world volume must have been created on the master thread by
-  // initializeGeometry() before any worker transports a particle. transport()
-  // now builds its own navigator/propagator per call (see the rationale there),
-  // so there is nothing to cache here; this is purely a readiness check.
+  // initializeGeometry() before any worker transports a particle. Each call
+  // to transport() builds its own navigator/propagator (see the comment
+  // there), so this is purely a readiness check.
   if (!m_worldVolume) {
     G4Exception("G4CaloTransportTool::initializePropagator",
                 "WorldVolumeNotInitialized",
@@ -188,28 +192,53 @@ std::vector<G4FieldTrack> G4CaloTransportTool::transport(
 
   // Build a fresh navigator and propagator for this single transport() call.
   //
-  // Rationale: previously one propagator/navigator was cached per thread and
-  // reset at the top of every call. Making that reset bit-for-bit equivalent to
-  // a freshly constructed propagator proved impractical -- Geant4 spreads
-  // per-track state across the propagator (looping/zero-step counters,
-  // intersection-locator caches, first/last-step-in-volume flags), its
-  // navigator (located-point and safety caches, zero-step/push machinery) and
-  // the field manager's chord finder, and any field the reset misses leaks
-  // between calls. Because the mapping of events to worker threads differs
-  // between single- and multi-threaded running, such leakage makes a shower
-  // depend on which events the thread processed before it, which breaks single-
-  // vs multi-threaded reproducibility. Constructing the state fresh per call
-  // removes that dependency by construction: each transport() sees only the
-  // input track. The cost (one navigator + propagator per transported particle)
-  // is negligible next to the field-integration steps below, and it mirrors how
-  // every Geant4 worker owns a private navigator over the shared, read-only
-  // geometry. The objects are stack-scoped and destruct in reverse declaration
-  // order (propagator before navigator), so there is nothing to clean up.
+  // Geant4 spreads per-track state across the propagator (looping/zero-step
+  // counters, intersection-locator caches, first/last-step-in-volume flags),
+  // its navigator (located-point and safety caches, zero-step/push
+  // machinery), and the field manager's chord finder. A propagator/navigator
+  // reused across calls would carry any of this state forward unless every
+  // field were explicitly reset, and a missed field leaks state between
+  // calls. Since the mapping of events to worker threads differs between
+  // single- and multi-threaded running, such leakage would make a shower's
+  // result depend on which events the thread happened to process before it --
+  // breaking single- vs multi-threaded reproducibility. Constructing the
+  // state fresh per call removes that dependency by construction: each
+  // transport() call sees only its own input track. The cost (one navigator
+  // + propagator per transported particle) is negligible next to the
+  // field-integration steps below, and it mirrors how every Geant4 worker
+  // owns a private navigator over the shared, read-only geometry. The
+  // objects are stack-scoped and destruct in reverse declaration order
+  // (propagator before navigator), so there is nothing to clean up.
   G4Navigator navigator;
   navigator.SetWorldVolume(m_worldVolume);
   G4FieldManager* fieldMgr =
       G4TransportationManager::GetTransportationManager()->GetFieldManager();
   G4PropagatorInField propagator(&navigator, fieldMgr);
+
+  // Configure the (thread-persistent, shared) equation of motion with THIS
+  // particle's charge/mass/moments before stepping, exactly as real Geant4
+  // tracking does on every step (see G4Transportation::AlongStepDoIt, which
+  // builds a fresh G4ChargeState from the current track and calls
+  // SetChargeMomentumMass() every time). The equation of motion is shared
+  // across the thread's entire lifetime and is not rebuilt by the fresh
+  // navigator/propagator constructed above, so skipping this would leave it
+  // holding whatever charge/mass the previous track on this thread left
+  // behind (real G4 tracking of some other particle, or FastCaloSim's own
+  // previous transport() call). A wrong charge flips the Lorentz-force
+  // curvature outright -- a completely different trajectory from the very
+  // first step, not a subtle numerical difference -- so this must run before
+  // every transport() call regardless of what ran before it.
+  const G4DynamicParticle* inputDynamicParticle =
+      G4InputTrack.GetDynamicParticle();
+  const G4ParticleDefinition* inputParticleDef =
+      inputDynamicParticle->GetDefinition();
+  G4ChargeState chargeState(inputDynamicParticle->GetCharge(),
+                            inputDynamicParticle->GetMagneticMoment(),
+                            inputParticleDef->GetPDGSpin());
+  propagator.GetCurrentEquationOfMotion()->SetChargeMomentumMass(
+      chargeState,
+      inputDynamicParticle->GetTotalMomentum(),
+      inputDynamicParticle->GetMass());
 
   // The chord finder lives on the (thread-local) field manager, not on the
   // freshly built propagator, so it is the one piece of state not already reset
