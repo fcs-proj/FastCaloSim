@@ -42,7 +42,7 @@ void TFCSSimpleLWTNNHandler::setupNet()
       config.inputs, config.layers, config.outputs);
   // Get the output layers
   FCS_MSG_DEBUG("Getting output layers for neural network");
-  for (std::string name : config.outputs) {
+  for (const std::string& name : config.outputs) {
     FCS_MSG_VERBOSE("Found output layer called " << name);
     m_outputLayers.push_back(name);
   };
@@ -69,7 +69,7 @@ TFCSSimpleLWTNNHandler::NetworkOutputs TFCSSimpleLWTNNHandler::compute(
                   << " An LWTNN neural network can only handle one node.");
   };
   std::map<std::string, double> flat_inputs;
-  for (auto node : inputs) {
+  for (const auto& node : inputs) {
     flat_inputs = node.second;
   }
   // Now we have flattened, we can compute.

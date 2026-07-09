@@ -28,7 +28,7 @@ TFCSPhiModulationCorrection::TFCSPhiModulationCorrection(const char* name,
 TFCSPhiModulationCorrection::~TFCSPhiModulationCorrection() {}
 
 void TFCSPhiModulationCorrection::load_phi_modulation(
-    std::string filename,
+    const std::string& filename,
     long unsigned int layer_index,
     float eta_min,
     float eta_max,

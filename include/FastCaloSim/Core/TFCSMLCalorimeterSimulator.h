@@ -18,18 +18,18 @@ public:
   TFCSMLCalorimeterSimulator();
   virtual ~TFCSMLCalorimeterSimulator();
 
-  typedef struct
+  struct layer_t
   {
     std::vector<unsigned int> bin_index_vector;
     std::vector<float> E_vector;
-  } layer_t;
+  };
 
-  typedef struct
+  struct event_t
   {
     std::vector<layer_t> event_data;
-  } event_t;
+  };
 
-  bool loadSimulator(std::string filename);
+  bool loadSimulator(const std::string& filename);
 
   void Print() const;
 

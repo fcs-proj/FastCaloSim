@@ -132,7 +132,7 @@ bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
         transform[x][y] = func;
       }
     }
-    m_transform.push_back(transform);
+    m_transform.push_back(std::move(transform));
     ++bin;
   }
 

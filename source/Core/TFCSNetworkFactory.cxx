@@ -130,7 +130,7 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
     FCS_MSG_NOCLASS(
         logger,
         "No data in bytes, string contains data, " << "creating from string.");
-    return create(string_input);
+    return create(std::move(string_input));
   } else {
     throw std::invalid_argument(
         "Neither vector_input nor string_input contain data");
@@ -156,7 +156,7 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
     FCS_MSG_NOCLASS(
         logger,
         "No data in bytes, string contains data, " << "creating from string.");
-    return create(string_input, graph_form);
+    return create(std::move(string_input), graph_form);
   } else {
     throw std::invalid_argument(
         "Neither vector_input nor string_input contain data");

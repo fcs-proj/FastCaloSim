@@ -34,6 +34,9 @@ public:
                   const TFCSGANXMLParameters& param);
   virtual ~TFCSGANEtaSlice();
 
+  TFCSGANEtaSlice(const TFCSGANEtaSlice&) = delete;
+  TFCSGANEtaSlice& operator=(const TFCSGANEtaSlice&) = delete;
+
   typedef std::map<int, std::vector<double>> FitResultsPerLayer;
   typedef std::map<int, double> ExtrapolatorWeights;
   typedef std::map<std::string, std::map<std::string, double>> NetworkInputs;
@@ -45,18 +48,21 @@ public:
 
   NetworkOutputs GetNetworkOutputs(const TFCSTruthState* truth,
                                    const TFCSExtrapolationState* extrapol,
-                                   TFCSSimulationState simulstate) const;
+                                   TFCSSimulationState& simulstate) const;
 
   bool IsGanCorrectlyLoaded() const;
-  FitResultsPerLayer GetFitResults() const { return m_allFitResults; }
-  ExtrapolatorWeights GetExtrapolatorWeights() { return m_extrapolatorWeights; }
+  const FitResultsPerLayer& GetFitResults() const { return m_allFitResults; }
+  const ExtrapolatorWeights& GetExtrapolatorWeights() const
+  {
+    return m_extrapolatorWeights;
+  }
 
   void Print() const;
 
 private:
-  int m_pid;
-  int m_etaMin;
-  int m_etaMax;
+  int m_pid {};
+  int m_etaMin {};
+  int m_etaMax {};
 
   std::string m_inputFolderName;
 

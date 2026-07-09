@@ -3,6 +3,7 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
 #define ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
 
+#include <mutex>
 #include <string>
 
 #include "FastCaloSim/Core/TFCSGANEtaSlice.h"
@@ -84,7 +85,7 @@ public:
   {
     return m_param.GetBinning();
   };
-  const TFCSGANEtaSlice::ExtrapolatorWeights get_ExtrapolationWeights() const
+  const TFCSGANEtaSlice::ExtrapolatorWeights& get_ExtrapolationWeights() const
   {
     return m_slice->GetExtrapolatorWeights();
   };
@@ -111,7 +112,7 @@ protected:
                                 std::string FastCaloGANInputFolderName);
 
 private:
-  static int GetBinsInFours(double const& bins);
+  static int GetBinsInFours(double const bins);
   int GetAlphaBinsForRBin(const TAxis* x, int ix, int yBinNum) const;
 
   std::vector<int> m_bin_ninit;
@@ -123,6 +124,7 @@ private:
 
   TFCSGANEtaSlice* m_slice = nullptr;
   TFCSGANXMLParameters m_param;
+  mutable std::mutex m_mutex;  //! Do not persistify
 
   ClassDefOverride(TFCSEnergyAndHitGANV2, 2)  // TFCSEnergyAndHitGANV2
 };

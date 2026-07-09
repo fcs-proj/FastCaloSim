@@ -5,6 +5,8 @@
 #ifndef FCS_Cell
 #define FCS_Cell
 
+#include <algorithm>  // std::sort, std::remove_if
+#include <cmath>  // std::fabs
 #include <vector>
 
 #include <Rtypes.h>
@@ -12,12 +14,12 @@
 
 struct FCS_cell
 {
-  Long64_t cell_identifier;
-  int sampling;
-  float energy;
-  float center_x;
-  float center_y;
-  float center_z;  // to be updated later
+  Long64_t cell_identifier {};
+  int sampling {};
+  float energy {};
+  float center_x {};
+  float center_y {};
+  float center_z {};  // to be updated later
   auto operator<(const FCS_cell& rhs) const -> bool
   {
     return energy > rhs.energy;
@@ -26,30 +28,28 @@ struct FCS_cell
 
 struct FCS_hit  // this is the FCS detailed hit
 {
-  Long64_t identifier;  // hit in the same tile cell can have two identifiers
-                        // (for two PMTs)
-  Long64_t cell_identifier;
-  int sampling;  // calorimeter layer
-  float hit_energy;  // energy is already scaled for the sampling fraction
-  float hit_time;
-  float hit_x;
-  float hit_y;
-  float hit_z;
+  Long64_t identifier {};  // hit in the same tile cell can have two
+                           // identifiers (for two PMTs)
+  Long64_t cell_identifier {};
+  int sampling {};  // calorimeter layer
+  float hit_energy {};  // energy is already scaled for the sampling fraction
+  float hit_time {};
+  float hit_x {};
+  float hit_y {};
+  float hit_z {};
   auto operator<(const FCS_hit& rhs) const -> bool
   {
     return hit_energy > rhs.hit_energy;
   };
-  // float  hit_sampfrac;
 };
 
 struct FCS_g4hit  // this is the standard G4Hit
 {
-  Long64_t identifier;
-  Long64_t cell_identifier;
-  int sampling;
-  float hit_energy;
-  float hit_time;
-  // float  hit_sampfrac;
+  Long64_t identifier {};
+  Long64_t cell_identifier {};
+  int sampling {};
+  float hit_energy {};
+  float hit_time {};
   auto operator<(const FCS_g4hit& rhs) const -> bool
   {
     return hit_energy > rhs.hit_energy;
@@ -122,7 +122,10 @@ struct FCS_matchedcellvector  // this is the matched structure for the whole
     return m_vector[place];
   };
   inline auto size() const -> unsigned int { return m_vector.size(); };
-  inline void push_back(FCS_matchedcell cell) { m_vector.push_back(cell); };
+  inline void push_back(const FCS_matchedcell& cell)
+  {
+    m_vector.push_back(cell);
+  };
   inline void sort_cells() { std::sort(m_vector.begin(), m_vector.end()); };
   inline void sort()
   {
@@ -136,14 +139,15 @@ struct FCS_matchedcellvector  // this is the matched structure for the whole
     for (auto& i : m_vector) {
       i.time_trim(timing_cut);
     };
-    m_vector.erase(std::remove_if(m_vector.begin(),
-                                  m_vector.end(),
-                                  [](const FCS_matchedcell& rhs)
-                                  {
-                                    return (rhs.hit.empty() && rhs.g4hit.empty()
-                                            && fabs(rhs.cell.energy) < 1e-3);
-                                  }),
-                   m_vector.end());
+    m_vector.erase(
+        std::remove_if(m_vector.begin(),
+                       m_vector.end(),
+                       [](const FCS_matchedcell& rhs)
+                       {
+                         return (rhs.hit.empty() && rhs.g4hit.empty()
+                                 && std::fabs(rhs.cell.energy) < 1e-3);
+                       }),
+        m_vector.end());
   };
   inline auto scalingfactor() -> float
   {

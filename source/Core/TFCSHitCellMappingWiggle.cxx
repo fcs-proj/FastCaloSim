@@ -28,17 +28,26 @@ TFCSHitCellMappingWiggle::TFCSHitCellMappingWiggle(const char* name,
 
 TFCSHitCellMappingWiggle::~TFCSHitCellMappingWiggle()
 {
-  for (const auto* function : m_functions)
-    delete function;
+  clear();
+}
+
+void TFCSHitCellMappingWiggle::clear()
+{
+  for (auto*& function : m_functions) {
+    if (function) {
+      delete function;
+      function = nullptr;
+    }
+  }
+  m_functions.clear();
+  m_bin_low_edge.clear();
 }
 
 void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction* func)
 {
   if (!func)
     return;
-  for (const auto* function : m_functions)
-    if (function)
-      delete function;
+  clear();
 
   m_functions.resize(1);
   m_functions[0] = func;
@@ -58,9 +67,7 @@ void TFCSHitCellMappingWiggle::initialize(
                            << bin_low_edges.size() << "bins");
     return;
   }
-  for (const auto* function : m_functions)
-    if (function)
-      delete function;
+  clear();
   m_functions = functions;
   m_bin_low_edge = bin_low_edges;
 }

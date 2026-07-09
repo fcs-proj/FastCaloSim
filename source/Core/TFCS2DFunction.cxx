@@ -3,6 +3,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
+#include <cmath>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS2DFunction.h"
@@ -41,7 +42,7 @@ double TFCS2DFunction::CheckAndIntegrate2DHistogram(
       if (binval < 0) {
         // Can't work if a bin is negative, forcing bins to 0 in this case
         double fraction = binval / hint;
-        if (TMath::Abs(fraction) > 1e-5) {
+        if (std::abs(fraction) > 1e-5) {
           FCS_MSG_NOCLASS(logger,
                           "Warning: bin content is negative in histogram "
                               << hist->GetName() << " : " << hist->GetTitle()

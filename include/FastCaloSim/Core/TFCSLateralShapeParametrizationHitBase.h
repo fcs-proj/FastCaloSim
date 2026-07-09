@@ -53,6 +53,7 @@ public:
     Hit(float eta, float phi, float E)
         : m_eta_x(eta)
         , m_phi_y(phi)
+        , m_z(0.)
         , m_E(E)
         , m_useXYZ(false)
         , m_center_r(0.)
@@ -147,7 +148,7 @@ public:
     float m_center_z;
     float m_center_eta;
     float m_center_phi;
-    long unsigned int m_hit_index;
+    long unsigned int m_hit_index {};
   };
 
   /// simulated one hit position with some energy. As last step in

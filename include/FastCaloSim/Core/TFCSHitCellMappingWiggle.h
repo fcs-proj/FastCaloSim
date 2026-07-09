@@ -25,6 +25,8 @@ public:
                   const std::vector<float>& bin_low_edges,
                   float xscale = 1);
 
+  void clear();
+
   inline unsigned int get_number_of_bins() const { return m_functions.size(); };
 
   inline double get_bin_low_edge(int bin) const { return m_bin_low_edge[bin]; };
@@ -37,11 +39,14 @@ public:
   {
     return m_functions[bin];
   };
-  const std::vector<const TFCS1DFunction*> get_functions()
+  const std::vector<const TFCS1DFunction*>& get_functions() const
   {
     return m_functions;
   };
-  const std::vector<float> get_bin_low_edges() { return m_bin_low_edge; };
+  const std::vector<float>& get_bin_low_edges() const
+  {
+    return m_bin_low_edge;
+  };
 
   /// modify one hit position to emulate the LAr accordion shape
   /// and then fills all hits into calorimeter cells
