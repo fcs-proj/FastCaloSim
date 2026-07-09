@@ -21,8 +21,7 @@
 
 // Hopefully documentation gets inherited from VNetworkBase
 
-#ifndef TFCSGANLWTNNHANDLER_H
-#define TFCSGANLWTNNHANDLER_H
+#pragma once
 
 #include "FastCaloSim/Core/VNetworkLWTNN.h"
 
@@ -118,5 +117,3 @@ private:
   // Supplying a ClassDef for writing to file.
   ClassDefOverride(TFCSGANLWTNNHandler, 6);
 };
-
-#endif  // TFCSGANLWTNNHANDLER_H

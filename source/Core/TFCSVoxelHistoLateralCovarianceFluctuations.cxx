@@ -78,7 +78,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       FCS_MSG_ERROR("parMeans" + label + " not found");
       return false;
     }
-    if (msgLvl(FCS_MSG::DEBUG)) {
+    if (msgLvl(FastCaloSim::MSG::DEBUG)) {
       FCS_MSG_DEBUG("parMeans");
       obj->Print();
     }
@@ -101,12 +101,12 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
     EigenValues = eigenvariances.GetEigenValues();
     m_EigenValues.push_back(EigenValues);
 
-    if (msgLvl(FCS_MSG::DEBUG)) {
+    if (msgLvl(FastCaloSim::MSG::DEBUG)) {
       FCS_MSG_DEBUG("eigenvariances");
       eigenvariances.GetEigenValues().Print();
       eigenvariances.GetEigenVectors().Print();
     }
-    if (msgLvl(FCS_MSG::DEBUG)) {
+    if (msgLvl(FastCaloSim::MSG::DEBUG)) {
       FCS_MSG_DEBUG("m_EigenValues");
       EigenValues.Print();
       FCS_MSG_DEBUG("m_EigenVectors");
@@ -174,7 +174,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     return FCSFatal;
   }
 
-  if (msgLvl(FCS_MSG::DEBUG)) {
+  if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("simulstate before clearing AuxInfo");
     simulstate.Print();
   }
@@ -203,7 +203,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     }
   }
 
-  if (msgLvl(FCS_MSG::DEBUG)) {
+  if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("simulstate after clearing AuxInfo");
     simulstate.Print();
   }
@@ -258,7 +258,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   simulstate.setAuxInfo<void*>(layer_hash(calosample()), weightvec);
   simulstate.setAuxInfo<void*>(layer_hash_geo(calosample()), voxel_temp);
 
-  if (msgLvl(FCS_MSG::DEBUG)) {
+  if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("simulstate after storing weight " << weightvec
                                                      << " in AuxInfo");
     simulstate.Print();

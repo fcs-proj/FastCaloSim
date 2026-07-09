@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSMLCALORIMETERSIMULATOR_H
-#define TFCSMLCALORIMETERSIMULATOR_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -12,7 +11,7 @@
 // generic network class
 #include "FastCaloSim/Core/VNetworkBase.h"
 
-class TFCSMLCalorimeterSimulator : public ISF_FCS::MLogging
+class TFCSMLCalorimeterSimulator : public FastCaloSim::MLogging
 {
 public:
   TFCSMLCalorimeterSimulator();
@@ -75,7 +74,5 @@ private:
   long unsigned int m_nVoxels = 382;
   long unsigned int m_nLayers = 5;
 
-  ClassDef(TFCSMLCalorimeterSimulator, 1)  // TFCSMLCalorimeterSimulator
+  ClassDef(TFCSMLCalorimeterSimulator, 2)  // TFCSMLCalorimeterSimulator
 };
-
-#endif  //> !ISF_TFCSMLCALORIMETERSIMULATOR_H

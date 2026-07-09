@@ -20,8 +20,7 @@
 
 // Hopefully documentation gets inherited from VNetworkBase
 
-#ifndef TFCSSIMPLELWTNNHANDLER_H
-#define TFCSSIMPLELWTNNHANDLER_H
+#pragma once
 
 #include <iostream>
 
@@ -112,5 +111,3 @@ private:
   // Supplying a ClassDef for writing to file.
   ClassDefOverride(TFCSSimpleLWTNNHandler, 1);
 };
-
-#endif  // TFCSSIMPLELWTNNHANDLER_H

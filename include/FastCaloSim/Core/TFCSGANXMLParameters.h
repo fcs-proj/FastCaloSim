@@ -4,8 +4,7 @@
 // TFCSGANDetectorRegion.h, (c) ATLAS Detector software
 ///////////////////////////////////////////////////////////////////
 
-#ifndef ISF_TFCSGANXMLPARAMETERS_H
-#define ISF_TFCSGANXMLPARAMETERS_H 1
+#pragma once
 
 #include <map>
 #include <string>
@@ -17,7 +16,7 @@
 #include "FastCaloSim/Core/MLogging.h"
 #include "TH2D.h"
 
-class TFCSGANXMLParameters : public ISF_FCS::MLogging
+class TFCSGANXMLParameters : public FastCaloSim::MLogging
 {
 public:
   using Binning = std::map<int, TH2D>;
@@ -54,7 +53,5 @@ private:
   int m_latentDim {};
   std::string m_fastCaloGANInputFolderName;
 
-  ClassDef(TFCSGANXMLParameters, 1)  // TFCSGANXMLParameters
+  ClassDef(TFCSGANXMLParameters, 2)  // TFCSGANXMLParameters
 };
-
-#endif  //> !ISF_TFCSGANXMLPARAMETERS_H

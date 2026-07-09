@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSHitCellMappingWiggleEMB_h
-#define TFCSHitCellMappingWiggleEMB_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
@@ -33,5 +32,3 @@ private:
   ClassDefOverride(TFCSHitCellMappingWiggleEMB,
                    1)  // TFCSHitCellMappingWiggleEMB
 };
-
-#endif

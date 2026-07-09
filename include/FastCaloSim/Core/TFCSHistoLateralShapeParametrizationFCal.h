@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSHistoLateralShapeParametrizationFCal_h
-#define TFCSHistoLateralShapeParametrizationFCal_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCS2DFunctionHistogram.h"
 #include "FastCaloSim/Core/TFCSHistoLateralShapeParametrization.h"
@@ -27,5 +26,3 @@ private:
   ClassDefOverride(TFCSHistoLateralShapeParametrizationFCal,
                    1)  // TFCSHistoLateralShapeParametrizationFCal
 };
-
-#endif

@@ -82,7 +82,7 @@ auto TFCSEnergyRenormalization::simulate(
     cell_iter.second *= scalefactor[layer];
   }
 
-  if (msgLvl(FCS_MSG::DEBUG)) {
+  if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("Apply scale factors : ");
     for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
       FCS_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "

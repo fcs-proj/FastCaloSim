@@ -557,8 +557,8 @@ void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
   TFCSParametrization::Print(option);
   TString opt(option);
   const bool shortprint = opt.Index("short") >= 0;
-  const bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  const bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
+      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 

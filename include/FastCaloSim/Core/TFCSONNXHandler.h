@@ -15,8 +15,7 @@
  * be accommodated by writing new subclasses of VNetworkBase.
  **/
 
-#ifndef TFCSONNXHANDLER_H
-#define TFCSONNXHANDLER_H
+#pragma once
 
 // inherits from
 #include <iostream>
@@ -323,5 +322,3 @@ private:
   // For the streamer
   ClassDefOverride(TFCSONNXHandler, 1);
 };
-
-#endif  // TFCSONNXHANDLER_H

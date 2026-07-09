@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyParametrization_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
@@ -26,5 +25,3 @@ public:
 private:
   ClassDefOverride(TFCSEnergyParametrization, 1)  // TFCSEnergyParametrization
 };
-
-#endif

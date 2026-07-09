@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSPREDICTEXTRAPWEIGHTS_h
-#define ISF_FASTCALOSIMEVENT_TFCSPREDICTEXTRAPWEIGHTS_h
+#pragma once
 
 #include <string>
 
@@ -99,5 +98,3 @@ private:
 
   ClassDefOverride(TFCSPredictExtrapWeights, 1)  // TFCSPredictExtrapWeights
 };
-
-#endif

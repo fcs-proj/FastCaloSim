@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
+#pragma once
 
 #include "FastCaloSim/Core/IntArray.h"
 #include "FastCaloSim/Core/TFCS1DFunction.h"
@@ -95,5 +94,3 @@ private:
   ClassDefOverride(TFCSPCAEnergyParametrization,
                    3)  // TFCSPCAEnergyParametrization
 };
-
-#endif

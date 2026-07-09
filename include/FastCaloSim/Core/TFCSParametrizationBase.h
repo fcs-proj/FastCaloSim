@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
+#pragma once
 
 #include <map>
 #include <mutex>
@@ -48,7 +47,7 @@ enum FCSReturnCode
 
 class FASTCALOSIM_EXPORT TFCSParametrizationBase
     : public TNamed
-    , public ISF_FCS::MLogging
+    , public FastCaloSim::MLogging
 {
 public:
   TFCSParametrizationBase(const char* name = nullptr,
@@ -189,7 +188,5 @@ public:
   }
 
 private:
-  ClassDef(TFCSParametrizationBase, 4)  // TFCSParametrizationBase
+  ClassDef(TFCSParametrizationBase, 5)  // TFCSParametrizationBase
 };
-
-#endif  // End header guards

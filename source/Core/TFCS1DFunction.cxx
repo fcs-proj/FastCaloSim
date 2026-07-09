@@ -62,7 +62,7 @@ auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
     const TH1* hist, std::vector<double>& integral_vec, int& first, int& last)
     -> double
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   Int_t nbins = hist->GetNbinsX();
 
   float integral = 0;

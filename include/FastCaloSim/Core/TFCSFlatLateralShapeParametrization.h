@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSFlatLateralShapeParametrization_h
-#define TFCSFlatLateralShapeParametrization_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCS2DFunctionHistogram.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -75,5 +74,3 @@ inline auto TFCSFlatLateralShapeParametrization::scale() const -> float
 {
   return m_scale;
 }
-
-#endif

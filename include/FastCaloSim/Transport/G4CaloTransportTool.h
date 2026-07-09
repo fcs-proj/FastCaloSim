@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H
-#define G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H
+#pragma once
 
 #include <mutex>
 #include <string>
@@ -100,5 +99,3 @@ private:
   /// Maximum number of steps allowed in particle transport
   unsigned int m_maxSteps = 100;
 };
-
-#endif  // G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H

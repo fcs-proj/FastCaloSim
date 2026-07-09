@@ -189,7 +189,7 @@ auto TFCSLateralShapeParametrizationHitChain::get_sigma2_fluctuation(
 }
 
 void TFCSLateralShapeParametrizationHitChain::PropagateMSGLevel(
-    FCS_MSG::Level level) const
+    FastCaloSim::MSG::Level level) const
 {
   for (TFCSLateralShapeParametrizationHitBase* reset : m_chain)
     reset->setLevel(level);
@@ -229,9 +229,9 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  FCS_MSG::Level old_level = level();
-  const bool debug = msgLvl(FCS_MSG::DEBUG);
-  const bool verbose = msgLvl(FCS_MSG::VERBOSE);
+  FastCaloSim::MSG::Level old_level = level();
+  const bool debug = msgLvl(FastCaloSim::MSG::DEBUG);
+  const bool verbose = msgLvl(FastCaloSim::MSG::VERBOSE);
 
   // Execute the first get_nr_of_init() simulate calls only once. Used for
   // example to initialize the center position
@@ -289,7 +289,7 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
           if (!verbose) {
             // Switch debug output back to INFO to avoid huge logs, but keep
             // full log in verbose
-            PropagateMSGLevel(FCS_MSG::INFO);
+            PropagateMSGLevel(FastCaloSim::MSG::INFO);
           }
       for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
         TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
@@ -399,8 +399,8 @@ void TFCSLateralShapeParametrizationHitChain::Print(Option_t* option) const
   TFCSLateralShapeParametrization::Print(option);
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
+      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
 

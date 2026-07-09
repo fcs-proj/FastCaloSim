@@ -3,7 +3,7 @@
 /* Header include */
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
 
-/* ISF includes */
+/* FastCaloSim includes */
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"

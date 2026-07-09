@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSLateralShapeParametrizationFluctChain_h
-#define TFCSLateralShapeParametrizationFluctChain_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitChain.h"
 
@@ -38,5 +37,3 @@ private:
   ClassDefOverride(TFCSLateralShapeParametrizationFluctChain,
                    1)  // TFCSLateralShapeParametrizationFluctChain
 };
-
-#endif

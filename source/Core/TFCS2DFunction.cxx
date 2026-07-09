@@ -27,7 +27,7 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
     const TH2* hist, std::vector<double>& integral_vec, int& first, int& last)
     -> double
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   Int_t nbinsx = hist->GetNbinsX();
   Int_t nbinsy = hist->GetNbinsY();
   Int_t nbins = nbinsx * nbinsy;

@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegressionTF_h
-#define ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegressionTF_h
+#pragma once
 
 #include <vector>
 
@@ -27,5 +26,3 @@ private:
 
   ClassDef(TFCS1DFunctionRegressionTF, 1)
 };
-
-#endif

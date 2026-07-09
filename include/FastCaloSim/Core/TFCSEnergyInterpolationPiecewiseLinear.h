@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationPiecewiseLinear_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationPiecewiseLinear_h
+#pragma once
 
 // base class include
 #include "FastCaloSim/Core/TFCSParametrization.h"
@@ -62,5 +61,3 @@ private:
   ClassDefOverride(TFCSEnergyInterpolationPiecewiseLinear,
                    4)  // TFCSEnergyInterpolationPiecewiseLinear
 };
-
-#endif

@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationChain_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
@@ -111,5 +110,3 @@ private:
 };
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.icc"
-
-#endif

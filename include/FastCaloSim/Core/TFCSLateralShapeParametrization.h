@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSLateralShapeParametrization_h
-#define TFCSLateralShapeParametrization_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
@@ -51,5 +50,3 @@ private:
   ClassDefOverride(TFCSLateralShapeParametrization,
                    1)  // TFCSLateralShapeParametrization
 };
-
-#endif

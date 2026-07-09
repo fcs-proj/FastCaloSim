@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSHistoLateralShapeWeightHitAndMiss_h
-#define TFCSHistoLateralShapeWeightHitAndMiss_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeWeight.h"
 
@@ -26,5 +25,3 @@ private:
   ClassDefOverride(TFCSHistoLateralShapeWeightHitAndMiss,
                    1)  // TFCSHistoLateralShapeWeightHitAndMiss
 };
-
-#endif

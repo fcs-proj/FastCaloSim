@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef FastCaloSimCaloExtrapolation_H
-#define FastCaloSimCaloExtrapolation_H
+#pragma once
 
 #include <CLHEP/Vector/ThreeVector.h>
 #include <FastCaloSim/FastCaloSim_export.h>
@@ -22,7 +21,8 @@ struct CylinderIntersections
   unsigned int number = 0;
 };
 
-class FASTCALOSIM_EXPORT FastCaloSimCaloExtrapolation : public ISF_FCS::MLogging
+class FASTCALOSIM_EXPORT FastCaloSimCaloExtrapolation
+    : public FastCaloSim::MLogging
 {
 public:
   FastCaloSimCaloExtrapolation();
@@ -181,5 +181,3 @@ private:
     return v.x() == 0.0 && v.y() == 0.0 && v.z() == 0.0;
   }
 };
-
-#endif  // FastCaloSimCaloExtrapolation_H

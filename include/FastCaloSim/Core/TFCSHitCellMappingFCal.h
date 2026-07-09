@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSHitCellMappingFCal_h
-#define TFCSHitCellMappingFCal_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
@@ -26,5 +25,3 @@ public:
 private:
   ClassDefOverride(TFCSHitCellMappingFCal, 1)  // TFCSHitCellMapping
 };
-
-#endif

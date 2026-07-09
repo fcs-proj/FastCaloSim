@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSBinnedShowerBase_h
-#define TFCSBinnedShowerBase_h
+#pragma once
 
 // local includes
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -125,5 +124,3 @@ protected:
 private:
   ClassDefOverride(TFCSBinnedShowerBase, 1)  // TFCSBinnedShowerBase
 };
-
-#endif

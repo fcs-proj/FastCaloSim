@@ -13,8 +13,7 @@
  *   - TFCSGANLWTNNHandler; Designed to wrap a lwtnn graph network
  *
  **/
-#ifndef VNETWORKLWTNN_H
-#define VNETWORKLWTNN_H
+#pragma once
 // inherits from
 #include "VNetworkBase.h"
 
@@ -148,5 +147,3 @@ private:
   // Supplying a ClassDef for writing to file.
   ClassDefOverride(VNetworkLWTNN, 1);
 };
-
-#endif

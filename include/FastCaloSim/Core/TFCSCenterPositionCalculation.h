@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSCenterPositionCalculation_h
-#define TFCSCenterPositionCalculation_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
@@ -27,5 +26,3 @@ private:
   ClassDefOverride(TFCSCenterPositionCalculation,
                    1)  // TFCSCenterPositionCalculation
 };
-
-#endif

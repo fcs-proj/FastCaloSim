@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
-#define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
+#pragma once
 
 #include <map>
 #include <utility>
@@ -13,7 +12,7 @@
 
 class FASTCALOSIM_EXPORT TFCSExtrapolationState
     : public TObject
-    , public ISF_FCS::MLogging
+    , public FastCaloSim::MLogging
 {
 public:
   TFCSExtrapolationState();
@@ -169,7 +168,5 @@ private:
   double m_IDCaloBoundary_AngleEta;
   double m_IDCaloBoundary_Angle3D;
 
-  ClassDef(TFCSExtrapolationState, 2)  // TFCSExtrapolationState
+  ClassDef(TFCSExtrapolationState, 3)  // TFCSExtrapolationState
 };
-
-#endif

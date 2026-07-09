@@ -50,8 +50,8 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  FCS_MSG::Level old_level = level();
-  const bool debug = msgLvl(FCS_MSG::DEBUG);
+  FastCaloSim::MSG::Level old_level = level();
+  const bool debug = msgLvl(FastCaloSim::MSG::DEBUG);
 
   // Execute the first get_nr_of_init() simulate calls only once. Used for
   // example to initialize the center position
@@ -114,7 +114,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
     if (debug)
       if (ihit == 2) {
         // Switch debug output back to INFO to avoid huge logs
-        PropagateMSGLevel(FCS_MSG::INFO);
+        PropagateMSGLevel(FastCaloSim::MSG::INFO);
       }
     for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
       TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
@@ -183,8 +183,8 @@ void TFCSLateralShapeParametrizationFluctChain::Print(Option_t* option) const
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
+      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitChain::Print(option);

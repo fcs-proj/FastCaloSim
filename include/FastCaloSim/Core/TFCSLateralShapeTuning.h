@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSLateralShapeTuning_h
-#define TFCSLateralShapeTuning_h
+#pragma once
 
 /*Parent class*/
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -48,5 +47,3 @@ private:
 
   ClassDefOverride(TFCSLateralShapeTuning, 1)  // TFCSLateralShapeTuning
 };
-
-#endif

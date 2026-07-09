@@ -13,8 +13,7 @@
  * to the factory to determine.
  *
  **/
-#ifndef TFCSNETWORKFACTORY_H
-#define TFCSNETWORKFACTORY_H
+#pragma once
 
 #include <filesystem>
 #include <memory>
@@ -131,5 +130,3 @@ private:
    **/
   static auto isOnnxFile(std::string const& filename) -> bool;
 };
-
-#endif  // TFCSNETWORKFACTORY_H

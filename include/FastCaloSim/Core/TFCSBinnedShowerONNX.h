@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSBinnedShowerONNX_h
-#define TFCSBinnedShowerONNX_h
+#pragma once
 
 #include <string>
 #include <tuple>
@@ -178,5 +177,3 @@ private:
 
   ClassDefOverride(TFCSBinnedShowerONNX, 1)  // TFCSBinnedShowerONNX
 };
-
-#endif
