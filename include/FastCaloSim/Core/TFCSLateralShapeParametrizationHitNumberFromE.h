@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSLateralShapeParametrizationHitNumberFromE_h
-#define TFCSLateralShapeParametrizationHitNumberFromE_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "TH2.h"
@@ -64,5 +63,3 @@ private:
   ClassDefOverride(TFCSLateralShapeParametrizationHitNumberFromE,
                    2)  // TFCSLateralShapeParametrizationHitNumberFromE
 };
-
-#endif

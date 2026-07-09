@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationBinnedChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationBinnedChain_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
 
@@ -55,5 +54,3 @@ private:
   ClassDefOverride(TFCSParametrizationBinnedChain,
                    1)  // TFCSParametrizationBinnedChain
 };
-
-#endif

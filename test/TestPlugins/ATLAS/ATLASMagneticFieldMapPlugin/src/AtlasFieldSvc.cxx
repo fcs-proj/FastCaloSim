@@ -9,10 +9,9 @@
 #include <fstream>
 #include <iostream>
 
-#include <libgen.h>
-
-// ISF_Services include
 #include "AtlasFieldSvc.h"
+
+#include <libgen.h>
 
 // PathResolver
 // #include "PathResolver/PathResolver.h"

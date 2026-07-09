@@ -1,14 +1,13 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSFunction_h
-#define ISF_FASTCALOSIMEVENT_TFCSFunction_h
+#pragma once
 
 #include "FastCaloSim/Core/MLogging.h"
 #include "TObject.h"
 
 class TFCSFunction
     : public TObject
-    , public ISF_FCS::MLogging
+    , public FastCaloSim::MLogging
 {
 public:
   TFCSFunction() = default;
@@ -27,7 +26,5 @@ public:
   virtual void rnd_to_fct(float value[], const float rnd[]) const = 0;
 
 private:
-  ClassDef(TFCSFunction, 3)  // TFCSFunction
+  ClassDef(TFCSFunction, 4)  // TFCSFunction
 };
-
-#endif

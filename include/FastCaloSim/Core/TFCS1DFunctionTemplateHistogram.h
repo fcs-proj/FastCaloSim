@@ -2,14 +2,13 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
-#  define ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
+#pragma once
 
-#  include <iostream>
+#include <iostream>
 
-#  include "FastCaloSim/Core/TFCS1DFunction.h"
-#  include "FastCaloSim/Core/TFCS1DFunctionTemplateHelpers.h"
-#  include "TH1.h"
+#include "FastCaloSim/Core/TFCS1DFunction.h"
+#include "FastCaloSim/Core/TFCS1DFunctionTemplateHelpers.h"
+#include "TH1.h"
 
 template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateHistogram : public TFCS1DFunction
@@ -262,7 +261,5 @@ public:
   ClassDef(TFCS1DFunctionInt32Int32Histogram,
            1)  // TFCS1DFunctionInt32Int32Histogram
 };
-
-#endif
 
 #pragma GCC diagnostic pop

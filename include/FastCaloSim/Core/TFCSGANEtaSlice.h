@@ -4,10 +4,9 @@
 // TFCSGANEtaSlice.h, (c) ATLAS Detector software
 ///////////////////////////////////////////////////////////////////
 
-#ifndef ISF_TFCSGANETASLICE_H
-#define ISF_TFCSGANETASLICE_H 1
+#pragma once
 
-// ISF includes
+// STL includes
 #include <map>
 #include <vector>
 
@@ -24,7 +23,7 @@
 
 #include "FastCaloSim/Core/TFCSGANLWTNNHandler.h"
 
-class TFCSGANEtaSlice : public ISF_FCS::MLogging
+class TFCSGANEtaSlice : public FastCaloSim::MLogging
 {
 public:
   TFCSGANEtaSlice();
@@ -93,7 +92,5 @@ private:
 
   TFCSGANXMLParameters m_param;
 
-  ClassDef(TFCSGANEtaSlice, 5)  // TFCSGANEtaSlice
+  ClassDef(TFCSGANEtaSlice, 6)  // TFCSGANEtaSlice
 };
-
-#endif  //> !ISF_TFCSGANETASLICE_H

@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunction_h
-#define ISF_FASTCALOSIMEVENT_TFCS2DFunction_h
+#pragma once
 
 #include <vector>
 
@@ -31,5 +30,3 @@ public:
 private:
   ClassDef(TFCS2DFunction, 1)  // TFCS2DFunction
 };
-
-#endif

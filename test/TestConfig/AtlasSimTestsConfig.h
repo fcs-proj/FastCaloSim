@@ -15,8 +15,8 @@ class AtlasSimTestConfig : public ::testing::Environment
 {
 public:
   // Extrapolation debug level
-  inline static const FCS_MSG::Level EXTRAPOLATION_FCS_MSG_LEVEL =
-      FCS_MSG::Level::INFO;
+  inline static const FastCaloSim::MSG::Level EXTRAPOLATION_FCS_MSG_LEVEL =
+      FastCaloSim::MSG::Level::INFO;
 
   // The list of events (event = particle container) to be simulated
   inline static const std::vector<TestHelpers::Event> EVENTS = []()

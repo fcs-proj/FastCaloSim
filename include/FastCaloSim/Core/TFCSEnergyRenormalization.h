@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyRenormalization_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyRenormalization_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
@@ -47,5 +46,3 @@ inline auto TFCSEnergyRenormalization::is_match_calosample(
 {
   return true;
 }
-
-#endif

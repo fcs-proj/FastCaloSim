@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSHistoLateralShapeGausLogWeight_h
-#define TFCSHistoLateralShapeGausLogWeight_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeWeight.h"
 
@@ -27,5 +26,3 @@ ClassDefOverride(TFCSHistoLateralShapeGausLogWeight,
 
     private:
 };
-
-#endif

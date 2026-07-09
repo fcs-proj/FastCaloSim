@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef MeanAndRMS_h
-#define MeanAndRMS_h
+#pragma once
 
 #include <math.h>
 
@@ -87,5 +86,3 @@ protected:
   double m_w;
   double m_wx, m_wx2;
 };
-
-#endif

@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSPhiModulationCorrection_h
-#define TFCSPhiModulationCorrection_h
+#pragma once
 
 // Local includes
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -138,5 +137,3 @@ private:
   ClassDefOverride(TFCSPhiModulationCorrection,
                    1)  // TFCSPhiModulationCorrection
 };
-
-#endif

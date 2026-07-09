@@ -3,10 +3,9 @@
 
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrization_h
-#  define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
+#pragma once
 
-#  include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#include "FastCaloSim/Core/TFCSParametrizationBase.h"
 
 class TFCSParametrization : public ::TFCSParametrizationBase
 {
@@ -73,7 +72,5 @@ private:
 
   ClassDefOverride(TFCSParametrization, 1)  // TFCSParametrization
 };
-
-#endif
 
 #pragma GCC diagnostic pop

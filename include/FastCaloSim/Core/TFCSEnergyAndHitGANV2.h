@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyAndHitGANV2_h
+#pragma once
 
 #include <mutex>
 #include <string>
@@ -129,5 +128,3 @@ private:
 
   ClassDefOverride(TFCSEnergyAndHitGANV2, 2)  // TFCSEnergyAndHitGANV2
 };
-
-#endif

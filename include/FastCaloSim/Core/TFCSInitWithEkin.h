@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSInitWithEkin_h
-#define ISF_FASTCALOSIMEVENT_TFCSInitWithEkin_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
@@ -30,5 +29,3 @@ public:
 private:
   ClassDefOverride(TFCSInitWithEkin, 1)  // TFCSInitWithEkin
 };
-
-#endif

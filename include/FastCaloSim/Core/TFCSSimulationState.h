@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
-#define ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
+#pragma once
 
 #include <cstdint>
 #include <set>
@@ -23,7 +22,7 @@ constexpr auto operator""_FCShash(char const* s, std::size_t count)
 
 class FASTCALOSIM_EXPORT TFCSSimulationState
     : public TObject
-    , public ISF_FCS::MLogging
+    , public FastCaloSim::MLogging
 {
 public:
   TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine = nullptr);
@@ -168,7 +167,7 @@ private:
   std::set<const TFCSParametrizationBase*>
       m_AuxInfoCleanup;  //! Do not persistify
 
-  ClassDef(TFCSSimulationState, 3)  // TFCSSimulationState
+  ClassDef(TFCSSimulationState, 4)  // TFCSSimulationState
 };
 
 // Explicit template implementations for template<class T> void
@@ -216,5 +215,3 @@ constexpr auto operator""_FCShash(char const* s, std::size_t count)
 {
   return TFCSSimulationState::fnv1a_32(s, count);
 }
-
-#endif

@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateInterpolationExpHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateInterpolationExpHistogram_h
+#pragma once
 
 #include <iostream>
 
@@ -762,4 +761,3 @@ public:
 
 #endif
 // clang-format on
-#endif

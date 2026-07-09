@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSBinnedShower_h
-#define TFCSBinnedShower_h
+#pragma once
 
 #include <string>
 #include <tuple>
@@ -266,5 +265,3 @@ private:
 
   ClassDefOverride(TFCSBinnedShower, 1)  // TFCSBinnedShower
 };
-
-#endif

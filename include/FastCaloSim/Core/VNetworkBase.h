@@ -16,8 +16,7 @@
  * so that it can make a run-time decision about which derived class
  * to use, based on the file or data presented.
  **/
-#ifndef VNETWORKBASE_H
-#define VNETWORKBASE_H
+#pragma once
 
 // For conversion to ostream
 #include <iostream>
@@ -36,7 +35,7 @@
  * Has various subclasses to cover differing network
  * libraries and save formats.
  **/
-class VNetworkBase : public ISF_FCS::MLogging
+class VNetworkBase : public FastCaloSim::MLogging
 {
 public:
   /**
@@ -307,7 +306,5 @@ protected:
 
 private:
   // Supplying a ClassDef for writing to file.
-  ClassDef(VNetworkBase, 3);
+  ClassDef(VNetworkBase, 4);
 };
-
-#endif

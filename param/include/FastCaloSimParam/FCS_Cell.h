@@ -2,8 +2,7 @@
   Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
 */
 
-#ifndef FCS_Cell
-#define FCS_Cell
+#pragma once
 
 #include <algorithm>  // std::sort, std::remove_if
 #include <cmath>  // std::fabs
@@ -162,5 +161,3 @@ struct FCS_matchedcellvector  // this is the matched structure for the whole
     return cellsum / hitsum;
   };  // doesn't check for 0!
 };
-
-#endif

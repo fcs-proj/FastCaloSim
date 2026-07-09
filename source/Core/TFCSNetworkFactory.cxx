@@ -17,7 +17,7 @@
 
 void TFCSNetworkFactory::resolveGlobs(std::string& filename)
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   const std::string ending = ".*";
   const int ending_len = ending.length();
   const int filename_len = filename.length();
@@ -42,7 +42,7 @@ void TFCSNetworkFactory::resolveGlobs(std::string& filename)
 
 auto TFCSNetworkFactory::isOnnxFile(std::string const& filename) -> bool
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   const std::string ending = ".onnx";
   const int ending_len = ending.length();
   const int filename_len = filename.length();
@@ -59,7 +59,7 @@ auto TFCSNetworkFactory::isOnnxFile(std::string const& filename) -> bool
 auto TFCSNetworkFactory::create(std::vector<char> const& input)
     -> std::unique_ptr<VNetworkBase>
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   FCS_MSG_NOCLASS(
       logger,
       "Directly creating ONNX network from bytes length " << input.size());
@@ -70,7 +70,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& input)
 auto TFCSNetworkFactory::create(std::string input)
     -> std::unique_ptr<VNetworkBase>
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   resolveGlobs(input);
   if (VNetworkBase::isFile(input) && isOnnxFile(input)) {
     FCS_MSG_NOCLASS(logger,
@@ -97,7 +97,7 @@ auto TFCSNetworkFactory::create(std::string input)
 auto TFCSNetworkFactory::create(std::string input, bool graph_form)
     -> std::unique_ptr<VNetworkBase>
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   resolveGlobs(input);
   if (VNetworkBase::isFile(input) && isOnnxFile(input)) {
     FCS_MSG_NOCLASS(logger,
@@ -120,7 +120,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                 std::string string_input)
     -> std::unique_ptr<VNetworkBase>
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   FCS_MSG_NOCLASS(logger, "Given both bytes and a string to create an nn.");
   resolveGlobs(string_input);
   if (vector_input.size() > 0) {
@@ -144,7 +144,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                 bool graph_form)
     -> std::unique_ptr<VNetworkBase>
 {
-  ISF_FCS::MLogging logger;
+  FastCaloSim::MLogging logger;
   FCS_MSG_NOCLASS(
       logger,
       "Given both bytes, a string and graph form specified to create an nn.");

@@ -137,8 +137,8 @@ void TFCSLateralShapeParametrizationHitNumberFromE::Print(
 {
   TString opt(option);
   bool shortprint = opt.Index("short") >= 0;
-  bool longprint =
-      msgLvl(FCS_MSG::DEBUG) || (msgLvl(FCS_MSG::INFO) && !shortprint);
+  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
+      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
   TString optprint = opt;
   optprint.ReplaceAll("short", "");
   TFCSLateralShapeParametrizationHitBase::Print(option);

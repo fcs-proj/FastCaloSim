@@ -58,7 +58,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   // Set up the geometry
   param->set_geometry(AtlasGeoTests::geo);
   // Set logging level
-  param->setLevel(FCS_MSG::Level::VERBOSE);
+  param->setLevel(FastCaloSim::MSG::Level::VERBOSE);
 
   // Set the param in the model
   model->setParametrization(param);

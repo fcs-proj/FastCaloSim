@@ -587,7 +587,11 @@
 
 #pragma link C++ class TFCS2DFunction + ;
 #pragma link C++ class TFCS2DFunctionHistogram + ;
-#pragma link C++ class ISF_FCS::MLogging + ;
+#pragma link C++ class FastCaloSim::MLogging + ;
+// MLogging was called ISF_FCS::MLogging when the library still lived in
+// Athena. Old parametrization files reference that name in their streamer
+// info; this rule maps it onto the renamed class so they read cleanly.
+#pragma read sourceClass="ISF_FCS::MLogging" targetClass="FastCaloSim::MLogging";
 #pragma link C++ class TFCSParametrizationBase + ;
 #pragma link C++ class TFCSParametrizationPlaceholder + ;
 #pragma link C++ class TFCSParametrization + ;

@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyBinParametrization_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyBinParametrization_h
+#pragma once
 
 #include <map>
 #include <vector>
@@ -59,5 +58,3 @@ private:
   ClassDefOverride(TFCSEnergyBinParametrization,
                    1)  // TFCSEnergyBinParametrization
 };
-
-#endif

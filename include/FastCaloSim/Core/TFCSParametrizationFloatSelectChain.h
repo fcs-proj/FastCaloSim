@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationFloatSelectChain_h
-#define ISF_FASTCALOSIMEVENT_TFCSParametrizationFloatSelectChain_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 
@@ -44,5 +43,3 @@ private:
   ClassDefOverride(TFCSParametrizationFloatSelectChain,
                    1)  // TFCSParametrizationFloatSelectChain
 };
-
-#endif

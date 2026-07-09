@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSHistoLateralShapeWeight_h
-#define TFCSHistoLateralShapeWeight_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
@@ -44,5 +43,3 @@ protected:
   ClassDefOverride(TFCSHistoLateralShapeWeight,
                    2)  // TFCSHistoLateralShapeWeight
 };
-
-#endif

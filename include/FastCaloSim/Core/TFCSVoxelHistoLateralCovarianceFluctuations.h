@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSVoxelHistoLateralCovarianceFluctuations_h
-#define TFCSVoxelHistoLateralCovarianceFluctuations_h
+#pragma once
 
 #include <string>
 
@@ -61,5 +60,3 @@ protected:
   ClassDefOverride(TFCSVoxelHistoLateralCovarianceFluctuations,
                    1)  // TFCSVoxelHistoLateralCovarianceFluctuations
 };
-
-#endif

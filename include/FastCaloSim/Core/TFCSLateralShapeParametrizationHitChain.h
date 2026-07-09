@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSLateralShapeParametrizationHitChain_h
-#define TFCSLateralShapeParametrizationHitChain_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -81,7 +80,7 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
-  void PropagateMSGLevel(FCS_MSG::Level level) const;
+  void PropagateMSGLevel(FastCaloSim::MSG::Level level) const;
 
   virtual auto check_all_hits_simulated(
       TFCSLateralShapeParametrizationHitBase::Hit& hit,
@@ -99,5 +98,3 @@ private:
   ClassDefOverride(TFCSLateralShapeParametrizationHitChain,
                    2)  // TFCSLateralShapeParametrizationHitChain
 };
-
-#endif

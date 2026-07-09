@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationHistogram_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 #include "TH1F.h"
@@ -55,6 +54,4 @@ private:
 
 #if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
 #  pragma link C++ class TFCSEnergyInterpolationHistogram + ;
-#endif
-
 #endif

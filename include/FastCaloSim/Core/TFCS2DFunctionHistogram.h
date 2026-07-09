@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunctionHistogram_h
-#define ISF_FASTCALOSIMEVENT_TFCS2DFunctionHistogram_h
+#pragma once
 
 #include <vector>
 
@@ -51,5 +50,3 @@ protected:
 private:
   ClassDef(TFCS2DFunctionHistogram, 1)  // TFCS2DFunctionHistogram
 };
-
-#endif

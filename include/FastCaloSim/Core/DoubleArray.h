@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef ISF_FASTCALOSIMEVENT_DoubleArray_h
-#define ISF_FASTCALOSIMEVENT_DoubleArray_h
+#pragma once
 
 #include "TArrayD.h"
 #include "TObject.h"
@@ -18,5 +17,3 @@ public:
 private:
   ClassDef(DoubleArray, 1)
 };
-
-#endif

@@ -1,7 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#ifndef TFCSHitCellMapping_h
-#define TFCSHitCellMapping_h
+#pragma once
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Geometry/Cell.h"
@@ -35,5 +34,3 @@ protected:
 private:
   ClassDefOverride(TFCSHitCellMapping, 1)  // TFCSHitCellMapping
 };
-
-#endif
