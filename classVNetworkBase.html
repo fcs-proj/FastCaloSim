@@ -100,11 +100,11 @@
           <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
             <dt>
-              using <a href="#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> = std::map&lt;std::string, std::map&lt;std::string, double&gt;&gt;
+              using <a href="#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">NetworkInputs</a> = std::map&lt;std::string, std::map&lt;std::string, double&gt;&gt;
             </dt>
             <dd>Format for network inputs.</dd>
             <dt>
-              using <a href="#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> = std::map&lt;std::string, double&gt;
+              using <a href="#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a> = std::map&lt;std::string, double&gt;
             </dt>
             <dd>Format for network outputs.</dd>
           </dl>
@@ -122,17 +122,17 @@
           <h2><a href="#pub-static-methods">Public static functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#a5450468cb580351d1ce9631b00dcfd5a" class="m-doc">representNetworkInputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs,
+              <span class="m-doc-wrap-bumper">static auto <a href="#a0d9bca305b5cd9cb17860df908ea8324" class="m-doc">representNetworkInputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">NetworkInputs</a> const&amp; inputs,
               int maxValues = 3) -&gt; std::string</span>
             </dt>
             <dd>String representation of network inputs.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#a9d456e7569fa4045a2416632f6673e30" class="m-doc">representNetworkOutputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> const&amp; outputs,
+              <span class="m-doc-wrap-bumper">static auto <a href="#ae077126cdd6bc164bda9ee5cb14b2e33" class="m-doc">representNetworkOutputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a> const&amp; outputs,
               int maxValues = 3) -&gt; std::string</span>
             </dt>
             <dd>String representation of network outputs.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#abf365bdb6a68e11b77872fe994d5c8ff" class="m-doc">isFile</a>(</span><span class="m-doc-wrap">std::string const&amp; inputFile) -&gt; bool</span>
+              <span class="m-doc-wrap-bumper">static auto <a href="#af0c2e9b65e10722384ca1da26aa45b4d" class="m-doc">isFile</a>(</span><span class="m-doc-wrap">std::string const&amp; inputFile) -&gt; bool</span>
             </dt>
             <dd>Check if a string is the path of a file on disk.</dd>
           </dl>
@@ -152,8 +152,8 @@
               <span class="m-doc-wrap-bumper"><a href="#ac0a4898e4187e4d44fb53ef860ee6dde" class="m-doc">VNetworkBase</a>(</span><span class="m-doc-wrap">const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; copy_from)</span>
             </dt>
             <dd><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> copy constructor.</dd>
-            <dt id="ad1b92a5999575496fc607d3dd852f173">
-              <span class="m-doc-wrap-bumper"><a href="#ad1b92a5999575496fc607d3dd852f173" class="m-doc-self">~VNetworkBase</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">virtual</span></span>
+            <dt id="ae195cc81f2a6f9faa2c7197039edcb57">
+              <span class="m-doc-wrap-bumper"><a href="#ae195cc81f2a6f9faa2c7197039edcb57" class="m-doc-self">~VNetworkBase</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -162,7 +162,7 @@
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a3a3f53fab5604f80ddd924e154061555" class="m-doc">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs) const -&gt; <a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> <span class="m-label m-flat m-warning">pure virtual</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#aaa1285fa10787e34cfcb4aab0c21024e" class="m-doc">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">NetworkInputs</a> const&amp; inputs) const -&gt; NetworkOutputs <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd>Function to pass values to the network.</dd>
             <dt>
@@ -180,11 +180,11 @@
             </dt>
             <dd>Save the network to a TTree.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#afd742c834ad0134dda4794150af0c618" class="m-doc">getOutputLayers</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt;std::string&gt; <span class="m-label m-flat m-warning">pure virtual</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a4ba3230931ba41e89fb6dc2b2337129a" class="m-doc">getOutputLayers</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt; std::string &gt; <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd>List the names of the outputs.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#aeb866e081cf65eea74552ce4d2c821b8" class="m-doc">isFile</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#af11a7e2514311d974918c34fef19ae52" class="m-doc">isFile</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
             </dt>
             <dd>Check if the argument inputFile is the path of a file on disk.</dd>
             <dt>
@@ -209,11 +209,11 @@
             </dt>
             <dd>Write a short description of this net to the string stream.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a90a258cdd6e4cc4383d13cc81aafafc4" class="m-doc">isRootFile</a>(</span><span class="m-doc-wrap">std::string const&amp; filename = &quot;&quot;) const -&gt; bool</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#ad4508d9bb69eaf3ac8ff7fdb4b6dc3c0" class="m-doc">isRootFile</a>(</span><span class="m-doc-wrap">std::string const&amp; filename = &quot;&quot;) const -&gt; bool</span>
             </dt>
             <dd>Check if a string is possibly a root file path.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a>&amp; outputs) const</span>
+              <span class="m-doc-wrap-bumper">void <a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a>&amp; outputs) const</span>
             </dt>
             <dd>Remove any common prefix from the outputs.</dd>
             <dt id="ab32127d45529c3ad65a27a8d1e0f56ae">
@@ -235,24 +235,24 @@
           <h2><a href="#friends">Friends</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a3ae270ee94908caaf85b64d112a73221" class="m-doc">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm,
-              const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; vNetworkBase) -&gt; std::ostream&amp;</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#aded86e999cdf0e9b249281ae42719d36" class="m-doc">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm,
+              const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; vNetworkBase) -&gt; std::ostream &amp;</span>
             </dt>
             <dd>Put-to operator to facilitate printing.</dd>
           </dl>
         </section>
         <section>
           <h2>Typedef documentation</h2>
-          <section class="m-doc-details" id="a4d6471d5a9c6a42a89aa6659a76ebf65"><div>
+          <section class="m-doc-details" id="ac9b89602ce18cc6f82f1aa320be3971d"><div>
             <h3>
-              typedef std::map&lt;std::string, std::map&lt;std::string, double&gt;&gt; VNetworkBase::<wbr /><a href="#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc-self">NetworkInputs</a>
+              using VNetworkBase::<wbr /><a href="#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc-self">NetworkInputs</a> = std::map&lt;std::string, std::map&lt;std::string, double&gt;&gt;
             </h3>
             <p>Format for network inputs.</p>
 <p>The doubles are the values to be passed into the network. Strings in the outer map identify the input node, which must correspond to the names of the nodes as read from the description of the network found by the constructor. Strings in the inner map identify the part of the input node, for some networks these must be simple integers, in string form, as parts of nodes do not always have the ability to carry real string labels.</p>
           </div></section>
-          <section class="m-doc-details" id="a764549e2ddcb6bc685f452744484c1e0"><div>
+          <section class="m-doc-details" id="ac67a7a6e0c507d5120d2e49f6db6cdc2"><div>
             <h3>
-              typedef std::map&lt;std::string, double&gt; VNetworkBase::<wbr /><a href="#a764549e2ddcb6bc685f452744484c1e0" class="m-doc-self">NetworkOutputs</a>
+              using VNetworkBase::<wbr /><a href="#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc-self">NetworkOutputs</a> = std::map&lt;std::string, double&gt;
             </h3>
             <p>Format for network outputs.</p>
 <p>The doubles are the values generated by the network. Strings identify which node this value came from, and when nodes have multiple values, are suffixed with a number to indicate which part of the node they came from. So in multi-value nodes the format becomes &quot;&lt;node_name&gt;_&lt;part_n&gt;&quot;</p>
@@ -260,10 +260,10 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a5450468cb580351d1ce9631b00dcfd5a"><div>
+          <section class="m-doc-details" id="a0d9bca305b5cd9cb17860df908ea8324"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static std::string VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a5450468cb580351d1ce9631b00dcfd5a" class="m-doc-self">representNetworkInputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs,
-              int maxValues = 3)</span></span>
+              <span class="m-doc-wrap-bumper">static auto VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0d9bca305b5cd9cb17860df908ea8324" class="m-doc-self">representNetworkInputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">NetworkInputs</a> const&amp; inputs,
+              int maxValues = 3) -&gt; std::string</span></span>
             </h3>
             <p>String representation of network inputs.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -289,10 +289,10 @@
             </table>
 <p>Create a string that summarizes a set of network inputs. Gives basic dimensions plus a few values, up to the maxValues</p>
           </div></section>
-          <section class="m-doc-details" id="a9d456e7569fa4045a2416632f6673e30"><div>
+          <section class="m-doc-details" id="ae077126cdd6bc164bda9ee5cb14b2e33"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static std::string VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a9d456e7569fa4045a2416632f6673e30" class="m-doc-self">representNetworkOutputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> const&amp; outputs,
-              int maxValues = 3)</span></span>
+              <span class="m-doc-wrap-bumper">static auto VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae077126cdd6bc164bda9ee5cb14b2e33" class="m-doc-self">representNetworkOutputs</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a> const&amp; outputs,
+              int maxValues = 3) -&gt; std::string</span></span>
             </h3>
             <p>String representation of network outputs.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -318,9 +318,9 @@
             </table>
 <p>Create a string that summarizes a set of network outputs. Gives basic dimensions plus a few values, up to the maxValues</p>
           </div></section>
-          <section class="m-doc-details" id="abf365bdb6a68e11b77872fe994d5c8ff"><div>
+          <section class="m-doc-details" id="af0c2e9b65e10722384ca1da26aa45b4d"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static bool VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#abf365bdb6a68e11b77872fe994d5c8ff" class="m-doc-self">isFile</a>(</span><span class="m-doc-wrap">std::string const&amp; inputFile)</span></span>
+              <span class="m-doc-wrap-bumper">static auto VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af0c2e9b65e10722384ca1da26aa45b4d" class="m-doc-self">isFile</a>(</span><span class="m-doc-wrap">std::string const&amp; inputFile) -&gt; bool</span></span>
             </h3>
             <p>Check if a string is the path of a file on disk.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -385,9 +385,9 @@
             </table>
 <p>Does not call setupPersistedVariables or setupNet but will pass on m_inputFile. Inheriting classes should do whatever they need to move the variables created in the setup functions.</p>
           </div></section>
-          <section class="m-doc-details" id="a3a3f53fab5604f80ddd924e154061555"><div>
+          <section class="m-doc-details" id="aaa1285fa10787e34cfcb4aab0c21024e"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3a3f53fab5604f80ddd924e154061555" class="m-doc-self">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs) const <span class="m-label m-warning">pure virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">auto VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aaa1285fa10787e34cfcb4aab0c21024e" class="m-doc-self">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">NetworkInputs</a> const&amp; inputs) const -&gt; NetworkOutputs <span class="m-label m-warning">pure virtual</span></span></span>
             </h3>
             <p>Function to pass values to the network.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -407,7 +407,7 @@
                 </tr>
               </tfoot>
             </table>
-<p>This function hides variations in the formatted needed by different network libraries, providing a uniform input and output type.</p><aside class="m-note m-default"><h4>See also</h4><p><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">VNetworkBase::<wbr />NetworkInputs</a></p><p><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">VNetworkBase::<wbr />NetworkOutputs</a></p></aside>
+<p>This function hides variations in the formatted needed by different network libraries, providing a uniform input and output type.</p><aside class="m-note m-default"><h4>See also</h4><p><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">VNetworkBase::<wbr />NetworkInputs</a></p><p><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">VNetworkBase::<wbr />NetworkOutputs</a></p></aside>
           </div></section>
           <section class="m-doc-details" id="a67a72e59de0fce8cd056fdb5429ec0b3"><div>
             <h3>
@@ -473,16 +473,16 @@
             </table>
 <p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
           </div></section>
-          <section class="m-doc-details" id="afd742c834ad0134dda4794150af0c618"><div>
+          <section class="m-doc-details" id="a4ba3230931ba41e89fb6dc2b2337129a"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">std::vector&lt;std::string&gt; VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#afd742c834ad0134dda4794150af0c618" class="m-doc-self">getOutputLayers</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">pure virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">auto VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4ba3230931ba41e89fb6dc2b2337129a" class="m-doc-self">getOutputLayers</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt; std::string &gt; <span class="m-label m-warning">pure virtual</span></span></span>
             </h3>
             <p>List the names of the outputs.</p>
 <p>Outputs are stored in an NetworkOutputs object which is indexed by strings. This function returns the list of all strings that will index the outputs.</p>
           </div></section>
-          <section class="m-doc-details" id="aeb866e081cf65eea74552ce4d2c821b8"><div>
+          <section class="m-doc-details" id="af11a7e2514311d974918c34fef19ae52"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">bool VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aeb866e081cf65eea74552ce4d2c821b8" class="m-doc-self">isFile</a>(</span><span class="m-doc-wrap">) const</span></span>
+              <span class="m-doc-wrap-bumper">auto VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af11a7e2514311d974918c34fef19ae52" class="m-doc-self">isFile</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span></span>
             </h3>
             <p>Check if the argument inputFile is the path of a file on disk.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -534,9 +534,9 @@
             </table>
 <p>Intended to facilitate the put-to operator, allowing subclasses to change how this object is displayed.</p>
           </div></section>
-          <section class="m-doc-details" id="a90a258cdd6e4cc4383d13cc81aafafc4"><div>
+          <section class="m-doc-details" id="ad4508d9bb69eaf3ac8ff7fdb4b6dc3c0"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">bool VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a90a258cdd6e4cc4383d13cc81aafafc4" class="m-doc-self">isRootFile</a>(</span><span class="m-doc-wrap">std::string const&amp; filename = &quot;&quot;) const <span class="m-label m-warning">protected</span></span></span>
+              <span class="m-doc-wrap-bumper">auto VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ad4508d9bb69eaf3ac8ff7fdb4b6dc3c0" class="m-doc-self">isRootFile</a>(</span><span class="m-doc-wrap">std::string const&amp; filename = &quot;&quot;) const -&gt; bool <span class="m-label m-warning">protected</span></span></span>
             </h3>
             <p>Check if a string is possibly a root file path.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -551,7 +551,7 @@
           </div></section>
           <section class="m-doc-details" id="aae9544aaf496d892863f4be3104c168d"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a>&amp; outputs) const <span class="m-label m-warning">protected</span></span></span>
+              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a>&amp; outputs) const <span class="m-label m-warning">protected</span></span></span>
             </h3>
             <p>Remove any common prefix from the outputs.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -566,10 +566,10 @@
               </tbody>
             </table>
           </div></section>
-          <section class="m-doc-details" id="a3ae270ee94908caaf85b64d112a73221"><div>
+          <section class="m-doc-details" id="aded86e999cdf0e9b249281ae42719d36"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">std::ostream&amp; </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3ae270ee94908caaf85b64d112a73221" class="m-doc-self">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm,
-              const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; vNetworkBase)</span></span>
+              <span class="m-doc-wrap-bumper">auto </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aded86e999cdf0e9b249281ae42719d36" class="m-doc-self">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm,
+              const <a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&amp; vNetworkBase) -&gt; std::ostream &amp;</span></span>
             </h3>
             <p>Put-to operator to facilitate printing.</p>
 <p>It is useful to be able to display a reasonable representation of a network for debugging. This can be altered by subclasses by changing the protected print function of this class.</p>

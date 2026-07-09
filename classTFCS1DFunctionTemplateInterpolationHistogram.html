@@ -90,45 +90,45 @@
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a2cc55368be4fe9e0ea2bb37ed9661903" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">double rnd) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a33bbf913e50676fec690863761caf138" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">double rnd) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a85f17655648a4c94ab958c155fd28a40" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const</span>
+              <span class="m-doc-wrap-bumper">void <a href="#a5a96f26f83dd0ff708056c36cc6419e0" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a7287d11b06ec8da6ef053e93977a07ab" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">pure virtual</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a3431464cd14c436ff01ca0aede8c29a5" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd></dd>
           </dl>
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a2cc55368be4fe9e0ea2bb37ed9661903"><div>
+          <section class="m-doc-details" id="a33bbf913e50676fec690863761caf138"><div>
             <h3>
               <div class="m-doc-template">
                 template&lt;typename Txvec, typename Ty, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">double TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2cc55368be4fe9e0ea2bb37ed9661903" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">double rnd) const <span class="m-label m-warning">virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">auto TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a33bbf913e50676fec690863761caf138" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">double rnd) const -&gt; double <span class="m-label m-warning">override</span></span></span>
             </h3>
 <p>Function gets random number rnd in the range [0,1) as argument and returns function value according to a histogram distribution. A linear interpolation is done within each bin</p>
           </div></section>
-          <section class="m-doc-details" id="a85f17655648a4c94ab958c155fd28a40"><div>
+          <section class="m-doc-details" id="a5a96f26f83dd0ff708056c36cc6419e0"><div>
             <h3>
               <div class="m-doc-template">
                 template&lt;typename Txvec, typename Ty, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">void TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a85f17655648a4c94ab958c155fd28a40" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const</span></span>
+              <span class="m-doc-wrap-bumper">void TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a5a96f26f83dd0ff708056c36cc6419e0" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">override</span></span></span>
             </h3>
 <p>Function gets array of random numbers rnd[] in the range [0,1) as arguments and returns function value in array value. For a n-dimensional function, value and rnd should both have n elements.</p>
           </div></section>
-          <section class="m-doc-details" id="a7287d11b06ec8da6ef053e93977a07ab"><div>
+          <section class="m-doc-details" id="a3431464cd14c436ff01ca0aede8c29a5"><div>
             <h3>
               <div class="m-doc-template">
                 template&lt;typename Txvec, typename Ty, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">double TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7287d11b06ec8da6ef053e93977a07ab" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">pure virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">auto TFCS1DFunctionTemplateInterpolationHistogram&lt;Txvec, Ty, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3431464cd14c436ff01ca0aede8c29a5" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-warning">pure virtual</span></span></span>
             </h3>
 <p>Function gets random number rnd in the range [0,1) as argument and returns function value</p>
           </div></section>

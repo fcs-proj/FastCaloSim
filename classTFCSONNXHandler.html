@@ -110,7 +110,7 @@
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#aefb04c6e8590baf880a4501447ca3480" class="m-doc">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs) const -&gt; <a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a8f416da877e08eea45382671bbd5ab66" class="m-doc">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">NetworkInputs</a> const&amp; inputs) const -&gt; NetworkOutputs <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Function to pass values to the network.</dd>
             <dt>
@@ -118,7 +118,7 @@
             </dt>
             <dd>Save the network to a TTree.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#acd6fba1a7dd73ecc20b1c8f6e3ee9d83" class="m-doc">getOutputLayers</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt;std::string&gt; <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a6924ca993834901654ffb5f764ae9b25" class="m-doc">getOutputLayers</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt; std::string &gt; <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>List the names of the outputs.</dd>
             <dt>
@@ -143,7 +143,7 @@
           <h2><a href="#pro-methods">Protected functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#abc52b4fd94743cb18834c1ee36a88439" class="m-doc">print</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm) const <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">void <a href="#a15d67e6ba2f325f73666bbef5ba69116" class="m-doc">print</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Write a short description of this net to the string stream.</dd>
             <dt>
@@ -233,9 +233,9 @@
             <p><a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a> copy constructor.</p>
 <p>Does not call setupPersistedVariables or setupNet but will pass on m_inputFile. Inheriting classes should do whatever they need to move the variables created in the setup functions.</p>
           </div></section>
-          <section class="m-doc-details" id="aefb04c6e8590baf880a4501447ca3480"><div>
+          <section class="m-doc-details" id="a8f416da877e08eea45382671bbd5ab66"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">NetworkOutputs</a> TFCSONNXHandler::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aefb04c6e8590baf880a4501447ca3480" class="m-doc-self">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">NetworkInputs</a> const&amp; inputs) const <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper">auto TFCSONNXHandler::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8f416da877e08eea45382671bbd5ab66" class="m-doc-self">compute</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">NetworkInputs</a> const&amp; inputs) const -&gt; NetworkOutputs <span class="m-label m-warning">override</span></span></span>
             </h3>
             <p>Function to pass values to the network.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -255,7 +255,7 @@
                 </tr>
               </tfoot>
             </table>
-<p>This function is used to actually run data through the loaded network and obtain results.</p><aside class="m-note m-default"><h4>See also</h4><p><a href="classVNetworkBase.html#a4d6471d5a9c6a42a89aa6659a76ebf65" class="m-doc">VNetworkBase::<wbr />NetworkInputs</a></p><p><a href="classVNetworkBase.html#a764549e2ddcb6bc685f452744484c1e0" class="m-doc">VNetworkBase::<wbr />NetworkOutputs</a></p></aside>
+<p>This function is used to actually run data through the loaded network and obtain results.</p><aside class="m-note m-default"><h4>See also</h4><p><a href="classVNetworkBase.html#ac9b89602ce18cc6f82f1aa320be3971d" class="m-doc">VNetworkBase::<wbr />NetworkInputs</a></p><p><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">VNetworkBase::<wbr />NetworkOutputs</a></p></aside>
           </div></section>
           <section class="m-doc-details" id="ad6ee0711bd7f01eba5727bfcb8977f01"><div>
             <h3>
@@ -275,9 +275,9 @@
             </table>
 <p>All data required to recreate the network object is saved into a TTree. The format is not specified. Will still work even if deleteAllButNet has already been called.</p>
           </div></section>
-          <section class="m-doc-details" id="acd6fba1a7dd73ecc20b1c8f6e3ee9d83"><div>
+          <section class="m-doc-details" id="a6924ca993834901654ffb5f764ae9b25"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">std::vector&lt;std::string&gt; TFCSONNXHandler::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#acd6fba1a7dd73ecc20b1c8f6e3ee9d83" class="m-doc-self">getOutputLayers</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper">auto TFCSONNXHandler::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a6924ca993834901654ffb5f764ae9b25" class="m-doc-self">getOutputLayers</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt; std::string &gt; <span class="m-label m-warning">override</span></span></span>
             </h3>
             <p>List the names of the outputs.</p>
 <p>Outputs are stored in an NetworkOutputs object which is indexed by strings. This function returns the list of all strings that will index the outputs.</p>
@@ -310,9 +310,9 @@
             <p>Save the network to a TTree.</p>
 <p>All data required to recreate the network object is saved into a TTree. The format is not specified.</p>
           </div></section>
-          <section class="m-doc-details" id="abc52b4fd94743cb18834c1ee36a88439"><div>
+          <section class="m-doc-details" id="a15d67e6ba2f325f73666bbef5ba69116"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void TFCSONNXHandler::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#abc52b4fd94743cb18834c1ee36a88439" class="m-doc-self">print</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm) const <span class="m-label m-warning">override</span> <span class="m-label m-warning">protected</span></span></span>
+              <span class="m-doc-wrap-bumper">void TFCSONNXHandler::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a15d67e6ba2f325f73666bbef5ba69116" class="m-doc-self">print</a>(</span><span class="m-doc-wrap">std::ostream&amp; strm) const <span class="m-label m-warning">override</span> <span class="m-label m-warning">protected</span></span></span>
             </h3>
             <p>Write a short description of this net to the string stream.</p>
             <table class="m-table m-fullwidth m-flat">

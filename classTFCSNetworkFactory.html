@@ -68,36 +68,36 @@
           <h2><a href="#pub-static-methods">Public static functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#ae16f53702562e8e4435029031d42630b" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::string input) -&gt; std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt;</span>
+              <span class="m-doc-wrap-bumper">static auto <a href="#a4a9da9ef930c1b7ec6b42a053ef71294" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::string input) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span>
             </dt>
             <dd>Given a string, make a network.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#acb15a4633197fe7ef6fe879a2f9cc3a7" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::string input,
-              bool graph_form) -&gt; std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt;</span>
+              <span class="m-doc-wrap-bumper">static auto <a href="#a0d810189d99ba7bb25c1a1a300abb8b1" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::string input,
+              bool graph_form) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span>
             </dt>
             <dd>Given a string, and information about format, make a network.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#a132d6f5942ea8df0674897fcf9f00126" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; input) -&gt; std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt;</span>
+              <span class="m-doc-wrap-bumper">static auto <a href="#a2129d757c07b469cbc63c0ba3f52ce73" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; input) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span>
             </dt>
             <dd>Given a vector of chars (bytes), make a network.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#a7c6fade222b668209ec786e48ec777a0" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
-              std::string string_input) -&gt; std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt;</span>
+              <span class="m-doc-wrap-bumper">static auto <a href="#a653729f7b9ff5293e6b3679e1af24cc5" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
+              std::string string_input) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span>
             </dt>
             <dd>Create a network from whichever input isn&#x27;t empty.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">static auto <a href="#aa80b14d601f3944b6fd1f52765ba27c1" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
+              <span class="m-doc-wrap-bumper">static auto <a href="#aff3beba685b3268535e964992dd6b05e" class="m-doc">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
               std::string string_input,
-              bool graph_form) -&gt; std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt;</span>
+              bool graph_form) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span>
             </dt>
             <dd>Create a network from whichever input isn&#x27;t empty.</dd>
           </dl>
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="ae16f53702562e8e4435029031d42630b"><div>
+          <section class="m-doc-details" id="a4a9da9ef930c1b7ec6b42a053ef71294"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt; TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae16f53702562e8e4435029031d42630b" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::string input)</span></span>
+              <span class="m-doc-wrap-bumper">static auto TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4a9da9ef930c1b7ec6b42a053ef71294" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::string input) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span></span>
             </h3>
             <p>Given a string, make a network.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -113,10 +113,10 @@
             </table>
 <p>This function will first check if the string is the path of a readable file on the disk. If so, the file suffix is used to decide if it&#x27;s an onnx (.onnx) or lwtnn file (.json). If the filepath ends in .* then first an onnx then an lwtnn file will be tried. The file is read and parsed into a network.</p><p>If the string is not a filepath, it is assumed to be the content of a json file to make an lwtnn network.</p><p>When an lwtnn network is created, first the <a href="classTFCSSimpleLWTNNHandler.html" class="m-doc">TFCSSimpleLWTNNHandler</a> format is tried, and if this raises an error, the <a href="classTFCSGANLWTNNHandler.html" class="m-doc">TFCSGANLWTNNHandler</a> is applied. The former is simpler than the latter, so it will always fail to parse the more complex graph format.</p>
           </div></section>
-          <section class="m-doc-details" id="acb15a4633197fe7ef6fe879a2f9cc3a7"><div>
+          <section class="m-doc-details" id="a0d810189d99ba7bb25c1a1a300abb8b1"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt; TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#acb15a4633197fe7ef6fe879a2f9cc3a7" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::string input,
-              bool graph_form)</span></span>
+              <span class="m-doc-wrap-bumper">static auto TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0d810189d99ba7bb25c1a1a300abb8b1" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::string input,
+              bool graph_form) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span></span>
             </h3>
             <p>Given a string, and information about format, make a network.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -136,9 +136,9 @@
             </table>
 <p>This function will first check if the string is the path of a readable file on the disk. If so, the file suffix is used to decide if it&#x27;s an onnx (.onnx) or lwtnn file (.json). If the filepath ends in .* then first an onnx then an lwtnn file will be tried. The file is read and parsed into a network.</p><p>If the string is not a filepath, it is assumed to be the content of a json file to make an lwtnn network.</p><p>When an lwtnn network is created, if graph_form is true the network will be a <a href="classTFCSSimpleLWTNNHandler.html" class="m-doc">TFCSSimpleLWTNNHandler</a> otherwise it is a <a href="classTFCSGANLWTNNHandler.html" class="m-doc">TFCSGANLWTNNHandler</a>.</p>
           </div></section>
-          <section class="m-doc-details" id="a132d6f5942ea8df0674897fcf9f00126"><div>
+          <section class="m-doc-details" id="a2129d757c07b469cbc63c0ba3f52ce73"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt; TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a132d6f5942ea8df0674897fcf9f00126" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; input)</span></span>
+              <span class="m-doc-wrap-bumper">static auto TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2129d757c07b469cbc63c0ba3f52ce73" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; input) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span></span>
             </h3>
             <p>Given a vector of chars (bytes), make a network.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -154,10 +154,10 @@
             </table>
 <p>This function will always create a <a href="classTFCSONNXHandler.html" class="m-doc">TFCSONNXHandler</a>. Caution: this function is designed to modify its input.</p>
           </div></section>
-          <section class="m-doc-details" id="a7c6fade222b668209ec786e48ec777a0"><div>
+          <section class="m-doc-details" id="a653729f7b9ff5293e6b3679e1af24cc5"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt; TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7c6fade222b668209ec786e48ec777a0" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
-              std::string string_input)</span></span>
+              <span class="m-doc-wrap-bumper">static auto TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a653729f7b9ff5293e6b3679e1af24cc5" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
+              std::string string_input) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span></span>
             </h3>
             <p>Create a network from whichever input isn&#x27;t empty.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -177,11 +177,11 @@
             </table>
 <p>If the vector_input is not empty, construct a network from that, otherwise, use the string_input to construct a network.</p>
           </div></section>
-          <section class="m-doc-details" id="aa80b14d601f3944b6fd1f52765ba27c1"><div>
+          <section class="m-doc-details" id="aff3beba685b3268535e964992dd6b05e"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static std::unique_ptr&lt;<a href="classVNetworkBase.html" class="m-doc">VNetworkBase</a>&gt; TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa80b14d601f3944b6fd1f52765ba27c1" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
+              <span class="m-doc-wrap-bumper">static auto TFCSNetworkFactory::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aff3beba685b3268535e964992dd6b05e" class="m-doc-self">create</a>(</span><span class="m-doc-wrap">std::vector&lt;char&gt; const&amp; vector_input,
               std::string string_input,
-              bool graph_form)</span></span>
+              bool graph_form) -&gt; std::unique_ptr&lt; VNetworkBase &gt;</span></span>
             </h3>
             <p>Create a network from whichever input isn&#x27;t empty.</p>
             <table class="m-table m-fullwidth m-flat">

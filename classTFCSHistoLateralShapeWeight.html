@@ -102,8 +102,8 @@
               const char* title = nullptr)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ab2f6453e199dd79775a403950bc9948b">
-              <span class="m-doc-wrap-bumper"><a href="#ab2f6453e199dd79775a403950bc9948b" class="m-doc-self">~TFCSHistoLateralShapeWeight</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">virtual</span></span>
+            <dt id="a165e0943effdc9ff6353f046ae32e2ca">
+              <span class="m-doc-wrap-bumper"><a href="#a165e0943effdc9ff6353f046ae32e2ca" class="m-doc-self">~TFCSHistoLateralShapeWeight</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -111,23 +111,23 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="a0f5e7c91ac60ebef2bc47cfd1d54a1fe">
-              <span class="m-doc-wrap-bumper">auto <a href="#a0f5e7c91ac60ebef2bc47cfd1d54a1fe" class="m-doc-self">simulate_hit</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit,
+            <dt id="a08eede9b7494353acd0242666b502caf">
+              <span class="m-doc-wrap-bumper">auto <a href="#a08eede9b7494353acd0242666b502caf" class="m-doc-self">simulate_hit</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit,
               <a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
-              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) -&gt; <a href="TFCSParametrizationBase_8h.html#ab0749ab8fe854de16604ff6d70028527" class="m-doc">FCSReturnCode</a> <span class="m-label m-flat m-warning">override</span></span>
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) -&gt; FCSReturnCode <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>weight the energy of one hit in order to generate fluctuations</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a4fa991d1318b7321e4c6d58bde406390" class="m-doc">Initialize</a>(</span><span class="m-doc-wrap">TH1* hist) -&gt; bool</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a75ab46043548c601300a34349bfe1e59" class="m-doc">Initialize</a>(</span><span class="m-doc-wrap">TH1* hist) -&gt; bool</span>
             </dt>
             <dd></dd>
-            <dt id="a7bff226f2d6da32bb6e6dfcdad7f0624">
-              <span class="m-doc-wrap-bumper">auto <a href="#a7bff226f2d6da32bb6e6dfcdad7f0624" class="m-doc-self">getHistogram</a>(</span><span class="m-doc-wrap">) const -&gt; TH1*</span>
+            <dt id="ad6132bf029faa3fcf027a74e277383c8">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad6132bf029faa3fcf027a74e277383c8" class="m-doc-self">getHistogram</a>(</span><span class="m-doc-wrap">) const -&gt; TH1 *</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ab1a2ded51bfbe05b112633db466c4d56">
-              <span class="m-doc-wrap-bumper">void <a href="#ab1a2ded51bfbe05b112633db466c4d56" class="m-doc-self">Print</a>(</span><span class="m-doc-wrap">Option_t* option = &quot;&quot;) const <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a440109350b3eb27265dcb160e9ceeece">
+              <span class="m-doc-wrap-bumper">void <a href="#a440109350b3eb27265dcb160e9ceeece" class="m-doc-self">Print</a>(</span><span class="m-doc-wrap">Option_t* option = &quot;&quot;) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="af1fa79dd98a6679d55032f29959a9335">
@@ -138,12 +138,12 @@
               <span class="m-doc-wrap-bumper">void <a href="#a3c99d984b0b137cb12746b7b2460064d" class="m-doc-self">setMaxWeight</a>(</span><span class="m-doc-wrap">float maxWeight) <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a140ce3e870decb721f8104c466140d74">
-              <span class="m-doc-wrap-bumper">auto <a href="#a140ce3e870decb721f8104c466140d74" class="m-doc-self">getMinWeight</a>(</span><span class="m-doc-wrap">) const -&gt; float <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a7d20b4ce9c28e198e3ba3b7274e6c3bc">
+              <span class="m-doc-wrap-bumper">auto <a href="#a7d20b4ce9c28e198e3ba3b7274e6c3bc" class="m-doc-self">getMinWeight</a>(</span><span class="m-doc-wrap">) const -&gt; float <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Get minimum and maximum value of weight for hit energy reweighting.</dd>
-            <dt id="a8f94a8cb9993c61628b0b34499870edb">
-              <span class="m-doc-wrap-bumper">auto <a href="#a8f94a8cb9993c61628b0b34499870edb" class="m-doc-self">getMaxWeight</a>(</span><span class="m-doc-wrap">) const -&gt; float <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a8debd3e65031aeaf22fc146ccf431aaa">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8debd3e65031aeaf22fc146ccf431aaa" class="m-doc-self">getMaxWeight</a>(</span><span class="m-doc-wrap">) const -&gt; float <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -167,9 +167,9 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a4fa991d1318b7321e4c6d58bde406390"><div>
+          <section class="m-doc-details" id="a75ab46043548c601300a34349bfe1e59"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">bool TFCSHistoLateralShapeWeight::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4fa991d1318b7321e4c6d58bde406390" class="m-doc-self">Initialize</a>(</span><span class="m-doc-wrap">TH1* hist)</span></span>
+              <span class="m-doc-wrap-bumper">auto TFCSHistoLateralShapeWeight::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a75ab46043548c601300a34349bfe1e59" class="m-doc-self">Initialize</a>(</span><span class="m-doc-wrap">TH1* hist) -&gt; bool</span></span>
             </h3>
 <p>Init from histogram. The integral of the histogram is used as number of expected hits to be generated</p>
           </div></section>
