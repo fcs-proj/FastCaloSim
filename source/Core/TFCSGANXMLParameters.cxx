@@ -7,6 +7,7 @@
 // class header include
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <sstream>
 
 #include "FastCaloSim/Core/TFCSGANXMLParameters.h"
@@ -45,7 +46,10 @@ void TFCSGANXMLParameters::InitialiseFromXML(
   m_fastCaloGANInputFolderName = FastCaloGANInputFolderName;
   std::string xmlFullFileName = FastCaloGANInputFolderName + "/binning.xml";
 
-  xmlDocPtr doc = xmlParseFile(xmlFullFileName.c_str());
+  // RAII ownership: the document must also be freed when the numeric
+  // attribute conversions below throw
+  const std::unique_ptr<xmlDoc, void (*)(xmlDocPtr)> doc(
+      xmlParseFile(xmlFullFileName.c_str()), xmlFreeDoc);
   if (!doc) {
     FCS_MSG_WARNING("Failed to parse XML file: " << xmlFullFileName);
     return;
@@ -92,6 +96,8 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                       std::string token;
 
                       while (std::getline(ss, token, ',')) {
+                        if (token.empty())
+                          continue;
                         edges.push_back(std::stod(token));
                       }
 
@@ -139,7 +145,6 @@ void TFCSGANXMLParameters::InitialiseFromXML(
       }
     }
   }
-  xmlFreeDoc(doc);
 }
 
 bool TFCSGANXMLParameters::ReadBooleanAttribute(const std::string& name,

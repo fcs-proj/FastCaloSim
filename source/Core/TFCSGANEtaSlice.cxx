@@ -105,7 +105,7 @@ bool TFCSGANEtaSlice::LoadGAN()
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_High12.*";
     FCS_MSG_DEBUG("Gan input file name " << inputFileName);
-    m_net_high = TFCSNetworkFactory::create(inputFileName);
+    m_net_high = TFCSNetworkFactory::create(std::move(inputFileName));
     if (m_net_high == nullptr)
       success = false;
 
@@ -137,9 +137,13 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
 
     std::string histoName = "r" + std::to_string(layer) + "w";
     TH1D* h1 = (TH1D*)file->Get(histoName.c_str());
-    if (std::isnan(h1->Integral())) {
+    if (!h1 || std::isnan(h1->Integral())) {
       histoName = "r" + std::to_string(layer);
       h1 = (TH1D*)file->Get(histoName.c_str());
+    }
+    if (!h1) {
+      throw std::runtime_error("Failed to load histogram " + histoName
+                               + " from ROOT file: " + rootFileName);
     }
 
     TAxis* x = (TAxis*)h2->GetXaxis();

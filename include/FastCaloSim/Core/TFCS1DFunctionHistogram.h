@@ -33,8 +33,11 @@ public:
   static double sample_from_histo(TH1* hist, double);
   double sample_from_histovalues(double);
 
-  const std::vector<float>& get_HistoBorders() { return m_HistoBorders; };
-  const std::vector<float>& get_HistoContents() { return m_HistoContents; };
+  const std::vector<float>& get_HistoBorders() const { return m_HistoBorders; };
+  const std::vector<float>& get_HistoContents() const
+  {
+    return m_HistoContents;
+  };
 
 protected:
   std::vector<float> m_HistoBorders;

@@ -1,5 +1,8 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS1DFunctionHistogram.h"
@@ -24,15 +27,17 @@ void TFCS1DFunctionHistogram::Initialize(TH1* hist, double cut_maxdev)
 
 std::unique_ptr<double[]> TFCS1DFunctionHistogram::histo_to_array(TH1* hist)
 {
-  TH1D* h_clone = (TH1D*)hist->Clone("h_clone");
-  h_clone->Scale(1.0 / h_clone->Integral());
+  std::unique_ptr<TH1D> h_clone(static_cast<TH1D*>(hist->Clone("h_clone")));
+  const double integral = h_clone->Integral();
+  if (integral != 0) {
+    h_clone->Scale(1.0 / integral);
+  }
 
   auto histoVals = std::make_unique<double[]>(h_clone->GetNbinsX());
   histoVals[0] = h_clone->GetBinContent(1);
   for (int i = 1; i < h_clone->GetNbinsX(); i++) {
     histoVals[i] = histoVals[i - 1] + h_clone->GetBinContent(i + 1);
   }
-  delete h_clone;
   return histoVals;
 }
 

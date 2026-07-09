@@ -75,7 +75,7 @@ public:
                           const std::vector<float>& alpha_lower,
                           const std::vector<float>& alpha_size);
 
-  const event_bins_t& get_coordinates() { return m_coordinates; }
+  const event_bins_t& get_coordinates() const { return m_coordinates; }
 
   void set_coordinates(const event_bins_t& coordinates)
   {

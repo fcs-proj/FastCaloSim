@@ -52,7 +52,7 @@ public:
 
   bool IsGanCorrectlyLoaded() const;
   const FitResultsPerLayer& GetFitResults() const { return m_allFitResults; }
-  const ExtrapolatorWeights& GetExtrapolatorWeights()
+  const ExtrapolatorWeights& GetExtrapolatorWeights() const
   {
     return m_extrapolatorWeights;
   }

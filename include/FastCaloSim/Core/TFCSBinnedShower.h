@@ -125,14 +125,14 @@ public:
                                      float eta_center,
                                      float phi_center);
 
-  const eventvector_t& get_eventlibrary() { return m_eventlibrary; }
+  const eventvector_t& get_eventlibrary() const { return m_eventlibrary; }
 
   void set_event_library(const eventvector_t& eventlibrary)
   {
     m_eventlibrary = eventlibrary;
   }
 
-  const event_bins_t& get_coordinates() { return m_coordinates; }
+  const event_bins_t& get_coordinates() const { return m_coordinates; }
 
   void set_coordinates(const event_bins_t& coordinates)
   {
