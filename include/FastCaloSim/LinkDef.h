@@ -591,7 +591,11 @@
 // MLogging was called ISF_FCS::MLogging when the library still lived in
 // Athena. Old parametrization files reference that name in their streamer
 // info; this rule maps it onto the renamed class so they read cleanly.
-#pragma read sourceClass="ISF_FCS::MLogging" targetClass="FastCaloSim::MLogging";
+// The version selector must include 0: MLogging is persistified with class
+// version 0 (ClassDef(MLogging, 0)), and rootcling defaults a missing
+// version attribute to "[1-]", which would never match the legacy streamer
+// info.
+#pragma read sourceClass="ISF_FCS::MLogging" version="[0-]" targetClass="FastCaloSim::MLogging";
 #pragma link C++ class TFCSParametrizationBase + ;
 #pragma link C++ class TFCSParametrizationPlaceholder + ;
 #pragma link C++ class TFCSParametrization + ;
