@@ -173,23 +173,23 @@
               <span class="m-doc-wrap-bumper">void <a href="#a73669a18fc351ad272891772112d9fc2" class="m-doc-self">delete_hdf5_path</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae014fe1ea2dd6f9ee0d5601c0db8a72d">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae014fe1ea2dd6f9ee0d5601c0db8a72d" class="m-doc-self">get_hdf5_path</a>(</span><span class="m-doc-wrap">) const -&gt; const std::string</span>
+            <dt id="a2695dc9756016350553191f8efaf5d2f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2695dc9756016350553191f8efaf5d2f" class="m-doc-self">get_hdf5_path</a>(</span><span class="m-doc-wrap">) const -&gt; const std::string&amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aa522b37fcbcd9655d823df9cc3b37c83">
-              <span class="m-doc-wrap-bumper">void <a href="#aa522b37fcbcd9655d823df9cc3b37c83" class="m-doc-self">set_layer_energy</a>(</span><span class="m-doc-wrap">long unsigned int event_index,
+            <dt id="ab30171c36e90669d23b159d899f7ec42">
+              <span class="m-doc-wrap-bumper">void <a href="#ab30171c36e90669d23b159d899f7ec42" class="m-doc-self">set_layer_energy</a>(</span><span class="m-doc-wrap">long unsigned int event_index,
               long unsigned int layer_index,
-              const std::vector&lt;unsigned int&gt; bin_index_vector,
-              const std::vector&lt;float&gt; E_vector)</span>
+              const std::vector&lt;unsigned int&gt;&amp; bin_index_vector,
+              const std::vector&lt;float&gt;&amp; E_vector)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a4e86849ecb6fc2744a701260be4e80fa">
-              <span class="m-doc-wrap-bumper">void <a href="#a4e86849ecb6fc2744a701260be4e80fa" class="m-doc-self">set_bin_boundaries</a>(</span><span class="m-doc-wrap">long unsigned int layer_index,
-              std::vector&lt;float&gt; R_lower,
-              std::vector&lt;float&gt; R_size,
-              std::vector&lt;float&gt; alpha_lower,
-              std::vector&lt;float&gt; alpha_size)</span>
+            <dt id="a20b0ab8563d6a949b390a05d01ca81c0">
+              <span class="m-doc-wrap-bumper">void <a href="#a20b0ab8563d6a949b390a05d01ca81c0" class="m-doc-self">set_bin_boundaries</a>(</span><span class="m-doc-wrap">long unsigned int layer_index,
+              const std::vector&lt;float&gt;&amp; R_lower,
+              const std::vector&lt;float&gt;&amp; R_size,
+              const std::vector&lt;float&gt;&amp; alpha_lower,
+              const std::vector&lt;float&gt;&amp; alpha_size)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="ab0c3d36681c3e62bb3d5084ce71c1abc">
@@ -199,33 +199,33 @@
               float phi_center)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a120d0a1c1ee00774a2785abfc6d4c87c">
-              <span class="m-doc-wrap-bumper">auto <a href="#a120d0a1c1ee00774a2785abfc6d4c87c" class="m-doc-self">get_eventlibrary</a>(</span><span class="m-doc-wrap">) -&gt; <a href="classTFCSBinnedShower.html#acfce1bc0778ea46fdabe2cf8513586db" class="m-doc">eventvector_<wbr />t</a></span>
+            <dt id="ad8f1f54fc3f821e1b794ba9fa2446367">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad8f1f54fc3f821e1b794ba9fa2446367" class="m-doc-self">get_eventlibrary</a>(</span><span class="m-doc-wrap">) const -&gt; const <a href="classTFCSBinnedShower.html#acfce1bc0778ea46fdabe2cf8513586db" class="m-doc">eventvector_<wbr />t</a>&amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aa2958a461bae19ff1bea303faad001c4">
-              <span class="m-doc-wrap-bumper">void <a href="#aa2958a461bae19ff1bea303faad001c4" class="m-doc-self">set_event_library</a>(</span><span class="m-doc-wrap"><a href="classTFCSBinnedShower.html#acfce1bc0778ea46fdabe2cf8513586db" class="m-doc">eventvector_<wbr />t</a> eventlibrary)</span>
+            <dt id="a89337d05b1b8eeaa1acd2bdbe0dccdf7">
+              <span class="m-doc-wrap-bumper">void <a href="#a89337d05b1b8eeaa1acd2bdbe0dccdf7" class="m-doc-self">set_event_library</a>(</span><span class="m-doc-wrap">const <a href="classTFCSBinnedShower.html#acfce1bc0778ea46fdabe2cf8513586db" class="m-doc">eventvector_<wbr />t</a>&amp; eventlibrary)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ad0343277c49c8962f10eec017097d406">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad0343277c49c8962f10eec017097d406" class="m-doc-self">get_coordinates</a>(</span><span class="m-doc-wrap">) -&gt; <a href="classTFCSBinnedShower.html#a63a2abdd6b6e9e94539603826a3c60a4" class="m-doc">event_<wbr />bins_<wbr />t</a></span>
+            <dt id="a6fa0f2c337fe16ef8e2a89cc189c6f6d">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6fa0f2c337fe16ef8e2a89cc189c6f6d" class="m-doc-self">get_coordinates</a>(</span><span class="m-doc-wrap">) const -&gt; const <a href="classTFCSBinnedShower.html#a63a2abdd6b6e9e94539603826a3c60a4" class="m-doc">event_<wbr />bins_<wbr />t</a>&amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a0be45215f4f1a7cbb541c0bc9286ce34">
-              <span class="m-doc-wrap-bumper">void <a href="#a0be45215f4f1a7cbb541c0bc9286ce34" class="m-doc-self">set_coordinates</a>(</span><span class="m-doc-wrap"><a href="classTFCSBinnedShower.html#a63a2abdd6b6e9e94539603826a3c60a4" class="m-doc">event_<wbr />bins_<wbr />t</a> coordinates)</span>
+            <dt id="a61c74f77cf664f8a072afbeb44f178b0">
+              <span class="m-doc-wrap-bumper">void <a href="#a61c74f77cf664f8a072afbeb44f178b0" class="m-doc-self">set_coordinates</a>(</span><span class="m-doc-wrap">const <a href="classTFCSBinnedShower.html#a63a2abdd6b6e9e94539603826a3c60a4" class="m-doc">event_<wbr />bins_<wbr />t</a>&amp; coordinates)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a94ef494c67d65711df15ed4923880e8d">
-              <span class="m-doc-wrap-bumper">auto <a href="#a94ef494c67d65711df15ed4923880e8d" class="m-doc-self">get_sub_bin_distribution</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt;std::vector&lt;std::vector&lt;std::vector&lt;float&gt;&gt;&gt;&gt;</span>
+            <dt id="a5ee19cbf4fa127a83683828fcb025f78">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5ee19cbf4fa127a83683828fcb025f78" class="m-doc-self">get_sub_bin_distribution</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt;std::vector&lt;std::vector&lt;std::vector&lt;float&gt;&gt;&gt;&gt;&amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a56cf930dededc676f3f0caa73a1d11d2">
-              <span class="m-doc-wrap-bumper">auto <a href="#a56cf930dededc676f3f0caa73a1d11d2" class="m-doc-self">get_upscaling_energies</a>(</span><span class="m-doc-wrap">) const -&gt; std::vector&lt;float&gt;</span>
+            <dt id="aa627b5d758a7652075542d58441a05c4">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa627b5d758a7652075542d58441a05c4" class="m-doc-self">get_upscaling_energies</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt;float&gt;&amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae33d584ff4a6197af604905694e87ef3">
-              <span class="m-doc-wrap-bumper">void <a href="#ae33d584ff4a6197af604905694e87ef3" class="m-doc-self">set_sub_bin_distribution_and_energies</a>(</span><span class="m-doc-wrap">std::vector&lt;std::vector&lt;std::vector&lt;std::vector&lt;float&gt;&gt;&gt;&gt; sub_bin_distribution,
-              std::vector&lt;float&gt; upscaling_energies)</span>
+            <dt id="ae1d64196d8f9b3f1dd2b881170ae9bde">
+              <span class="m-doc-wrap-bumper">void <a href="#ae1d64196d8f9b3f1dd2b881170ae9bde" class="m-doc-self">set_sub_bin_distribution_and_energies</a>(</span><span class="m-doc-wrap">const std::vector&lt;std::vector&lt;std::vector&lt;std::vector&lt;float&gt;&gt;&gt;&gt;&amp; sub_bin_distribution,
+              const std::vector&lt;float&gt;&amp; upscaling_energies)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
