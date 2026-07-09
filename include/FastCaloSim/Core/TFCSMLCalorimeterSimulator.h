@@ -74,5 +74,5 @@ private:
   long unsigned int m_nVoxels = 382;
   long unsigned int m_nLayers = 5;
 
-  ClassDef(TFCSMLCalorimeterSimulator, 2)  // TFCSMLCalorimeterSimulator
+  ClassDefOverride(TFCSMLCalorimeterSimulator, 2)  // TFCSMLCalorimeterSimulator
 };

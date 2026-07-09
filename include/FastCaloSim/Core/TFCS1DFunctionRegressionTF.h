@@ -24,5 +24,5 @@ private:
   float m_rangeval {};
   float m_startval {};
 
-  ClassDef(TFCS1DFunctionRegressionTF, 1)
+  ClassDefOverride(TFCS1DFunctionRegressionTF, 1)
 };

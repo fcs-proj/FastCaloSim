@@ -28,5 +28,5 @@ public:
                                            int& last) -> double;
 
 private:
-  ClassDef(TFCS2DFunction, 1)  // TFCS2DFunction
+  ClassDefOverride(TFCS2DFunction, 1)  // TFCS2DFunction
 };

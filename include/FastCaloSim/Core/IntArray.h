@@ -15,5 +15,5 @@ public:
   ~IntArray() override;
 
 private:
-  ClassDef(IntArray, 1)
+  ClassDefOverride(IntArray, 1)
 };

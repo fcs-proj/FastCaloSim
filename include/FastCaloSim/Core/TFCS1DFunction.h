@@ -54,5 +54,5 @@ public:
                                               double sigma = 0.6) -> TH1*;
 
 private:
-  ClassDef(TFCS1DFunction, 2)  // TFCS1DFunction
+  ClassDefOverride(TFCS1DFunction, 2)  // TFCS1DFunction
 };

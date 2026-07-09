@@ -25,5 +25,5 @@ private:
   std::vector<std::vector<double>> m_fWeightMatrix0to1;
   std::vector<std::vector<double>> m_fWeightMatrix1to2;
 
-  ClassDef(TFCS1DFunctionRegression, 1)  // TFCS1DFunctionRegression
+  ClassDefOverride(TFCS1DFunctionRegression, 1)  // TFCS1DFunctionRegression
 };

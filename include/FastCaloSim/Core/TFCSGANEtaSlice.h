@@ -92,5 +92,5 @@ private:
 
   TFCSGANXMLParameters m_param;
 
-  ClassDef(TFCSGANEtaSlice, 6)  // TFCSGANEtaSlice
+  ClassDefOverride(TFCSGANEtaSlice, 6)  // TFCSGANEtaSlice
 };

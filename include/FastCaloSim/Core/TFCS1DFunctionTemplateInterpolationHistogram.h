@@ -88,8 +88,8 @@ public:
     return m_HistoBorders.position_lin(ibin, m, residual_rnd);
   }
 
-  ClassDef(TFCS1DFunctionTemplateInterpolationHistogram,
-           1)  // TFCS1DFunctionTemplateInterpolationHistogram
+  ClassDefOverride(TFCS1DFunctionTemplateInterpolationHistogram,
+                   1)  // TFCS1DFunctionTemplateInterpolationHistogram
 };
 
 class TFCS1DFunctionInt8Int8InterpolationHistogram
@@ -105,8 +105,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt8Int8InterpolationHistogram,
-           1)  // TFCS1DFunctionInt8Int8InterpolationHistogram
+  ClassDefOverride(TFCS1DFunctionInt8Int8InterpolationHistogram,
+                   1)  // TFCS1DFunctionInt8Int8InterpolationHistogram
 };
 
 class TFCS1DFunctionInt8Int16InterpolationHistogram
@@ -122,8 +122,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt8Int16InterpolationHistogram,
-           1)  // TFCS1DFunctionInt8Int16InterpolationHistogram
+  ClassDefOverride(TFCS1DFunctionInt8Int16InterpolationHistogram,
+                   1)  // TFCS1DFunctionInt8Int16InterpolationHistogram
 };
 
 class TFCS1DFunctionInt16Int16InterpolationHistogram
@@ -139,8 +139,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt16Int16InterpolationHistogram,
-           1)  // TFCS1DFunctionInt16Int16InterpolationHistogram
+  ClassDefOverride(TFCS1DFunctionInt16Int16InterpolationHistogram,
+                   1)  // TFCS1DFunctionInt16Int16InterpolationHistogram
 };
 
 class TFCS1DFunctionInt16Int32InterpolationHistogram
@@ -156,8 +156,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt16Int32InterpolationHistogram,
-           1)  // TFCS1DFunctionInt16Int32InterpolationHistogram
+  ClassDefOverride(TFCS1DFunctionInt16Int32InterpolationHistogram,
+                   1)  // TFCS1DFunctionInt16Int32InterpolationHistogram
 };
 
 // clang-format off

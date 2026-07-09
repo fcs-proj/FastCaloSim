@@ -15,5 +15,5 @@ public:
   ~DoubleArray() override;
 
 private:
-  ClassDef(DoubleArray, 1)
+  ClassDefOverride(DoubleArray, 1)
 };

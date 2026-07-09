@@ -265,8 +265,8 @@ protected:
   TFCS1DFunction_HistogramContent<Tz, Trandom> m_HistoContents;
 
 private:
-  ClassDef(TFCS2DFunctionTemplateHistogram,
-           1)  // TFCS2DFunctionTemplateHistogram
+  ClassDefOverride(TFCS2DFunctionTemplateHistogram,
+                   1)  // TFCS2DFunctionTemplateHistogram
 };
 
 class TFCS2DFunctionInt8Int8Int8Histogram
@@ -283,8 +283,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int8Int8Histogram,
-           1)  // TFCS2DFunctionInt8Int8Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int8Int8Histogram,
+                   1)  // TFCS2DFunctionInt8Int8Int8Histogram
 };
 
 class TFCS2DFunctionInt8Int8Int16Histogram
@@ -301,8 +301,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int8Int16Histogram,
-           1)  // TFCS2DFunctionInt8Int8Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int8Int16Histogram,
+                   1)  // TFCS2DFunctionInt8Int8Int16Histogram
 };
 
 class TFCS2DFunctionInt8Int8Int32Histogram
@@ -319,8 +319,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int8Int32Histogram,
-           1)  // TFCS2DFunctionInt8Int8Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int8Int32Histogram,
+                   1)  // TFCS2DFunctionInt8Int8Int32Histogram
 };
 class TFCS2DFunctionInt8Int16Int8Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -336,8 +336,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int16Int8Histogram,
-           1)  // TFCS2DFunctionInt8Int16Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int16Int8Histogram,
+                   1)  // TFCS2DFunctionInt8Int16Int8Histogram
 };
 
 class TFCS2DFunctionInt8Int16Int16Histogram
@@ -354,8 +354,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int16Int16Histogram,
-           1)  // TFCS2DFunctionInt8Int16Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int16Int16Histogram,
+                   1)  // TFCS2DFunctionInt8Int16Int16Histogram
 };
 
 class TFCS2DFunctionInt8Int16Int32Histogram
@@ -372,8 +372,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int16Int32Histogram,
-           1)  // TFCS2DFunctionInt8Int16Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int16Int32Histogram,
+                   1)  // TFCS2DFunctionInt8Int16Int32Histogram
 };
 class TFCS2DFunctionInt8Int32Int8Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -389,8 +389,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int32Int8Histogram,
-           1)  // TFCS2DFunctionInt8Int32Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int32Int8Histogram,
+                   1)  // TFCS2DFunctionInt8Int32Int8Histogram
 };
 class TFCS2DFunctionInt8Int32Int16Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -406,8 +406,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int32Int16Histogram,
-           1)  // TFCS2DFunctionInt8Int32Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int32Int16Histogram,
+                   1)  // TFCS2DFunctionInt8Int32Int16Histogram
 };
 class TFCS2DFunctionInt8Int32Int32Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -423,8 +423,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int32Int32Histogram,
-           1)  // TFCS2DFunctionInt8Int32Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt8Int32Int32Histogram,
+                   1)  // TFCS2DFunctionInt8Int32Int32Histogram
 };
 
 class TFCS2DFunctionInt16Int8Int8Histogram
@@ -441,8 +441,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int8Int8Histogram,
-           1)  // TFCS2DFunctionInt16Int8Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int8Int8Histogram,
+                   1)  // TFCS2DFunctionInt16Int8Int8Histogram
 };
 
 class TFCS2DFunctionInt16Int8Int16Histogram
@@ -459,8 +459,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int8Int16Histogram,
-           1)  // TFCS2DFunctionInt16Int8Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int8Int16Histogram,
+                   1)  // TFCS2DFunctionInt16Int8Int16Histogram
 };
 
 class TFCS2DFunctionInt16Int8Int32Histogram
@@ -477,8 +477,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int8Int32Histogram,
-           1)  // TFCS2DFunctionInt16Int8Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int8Int32Histogram,
+                   1)  // TFCS2DFunctionInt16Int8Int32Histogram
 };
 class TFCS2DFunctionInt16Int16Int8Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -494,8 +494,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int16Int8Histogram,
-           1)  // TFCS2DFunctionInt16Int16Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int16Int8Histogram,
+                   1)  // TFCS2DFunctionInt16Int16Int8Histogram
 };
 
 class TFCS2DFunctionInt16Int16Int16Histogram
@@ -512,8 +512,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int16Int16Histogram,
-           1)  // TFCS2DFunctionInt16Int16Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int16Int16Histogram,
+                   1)  // TFCS2DFunctionInt16Int16Int16Histogram
 };
 
 class TFCS2DFunctionInt16Int16Int32Histogram
@@ -530,8 +530,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int16Int32Histogram,
-           1)  // TFCS2DFunctionInt16Int16Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int16Int32Histogram,
+                   1)  // TFCS2DFunctionInt16Int16Int32Histogram
 };
 class TFCS2DFunctionInt16Int32Int8Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -547,8 +547,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int32Int8Histogram,
-           1)  // TFCS2DFunctionInt16Int32Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int32Int8Histogram,
+                   1)  // TFCS2DFunctionInt16Int32Int8Histogram
 };
 class TFCS2DFunctionInt16Int32Int16Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -564,8 +564,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int32Int16Histogram,
-           1)  // TFCS2DFunctionInt16Int32Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int32Int16Histogram,
+                   1)  // TFCS2DFunctionInt16Int32Int16Histogram
 };
 class TFCS2DFunctionInt16Int32Int32Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -581,8 +581,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int32Int32Histogram,
-           1)  // TFCS2DFunctionInt16Int32Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt16Int32Int32Histogram,
+                   1)  // TFCS2DFunctionInt16Int32Int32Histogram
 };
 
 class TFCS2DFunctionInt32Int8Int8Histogram
@@ -599,8 +599,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int8Int8Histogram,
-           1)  // TFCS2DFunctionInt32Int8Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int8Int8Histogram,
+                   1)  // TFCS2DFunctionInt32Int8Int8Histogram
 };
 
 class TFCS2DFunctionInt32Int8Int16Histogram
@@ -617,8 +617,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int8Int16Histogram,
-           1)  // TFCS2DFunctionInt32Int8Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int8Int16Histogram,
+                   1)  // TFCS2DFunctionInt32Int8Int16Histogram
 };
 
 class TFCS2DFunctionInt32Int8Int32Histogram
@@ -635,8 +635,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int8Int32Histogram,
-           1)  // TFCS2DFunctionInt32Int8Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int8Int32Histogram,
+                   1)  // TFCS2DFunctionInt32Int8Int32Histogram
 };
 class TFCS2DFunctionInt32Int16Int8Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -652,8 +652,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int16Int8Histogram,
-           1)  // TFCS2DFunctionInt32Int16Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int16Int8Histogram,
+                   1)  // TFCS2DFunctionInt32Int16Int8Histogram
 };
 
 class TFCS2DFunctionInt32Int16Int16Histogram
@@ -670,8 +670,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int16Int16Histogram,
-           1)  // TFCS2DFunctionInt32Int16Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int16Int16Histogram,
+                   1)  // TFCS2DFunctionInt32Int16Int16Histogram
 };
 
 class TFCS2DFunctionInt32Int16Int32Histogram
@@ -688,8 +688,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int16Int32Histogram,
-           1)  // TFCS2DFunctionInt32Int16Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int16Int32Histogram,
+                   1)  // TFCS2DFunctionInt32Int16Int32Histogram
 };
 class TFCS2DFunctionInt32Int32Int8Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -705,8 +705,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int32Int8Histogram,
-           1)  // TFCS2DFunctionInt32Int32Int8Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int32Int8Histogram,
+                   1)  // TFCS2DFunctionInt32Int32Int8Histogram
 };
 class TFCS2DFunctionInt32Int32Int16Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -722,8 +722,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int32Int16Histogram,
-           1)  // TFCS2DFunctionInt32Int32Int16Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int32Int16Histogram,
+                   1)  // TFCS2DFunctionInt32Int32Int16Histogram
 };
 class TFCS2DFunctionInt32Int32Int32Histogram
     : public TFCS2DFunctionTemplateHistogram<
@@ -739,8 +739,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int32Int32Histogram,
-           1)  // TFCS2DFunctionInt32Int32Int32Histogram
+  ClassDefOverride(TFCS2DFunctionInt32Int32Int32Histogram,
+                   1)  // TFCS2DFunctionInt32Int32Int32Histogram
 };
 
 // clang-format off

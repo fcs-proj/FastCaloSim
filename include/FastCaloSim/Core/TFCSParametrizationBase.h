@@ -188,5 +188,5 @@ public:
   }
 
 private:
-  ClassDef(TFCSParametrizationBase, 5)  // TFCSParametrizationBase
+  ClassDefOverride(TFCSParametrizationBase, 5)  // TFCSParametrizationBase
 };

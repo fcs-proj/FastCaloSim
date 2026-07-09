@@ -102,8 +102,8 @@ public:
     valuex = m_HistoBordersx.position(ibinx, rnd2);
   }
 
-  ClassDef(TFCS2DFunctionTemplateInterpolationHistogram,
-           1)  // TFCS1DFunctionTemplateInterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionTemplateInterpolationHistogram,
+                   1)  // TFCS1DFunctionTemplateInterpolationHistogram
 };
 
 class TFCS2DFunctionInt8Int8Int8InterpolationHistogram
@@ -121,8 +121,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int8Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int8Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int8Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int8Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt8Int8Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -139,8 +139,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int8Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int8Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int8Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int8Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt8Int8Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -157,8 +157,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int8Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int8Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int8Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int8Int32InterpolationHistogram
 };
 
 ////
@@ -178,8 +178,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int16Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int16Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int16Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int16Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt8Int16Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -196,8 +196,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int16Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int16Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int16Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int16Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt8Int16Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -214,8 +214,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int16Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int16Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int16Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int16Int32InterpolationHistogram
 };
 
 class TFCS2DFunctionInt8Int32Int8InterpolationHistogram
@@ -233,8 +233,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int32Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int32Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int32Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int32Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt8Int32Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -251,8 +251,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int32Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int32Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int32Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int32Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt8Int32Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -269,8 +269,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt8Int32Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt8Int32Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt8Int32Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt8Int32Int32InterpolationHistogram
 };
 
 class TFCS2DFunctionInt16Int8Int8InterpolationHistogram
@@ -288,8 +288,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int8Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int8Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int8Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int8Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt16Int8Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -306,8 +306,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int8Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int8Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int8Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int8Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt16Int8Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -324,8 +324,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int8Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int8Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int8Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int8Int32InterpolationHistogram
 };
 
 ////
@@ -345,8 +345,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int16Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int16Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int16Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int16Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt16Int16Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -363,8 +363,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int16Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int16Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int16Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int16Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt16Int16Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -381,8 +381,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int16Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int16Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int16Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int16Int32InterpolationHistogram
 };
 
 class TFCS2DFunctionInt16Int32Int8InterpolationHistogram
@@ -400,8 +400,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int32Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int32Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int32Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int32Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt16Int32Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -418,8 +418,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int32Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int32Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int32Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int32Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt16Int32Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -436,8 +436,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt16Int32Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt16Int32Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt16Int32Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt16Int32Int32InterpolationHistogram
 };
 
 class TFCS2DFunctionInt32Int8Int8InterpolationHistogram
@@ -455,8 +455,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int8Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int8Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int8Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int8Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt32Int8Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -473,8 +473,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int8Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int8Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int8Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int8Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt32Int8Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -491,8 +491,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int8Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int8Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int8Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int8Int32InterpolationHistogram
 };
 
 ////
@@ -512,8 +512,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int16Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int16Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int16Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int16Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt32Int16Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -530,8 +530,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int16Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int16Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int16Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int16Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt32Int16Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -548,8 +548,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int16Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int16Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int16Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int16Int32InterpolationHistogram
 };
 
 class TFCS2DFunctionInt32Int32Int8InterpolationHistogram
@@ -567,8 +567,8 @@ public:
             uint8_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int32Int8InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int32Int8InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int32Int8InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int32Int8InterpolationHistogram
 };
 class TFCS2DFunctionInt32Int32Int16InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -585,8 +585,8 @@ public:
             uint16_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int32Int16InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int32Int16InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int32Int16InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int32Int16InterpolationHistogram
 };
 class TFCS2DFunctionInt32Int32Int32InterpolationHistogram
     : public TFCS2DFunctionTemplateInterpolationHistogram<
@@ -603,8 +603,8 @@ public:
             uint32_t,
             float>(h) {};
 
-  ClassDef(TFCS2DFunctionInt32Int32Int32InterpolationHistogram,
-           1)  // TFCS2DFunctionInt32Int32Int32InterpolationHistogram
+  ClassDefOverride(TFCS2DFunctionInt32Int32Int32InterpolationHistogram,
+                   1)  // TFCS2DFunctionInt32Int32Int32InterpolationHistogram
 };
 
 // clang-format off

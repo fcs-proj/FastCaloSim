@@ -162,8 +162,8 @@ protected:
   TFCS1DFunction_HistogramContent<Ty, Trandom> m_HistoContents;
 
 private:
-  ClassDef(TFCS1DFunctionTemplateHistogram,
-           1)  // TFCS1DFunctionTemplateHistogram
+  ClassDefOverride(TFCS1DFunctionTemplateHistogram,
+                   1)  // TFCS1DFunctionTemplateHistogram
 };
 
 class TFCS1DFunctionInt8Int8Histogram
@@ -178,8 +178,8 @@ public:
                                         uint8_t,
                                         float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt8Int8Histogram,
-           1)  // TFCS1DFunctionInt8Int8Histogram
+  ClassDefOverride(TFCS1DFunctionInt8Int8Histogram,
+                   1)  // TFCS1DFunctionInt8Int8Histogram
 };
 
 class TFCS1DFunctionInt8Int16Histogram
@@ -194,8 +194,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt8Int16Histogram,
-           1)  // TFCS1DFunctionInt8Int16Histogram
+  ClassDefOverride(TFCS1DFunctionInt8Int16Histogram,
+                   1)  // TFCS1DFunctionInt8Int16Histogram
 };
 
 class TFCS1DFunctionInt8Int32Histogram
@@ -210,8 +210,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt8Int32Histogram,
-           1)  // TFCS1DFunctionInt8Int32Histogram
+  ClassDefOverride(TFCS1DFunctionInt8Int32Histogram,
+                   1)  // TFCS1DFunctionInt8Int32Histogram
 };
 
 class TFCS1DFunctionInt16Int16Histogram
@@ -226,8 +226,8 @@ public:
                                         uint16_t,
                                         float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt16Int16Histogram,
-           1)  // TFCS1DFunctionInt16Int16Histogram
+  ClassDefOverride(TFCS1DFunctionInt16Int16Histogram,
+                   1)  // TFCS1DFunctionInt16Int16Histogram
 };
 
 class TFCS1DFunctionInt16Int32Histogram
@@ -242,8 +242,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt16Int32Histogram,
-           1)  // TFCS1DFunctionInt16Int32Histogram
+  ClassDefOverride(TFCS1DFunctionInt16Int32Histogram,
+                   1)  // TFCS1DFunctionInt16Int32Histogram
 };
 
 class TFCS1DFunctionInt32Int32Histogram
@@ -258,8 +258,8 @@ public:
                                         uint32_t,
                                         float>(h) {};
 
-  ClassDef(TFCS1DFunctionInt32Int32Histogram,
-           1)  // TFCS1DFunctionInt32Int32Histogram
+  ClassDefOverride(TFCS1DFunctionInt32Int32Histogram,
+                   1)  // TFCS1DFunctionInt32Int32Histogram
 };
 
 #pragma GCC diagnostic pop

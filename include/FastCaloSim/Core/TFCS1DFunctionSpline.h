@@ -70,5 +70,5 @@ protected:
   TSpline3 m_spline;
 
 private:
-  ClassDef(TFCS1DFunctionSpline, 1)  // TFCS1DFunctionSpline
+  ClassDefOverride(TFCS1DFunctionSpline, 1)  // TFCS1DFunctionSpline
 };

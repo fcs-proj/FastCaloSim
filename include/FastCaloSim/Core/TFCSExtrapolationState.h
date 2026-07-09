@@ -168,5 +168,5 @@ private:
   double m_IDCaloBoundary_AngleEta;
   double m_IDCaloBoundary_Angle3D;
 
-  ClassDef(TFCSExtrapolationState, 3)  // TFCSExtrapolationState
+  ClassDefOverride(TFCSExtrapolationState, 3)  // TFCSExtrapolationState
 };

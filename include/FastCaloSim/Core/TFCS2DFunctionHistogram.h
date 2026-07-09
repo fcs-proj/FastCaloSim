@@ -48,5 +48,5 @@ protected:
   std::vector<float> m_HistoContents;
 
 private:
-  ClassDef(TFCS2DFunctionHistogram, 1)  // TFCS2DFunctionHistogram
+  ClassDefOverride(TFCS2DFunctionHistogram, 1)  // TFCS2DFunctionHistogram
 };

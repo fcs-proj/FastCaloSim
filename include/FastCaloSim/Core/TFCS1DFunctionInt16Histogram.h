@@ -48,5 +48,6 @@ protected:
   std::vector<HistoContent_t> m_HistoContents;
 
 private:
-  ClassDef(TFCS1DFunctionInt16Histogram, 1)  // TFCS1DFunctionInt16Histogram
+  ClassDefOverride(TFCS1DFunctionInt16Histogram,
+                   1)  // TFCS1DFunctionInt16Histogram
 };

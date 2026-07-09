@@ -35,5 +35,5 @@ private:
   TLorentzVector m_vertex;
   double m_ekin_off = 0;
 
-  ClassDef(TFCSTruthState, 4)  // TFCSTruthState
+  ClassDefOverride(TFCSTruthState, 4)  // TFCSTruthState
 };
