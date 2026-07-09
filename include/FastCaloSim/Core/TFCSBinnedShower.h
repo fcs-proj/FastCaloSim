@@ -22,29 +22,29 @@ class CaloGeo;
 class TFCSBinnedShower : public TFCSBinnedShowerBase
 {
 public:
-  typedef struct
+  struct layer_t
   {
     std::vector<unsigned int> bin_index_vector;
     std::vector<float> E_vector;
-  } layer_t;
+  };
 
-  typedef struct
+  struct event_t
   {
     std::vector<layer_t> event_data;
-    float phi_mod;
-    float center_eta;
-    float e_init;  // Initial energy of the event
-  } event_t;
+    float phi_mod {};
+    float center_eta {};
+    float e_init {};  // Initial energy of the event
+  };
 
   typedef std::vector<event_t> eventvector_t;
 
-  typedef struct
+  struct layer_bins_t
   {
     std::vector<float> R_lower;
     std::vector<float> R_size;
     std::vector<float> alpha_lower;
     std::vector<float> alpha_size;
-  } layer_bins_t;
+  };
 
   typedef std::vector<layer_bins_t> event_bins_t;
 
@@ -102,20 +102,20 @@ public:
   // is stored and not loaded on the fly.
   void set_hdf5_path(const std::string& filename) { m_hdf5_file = filename; }
   void delete_hdf5_path() { m_hdf5_file.clear(); }
-  const std::string get_hdf5_path() const { return m_hdf5_file; }
+  const std::string& get_hdf5_path() const { return m_hdf5_file; }
 
   // Allows to set the layer energy for the given layer and event manually.
   void set_layer_energy(long unsigned int event_index,
                         long unsigned int layer_index,
-                        const std::vector<unsigned int> bin_index_vector,
-                        const std::vector<float> E_vector);
+                        const std::vector<unsigned int>& bin_index_vector,
+                        const std::vector<float>& E_vector);
 
   // Allows to set the voxel boundaries for the given layer manually.
   void set_bin_boundaries(long unsigned int layer_index,
-                          std::vector<float> R_lower,
-                          std::vector<float> R_size,
-                          std::vector<float> alpha_lower,
-                          std::vector<float> alpha_size);
+                          const std::vector<float>& R_lower,
+                          const std::vector<float>& R_size,
+                          const std::vector<float>& alpha_lower,
+                          const std::vector<float>& alpha_size);
 
   // Allows to set the shower center for the given event manually.
   // The layer is needed as reference for the phi modulation calculation.
@@ -125,35 +125,35 @@ public:
                                      float eta_center,
                                      float phi_center);
 
-  eventvector_t get_eventlibrary() { return m_eventlibrary; }
+  const eventvector_t& get_eventlibrary() { return m_eventlibrary; }
 
-  void set_event_library(eventvector_t eventlibrary)
+  void set_event_library(const eventvector_t& eventlibrary)
   {
     m_eventlibrary = eventlibrary;
   }
 
-  event_bins_t get_coordinates() { return m_coordinates; }
+  const event_bins_t& get_coordinates() { return m_coordinates; }
 
-  void set_coordinates(event_bins_t coordinates)
+  void set_coordinates(const event_bins_t& coordinates)
   {
     m_coordinates = coordinates;
   }
 
-  std::vector<std::vector<std::vector<std::vector<float>>>>
+  const std::vector<std::vector<std::vector<std::vector<float>>>>&
   get_sub_bin_distribution() const
   {
     return m_sub_bin_distribution;
   }
 
-  std::vector<float> get_upscaling_energies() const
+  const std::vector<float>& get_upscaling_energies() const
   {
     return m_upscaling_energies;
   }
 
   void set_sub_bin_distribution_and_energies(
-      std::vector<std::vector<std::vector<std::vector<float>>>>
+      const std::vector<std::vector<std::vector<std::vector<float>>>>&
           sub_bin_distribution,
-      std::vector<float> upscaling_energies)
+      const std::vector<float>& upscaling_energies)
   {
     m_sub_bin_distribution = sub_bin_distribution;
     m_upscaling_energies = upscaling_energies;

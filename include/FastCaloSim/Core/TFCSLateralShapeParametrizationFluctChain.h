@@ -33,7 +33,7 @@ public:
   void Print(Option_t* option) const override;
 
 private:
-  float m_RMS;
+  float m_RMS {};
 
   ClassDefOverride(TFCSLateralShapeParametrizationFluctChain,
                    1)  // TFCSLateralShapeParametrizationFluctChain

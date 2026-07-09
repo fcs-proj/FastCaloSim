@@ -3,6 +3,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
+#include <cmath>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
@@ -29,17 +30,23 @@ double TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1)
   // normalize the histos to the same area:
   double integral_input = h_input->Integral();
   double integral_approx = 0.0;
-  for (int b = 1; b <= h_input->GetNbinsX(); b++)
+  for (int b = 1; b <= h_input->GetNbinsX(); b++) {
     integral_approx +=
         h_approx->GetBinContent(h_approx->FindBin(h_input->GetBinCenter(b)));
+  }
+  if (integral_approx == 0.0) {
+    delete h_input;
+    delete h_approx;
+    return 0.;
+  }
   h_approx->Scale(integral_input / integral_approx);
 
   double ymax = h_approx->GetBinContent(h_approx->GetNbinsX())
       - h_approx->GetBinContent(h_approx->GetMinimumBin());
   for (int i = 1; i <= h_input->GetNbinsX(); i++) {
-    double val = fabs(h_approx->GetBinContent(
-                          h_approx->FindBin(h_input->GetBinCenter(i)))
-                      - h_input->GetBinContent(i))
+    double val = std::abs(h_approx->GetBinContent(
+                              h_approx->FindBin(h_input->GetBinCenter(i)))
+                          - h_input->GetBinContent(i))
         / ymax;
     if (val > maxdev)
       maxdev = val;
@@ -64,7 +71,7 @@ double TFCS1DFunction::CheckAndIntegrate1DHistogram(
     if (binval < 0) {
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
-      if (TMath::Abs(fraction) > 1e-5) {
+      if (std::abs(fraction) > 1e-5) {
         FCS_MSG_NOCLASS(logger,
                         "Warning: bin content is negative in histogram "
                             << hist->GetName() << " : " << hist->GetTitle()

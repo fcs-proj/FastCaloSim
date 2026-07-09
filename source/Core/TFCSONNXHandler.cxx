@@ -186,7 +186,7 @@ void TFCSONNXHandler::setupNet()
         dimension_of_node.push_back(node_dim);
       };
     };
-    m_inputNodeDims.push_back(dimension_of_node);
+    m_inputNodeDims.push_back(std::move(dimension_of_node));
   };
   FCS_MSG_DEBUG("Finished looping on inputs.");
 
@@ -243,7 +243,7 @@ void TFCSONNXHandler::setupNet()
         node_size *= node_dim;
       };
     };
-    m_outputNodeDims.push_back(dimension_of_node);
+    m_outputNodeDims.push_back(std::move(dimension_of_node));
     m_outputNodeSize.push_back(node_size);
 
     // The outputs are treated as a flat vector
@@ -252,7 +252,7 @@ void TFCSONNXHandler::setupNet()
       std::string layer_name =
           std::string(output_name) + "_" + std::to_string(part_n);
       FCS_MSG_VERBOSE("Found output layer named " << layer_name);
-      m_outputLayers.push_back(layer_name);
+      m_outputLayers.push_back(std::move(layer_name));
     }
   }
   FCS_MSG_DEBUG("Removing prefix from stored layers.");
@@ -389,7 +389,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
       elements_in_node *= dimension_len;
     };
     FCS_MSG_DEBUG("Elements in node " << elements_in_node);
-    for (auto inp : inputs) {
+    for (const auto& inp : inputs) {
       FCS_MSG_DEBUG("Have input named " << inp.first);
     };
     // Get the node content and remove any common prefix from the elements
@@ -399,7 +399,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
     FCS_MSG_DEBUG("Found node named " << node_name << " with "
                                       << elements_in_node << " elements.");
     // Then the rest should be numbers from 0 up
-    for (auto element : node_inputs) {
+    for (const auto& element : node_inputs) {
       first_digit = element.first.find_first_of("0123456789");
       // if there is no digit, it's not an element
       if (first_digit < element.first.length()) {
@@ -407,7 +407,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
         node_elements[key_number] = element.second;
       }
     }
-    input_values[node_n] = node_elements;
+    input_values[node_n] = std::move(node_elements);
 
     FCS_MSG_DEBUG("Creating ort tensor n_dimensions = "
                   << n_dimensions

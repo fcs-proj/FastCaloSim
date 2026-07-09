@@ -6,9 +6,9 @@
 
 // class header include
 #include <cmath>
-#include <fstream>
 #include <iostream>
-#include <sstream>
+#include <memory>
+#include <stdexcept>
 #include <string>
 
 #include "FastCaloSim/Core/TFCSGANEtaSlice.h"
@@ -18,7 +18,6 @@
 #include "TFile.h"
 #include "TFitResult.h"
 #include "TH1D.h"
-#include "TMath.h"
 #include "TTree.h"
 
 TFCSGANEtaSlice::TFCSGANEtaSlice() {}
@@ -90,7 +89,7 @@ bool TFCSGANEtaSlice::LoadGAN()
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_All.*";
     FCS_MSG_DEBUG("Gan input file name " << inputFileName);
-    m_net_all = TFCSNetworkFactory::create(inputFileName);
+    m_net_all = TFCSNetworkFactory::create(std::move(inputFileName));
     if (m_net_all == nullptr)
       success = false;
   } else if (m_pid == 2212) {
@@ -98,7 +97,7 @@ bool TFCSGANEtaSlice::LoadGAN()
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_High10.*";
     FCS_MSG_DEBUG("Gan input file name " << inputFileName);
-    m_net_all = TFCSNetworkFactory::create(inputFileName);
+    m_net_all = TFCSNetworkFactory::create(std::move(inputFileName));
     if (m_net_all == nullptr)
       success = false;
   } else {
@@ -113,7 +112,7 @@ bool TFCSGANEtaSlice::LoadGAN()
     inputFileName = m_param.GetInputFolder() + "/neural_net_"
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_UltraLow12.*";
-    m_net_low = TFCSNetworkFactory::create(inputFileName);
+    m_net_low = TFCSNetworkFactory::create(std::move(inputFileName));
     if (m_net_low == nullptr)
       success = false;
   }
@@ -126,7 +125,11 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
       + std::to_string(m_pid) + "_E1048576_eta_" + std::to_string(m_etaMin)
       + "_" + std::to_string(m_etaMin + 5) + ".root";
   FCS_MSG_DEBUG("Opening file " << rootFileName);
-  TFile* file = TFile::Open(rootFileName.c_str(), "read");
+  std::unique_ptr<TFile> file(TFile::Open(rootFileName.c_str(), "read"));
+  if (!file || file->IsZombie()) {
+    throw std::runtime_error("Failed to open or initialize ROOT file: "
+                             + rootFileName);
+  }
   for (int layer : m_param.GetRelevantLayers()) {
     FCS_MSG_DEBUG("Layer " << layer);
     TFCSGANXMLParameters::Binning binsInLayers = m_param.GetBinning();
@@ -134,7 +137,7 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
 
     std::string histoName = "r" + std::to_string(layer) + "w";
     TH1D* h1 = (TH1D*)file->Get(histoName.c_str());
-    if (TMath::IsNaN(h1->Integral())) {
+    if (std::isnan(h1->Integral())) {
       histoName = "r" + std::to_string(layer);
       h1 = (TH1D*)file->Get(histoName.c_str());
     }
@@ -165,7 +168,11 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
       + std::to_string(m_pid) + "_E65536_eta_" + std::to_string(m_etaMin) + "_"
       + std::to_string(m_etaMin + 5) + "_validation.root";
   FCS_MSG_DEBUG("Opening file " << rootFileName);
-  TFile* file = TFile::Open(rootFileName.c_str(), "read");
+  std::unique_ptr<TFile> file(TFile::Open(rootFileName.c_str(), "read"));
+  if (!file || file->IsZombie()) {
+    throw std::runtime_error("Failed to open or initialize ROOT file: "
+                             + rootFileName);
+  }
   for (int layer : m_param.GetRelevantLayers()) {
     std::string branchName = "extrapWeight_" + std::to_string(layer);
     TH1D* h = new TH1D("h", "h", 100, 0.01, 1);
@@ -181,13 +188,13 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
 VNetworkBase::NetworkOutputs TFCSGANEtaSlice::GetNetworkOutputs(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol,
-    TFCSSimulationState simulstate) const
+    TFCSSimulationState& simulstate) const
 {
   double randUniformZ = 0.;
   NetworkInputs inputs;
 
   int maxExp = 0, minExp = 0;
-  if (m_pid == 22 || fabs(m_pid) == 11) {
+  if (m_pid == 22 || std::abs(m_pid) == 11) {
     if (truth->P() > 4096)
     {  // This is the momentum, not the energy, because the split is
        // based on the samples which are produced with the momentum
@@ -197,10 +204,10 @@ VNetworkBase::NetworkOutputs TFCSGANEtaSlice::GetNetworkOutputs(
       maxExp = 12;
       minExp = 6;
     }
-  } else if (fabs(m_pid) == 211) {
+  } else if (std::abs(m_pid) == 211) {
     maxExp = 22;
     minExp = 8;
-  } else if (fabs(m_pid) == 2212) {
+  } else if (std::abs(m_pid) == 2212) {
     maxExp = 22;
     minExp = 10;
   }
@@ -236,7 +243,7 @@ VNetworkBase::NetworkOutputs TFCSGANEtaSlice::GetNetworkOutputs(
                   // regions and added only to the GANs that use it, for now all
                   // GANs have 3 conditioning inputs so filling zeros
       inputs["mycond"].insert(std::pair<std::string, double>(
-          "variable_1", fabs(extrapol->IDCaloBoundary_eta())));
+          "variable_1", std::abs(extrapol->IDCaloBoundary_eta())));
     } else {
       inputs["mycond"].insert(std::pair<std::string, double>("variable_1", 0));
     }

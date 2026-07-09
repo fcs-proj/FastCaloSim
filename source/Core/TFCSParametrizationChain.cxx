@@ -231,7 +231,7 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
       TObject* parent = R__b.GetParent();
       if (R__b.GetParent()) {
         if (parent->InheritsFrom(TDirectory::Class())) {
-          dir = (TDirectory*)parent;
+          dir = static_cast<TDirectory*>(parent);
         }
       }
 
@@ -280,7 +280,7 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
       TObject* parent = R__b.GetParent();
       if (R__b.GetParent()) {
         if (parent->InheritsFrom(TDirectory::Class())) {
-          dir = (TDirectory*)parent;
+          dir = static_cast<TDirectory*>(parent);
         }
       }
     }

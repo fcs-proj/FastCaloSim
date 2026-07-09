@@ -47,7 +47,7 @@ void TFCSGANLWTNNHandler::setupNet()
   m_lwtnn_graph = std::make_unique<lwt::LightweightGraph>(config);
   // Get the output layers
   FCS_MSG_VERBOSE("Getting output layers for neural network");
-  for (auto node : config.outputs) {
+  for (const auto& node : config.outputs) {
     const std::string node_name = node.first;
     const lwt::OutputNodeConfig node_config = node.second;
     for (const std::string& label : node_config.labels) {

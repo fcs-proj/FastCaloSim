@@ -18,7 +18,7 @@ namespace CLHEP
 class HepRandomEngine;
 }
 
-constexpr std::uint32_t operator"" _FCShash(char const* s, std::size_t count);
+constexpr std::uint32_t operator""_FCShash(char const* s, std::size_t count);
 
 class FASTCALOSIM_EXPORT TFCSSimulationState
     : public TObject
@@ -209,7 +209,7 @@ inline void TFCSSimulationState::AuxInfo_t::set<void*>(void* val)
 
 // Implementation of the compile time text hash operator that can be used for
 // human readable indices to the AuxInfo
-constexpr std::uint32_t operator"" _FCShash(char const* s, std::size_t count)
+constexpr std::uint32_t operator""_FCShash(char const* s, std::size_t count)
 {
   return TFCSSimulationState::fnv1a_32(s, count);
 }

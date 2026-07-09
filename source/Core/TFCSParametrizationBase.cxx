@@ -97,8 +97,15 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
       // If param is already in the duplication list, skip over
       auto checkexist = dup.find(param);
       if (checkexist != dup.end()) {
-        FCS_MSG_DEBUG("Found duplicate pointer for: " << param << "="
-                                                      << param->GetName());
+        FCS_MSG_WARNING(
+            " [TFCSParametrizationBase::FindDuplicates] "
+            "DUPLICATE POINTER DETECTED");
+        FCS_MSG_WARNING(" - Pointer           : " << param);
+        FCS_MSG_WARNING(" - Name              : " << param->GetName());
+        FCS_MSG_WARNING(" - Class             : " << param->ClassName());
+        FCS_MSG_WARNING(" - Occurs in parent  : " << this << " ("
+                                                  << this->ClassName() << ")"
+                                                  << " index=" << i);
         if (checkexist->second.replace) {
           TFCSParametrizationBase* refparam = checkexist->second.replace;
           FCS_MSG_DEBUG("Found duplicate pointer: "

@@ -19,7 +19,7 @@ struct CylinderIntersections
 {
   Vector3D first;
   Vector3D second;
-  unsigned int number;
+  unsigned int number = 0;
 };
 
 class FASTCALOSIM_EXPORT FastCaloSimCaloExtrapolation : public ISF_FCS::MLogging

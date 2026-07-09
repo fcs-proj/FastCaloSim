@@ -91,11 +91,8 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol)
+    const TFCSExtrapolationState* /*extrapol*/)
 {
-  // Extrapol unused, but needed for the interface
-  (void)extrapol;
-
   const int pdgId = truth->pdgid();
   const float charge = ParticleData::charge(pdgId);
   long unsigned int layer_index = calosample();
@@ -125,8 +122,8 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
   // NOTE: this is ATLAS dependent
   // layer 21 is FCAL0
   if (layer_index <= 21) {
-    float delta_eta_mm = r * cos(alpha);
-    float delta_phi_mm = r * sin(alpha);
+    float delta_eta_mm = r * std::cos(alpha);
+    float delta_phi_mm = r * std::sin(alpha);
 
     // Particles with negative eta are expected to have the same shape
     // as those with positive eta after transformation: delta_eta -->
@@ -152,8 +149,8 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
                                 << " layer " << layer_index);
 
   } else {  // FCAL is in (x,y,z)
-    const float hit_r = r * cos(alpha) + center_r;
-    float delta_phi = r * sin(alpha) / center_r;
+    const float hit_r = r * std::cos(alpha) + center_r;
+    float delta_phi = r * std::sin(alpha) / center_r;
     // We derive the shower shapes for electrons and positively charged
     // hadrons. Particle with the opposite charge are expected to have the
     // same shower shape after the transformation: delta_phi -->
@@ -161,8 +158,8 @@ FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
     if ((charge < 0. && pdgId != 11) || pdgId == -11)
       delta_phi = -delta_phi;
     const float hit_phi = TVector2::Phi_mpi_pi(center_phi + delta_phi);
-    hit.set_eta_x(hit_r * cos(hit_phi));
-    hit.set_phi_y(hit_r * sin(hit_phi));
+    hit.set_eta_x(hit_r * std::cos(hit_phi));
+    hit.set_phi_y(hit_r * std::sin(hit_phi));
     hit.set_z(center_z);
 
     FCS_MSG_VERBOSE(" Hit x " << hit.x() << " y " << hit.y() << " layer "

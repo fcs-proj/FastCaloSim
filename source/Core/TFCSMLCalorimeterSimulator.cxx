@@ -9,7 +9,7 @@ TFCSMLCalorimeterSimulator::TFCSMLCalorimeterSimulator() {}
 
 TFCSMLCalorimeterSimulator::~TFCSMLCalorimeterSimulator() {}
 
-bool TFCSMLCalorimeterSimulator::loadSimulator(std::string filename)
+bool TFCSMLCalorimeterSimulator::loadSimulator(const std::string& filename)
 {
   // Load the simulator
   try {
@@ -52,16 +52,16 @@ VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels(
   VNetworkBase::NetworkInputs inputs;
 
   int i = 0;
-  for (float eta : eta_vector) {
-    inputs["inn_eta_in"].insert(
-        std::pair<std::string, double>("variable_" + std::to_string(i), eta));
+  for (float thisEta : eta_vector) {
+    inputs["inn_eta_in"].insert(std::pair<std::string, double>(
+        "variable_" + std::to_string(i), thisEta));
     i++;
   }
 
   i = 0;
-  for (float energy : energy_vector) {
+  for (float thisEnergy : energy_vector) {
     inputs["inn_einc_in"].insert(std::pair<std::string, double>(
-        "variable_" + std::to_string(i), energy));
+        "variable_" + std::to_string(i), thisEnergy));
     i++;
   }
 
@@ -190,16 +190,16 @@ VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels() const
   VNetworkBase::NetworkInputs inputs;
 
   int i = 0;
-  for (float eta : eta_vector) {
-    inputs["inn_eta_in"].insert(
-        std::pair<std::string, double>("variable_" + std::to_string(i), eta));
+  for (float thisEta : eta_vector) {
+    inputs["inn_eta_in"].insert(std::pair<std::string, double>(
+        "variable_" + std::to_string(i), thisEta));
     i++;
   }
 
   i = 0;
-  for (float energy : energy_vector) {
+  for (float thisEnergy : energy_vector) {
     inputs["inn_einc_in"].insert(std::pair<std::string, double>(
-        "variable_" + std::to_string(i), energy));
+        "variable_" + std::to_string(i), thisEnergy));
     i++;
   }
 

@@ -3,6 +3,7 @@
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionHistogram_h
 #define ISF_FASTCALOSIMEVENT_TFCS1DFunctionHistogram_h
 
+#include <memory>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
@@ -28,12 +29,12 @@ public:
   void smart_rebin_loop(TH1* hist, double);
   static double get_change(TH1*);
   static TH1D* smart_rebin(TH1D*);
-  static double* histo_to_array(TH1*);
+  static std::unique_ptr<double[]> histo_to_array(TH1*);
   static double sample_from_histo(TH1* hist, double);
   double sample_from_histovalues(double);
 
-  std::vector<float> get_HistoBorders() { return m_HistoBorders; };
-  std::vector<float> get_HistoContents() { return m_HistoContents; };
+  const std::vector<float>& get_HistoBorders() { return m_HistoBorders; };
+  const std::vector<float>& get_HistoContents() { return m_HistoContents; };
 
 protected:
   std::vector<float> m_HistoBorders;

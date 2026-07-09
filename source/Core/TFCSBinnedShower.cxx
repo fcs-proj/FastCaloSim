@@ -42,8 +42,8 @@ TFCSBinnedShower::~TFCSBinnedShower() {}
 void TFCSBinnedShower::set_layer_energy(
     long unsigned int event_index,
     long unsigned int layer_index,
-    const std::vector<unsigned int> bin_index_vector,
-    const std::vector<float> E_vector)
+    const std::vector<unsigned int>& bin_index_vector,
+    const std::vector<float>& E_vector)
 {
   // Assert that the event index is valid
   if (event_index >= m_eventlibrary.size()) {
@@ -62,10 +62,10 @@ void TFCSBinnedShower::set_layer_energy(
 }
 
 void TFCSBinnedShower::set_bin_boundaries(long unsigned int layer_index,
-                                          std::vector<float> R_lower,
-                                          std::vector<float> R_size,
-                                          std::vector<float> alpha_lower,
-                                          std::vector<float> alpha_size)
+                                          const std::vector<float>& R_lower,
+                                          const std::vector<float>& R_size,
+                                          const std::vector<float>& alpha_lower,
+                                          const std::vector<float>& alpha_size)
 {
   if (layer_index >= m_coordinates.size()) {
     m_coordinates.resize(layer_index + 1);
@@ -275,11 +275,12 @@ void TFCSBinnedShower::compute_n_hits_and_elayer(
   }
   // Store the hits per layer vector
   std::vector<std::vector<long unsigned int>>* hits_per_layer_ptr =
-      new std::vector<std::vector<long unsigned int>>(hits_per_layer);
+      new std::vector<std::vector<long unsigned int>>(
+          std::move(hits_per_layer));
   simulstate.setAuxInfo<void*>("BSNHits"_FCShash, hits_per_layer_ptr);
 
   // Store the energy per layer
-  std::vector<float>* elayer_ptr = new std::vector<float>(elayer);
+  std::vector<float>* elayer_ptr = new std::vector<float>(std::move(elayer));
   simulstate.setAuxInfo<void*>("BSELayer"_FCShash, elayer_ptr);
 }
 
@@ -708,16 +709,16 @@ void TFCSBinnedShower::load_bin_boundaries(const std::string& filename,
     auto& event_bins = m_coordinates.at(layer_index);
     switch (i) {
       case 0:
-        event_bins.R_lower = data;
+        event_bins.R_lower = std::move(data);
         break;
       case 1:
-        event_bins.R_size = data;
+        event_bins.R_size = std::move(data);
         break;
       case 2:
-        event_bins.alpha_lower = data;
+        event_bins.alpha_lower = std::move(data);
         break;
       case 3:
-        event_bins.alpha_size = data;
+        event_bins.alpha_size = std::move(data);
         break;
     }
   }
@@ -872,6 +873,6 @@ void TFCSBinnedShower::load_sub_bin_distribution(const std::string& filename)
     }
   }
 
-  m_upscaling_energies = energies;
-  m_sub_bin_distribution = data;
+  m_upscaling_energies = std::move(energies);
+  m_sub_bin_distribution = std::move(data);
 }

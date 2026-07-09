@@ -51,9 +51,9 @@ public:
 
 protected:
   /// Simulate hits flat in radius dR
-  float m_dR;
-  float m_nhits;
-  float m_scale;
+  float m_dR {};
+  float m_nhits {};
+  float m_scale {};
 
 private:
   ClassDefOverride(TFCSFlatLateralShapeParametrization,

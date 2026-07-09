@@ -139,7 +139,10 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
     return false;
   }
 
-  const TFCSGANEtaSlice::NetworkOutputs& outputs =
+  // Protect the GAN inference and network outputs when the same
+  // parametrization object is shared between threads (see ATLASSIM-7031)
+  std::scoped_lock lock(m_mutex);
+  TFCSGANEtaSlice::NetworkOutputs outputs =
       m_slice->GetNetworkOutputs(truth, extrapol, simulstate);
   FCS_MSG_VERBOSE("network outputs size: " << outputs.size());
 
@@ -151,7 +154,7 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   FCS_MSG_DEBUG("energy voxels size = " << outputs.size());
 
   double totalEnergy = 0;
-  for (auto output : outputs) {
+  for (const auto& output : outputs) {
     totalEnergy += output.second;
   }
   if (totalEnergy < 0) {
@@ -164,13 +167,15 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   simulstate.set_E(0);
 
   int vox = 0;
-  for (const auto& element : binsInLayers) {
-    const int layer = element.first;
-    const TH2D* h = &element.second;
+  for (const auto& [layer, h] : binsInLayers) {
+    if (h.IsZombie()) {
+      FCS_MSG_ERROR("Histogram for layer " << layer << " is broken");
+      return false;
+    }
 
-    const int xBinNum = h->GetNbinsX();
-    const int yBinNum = h->GetNbinsY();
-    const TAxis* x = h->GetXaxis();
+    const int xBinNum = h.GetNbinsX();
+    const int yBinNum = h.GetNbinsY();
+    const TAxis* x = h.GetXaxis();
 
     // If only one bin in r means layer is empty, no value should be added
     if (xBinNum == 1) {
@@ -214,13 +219,11 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   vox = 0;
-  for (const auto& element : binsInLayers) {
-    const int layer = element.first;
-    const TH2D* h = &element.second;
-    const int xBinNum = h->GetNbinsX();
-    const int yBinNum = h->GetNbinsY();
-    const TAxis* x = h->GetXaxis();
-    const TAxis* y = h->GetYaxis();
+  for (const auto& [layer, h] : binsInLayers) {
+    const int xBinNum = h.GetNbinsX();
+    const int yBinNum = h.GetNbinsY();
+    const TAxis* x = h.GetXaxis();
+    const TAxis* y = h.GetYaxis();
 
     simulstate.setAuxInfo<int>("GANlayer"_FCShash, layer);
     TFCSLateralShapeParametrizationHitBase::Hit hit;
@@ -251,7 +254,8 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                   TFCSLateralShapeParametrizationHitBase::Class()))
           {
             TFCSLateralShapeParametrizationHitBase* sim =
-                (TFCSLateralShapeParametrizationHitBase*)(chain()[ichain]);
+                static_cast<TFCSLateralShapeParametrizationHitBase*>(
+                    chain()[ichain]);
             if (sim->simulate_hit(hit, simulstate, truth, extrapol)
                 != FCSSuccess)
             {
@@ -296,8 +300,8 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
     const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
                                         / (1.0 + TMath::Exp(-2 * center_eta)));
 
-    int nHitsAlpha;
-    int nHitsR;
+    int nHitsAlpha {};
+    int nHitsR {};
 
     // Now create hits
     for (int ix = 1; ix <= xBinNum; ++ix) {
@@ -317,13 +321,13 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
           continue;
         }
 
-        if (fabs(pdgId) == 22 || fabs(pdgId) == 11) {
+        if (std::abs(pdgId) == 22 || std::abs(pdgId) == 11) {
           // maximum 10 MeV per hit, equally distributed in alpha and r
           int maxHitsInVoxel = energyInVoxel * truth->Ekin() / 10;
           if (maxHitsInVoxel < 1)
             maxHitsInVoxel = 1;
-          nHitsAlpha = sqrt(maxHitsInVoxel);
-          nHitsR = sqrt(maxHitsInVoxel);
+          nHitsAlpha = std::sqrt(maxHitsInVoxel);
+          nHitsR = std::sqrt(maxHitsInVoxel);
         } else {
           // One hit per mm along r
           nHitsR = x->GetBinUpEdge(ix) - x->GetBinLowEdge(ix);
@@ -334,7 +338,6 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
           } else {
             // d = 2*r*sin (a/2r) this distance at the upper r must be 1mm for
             // layer 1 or 5, 5mm otherwise.
-            const TAxis* y = h->GetYaxis();
             const double angle = y->GetBinUpEdge(iy) - y->GetBinLowEdge(iy);
             const double r = x->GetBinUpEdge(ix);
             const double d = 2 * r * sin(angle / 2 * r);
@@ -473,8 +476,8 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
                           TFCSLateralShapeParametrizationHitBase::Class()))
                   {
                     TFCSLateralShapeParametrizationHitBase* sim =
-                        (TFCSLateralShapeParametrizationHitBase*)(chain()
-                                                                      [ichain]);
+                        static_cast<TFCSLateralShapeParametrizationHitBase*>(
+                            chain()[ichain]);
                     if (sim->simulate_hit(hit, simulstate, truth, extrapol)
                         != FCSSuccess)
                     {
@@ -584,7 +587,7 @@ void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
   }
 }
 
-int TFCSEnergyAndHitGANV2::GetBinsInFours(double const& bins)
+int TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins)
 {
   if (bins < 4)
     return 4;
@@ -605,7 +608,7 @@ int TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
     FCS_MSG_DEBUG("yBinNum is special value 32");
     const double widthX = x->GetBinWidth(ix);
     const double radious = x->GetBinCenter(ix);
-    double circumference = radious * 2 * TMath::Pi();
+    double circumference = radious * 2. * TMath::Pi();
     if (m_param.IsSymmetrisedAlpha()) {
       circumference = radious * TMath::Pi();
     }

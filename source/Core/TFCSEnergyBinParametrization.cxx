@@ -1,5 +1,8 @@
 // Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+
 #include "FastCaloSim/Core/TFCSEnergyBinParametrization.h"
 
 #include "CLHEP/Random/RandFlat.h"
@@ -82,6 +85,12 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
   float ptot = 0;
   for (int iEbin = 0; iEbin <= n_bins(); ++iEbin)
     ptot += prob[iEbin];
+  if (ptot == 0.f) {
+    FCS_MSG_ERROR(
+        "TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(): "
+        "ptot is zero.");
+    return;
+  }
   float p = 0;
   for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
     p += prob[iEbin] / ptot;
@@ -128,6 +137,12 @@ bool TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
   float ptot {};
   for (int iEbin = 0; iEbin <= n_bins(); ++iEbin)
     ptot += prob[iEbin];
+  if (ptot == 0.f) {
+    FCS_MSG_ERROR(
+        "TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_"
+        "file(): ptot is zero");
+    return false;
+  }
   float p {};
   for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
     p += prob[iEbin] / ptot;
@@ -224,3 +239,5 @@ FCSReturnCode TFCSEnergyBinParametrization::simulate(
 
   return FCSSuccess;
 }
+
+#pragma GCC diagnostic pop
