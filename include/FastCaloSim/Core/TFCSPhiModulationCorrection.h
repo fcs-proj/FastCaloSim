@@ -23,7 +23,7 @@ public:
   TFCSPhiModulationCorrection(const char* name = nullptr,
                               const char* title = nullptr);
 
-  virtual ~TFCSPhiModulationCorrection();
+  ~TFCSPhiModulationCorrection() override;
 
   void load_phi_modulation(const std::string& filename,
                            long unsigned int layer_index,
@@ -39,19 +39,21 @@ public:
     m_energy_shift.clear();
   };
 
-  const std::vector<std::vector<std::vector<float>>>& get_phi_modulation() const
+  auto get_phi_modulation() const
+      -> const std::vector<std::vector<std::vector<float>>>&
   {
     return m_modulation;
   };
-  const std::vector<std::vector<float>>& get_min_eta() const
+  auto get_min_eta() const -> const std::vector<std::vector<float>>&
   {
     return m_min_eta;
   };
-  const std::vector<std::vector<float>>& get_energy_shift() const
+  auto get_energy_shift() const -> const std::vector<std::vector<float>>&
   {
     return m_energy_shift;
   };
-  const std::vector<std::vector<std::vector<float>>>& get_min_phi() const
+  auto get_min_phi() const
+      -> const std::vector<std::vector<std::vector<float>>>&
   {
     return m_min_phi;
   };
@@ -61,9 +63,9 @@ public:
     m_modulation_scale = phi_modulation_scale;
   };
 
-  float get_phi_modulation_scale() const { return m_modulation_scale; };
+  auto get_phi_modulation_scale() const -> float { return m_modulation_scale; };
 
-  static float get_phi_cell_size(long unsigned int layer, float eta)
+  static auto get_phi_cell_size(long unsigned int layer, float eta) -> float
   {
     if (layer <= 3) {
       return 2 * TMath::Pi() / 1024;
@@ -75,34 +77,38 @@ public:
   }
 
   // Adds adds the phi-modulation in the energy to the given hit
-  float add_phi_modulation(Hit& hit) const;
+  auto add_phi_modulation(Hit& hit) const -> float;
 
   // Adds adds the phi-modulation in the energy to the given hit
-  float add_phi_modulation(Hit& hit, long unsigned int layer_index) const;
+  auto add_phi_modulation(Hit& hit, long unsigned int layer_index) const
+      -> float;
 
   // Adds adds the phi-modulation in the energy to the given hit
-  float add_phi_modulation(float energy,
-                           float phi,
-                           float eta,
-                           long unsigned int layer_index) const;
+  auto add_phi_modulation(float energy,
+                          float phi,
+                          float eta,
+                          long unsigned int layer_index) const -> float;
 
   // Removes the phi-modulation in the energy from the given hit
-  float remove_phi_modulation(Hit& hit) const;
+  auto remove_phi_modulation(Hit& hit) const -> float;
 
   // Removes the phi-modulation in the energy from the given hit
-  float remove_phi_modulation(Hit& hit, long unsigned int layer_index) const;
+  auto remove_phi_modulation(Hit& hit, long unsigned int layer_index) const
+      -> float;
 
   // Removes the phi-modulation in the energy from the given hit
-  float remove_phi_modulation(float energy,
-                              float phi,
-                              float eta,
-                              long unsigned int layer_index) const;
+  auto remove_phi_modulation(float energy,
+                             float phi,
+                             float eta,
+                             long unsigned int layer_index) const -> float;
 
   // Returns the correct eta and phi index for the position of the hit.
   // Used to extract the correct modulation factor from the stored modulation
   // curves.
-  std::tuple<int, long unsigned int, long unsigned int> get_eta_and_phi_index(
-      float phi, float eta, long unsigned int layer_index) const;
+  auto get_eta_and_phi_index(float phi,
+                             float eta,
+                             long unsigned int layer_index) const
+      -> std::tuple<int, long unsigned int, long unsigned int>;
 
   void set_geometry(CaloGeo* geo) override
   {
@@ -110,13 +116,13 @@ public:
     TFCSParametrizationBase::set_geometry(geo);
   };
 
-  CaloGeo* get_geometry() const { return m_geo; };
+  auto get_geometry() const -> CaloGeo* { return m_geo; };
 
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
 protected:
   CaloGeo* m_geo = nullptr;  //! do not persistify

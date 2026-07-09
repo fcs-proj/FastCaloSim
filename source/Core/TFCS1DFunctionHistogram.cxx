@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -25,7 +25,8 @@ void TFCS1DFunctionHistogram::Initialize(TH1* hist, double cut_maxdev)
   smart_rebin_loop(hist, cut_maxdev);
 }
 
-std::unique_ptr<double[]> TFCS1DFunctionHistogram::histo_to_array(TH1* hist)
+auto TFCS1DFunctionHistogram::histo_to_array(TH1* hist)
+    -> std::unique_ptr<double[]>
 {
   std::unique_ptr<TH1D> h_clone(static_cast<TH1D*>(hist->Clone("h_clone")));
   const double integral = h_clone->Integral();
@@ -41,7 +42,8 @@ std::unique_ptr<double[]> TFCS1DFunctionHistogram::histo_to_array(TH1* hist)
   return histoVals;
 }
 
-double TFCS1DFunctionHistogram::sample_from_histo(TH1* hist, double random)
+auto TFCS1DFunctionHistogram::sample_from_histo(TH1* hist, double random)
+    -> double
 {
   auto histoVals = histo_to_array(hist);
   double value = 0.0;
@@ -52,7 +54,7 @@ double TFCS1DFunctionHistogram::sample_from_histo(TH1* hist, double random)
   return value;
 }
 
-double TFCS1DFunctionHistogram::sample_from_histovalues(double random)
+auto TFCS1DFunctionHistogram::sample_from_histovalues(double random) -> double
 {
   double value = 0.0;
 
@@ -66,7 +68,7 @@ double TFCS1DFunctionHistogram::sample_from_histovalues(double random)
   return value;
 }
 
-TH1* TFCS1DFunctionHistogram::vector_to_histo()
+auto TFCS1DFunctionHistogram::vector_to_histo() -> TH1*
 {
   double* bins = new double[m_HistoBorders.size()];
   for (unsigned int i = 0; i < m_HistoBorders.size(); i++)
@@ -95,7 +97,7 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
   TH1D* h_output = nullptr;
 
   int i = 0;
-  while (1) {
+  while (true) {
     TH1D* h_out;
     if (i == 0) {
       h_out = (TH1D*)h_input->Clone("h_out");
@@ -139,7 +141,7 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
   m_HistoContents.push_back(1);
 }
 
-double TFCS1DFunctionHistogram::get_maxdev(TH1* h_in, TH1D* h_out)
+auto TFCS1DFunctionHistogram::get_maxdev(TH1* h_in, TH1D* h_out) -> double
 {
   double maxdev = 0;
   for (int i = 1; i <= h_in->GetNbinsX(); i++) {
@@ -151,7 +153,7 @@ double TFCS1DFunctionHistogram::get_maxdev(TH1* h_in, TH1D* h_out)
   return maxdev;
 }
 
-double TFCS1DFunctionHistogram::get_change(TH1* histo)
+auto TFCS1DFunctionHistogram::get_change(TH1* histo) -> double
 {
   // return the smallest change between 2 bin contents, but don't check the last
   // bin, because that one never gets merged
@@ -165,7 +167,7 @@ double TFCS1DFunctionHistogram::get_change(TH1* histo)
   return minchange;
 }
 
-TH1D* TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
+auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input) -> TH1D*
 {
   TH1D* h_out1 = (TH1D*)h_input->Clone("h_out1");
 
@@ -224,15 +226,15 @@ TH1D* TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
   return h_out2;
 }
 
-double TFCS1DFunctionHistogram::rnd_to_fct(double rnd) const
+auto TFCS1DFunctionHistogram::rnd_to_fct(double rnd) const -> double
 {
   double value2 = get_inverse(rnd);
 
   return value2;
 }
 
-double TFCS1DFunctionHistogram::linear(
-    double y1, double y2, double x1, double x2, double y)
+auto TFCS1DFunctionHistogram::linear(
+    double y1, double y2, double x1, double x2, double y) -> double
 {
   double x = -1;
 
@@ -248,8 +250,8 @@ double TFCS1DFunctionHistogram::linear(
   return x;
 }
 
-double TFCS1DFunctionHistogram::non_linear(
-    double y1, double y2, double x1, double x2, double y)
+auto TFCS1DFunctionHistogram::non_linear(
+    double y1, double y2, double x1, double x2, double y) -> double
 {
   double x = -1;
   double eps = 0.0000000001;
@@ -263,7 +265,7 @@ double TFCS1DFunctionHistogram::non_linear(
   return x;
 }
 
-double TFCS1DFunctionHistogram::get_inverse(double rnd) const
+auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
 {
   double value = 0.;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationEkinSelectChain_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationEkinSelectChain_h
@@ -31,7 +31,7 @@ public:
                  ///< selection between neighboring Ekin bins should be done
   };
 
-  bool DoRandomInterpolation() const
+  auto DoRandomInterpolation() const -> bool
   {
     return TestBit(kDoRandomInterpolation);
   };
@@ -42,17 +42,17 @@ public:
   virtual void push_back_in_bin(TFCSParametrizationBase* param);
   // selects on truth->Ekin()
   // return -1 if outside range
-  virtual int get_bin(TFCSSimulationState&,
-                      const TFCSTruthState* truth,
-                      const TFCSExtrapolationState*) const override;
-  virtual const std::string get_variable_text(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState*,
-      const TFCSExtrapolationState*) const override;
-  virtual const std::string get_bin_text(int bin) const override;
+  auto get_bin(TFCSSimulationState&,
+               const TFCSTruthState* truth,
+               const TFCSExtrapolationState*) const -> int override;
+  auto get_variable_text(TFCSSimulationState& simulstate,
+                         const TFCSTruthState*,
+                         const TFCSExtrapolationState*) const
+      -> const std::string override;
+  auto get_bin_text(int bin) const -> const std::string override;
 
 protected:
-  virtual void recalc() override;
+  void recalc() override;
 
 private:
   ClassDefOverride(TFCSParametrizationEkinSelectChain,

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
 #define ISF_FASTCALOSIMEVENT_TFCSPCAEnergyParametrization_h
@@ -31,32 +31,35 @@ public:
                                const char* title = nullptr,
                                CaloGeo* geo = nullptr);
 
-  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
 
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
-  int n_pcabins() const { return m_numberpcabins; };
-  virtual int n_bins() const override { return m_numberpcabins; };
-  const std::vector<int>& get_layers() const { return m_RelevantLayers; };
+  auto n_pcabins() const -> int { return m_numberpcabins; };
+  auto n_bins() const -> int override { return m_numberpcabins; };
+  auto get_layers() const -> const std::vector<int>&
+  {
+    return m_RelevantLayers;
+  };
 
-  virtual bool is_match_Ekin_bin(int Ekin_bin) const override;
-  virtual bool is_match_calosample(int calosample) const override;
-  virtual bool is_match_all_Ekin_bin() const override { return true; };
-  virtual bool is_match_all_calosample() const override { return false; };
+  auto is_match_Ekin_bin(int Ekin_bin) const -> bool override;
+  auto is_match_calosample(int calosample) const -> bool override;
+  auto is_match_all_Ekin_bin() const -> bool override { return true; };
+  auto is_match_all_calosample() const -> bool override { return false; };
 
   static void P2X(
       TVectorD*, TVectorD*, TMatrixD*, int, const double*, double*, int);
-  bool loadInputs(TFile* file);
-  bool loadInputs(TFile* file, const std::string&);
+  auto loadInputs(TFile* file) -> bool;
+  auto loadInputs(TFile* file, const std::string&) -> bool;
 
   void clean();
 
   void Print(Option_t* option = "") const override;
 
-  float get_total_energy_normalization() const
+  auto get_total_energy_normalization() const -> float
   {
     return m_total_energy_normalization;
   };
@@ -66,7 +69,7 @@ public:
   };
 
   void set_totalE_probability_ratio(int Ekin_bin, TH1* hist);
-  TH1* get_totalE_probability_ratio(int Ekin_bin) const;
+  auto get_totalE_probability_ratio(int Ekin_bin) const -> TH1*;
 
   int do_rescale;
 

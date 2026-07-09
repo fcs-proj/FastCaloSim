@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 // See header file for documentation.
 #include "FastCaloSim/Core/TFCSONNXHandler.h"
@@ -54,8 +54,8 @@ TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
   m_outputLayers = copy_from.m_outputLayers;
 };
 
-TFCSONNXHandler::NetworkOutputs TFCSONNXHandler::compute(
-    TFCSONNXHandler::NetworkInputs const& inputs) const
+auto TFCSONNXHandler::compute(TFCSONNXHandler::NetworkInputs const& inputs)
+    const -> TFCSONNXHandler::NetworkOutputs
 {
   return m_computeLambda(inputs);
 };
@@ -67,7 +67,7 @@ void TFCSONNXHandler::writeNetToTTree(TTree& tree)
   this->writeBytesToTTree(tree, m_bytes);
 };
 
-std::vector<std::string> TFCSONNXHandler::getOutputLayers() const
+auto TFCSONNXHandler::getOutputLayers() const -> std::vector<std::string>
 {
   FCS_MSG_DEBUG("TFCSONNXHandler output layers requested.");
   return m_outputLayers;
@@ -282,8 +282,8 @@ void TFCSONNXHandler::setupNet()
 };
 
 // Needs to also work if the input file is a root file
-std::vector<char> TFCSONNXHandler::getSerializedSession(
-    const std::string& tree_name)
+auto TFCSONNXHandler::getSerializedSession(const std::string& tree_name)
+    -> std::vector<char>
 {
   FCS_MSG_DEBUG("Getting serialized session for ONNX network.");
 
@@ -308,7 +308,7 @@ std::vector<char> TFCSONNXHandler::getSerializedSession(
   }
 };
 
-std::vector<char> TFCSONNXHandler::readBytesFromTTree(TTree& tree)
+auto TFCSONNXHandler::readBytesFromTTree(TTree& tree) -> std::vector<char>
 {
   FCS_MSG_DEBUG("TFCSONNXHandler reading bytes from tree.");
   std::vector<char> bytes;

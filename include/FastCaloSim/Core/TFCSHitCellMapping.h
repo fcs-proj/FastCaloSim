@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSHitCellMapping_h
 #define TFCSHitCellMapping_h
@@ -15,17 +15,17 @@ public:
                      const char* title = nullptr,
                      CaloGeo* geo = nullptr);
 
-  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
-  CaloGeo* get_geometry() { return m_geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  auto get_geometry() -> CaloGeo* { return m_geo; };
 
   /// fills all hits into calorimeter cells
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
-  virtual bool operator==(const TFCSParametrizationBase& ref) const override;
+  auto operator==(const TFCSParametrizationBase& ref) const -> bool override;
 
   void Print(Option_t* option) const override;
 

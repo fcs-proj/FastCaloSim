@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSCenterPositionCalculation_h
 #define TFCSCenterPositionCalculation_h
@@ -13,13 +13,13 @@ public:
                                 const char* title = nullptr);
 
   /// Used to decorate Hit with extrap center positions
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
   inline void setExtrapWeight(const float weight) { m_extrapWeight = weight; }
-  inline float getExtrapWeight() { return m_extrapWeight; }
+  inline auto getExtrapWeight() -> float { return m_extrapWeight; }
   void Print(Option_t* option = "") const override;
 
 private:

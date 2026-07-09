@@ -1,6 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
 #include <iostream>
@@ -12,8 +12,8 @@
 //======= TFCSParametrizationFloatSelectChain =========
 //=============================================
 
-int TFCSParametrizationFloatSelectChain::push_back_in_bin(
-    TFCSParametrizationBase* param, float low, float up)
+auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
+    TFCSParametrizationBase* param, float low, float up) -> int
 {
   if (up < low) {
     // can't handle wrong order of bounds
@@ -93,7 +93,7 @@ void TFCSParametrizationFloatSelectChain::push_back_in_bin(
   }
 }
 
-int TFCSParametrizationFloatSelectChain::val_to_bin(float val) const
+auto TFCSParametrizationFloatSelectChain::val_to_bin(float val) const -> int
 {
   if (val < m_bin_low_edge[0]) {
     FCS_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " < "

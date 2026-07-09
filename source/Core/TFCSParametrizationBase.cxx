@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 
@@ -24,10 +24,10 @@ void TFCSParametrizationBase::set_geometry(CaloGeo* geo)
 /// Result should be returned in simulstate.
 /// Simulate all energies in calo layers for energy parametrizations.
 /// Simulate cells for shape simulation.
-FCSReturnCode TFCSParametrizationBase::simulate(
+auto TFCSParametrizationBase::simulate(
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   FCS_MSG_ERROR(
       "now in TFCSParametrizationBase::simulate(). This should "
@@ -37,7 +37,8 @@ FCSReturnCode TFCSParametrizationBase::simulate(
   return (FCSReturnCode)(FCSRetry + 1);
 }
 
-bool TFCSParametrizationBase::compare(const TFCSParametrizationBase& ref) const
+auto TFCSParametrizationBase::compare(const TFCSParametrizationBase& ref) const
+    -> bool
 {
   if (this == &ref) {
     FCS_MSG_DEBUG("compare(): identical instances " << this << " == " << &ref);

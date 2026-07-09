@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCS2DFunctionLateralShapeParametrization.h"
 
@@ -33,18 +33,18 @@ TFCS2DFunctionLateralShapeParametrization::
   m_function = nullptr;
 }
 
-double TFCS2DFunctionLateralShapeParametrization::get_sigma2_fluctuation(
+auto TFCS2DFunctionLateralShapeParametrization::get_sigma2_fluctuation(
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
   return 1.0 / m_nhits;
 }
 
-int TFCS2DFunctionLateralShapeParametrization::get_number_of_hits(
+auto TFCS2DFunctionLateralShapeParametrization::get_number_of_hits(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> int
 {
   if (!simulstate.randomEngine()) {
     return -1;
@@ -58,11 +58,11 @@ void TFCS2DFunctionLateralShapeParametrization::set_number_of_hits(float nhits)
   m_nhits = nhits;
 }
 
-FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
+auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;
@@ -143,8 +143,8 @@ FCSReturnCode TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   return FCSSuccess;
 }
 
-bool TFCS2DFunctionLateralShapeParametrization::Initialize(TFCS2DFunction* func,
-                                                           float nhits)
+auto TFCS2DFunctionLateralShapeParametrization::Initialize(TFCS2DFunction* func,
+                                                           float nhits) -> bool
 {
   if (!func)
     return false;

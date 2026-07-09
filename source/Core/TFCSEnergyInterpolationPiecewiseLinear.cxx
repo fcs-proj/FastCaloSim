@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 
@@ -6,15 +6,12 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
-namespace Gaudi
-{
-namespace Units
+namespace Gaudi::Units
 {
 constexpr double megaelectronvolt = 1.;
 constexpr double kiloelectronvolt = 1.e-3 * megaelectronvolt;
 constexpr double keV = kiloelectronvolt;
-}  // namespace Units
-}  // namespace Gaudi
+}  // namespace Gaudi::Units
 
 //========================================================
 //======= TFCSEnergyInterpolationPiecewiseLinear =========
@@ -49,10 +46,10 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
   InitFromArrayInLogEkin(np, logEkin.data(), response);
 }
 
-FCSReturnCode TFCSEnergyInterpolationPiecewiseLinear::simulate(
+auto TFCSEnergyInterpolationPiecewiseLinear::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> FCSReturnCode
 {
   const float Ekin = truth->Ekin();
   const float Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
@@ -87,8 +84,8 @@ FCSReturnCode TFCSEnergyInterpolationPiecewiseLinear::simulate(
   return FCSSuccess;
 }
 
-double TFCSEnergyInterpolationPiecewiseLinear::evaluate(
-    const double& Ekin) const
+auto TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double& Ekin) const
+    -> double
 {
   // returns simple evaluation of the interpolation
   // if the lookup is below the minimum interpolation value, will return minimum

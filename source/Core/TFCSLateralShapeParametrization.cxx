@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 
@@ -34,8 +34,8 @@ void TFCSLateralShapeParametrization::set_pdgid_Ekin_eta_Ekin_bin_calosample(
   set_pdgid_Ekin_eta(ref);
 }
 
-bool TFCSLateralShapeParametrization::compare(
-    const TFCSParametrizationBase& ref) const
+auto TFCSLateralShapeParametrization::compare(
+    const TFCSParametrizationBase& ref) const -> bool
 {
   if (IsA() != ref.IsA()) {
     FCS_MSG_DEBUG("compare(): different class types "

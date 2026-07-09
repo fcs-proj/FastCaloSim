@@ -1,6 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
 
@@ -20,12 +20,12 @@ TFCSEnergyRenormalization::TFCSEnergyRenormalization(const char* name,
 {
 }
 
-TFCSEnergyRenormalization::~TFCSEnergyRenormalization() {}
+TFCSEnergyRenormalization::~TFCSEnergyRenormalization() = default;
 
-FCSReturnCode TFCSEnergyRenormalization::simulate(
+auto TFCSEnergyRenormalization::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   std::vector<double> energies(m_geo->n_layers(), 0);
 

@@ -1,7 +1,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cstring>
 #include <iostream>
@@ -62,12 +62,12 @@ void TFCSSimulationState::Print(Option_t*) const
   }
 }
 
-std::uint32_t TFCSSimulationState::getAuxIndex(const std::string& s)
+auto TFCSSimulationState::getAuxIndex(const std::string& s) -> std::uint32_t
 {
   return TFCSSimulationState::fnv1a_32(s.c_str(), s.size());
 }
 
-std::uint32_t TFCSSimulationState::getAuxIndex(const char* s)
+auto TFCSSimulationState::getAuxIndex(const char* s) -> std::uint32_t
 {
   return TFCSSimulationState::fnv1a_32(s, std::strlen(s));
 }

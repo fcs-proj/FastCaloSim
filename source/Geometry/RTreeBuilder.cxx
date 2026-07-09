@@ -1,4 +1,4 @@
-// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #include <memory>
 #include <stdexcept>
 
@@ -46,9 +46,9 @@ void RTreeBuilder::build(const std::string& output_path)
     {
     }
 
-    bool hasNext() override { return m_index < m_boxes.size(); }
+    auto hasNext() -> bool override { return m_index < m_boxes.size(); }
 
-    SpatialIndex::IData* getNext() override
+    auto getNext() -> SpatialIndex::IData* override
     {
       // Get the next box-cell id pair from our collection
       const auto& [bounds, id] = m_boxes[m_index++];
@@ -74,7 +74,10 @@ void RTreeBuilder::build(const std::string& output_path)
       throw Tools::NotSupportedException("Rewind not supported");
     }
 
-    uint32_t size() override { return static_cast<uint32_t>(m_boxes.size()); }
+    auto size() -> uint32_t override
+    {
+      return static_cast<uint32_t>(m_boxes.size());
+    }
 
   private:
     const std::vector<std::pair<std::array<double, 4>, uint64_t>>& m_boxes;

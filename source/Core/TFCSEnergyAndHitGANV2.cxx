@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 #include <limits>
@@ -36,7 +36,7 @@ TFCSEnergyAndHitGANV2::~TFCSEnergyAndHitGANV2()
   }
 }
 
-bool TFCSEnergyAndHitGANV2::is_match_calosample(int calosample) const
+auto TFCSEnergyAndHitGANV2::is_match_calosample(int calosample) const -> bool
 {
   if (get_Binning().find(calosample) == get_Binning().cend())
     return false;
@@ -45,7 +45,8 @@ bool TFCSEnergyAndHitGANV2::is_match_calosample(int calosample) const
   return true;
 }
 
-unsigned int TFCSEnergyAndHitGANV2::get_nr_of_init(unsigned int bin) const
+auto TFCSEnergyAndHitGANV2::get_nr_of_init(unsigned int bin) const
+    -> unsigned int
 {
   if (bin >= m_bin_ninit.size())
     return 0;
@@ -62,10 +63,10 @@ void TFCSEnergyAndHitGANV2::set_nr_of_init(unsigned int bin, unsigned int ninit)
 }
 
 // initialize lwtnn network
-bool TFCSEnergyAndHitGANV2::initializeNetwork(
+auto TFCSEnergyAndHitGANV2::initializeNetwork(
     int const& pid,
     int const& etaMin,
-    const std::string& FastCaloGANInputFolderName)
+    const std::string& FastCaloGANInputFolderName) -> bool
 {
   // initialize all necessary constants
   // FIXME eventually all these could be stored in the .json file
@@ -98,19 +99,19 @@ bool TFCSEnergyAndHitGANV2::initializeNetwork(
   return m_slice->LoadGAN();
 }
 
-const std::string TFCSEnergyAndHitGANV2::get_variable_text(
+auto TFCSEnergyAndHitGANV2::get_variable_text(
     TFCSSimulationState& simulstate,
     const TFCSTruthState*,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> const std::string
 {
   return std::string(
       Form("layer=%d", simulstate.getAuxInfo<int>("GANlayer"_FCShash)));
 }
 
-bool TFCSEnergyAndHitGANV2::fillEnergy(
+auto TFCSEnergyAndHitGANV2::fillEnergy(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> bool
 {
   if (!truth) {
     FCS_MSG_ERROR("Invalid truth pointer");
@@ -527,10 +528,10 @@ bool TFCSEnergyAndHitGANV2::fillEnergy(
   return true;
 }
 
-FCSReturnCode TFCSEnergyAndHitGANV2::simulate(
+auto TFCSEnergyAndHitGANV2::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
     FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
@@ -587,7 +588,7 @@ void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
   }
 }
 
-int TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins)
+auto TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins) -> int
 {
   if (bins < 4)
     return 4;
@@ -599,9 +600,9 @@ int TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins)
     return 32;
 }
 
-int TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
-                                               int ix,
-                                               int yBinNum) const
+auto TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
+                                                int ix,
+                                                int yBinNum) const -> int
 {
   double binsInAlphaInRBin = yBinNum;
   if (yBinNum == 32) {

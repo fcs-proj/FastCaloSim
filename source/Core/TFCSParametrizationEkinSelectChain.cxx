@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 
@@ -32,10 +32,10 @@ void TFCSParametrizationEkinSelectChain::push_back_in_bin(
   push_back_in_bin(param, param->Ekin_min(), param->Ekin_max());
 }
 
-int TFCSParametrizationEkinSelectChain::get_bin(
+auto TFCSParametrizationEkinSelectChain::get_bin(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> int
 {
   if (!simulstate.randomEngine()) {
     return -1;
@@ -120,16 +120,16 @@ int TFCSParametrizationEkinSelectChain::get_bin(
   return bin;
 }
 
-const std::string TFCSParametrizationEkinSelectChain::get_variable_text(
+auto TFCSParametrizationEkinSelectChain::get_variable_text(
     TFCSSimulationState&,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> const std::string
 {
   return std::string(Form("Ekin=%1.1f", truth->Ekin()));
 }
 
-const std::string TFCSParametrizationEkinSelectChain::get_bin_text(
-    int bin) const
+auto TFCSParametrizationEkinSelectChain::get_bin_text(int bin) const
+    -> const std::string
 {
   if (bin == -1 || bin >= (int)get_number_of_bins()) {
     return std::string(Form("bin=%d not in [%1.1f<=Ekin<%1.1f)",

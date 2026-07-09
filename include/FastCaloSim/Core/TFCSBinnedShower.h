@@ -36,7 +36,7 @@ public:
     float e_init {};  // Initial energy of the event
   };
 
-  typedef std::vector<event_t> eventvector_t;
+  using eventvector_t = std::vector<event_t>;
 
   struct layer_bins_t
   {
@@ -46,13 +46,13 @@ public:
     std::vector<float> alpha_size;
   };
 
-  typedef std::vector<layer_bins_t> event_bins_t;
+  using event_bins_t = std::vector<layer_bins_t>;
 
   TFCSBinnedShower(const char* name = nullptr, const char* title = nullptr);
 
-  virtual ~TFCSBinnedShower();
+  ~TFCSBinnedShower() override;
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
+  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
   };
@@ -102,7 +102,7 @@ public:
   // is stored and not loaded on the fly.
   void set_hdf5_path(const std::string& filename) { m_hdf5_file = filename; }
   void delete_hdf5_path() { m_hdf5_file.clear(); }
-  const std::string& get_hdf5_path() const { return m_hdf5_file; }
+  auto get_hdf5_path() const -> const std::string& { return m_hdf5_file; }
 
   // Allows to set the layer energy for the given layer and event manually.
   void set_layer_energy(long unsigned int event_index,
@@ -125,27 +125,30 @@ public:
                                      float eta_center,
                                      float phi_center);
 
-  const eventvector_t& get_eventlibrary() const { return m_eventlibrary; }
+  auto get_eventlibrary() const -> const eventvector_t&
+  {
+    return m_eventlibrary;
+  }
 
   void set_event_library(const eventvector_t& eventlibrary)
   {
     m_eventlibrary = eventlibrary;
   }
 
-  const event_bins_t& get_coordinates() const { return m_coordinates; }
+  auto get_coordinates() const -> const event_bins_t& { return m_coordinates; }
 
   void set_coordinates(const event_bins_t& coordinates)
   {
     m_coordinates = coordinates;
   }
 
-  const std::vector<std::vector<std::vector<std::vector<float>>>>&
-  get_sub_bin_distribution() const
+  auto get_sub_bin_distribution() const
+      -> const std::vector<std::vector<std::vector<std::vector<float>>>>&
   {
     return m_sub_bin_distribution;
   }
 
-  const std::vector<float>& get_upscaling_energies() const
+  auto get_upscaling_energies() const -> const std::vector<float>&
   {
     return m_upscaling_energies;
   }
@@ -162,35 +165,34 @@ public:
 
 protected:
   // Returns the event to be used
-  virtual void get_event(
-      TFCSSimulationState& simulstate,
-      float eta_center,
-      float phi_center,
-      float e_init,
-      long unsigned int reference_layer_index) const override;
+  void get_event(TFCSSimulationState& simulstate,
+                 float eta_center,
+                 float phi_center,
+                 float e_init,
+                 long unsigned int reference_layer_index) const override;
 
   // Returns the number of hits that are going to be simulated in the given
   // layer.
-  virtual long unsigned int get_n_hits(
-      TFCSSimulationState& simulstate,
-      long unsigned int layer_index) const override;
+  auto get_n_hits(TFCSSimulationState& simulstate,
+                  long unsigned int layer_index) const
+      -> long unsigned int override;
 
   // Used to precompute the number of hits for all layers in the event.
   virtual void compute_n_hits_and_elayer(TFCSSimulationState& simulstate) const;
 
   // Returns the total deposited energy in the given layer for the current event
-  virtual float get_layer_energy(TFCSSimulationState& simulstate,
-                                 long unsigned int layer_index) const override;
+  auto get_layer_energy(TFCSSimulationState& simulstate,
+                        long unsigned int layer_index) const -> float override;
 
   // Returns the position and energy of the corresponding hit in the given
   // event, layer and bin
-  virtual std::tuple<float, float, float> get_hit_position_and_energy(
-      TFCSSimulationState& simulstate,
-      long unsigned int layer_index,
-      long unsigned int hit_index) const override;
+  auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
+                                   long unsigned int layer_index,
+                                   long unsigned int hit_index) const
+      -> std::tuple<float, float, float> override;
 
   // Delete all pointers that were created in get_event()
-  virtual void delete_event(TFCSSimulationState& simulstate) const override;
+  void delete_event(TFCSSimulationState& simulstate) const override;
 
 private:
   // Enables to load the event library from an HDF5 file on the fly.
@@ -218,15 +220,15 @@ private:
   // file of the shower extraction and the simulation should NOT be the same!
   bool m_use_eta_matching = false;
 
-  long unsigned int find_best_match(float eta_center,
-                                    float phi_center,
-                                    float e_init,
-                                    long unsigned int reference_layer_index,
-                                    bool phi_mod_matching) const;
+  auto find_best_match(float eta_center,
+                       float phi_center,
+                       float e_init,
+                       long unsigned int reference_layer_index,
+                       bool phi_mod_matching) const -> long unsigned int;
 
-  std::tuple<float, float> get_coordinates(TFCSSimulationState& simulstate,
-                                           long unsigned int layer_index,
-                                           int bin_index) const;
+  auto get_coordinates(TFCSSimulationState& simulstate,
+                       long unsigned int layer_index,
+                       int bin_index) const -> std::tuple<float, float>;
 
   // If true, the sub-cell distribution is used to upscale the energy deposition
   bool m_use_upscaling = false;
@@ -245,13 +247,14 @@ private:
                long unsigned int layer_index,
                int bin_index) const;
 
-  long unsigned int get_energy_index(TFCSSimulationState& simulstate,
-                                     long unsigned int layer_index,
-                                     long unsigned int hit_index) const;
+  auto get_energy_index(TFCSSimulationState& simulstate,
+                        long unsigned int layer_index,
+                        long unsigned int hit_index) const -> long unsigned int;
 
   // Helper functions to load the HDF5 dataset
-  std::tuple<std::vector<float>, std::vector<hsize_t>, bool> load_hdf5_dataset(
-      const std::string& filename, const std::string& datasetname);
+  auto load_hdf5_dataset(const std::string& filename,
+                         const std::string& datasetname)
+      -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>;
 
   void load_layer_energy(const std::string& filename,
                          long unsigned int layer_index);

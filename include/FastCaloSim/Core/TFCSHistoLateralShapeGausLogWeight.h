@@ -12,14 +12,14 @@ class TFCSHistoLateralShapeGausLogWeight : public TFCSHistoLateralShapeWeight
 public:
   TFCSHistoLateralShapeGausLogWeight(const char* name = nullptr,
                                      const char* title = nullptr);
-  virtual ~TFCSHistoLateralShapeGausLogWeight();
+  ~TFCSHistoLateralShapeGausLogWeight() override;
 
   /// weight the energy of one hit in order to generate fluctuations
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
 protected:
 ClassDefOverride(TFCSHistoLateralShapeGausLogWeight,

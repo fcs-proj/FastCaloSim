@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationPDGIDSelectChain_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationPDGIDSelectChain_h
@@ -29,17 +29,20 @@ public:
              ///< loop should be aborted after the first successful match
   };
 
-  bool SimulateOnlyOnePDGID() const { return TestBit(kSimulateOnlyOnePDGID); };
+  auto SimulateOnlyOnePDGID() const -> bool
+  {
+    return TestBit(kSimulateOnlyOnePDGID);
+  };
   void set_SimulateOnlyOnePDGID() { SetBit(kSimulateOnlyOnePDGID); };
   void reset_SimulateOnlyOnePDGID() { ResetBit(kSimulateOnlyOnePDGID); };
 
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
 protected:
-  virtual void recalc() override;
+  void recalc() override;
 
 private:
   ClassDefOverride(TFCSParametrizationPDGIDSelectChain,

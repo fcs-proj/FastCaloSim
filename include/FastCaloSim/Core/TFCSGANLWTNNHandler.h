@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 /**
  * Class for a neural network read in the LWTNN format.
@@ -74,7 +74,7 @@ public:
    * @see VNetworkBase::NetworkInputs
    * @see VNetworkBase::NetworkOutputs
    **/
-  NetworkOutputs compute(NetworkInputs const& inputs) const override;
+  auto compute(NetworkInputs const& inputs) const -> NetworkOutputs override;
 
   /**
    * @brief List the names of the outputs.
@@ -84,7 +84,7 @@ public:
    * returns the list of all strings that will index the outputs.
    *
    **/
-  std::vector<std::string> getOutputLayers() const override;
+  auto getOutputLayers() const -> std::vector<std::string> override;
 
 protected:
   /**

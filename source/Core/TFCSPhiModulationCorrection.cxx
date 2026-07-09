@@ -25,7 +25,7 @@ TFCSPhiModulationCorrection::TFCSPhiModulationCorrection(const char* name,
 {
 }
 
-TFCSPhiModulationCorrection::~TFCSPhiModulationCorrection() {}
+TFCSPhiModulationCorrection::~TFCSPhiModulationCorrection() = default;
 
 void TFCSPhiModulationCorrection::load_phi_modulation(
     const std::string& filename,
@@ -147,9 +147,9 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
 }
 
 // TODO: Use FCSReturnCode
-std::tuple<int, long unsigned int, long unsigned int>
-TFCSPhiModulationCorrection::get_eta_and_phi_index(
+auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
     float phi, float eta, long unsigned int layer_index) const
+    -> std::tuple<int, long unsigned int, long unsigned int>
 {
   float eta_abs = TMath::Abs(eta);
 
@@ -237,15 +237,15 @@ TFCSPhiModulationCorrection::get_eta_and_phi_index(
   return std::make_tuple(0, eta_index, phi_index);  // No error
 }
 
-float TFCSPhiModulationCorrection::add_phi_modulation(
-    TFCSLateralShapeParametrizationHitBase::Hit& hit) const
+auto TFCSPhiModulationCorrection::add_phi_modulation(
+    TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> float
 {
   return add_phi_modulation(hit, calosample());
 }
 
-float TFCSPhiModulationCorrection::add_phi_modulation(
+auto TFCSPhiModulationCorrection::add_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
-    long unsigned int layer_index) const
+    long unsigned int layer_index) const -> float
 {
   if (layer_index >= m_min_eta.size()) {
     return hit.E();
@@ -269,8 +269,9 @@ float TFCSPhiModulationCorrection::add_phi_modulation(
   return reweighted_energy;
 }
 
-float TFCSPhiModulationCorrection::add_phi_modulation(
+auto TFCSPhiModulationCorrection::add_phi_modulation(
     float energy, float phi, float eta, long unsigned int layer_index) const
+    -> float
 {
   if (layer_index >= m_min_eta.size()) {
     return energy;
@@ -304,15 +305,15 @@ float TFCSPhiModulationCorrection::add_phi_modulation(
   return energy;
 }
 
-float TFCSPhiModulationCorrection::remove_phi_modulation(
-    TFCSLateralShapeParametrizationHitBase::Hit& hit) const
+auto TFCSPhiModulationCorrection::remove_phi_modulation(
+    TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> float
 {
   return remove_phi_modulation(hit, calosample());
 }
 
-float TFCSPhiModulationCorrection::remove_phi_modulation(
+auto TFCSPhiModulationCorrection::remove_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
-    long unsigned int layer_index) const
+    long unsigned int layer_index) const -> float
 {
   if (layer_index >= m_min_eta.size()) {
     return hit.E();
@@ -337,8 +338,9 @@ float TFCSPhiModulationCorrection::remove_phi_modulation(
   return reweighted_energy;
 }
 
-float TFCSPhiModulationCorrection::remove_phi_modulation(
+auto TFCSPhiModulationCorrection::remove_phi_modulation(
     float energy, float phi, float eta, long unsigned int layer_index) const
+    -> float
 {
   if (layer_index >= m_min_eta.size()) {
     return energy;
@@ -371,11 +373,11 @@ float TFCSPhiModulationCorrection::remove_phi_modulation(
   return energy;
 }
 
-FCSReturnCode TFCSPhiModulationCorrection::simulate_hit(
+auto TFCSPhiModulationCorrection::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol)
+    const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
   // Extrapol unused, but needed for the interface
   (void)extrapol;

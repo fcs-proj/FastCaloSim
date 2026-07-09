@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSLateralShapeParametrizationHitNumberFromE_h
 #define TFCSLateralShapeParametrizationHitNumberFromE_h
@@ -35,21 +35,22 @@ public:
 
   /// Give the effective size sigma^2 of the fluctuations from the stochastic
   /// and constant term
-  double get_sigma2_fluctuation(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto get_sigma2_fluctuation(TFCSSimulationState& simulstate,
+                              const TFCSTruthState* truth,
+                              const TFCSExtrapolationState* extrapol) const
+      -> double override;
 
-  int get_number_of_hits(TFCSSimulationState& simulstate,
-                         const TFCSTruthState* truth,
-                         const TFCSExtrapolationState* extrapol) const override;
+  auto get_number_of_hits(TFCSSimulationState& simulstate,
+                          const TFCSTruthState* truth,
+                          const TFCSExtrapolationState* extrapol) const
+      -> int override;
 
-  virtual bool operator==(const TFCSParametrizationBase& ref) const override;
+  auto operator==(const TFCSParametrizationBase& ref) const -> bool override;
 
   void Print(Option_t* option = "") const override;
 
 protected:
-  bool compare(const TFCSParametrizationBase& ref) const;
+  auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:
   // Information for the fluctuation terms

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 /* Header include */
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
@@ -272,12 +272,12 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
   FCS_MSG_DEBUG("[extrapolateToLayers] End extrapolateToLayers()");
 }
 
-bool FastCaloSimCaloExtrapolation::extrapolateToCylinder(
+auto FastCaloSimCaloExtrapolation::extrapolateToCylinder(
     const std::vector<G4FieldTrack>& caloSteps,
     float cylR,
     float cylZ,
     Vector3D& extPos,
-    Vector3D& momDir) const
+    Vector3D& momDir) const -> bool
 {
   if (caloSteps.size() == 1) {
     Vector3D hitPos = caloSteps.at(0).GetPosition();
@@ -311,12 +311,12 @@ bool FastCaloSimCaloExtrapolation::extrapolateToCylinder(
   return foundHit;
 }
 
-bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
+auto FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
     const std::vector<G4FieldTrack>& caloSteps,
     float cylR,
     float cylZ,
     Vector3D& extPos,
-    Vector3D& momDir) const
+    Vector3D& momDir) const -> bool
 {
   FCS_MSG_DEBUG("[extrapolateWithIntersection(R="
                 << cylR << ",Z=" << cylZ
@@ -435,12 +435,12 @@ bool FastCaloSimCaloExtrapolation::extrapolateWithIntersection(
   return false;
 }
 
-bool FastCaloSimCaloExtrapolation::extrapolateWithPCA(
+auto FastCaloSimCaloExtrapolation::extrapolateWithPCA(
     const std::vector<G4FieldTrack>& caloSteps,
     float cylR,
     float cylZ,
     Vector3D& extPos,
-    Vector3D& momDir) const
+    Vector3D& momDir) const -> bool
 {
   bool foundHit = false;
   FCS_MSG_DEBUG("[extrapolateWithPCA(R="
@@ -743,9 +743,10 @@ auto FastCaloSimCaloExtrapolation::circleLineIntersection2D(
   }
 }
 
-Vector3D FastCaloSimCaloExtrapolation::projectOnCylinder(float cylR,
-                                                         float cylZ,
-                                                         Vector3D& hitPos)
+auto FastCaloSimCaloExtrapolation::projectOnCylinder(float cylR,
+                                                     float cylZ,
+                                                     Vector3D& hitPos)
+    -> Vector3D
 {
   Vector3D closestPointOnCylinder;
   Vector3D cylAxis(0, 0, cylZ);
@@ -783,8 +784,9 @@ Vector3D FastCaloSimCaloExtrapolation::projectOnCylinder(float cylR,
   return closestPointOnCylinder;
 }
 
-CylinderIntersections FastCaloSimCaloExtrapolation::getCylinderIntersections(
+auto FastCaloSimCaloExtrapolation::getCylinderIntersections(
     float cylR, float cylZ, Vector3D& hitPos1, Vector3D& hitPos2) const
+    -> CylinderIntersections
 {
   // calculates intersection of infinite line with cylinder --> can have 0 or 2
   // intersections
@@ -921,13 +923,13 @@ auto FastCaloSimCaloExtrapolation::get3DLinePCA(const Vector3D& posA,
 
 // calculates the intersection between the line defined by pointA and pointB and
 // the cylinder cover defined by cylR and cylZ
-int FastCaloSimCaloExtrapolation::cylinderLineIntersection(
+auto FastCaloSimCaloExtrapolation::cylinderLineIntersection(
     float cylR,
     float cylZ,
     Vector3D& pointA,
     Vector3D& pointB,
     Vector3D& intersectA,
-    Vector3D& intersectB) const
+    Vector3D& intersectB) const -> int
 {
   // projections of points spanning the line onto the xy plane
   Vector3D projPointA(pointA.x(), pointA.y(), 0);
@@ -973,13 +975,13 @@ int FastCaloSimCaloExtrapolation::cylinderLineIntersection(
   return 0;
 }
 
-bool FastCaloSimCaloExtrapolation::cylinderEndcapIntersection(
+auto FastCaloSimCaloExtrapolation::cylinderEndcapIntersection(
     float cylR,
     float cylZ,
     bool positiveEndcap,
     Vector3D& pointA,
     Vector3D& pointB,
-    Vector3D& intersection)
+    Vector3D& intersection) -> bool
 {
   // normal and point on endcap defines the plane
   Vector3D pointOnEndcap;
@@ -1001,13 +1003,13 @@ bool FastCaloSimCaloExtrapolation::cylinderEndcapIntersection(
   return false;
 }
 
-int FastCaloSimCaloExtrapolation::whichIntersection(
+auto FastCaloSimCaloExtrapolation::whichIntersection(
     float cylR,
     float cylZ,
     Vector3D& hitPos1,
     Vector3D& hitPos2,
     Vector3D& intersectionA,
-    Vector3D intersectionB) const
+    Vector3D intersectionB) const -> int
 {
   // check if the hit positions are outside or inside the cylinder surface
   HITPOSITION cylPosHit1 = whereOnCylinder(cylR, cylZ, hitPos1);
@@ -1041,8 +1043,8 @@ int FastCaloSimCaloExtrapolation::whichIntersection(
   }
 }
 
-double FastCaloSimCaloExtrapolation::getPointLineSegmentDistance(
-    Vector3D& point, Vector3D& hitPos1, Vector3D& hitPos2)
+auto FastCaloSimCaloExtrapolation::getPointLineSegmentDistance(
+    Vector3D& point, Vector3D& hitPos1, Vector3D& hitPos2) -> double
 {
   Vector3D hitDir = hitPos2 - hitPos1;
   Vector3D w = point - hitPos1;
@@ -1058,10 +1060,10 @@ double FastCaloSimCaloExtrapolation::getPointLineSegmentDistance(
   return distance(point, vec);
 }
 
-enum FastCaloSimCaloExtrapolation::HITPOSITION
-FastCaloSimCaloExtrapolation::whereOnCylinder(float cylR,
-                                              float cylZ,
-                                              Vector3D& hitPos)
+auto FastCaloSimCaloExtrapolation::whereOnCylinder(float cylR,
+                                                   float cylZ,
+                                                   Vector3D& hitPos)
+    -> enum FastCaloSimCaloExtrapolation::HITPOSITION
 {
   // set a 1mm tolerance within which the hit position is considered to be on
   // the cylinder surface setting this higher can lead to extrapolation failures
@@ -1085,10 +1087,8 @@ FastCaloSimCaloExtrapolation::whereOnCylinder(float cylR,
   return HITPOSITION::OUTSIDE;
 }
 
-bool FastCaloSimCaloExtrapolation::doesTravelThroughSurface(float cylR,
-                                                            float cylZ,
-                                                            Vector3D& hitPos1,
-                                                            Vector3D& hitPos2)
+auto FastCaloSimCaloExtrapolation::doesTravelThroughSurface(
+    float cylR, float cylZ, Vector3D& hitPos1, Vector3D& hitPos2) -> bool
 {
   // travel through surface in case one hit position is outside and the other
   // outside of cylinder surface
@@ -1096,9 +1096,9 @@ bool FastCaloSimCaloExtrapolation::doesTravelThroughSurface(float cylR,
       ^ (whereOnCylinder(cylR, cylZ, hitPos2) == INSIDE);
 }
 
-bool FastCaloSimCaloExtrapolation::isOnSegment(Vector3D& point,
+auto FastCaloSimCaloExtrapolation::isOnSegment(Vector3D& point,
                                                Vector3D& hitPos1,
-                                               Vector3D& hitPos2)
+                                               Vector3D& hitPos2) -> bool
 {
   return getPointLineSegmentDistance(point, hitPos1, hitPos2) < 0.001;
 }

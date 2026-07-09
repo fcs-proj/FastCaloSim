@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
 #include <iterator>
@@ -140,7 +140,7 @@ void TFCSParametrizationChain::recalc()
   m_chain.shrink_to_fit();
 }
 
-bool TFCSParametrizationChain::is_match_Ekin_bin(int Ekin_bin) const
+auto TFCSParametrizationChain::is_match_Ekin_bin(int Ekin_bin) const -> bool
 {
   for (const auto& param : m_chain)
     if (!param->is_match_Ekin_bin(Ekin_bin))
@@ -148,7 +148,7 @@ bool TFCSParametrizationChain::is_match_Ekin_bin(int Ekin_bin) const
   return true;
 }
 
-bool TFCSParametrizationChain::is_match_calosample(int calosample) const
+auto TFCSParametrizationChain::is_match_calosample(int calosample) const -> bool
 {
   for (const auto& param : m_chain)
     if (!param->is_match_calosample(calosample))
@@ -156,10 +156,10 @@ bool TFCSParametrizationChain::is_match_calosample(int calosample) const
   return true;
 }
 
-FCSReturnCode TFCSParametrizationChain::simulate(
+auto TFCSParametrizationChain::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   Int_t retry = 0;
   Int_t retry_warning = 1;

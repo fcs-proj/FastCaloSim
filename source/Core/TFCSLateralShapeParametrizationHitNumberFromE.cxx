@@ -1,6 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitNumberFromE.h"
 
@@ -41,10 +41,10 @@ TFCSLateralShapeParametrizationHitNumberFromE::
   set_match_all_pdgid();
 }
 
-double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
+auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
   int cs = calosample();
   float energy = simulstate.E(cs);
@@ -75,10 +75,10 @@ double TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
   return sigma2;
 }
 
-int TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
+auto TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> int
 {
   if (!simulstate.randomEngine()) {
     return -1;
@@ -92,8 +92,8 @@ int TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
   return hits;
 }
 
-bool TFCSLateralShapeParametrizationHitNumberFromE::operator==(
-    const TFCSParametrizationBase& ref) const
+auto TFCSLateralShapeParametrizationHitNumberFromE::operator==(
+    const TFCSParametrizationBase& ref) const -> bool
 {
   if (TFCSParametrizationBase::compare(ref))
     return true;
@@ -106,8 +106,8 @@ bool TFCSLateralShapeParametrizationHitNumberFromE::operator==(
   return true;
 }
 
-bool TFCSLateralShapeParametrizationHitNumberFromE::compare(
-    const TFCSParametrizationBase& ref) const
+auto TFCSLateralShapeParametrizationHitNumberFromE::compare(
+    const TFCSParametrizationBase& ref) const -> bool
 {
   if (IsA() != ref.IsA()) {
     FCS_MSG_DEBUG("compare(): different class types "

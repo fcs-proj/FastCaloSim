@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
 
@@ -27,7 +27,8 @@ TFCSHistoLateralShapeParametrization::TFCSHistoLateralShapeParametrization(
   TFCSHistoLateralShapeParametrization::reset_phi_symmetric();
 }
 
-TFCSHistoLateralShapeParametrization::~TFCSHistoLateralShapeParametrization() {}
+TFCSHistoLateralShapeParametrization::~TFCSHistoLateralShapeParametrization() =
+    default;
 
 void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
 {
@@ -70,10 +71,10 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
   }
 }
 
-double TFCSHistoLateralShapeParametrization::get_sigma2_fluctuation(
+auto TFCSHistoLateralShapeParametrization::get_sigma2_fluctuation(
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
   // Limit to factor 1000 fluctuations
   if (m_nhits < 0.001)
@@ -81,10 +82,10 @@ double TFCSHistoLateralShapeParametrization::get_sigma2_fluctuation(
   return 1.0 / m_nhits;
 }
 
-int TFCSHistoLateralShapeParametrization::get_number_of_hits(
+auto TFCSHistoLateralShapeParametrization::get_number_of_hits(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> int
 {
   if (!simulstate.randomEngine()) {
     return -1;
@@ -98,11 +99,11 @@ void TFCSHistoLateralShapeParametrization::set_number_of_hits(float nhits)
   m_nhits = nhits;
 }
 
-FCSReturnCode TFCSHistoLateralShapeParametrization::simulate_hit(
+auto TFCSHistoLateralShapeParametrization::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;
@@ -187,7 +188,7 @@ FCSReturnCode TFCSHistoLateralShapeParametrization::simulate_hit(
   return FCSSuccess;
 }
 
-bool TFCSHistoLateralShapeParametrization::Initialize(TH2* hist)
+auto TFCSHistoLateralShapeParametrization::Initialize(TH2* hist) -> bool
 {
   if (!hist)
     return false;
@@ -200,8 +201,9 @@ bool TFCSHistoLateralShapeParametrization::Initialize(TH2* hist)
   return true;
 }
 
-bool TFCSHistoLateralShapeParametrization::Initialize(const char* filepath,
+auto TFCSHistoLateralShapeParametrization::Initialize(const char* filepath,
                                                       const char* histname)
+    -> bool
 {
   // input file with histogram to fit
   std::unique_ptr<TFile> inputfile(TFile::Open(filepath, "READ"));

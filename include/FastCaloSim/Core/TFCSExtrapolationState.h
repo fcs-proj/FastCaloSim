@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
 #define ISF_FASTCALOSIMEVENT_TFCSExtrapolationState_h
@@ -147,7 +147,7 @@ public:
   {
     m_IDCaloBoundary_Angle3D = val;
   }
-  void Print(Option_t* option = "") const;
+  void Print(Option_t* option = "") const override;
 
 private:
   // 2D Map: (layer, subpos) -> extrapolated position

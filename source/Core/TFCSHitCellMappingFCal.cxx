@@ -1,7 +1,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHitCellMappingFCal.h"
 
@@ -12,11 +12,11 @@
 //======= TFCSHitCellMappingFCal =========
 //=============================================
 
-FCSReturnCode TFCSHitCellMappingFCal::simulate_hit(
+auto TFCSHitCellMappingFCal::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   FCS_MSG_DEBUG("Got hit with E=" << hit.E() << " x=" << hit.x()
                                   << " y=" << hit.y());

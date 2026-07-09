@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionInt16Histogram_h
 #define ISF_FASTCALOSIMEVENT_TFCS1DFunctionInt16Histogram_h
@@ -17,29 +17,32 @@ public:
     if (hist)
       Initialize(hist);
   };
-  ~TFCS1DFunctionInt16Histogram() {};
+  ~TFCS1DFunctionInt16Histogram() override = default;
 
   void Initialize(const TH1* hist);
 
   using TFCS1DFunction::rnd_to_fct;
 
-  typedef uint16_t HistoContent_t;
+  using HistoContent_t = uint16_t;
   static const HistoContent_t s_MaxValue;
 
   /// Function gets random number rnd in the range [0,1) as argument
   /// and returns function value according to a histogram distribution
-  virtual double rnd_to_fct(double rnd) const;
+  auto rnd_to_fct(double rnd) const -> double override;
 
-  const std::vector<float>& get_HistoBordersx() const
+  auto get_HistoBordersx() const -> const std::vector<float>&
   {
     return m_HistoBorders;
   };
-  std::vector<float>& get_HistoBordersx() { return m_HistoBorders; };
-  const std::vector<HistoContent_t>& get_HistoContents() const
+  auto get_HistoBordersx() -> std::vector<float>& { return m_HistoBorders; };
+  auto get_HistoContents() const -> const std::vector<HistoContent_t>&
   {
     return m_HistoContents;
   };
-  std::vector<HistoContent_t>& get_HistoContents() { return m_HistoContents; };
+  auto get_HistoContents() -> std::vector<HistoContent_t>&
+  {
+    return m_HistoContents;
+  };
 
 protected:
   std::vector<float> m_HistoBorders;

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSParametrizationPlaceholder.h"
 
@@ -6,10 +6,10 @@
 //======= TFCSParametrizationPlaceholder =========
 //=============================================
 
-FCSReturnCode TFCSParametrizationPlaceholder::simulate(
+auto TFCSParametrizationPlaceholder::simulate(
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   FCS_MSG_ERROR(
       "TFCSParametrizationPlaceholder::simulate(). This is a "

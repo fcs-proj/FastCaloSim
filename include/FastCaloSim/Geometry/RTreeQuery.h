@@ -1,4 +1,4 @@
-// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #pragma once
 
 #include <cstddef>
@@ -74,5 +74,5 @@ private:
   mutable tbb::enumerable_thread_specific<TreeHandle> m_perThread;
 
   // Lazily initialize and return this thread's handle.
-  TreeHandle& localTree() const;
+  auto localTree() const -> TreeHandle&;
 };

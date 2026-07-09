@@ -1,7 +1,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
@@ -110,7 +110,8 @@ void TFCSParametrization::set_pdgid_Ekin_eta(const TFCSParametrizationBase& ref)
   set_pdgid(ref.pdgid());
 }
 
-bool TFCSParametrization::compare(const TFCSParametrizationBase& ref) const
+auto TFCSParametrization::compare(const TFCSParametrizationBase& ref) const
+    -> bool
 {
   if (IsA() != ref.IsA()) {
     FCS_MSG_DEBUG("compare(): different class types "

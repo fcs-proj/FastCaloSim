@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef FastCaloSimCaloExtrapolation_H
 #define FastCaloSimCaloExtrapolation_H
@@ -26,7 +26,7 @@ class FASTCALOSIM_EXPORT FastCaloSimCaloExtrapolation : public ISF_FCS::MLogging
 {
 public:
   FastCaloSimCaloExtrapolation();
-  ~FastCaloSimCaloExtrapolation() = default;
+  ~FastCaloSimCaloExtrapolation() override = default;
 
   void set_geometry(CaloGeo* geo) { m_geo = geo; };
 
@@ -47,11 +47,11 @@ private:
   /// Finds best extrapolation extPos from the caloSteps for a cylinder defined
   /// by radius cylR and half-length cylZ as well as corresponding momentum
   /// direction
-  bool extrapolateToCylinder(const std::vector<G4FieldTrack>& caloSteps,
+  auto extrapolateToCylinder(const std::vector<G4FieldTrack>& caloSteps,
                              float cylR,
                              float cylZ,
                              Vector3D& extPos,
-                             Vector3D& momDir) const;
+                             Vector3D& momDir) const -> bool;
   /// Extrapolates to ID using three uniquely defined cylinder surfaces
   void extrapolateToID(TFCSExtrapolationState& result,
                        const std::vector<G4FieldTrack>& caloSteps,
@@ -73,9 +73,9 @@ private:
                Vector3D& PCA) const;
   /// Computes the distance between a point and the line segment spanned by
   /// hitPos1 and hitPos2
-  static double getPointLineSegmentDistance(Vector3D& point,
-                                            Vector3D& hitPos1,
-                                            Vector3D& hitPos2);
+  static auto getPointLineSegmentDistance(Vector3D& point,
+                                          Vector3D& hitPos1,
+                                          Vector3D& hitPos2) -> double;
   /// Finds PCA iteratively given two bounds A and B on a line segment, used for
   /// (rare) cases with no easy analytical solutions
   void getIterativePCA(float cylR,
@@ -85,77 +85,77 @@ private:
                        Vector3D& PCA) const;
   /// Returns true if point lies on the line segment spanned by hitPos1 and
   /// hitPos2, otherwise returns false
-  static bool isOnSegment(Vector3D& point,
-                          Vector3D& hitPos1,
-                          Vector3D& hitPos2);
+  static auto isOnSegment(Vector3D& point, Vector3D& hitPos1, Vector3D& hitPos2)
+      -> bool;
   /// Computes intersection between the (infinite) line spanned by pointA and
   /// pointB with the positive (negative) endcap of a cylinder, returns true if
   /// intersection is found
-  static bool cylinderEndcapIntersection(float cylR,
+  static auto cylinderEndcapIntersection(float cylR,
                                          float cylZ,
                                          bool positiveEndcap,
                                          Vector3D& pointA,
                                          Vector3D& pointB,
-                                         Vector3D& intersection);
+                                         Vector3D& intersection) -> bool;
   /*!Extrapolates position on cylinder by finding intersections of subsequent
    hit positions, intersection is considered if we detect a travel through the
    surface with the line segment or we find a forward intersection (in the
    travel direction of the particle) which lies on the line segment, returns
    false if no such position is found*/
-  bool extrapolateWithIntersection(const std::vector<G4FieldTrack>& caloSteps,
+  auto extrapolateWithIntersection(const std::vector<G4FieldTrack>& caloSteps,
                                    float cylR,
                                    float cylZ,
                                    Vector3D& extPos,
-                                   Vector3D& momDir) const;
+                                   Vector3D& momDir) const -> bool;
   /// Extrapolates to the cylinder using the PCA to the polygon spanned by the
   /// individual line segments from the caloSteps
-  bool extrapolateWithPCA(const std::vector<G4FieldTrack>& caloSteps,
+  auto extrapolateWithPCA(const std::vector<G4FieldTrack>& caloSteps,
                           float cylR,
                           float cylZ,
                           Vector3D& extPos,
-                          Vector3D& momDir) const;
+                          Vector3D& momDir) const -> bool;
   /// Returns true if the line segment spanned by hitPos1 and hitPos2 crosses
   /// the cylinder surface, false otherwise
-  static bool doesTravelThroughSurface(float cylR,
+  static auto doesTravelThroughSurface(float cylR,
                                        float cylZ,
                                        Vector3D& hitPos1,
-                                       Vector3D& hitPos2);
+                                       Vector3D& hitPos2) -> bool;
   /// Returns ID of more sensible intersection between line segment spanned by
   /// hitPos1 and hitPos2 and cylinder
-  int whichIntersection(float cylR,
-                        float cylZ,
-                        Vector3D& hitPos1,
-                        Vector3D& hitPos2,
-                        Vector3D& intersectionA,
-                        Vector3D intersectionB) const;
+  auto whichIntersection(float cylR,
+                         float cylZ,
+                         Vector3D& hitPos1,
+                         Vector3D& hitPos2,
+                         Vector3D& intersectionA,
+                         Vector3D intersectionB) const -> int;
   /// Analytically computes 2D intersections between circle of radius circR and
   /// (infinite) line spanned by pointA nad pointB
-  int circleLineIntersection2D(float circR,
-                               Vector3D& pointA,
-                               Vector3D& pointB,
-                               Vector3D& intersectA,
-                               Vector3D& intersectB) const;
+  auto circleLineIntersection2D(float circR,
+                                Vector3D& pointA,
+                                Vector3D& pointB,
+                                Vector3D& intersectA,
+                                Vector3D& intersectB) const -> int;
   /// Analytically computes the intersection between the (infinite) line defined
   /// by pointA and pointB and the cylinder cover (without endcaps)
-  int cylinderLineIntersection(float cylR,
-                               float cylZ,
-                               Vector3D& pointA,
-                               Vector3D& pointB,
-                               Vector3D& intersectA,
-                               Vector3D& intersectB) const;
+  auto cylinderLineIntersection(float cylR,
+                                float cylZ,
+                                Vector3D& pointA,
+                                Vector3D& pointB,
+                                Vector3D& intersectA,
+                                Vector3D& intersectB) const -> int;
   /// Checks if position of hitPos is inside, outside or on the cylinder bounds
-  static enum HITPOSITION whereOnCylinder(float cylR,
-                                          float cylZ,
-                                          Vector3D& hitPos);
+  static auto whereOnCylinder(float cylR, float cylZ, Vector3D& hitPos)
+      -> enum HITPOSITION;
   /// Projects position hitPos onto the cylinder surface and returns projected
   /// position
-  static Vector3D projectOnCylinder(float cylR, float cylZ, Vector3D& hitPos);
+  static auto projectOnCylinder(float cylR, float cylZ, Vector3D& hitPos)
+      -> Vector3D;
   /// Analytically computes the intersection between the (infinite) line spanned
   /// by hitPos1 and hitPos2 with a cylinder
-  CylinderIntersections getCylinderIntersections(float cylR,
-                                                 float cylZ,
-                                                 Vector3D& hitPos1,
-                                                 Vector3D& hitPos2) const;
+  auto getCylinderIntersections(float cylR,
+                                float cylZ,
+                                Vector3D& hitPos1,
+                                Vector3D& hitPos2) const
+      -> CylinderIntersections;
 
   auto get3DLinePCA(const Vector3D& posA,
                     const Vector3D& dirA,

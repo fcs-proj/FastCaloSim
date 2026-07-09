@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionHistogram_h
 #define ISF_FASTCALOSIMEVENT_TFCS1DFunctionHistogram_h
@@ -12,29 +12,33 @@
 class TFCS1DFunctionHistogram : public TFCS1DFunction
 {
 public:
-  TFCS1DFunctionHistogram() {};
+  TFCS1DFunctionHistogram() = default;
   TFCS1DFunctionHistogram(TH1* hist, double);
 
   void Initialize(TH1* hist, double);
 
   using TFCS1DFunction::rnd_to_fct;
-  virtual double rnd_to_fct(double rnd) const;
-  TH1* vector_to_histo();
-  double get_inverse(double rnd) const;
-  static double linear(double y1, double y2, double x1, double x2, double x);
-  static double non_linear(
-      double y1, double y2, double x1, double x2, double x);
+  auto rnd_to_fct(double rnd) const -> double override;
+  auto vector_to_histo() -> TH1*;
+  auto get_inverse(double rnd) const -> double;
+  static auto linear(double y1, double y2, double x1, double x2, double x)
+      -> double;
+  static auto non_linear(double y1, double y2, double x1, double x2, double x)
+      -> double;
 
-  static double get_maxdev(TH1*, TH1D*);
+  static auto get_maxdev(TH1*, TH1D*) -> double;
   void smart_rebin_loop(TH1* hist, double);
-  static double get_change(TH1*);
-  static TH1D* smart_rebin(TH1D*);
-  static std::unique_ptr<double[]> histo_to_array(TH1*);
-  static double sample_from_histo(TH1* hist, double);
-  double sample_from_histovalues(double);
+  static auto get_change(TH1*) -> double;
+  static auto smart_rebin(TH1D*) -> TH1D*;
+  static auto histo_to_array(TH1*) -> std::unique_ptr<double[]>;
+  static auto sample_from_histo(TH1* hist, double) -> double;
+  auto sample_from_histovalues(double) -> double;
 
-  const std::vector<float>& get_HistoBorders() const { return m_HistoBorders; };
-  const std::vector<float>& get_HistoContents() const
+  auto get_HistoBorders() const -> const std::vector<float>&
+  {
+    return m_HistoBorders;
+  };
+  auto get_HistoContents() const -> const std::vector<float>&
   {
     return m_HistoContents;
   };

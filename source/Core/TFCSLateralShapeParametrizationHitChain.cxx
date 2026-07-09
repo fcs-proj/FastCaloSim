@@ -34,7 +34,7 @@ TFCSLateralShapeParametrizationHitChain::
   m_chain.push_back(hitsim);
 }
 
-unsigned int TFCSLateralShapeParametrizationHitChain::size() const
+auto TFCSLateralShapeParametrizationHitChain::size() const -> unsigned int
 {
   if (m_number_of_hits_simul)
     return m_chain.size() + 1;
@@ -54,8 +54,8 @@ void TFCSLateralShapeParametrizationHitChain::push_back_init(
   ++m_ninit;
 }
 
-const TFCSParametrizationBase*
-TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind) const
+auto TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind) const
+    -> const TFCSParametrizationBase*
 {
   if (m_number_of_hits_simul) {
     if (ind == 0)
@@ -66,8 +66,8 @@ TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind) const
   }
 }
 
-TFCSParametrizationBase* TFCSLateralShapeParametrizationHitChain::operator[](
-    unsigned int ind)
+auto TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind)
+    -> TFCSParametrizationBase*
 {
   if (m_number_of_hits_simul) {
     if (ind == 0)
@@ -99,10 +99,10 @@ void TFCSLateralShapeParametrizationHitChain::set_daughter(
   }
 }
 
-int TFCSLateralShapeParametrizationHitChain::get_number_of_hits(
+auto TFCSLateralShapeParametrizationHitChain::get_number_of_hits(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> int
 {
   // TODO: should we still do it?
   if (m_number_of_hits_simul) {
@@ -120,7 +120,7 @@ int TFCSLateralShapeParametrizationHitChain::get_number_of_hits(
   return 1;
 }
 
-float TFCSLateralShapeParametrizationHitChain::getMinWeight() const
+auto TFCSLateralShapeParametrizationHitChain::getMinWeight() const -> float
 {
   for (TFCSLateralShapeParametrizationHitBase* hitsim : m_chain) {
     float weight = hitsim->getMinWeight();
@@ -130,7 +130,7 @@ float TFCSLateralShapeParametrizationHitChain::getMinWeight() const
   return -1.;
 }
 
-float TFCSLateralShapeParametrizationHitChain::getMaxWeight() const
+auto TFCSLateralShapeParametrizationHitChain::getMaxWeight() const -> float
 {
   for (TFCSLateralShapeParametrizationHitBase* hitsim : m_chain) {
     float weight = hitsim->getMaxWeight();
@@ -140,10 +140,10 @@ float TFCSLateralShapeParametrizationHitChain::getMaxWeight() const
   return -1.;
 }
 
-float TFCSLateralShapeParametrizationHitChain::get_E_hit(
+auto TFCSLateralShapeParametrizationHitChain::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> float
 {
   const int nhits = get_number_of_hits(simulstate, truth, extrapol);
 
@@ -168,10 +168,10 @@ float TFCSLateralShapeParametrizationHitChain::get_E_hit(
         / nhits;  // Otherwise, old definition of E_hit is used
 }
 
-float TFCSLateralShapeParametrizationHitChain::get_sigma2_fluctuation(
+auto TFCSLateralShapeParametrizationHitChain::get_sigma2_fluctuation(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> float
 {
   if (m_number_of_hits_simul) {
     double sigma2 = m_number_of_hits_simul->get_sigma2_fluctuation(
@@ -195,11 +195,11 @@ void TFCSLateralShapeParametrizationHitChain::PropagateMSGLevel(
     reset->setLevel(level);
 }
 
-FCSReturnCode TFCSLateralShapeParametrizationHitChain::init_hit(
+auto TFCSLateralShapeParametrizationHitChain::init_hit(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   hit.reset_center();
   if (get_nr_of_init() > 0) {
@@ -224,10 +224,10 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::init_hit(
   return FCSSuccess;
 }
 
-FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
+auto TFCSLateralShapeParametrizationHitChain::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   FCS_MSG::Level old_level = level();
   const bool debug = msgLvl(FCS_MSG::DEBUG);
@@ -366,12 +366,12 @@ FCSReturnCode TFCSLateralShapeParametrizationHitChain::simulate(
   return FCSSuccess;
 }
 
-bool TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
+auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol,
-    bool success) const
+    bool success) const -> bool
 {
   (void)truth;  // unused parameter
   (void)extrapol;  // unused parameter

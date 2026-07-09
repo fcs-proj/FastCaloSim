@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSHistoLateralShapeWeight_h
 #define TFCSHistoLateralShapeWeight_h
@@ -13,26 +13,26 @@ class TFCSHistoLateralShapeWeight
 public:
   TFCSHistoLateralShapeWeight(const char* name = nullptr,
                               const char* title = nullptr);
-  virtual ~TFCSHistoLateralShapeWeight();
+  ~TFCSHistoLateralShapeWeight() override;
 
   /// weight the energy of one hit in order to generate fluctuations
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
   /// Init from histogram. The integral of the histogram is used as number of
   /// expected hits to be generated
-  bool Initialize(TH1* hist);
+  auto Initialize(TH1* hist) -> bool;
 
-  TH1* getHistogram() const { return m_hist; };
+  auto getHistogram() const -> TH1* { return m_hist; };
 
-  virtual void Print(Option_t* option = "") const override;
+  void Print(Option_t* option = "") const override;
   virtual void setMinWeight(float minWeight) { m_minWeight = minWeight; }
   virtual void setMaxWeight(float maxWeight) { m_maxWeight = maxWeight; }
-  virtual float getMinWeight() const override;
-  virtual float getMaxWeight() const override;
+  auto getMinWeight() const -> float override;
+  auto getMaxWeight() const -> float override;
 
 protected:
   /// Histogram to be used for the shape simulation

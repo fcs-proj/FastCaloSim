@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <utility>
 
@@ -27,21 +27,21 @@ TFCSHistoLateralShapeWeight::~TFCSHistoLateralShapeWeight()
     delete m_hist;
 }
 
-float TFCSHistoLateralShapeWeight::getMinWeight() const
+auto TFCSHistoLateralShapeWeight::getMinWeight() const -> float
 {
   return m_minWeight;
 }
 
-float TFCSHistoLateralShapeWeight::getMaxWeight() const
+auto TFCSHistoLateralShapeWeight::getMaxWeight() const -> float
 {
   return m_maxWeight;
 }
 
-FCSReturnCode TFCSHistoLateralShapeWeight::simulate_hit(
+auto TFCSHistoLateralShapeWeight::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;
@@ -83,7 +83,7 @@ FCSReturnCode TFCSHistoLateralShapeWeight::simulate_hit(
   return FCSSuccess;
 }
 
-bool TFCSHistoLateralShapeWeight::Initialize(TH1* hist)
+auto TFCSHistoLateralShapeWeight::Initialize(TH1* hist) -> bool
 {
   if (!hist)
     return false;

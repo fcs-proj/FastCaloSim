@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <fstream>  // For checking if files exist
 #include <stdexcept>
@@ -40,7 +40,7 @@ void TFCSNetworkFactory::resolveGlobs(std::string& filename)
   };
 };
 
-bool TFCSNetworkFactory::isOnnxFile(std::string const& filename)
+auto TFCSNetworkFactory::isOnnxFile(std::string const& filename) -> bool
 {
   ISF_FCS::MLogging logger;
   const std::string ending = ".onnx";
@@ -56,8 +56,8 @@ bool TFCSNetworkFactory::isOnnxFile(std::string const& filename)
   return is_onnx;
 };
 
-std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
-    std::vector<char> const& input)
+auto TFCSNetworkFactory::create(std::vector<char> const& input)
+    -> std::unique_ptr<VNetworkBase>
 {
   ISF_FCS::MLogging logger;
   FCS_MSG_NOCLASS(
@@ -67,7 +67,8 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
   return created;
 };
 
-std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(std::string input)
+auto TFCSNetworkFactory::create(std::string input)
+    -> std::unique_ptr<VNetworkBase>
 {
   ISF_FCS::MLogging logger;
   resolveGlobs(input);
@@ -93,8 +94,8 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(std::string input)
   };
 };
 
-std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(std::string input,
-                                                         bool graph_form)
+auto TFCSNetworkFactory::create(std::string input, bool graph_form)
+    -> std::unique_ptr<VNetworkBase>
 {
   ISF_FCS::MLogging logger;
   resolveGlobs(input);
@@ -115,8 +116,9 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(std::string input,
   };
 };
 
-std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
-    std::vector<char> const& vector_input, std::string string_input)
+auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
+                                std::string string_input)
+    -> std::unique_ptr<VNetworkBase>
 {
   ISF_FCS::MLogging logger;
   FCS_MSG_NOCLASS(logger, "Given both bytes and a string to create an nn.");
@@ -137,10 +139,10 @@ std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
   };
 };
 
-std::unique_ptr<VNetworkBase> TFCSNetworkFactory::create(
-    std::vector<char> const& vector_input,
-    std::string string_input,
-    bool graph_form)
+auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
+                                std::string string_input,
+                                bool graph_form)
+    -> std::unique_ptr<VNetworkBase>
 {
   ISF_FCS::MLogging logger;
   FCS_MSG_NOCLASS(

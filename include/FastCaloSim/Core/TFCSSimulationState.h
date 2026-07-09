@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
 #define ISF_FASTCALOSIMEVENT_TFCSSimulationState_h
@@ -18,7 +18,8 @@ namespace CLHEP
 class HepRandomEngine;
 }
 
-constexpr std::uint32_t operator""_FCShash(char const* s, std::size_t count);
+constexpr auto operator""_FCShash(char const* s, std::size_t count)
+    -> std::uint32_t;
 
 class FASTCALOSIM_EXPORT TFCSSimulationState
     : public TObject
@@ -27,27 +28,27 @@ class FASTCALOSIM_EXPORT TFCSSimulationState
 public:
   TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine = nullptr);
 
-  CLHEP::HepRandomEngine* randomEngine() { return m_randomEngine; }
+  auto randomEngine() -> CLHEP::HepRandomEngine* { return m_randomEngine; }
   void setRandomEngine(CLHEP::HepRandomEngine* engine)
   {
     m_randomEngine = engine;
   }
 
-  bool is_valid() const { return m_Ebin >= 0; };
-  double E() const { return m_Etot; };
+  auto is_valid() const -> bool { return m_Ebin >= 0; };
+  auto E() const -> double { return m_Etot; };
   // NOTE: layers without energy are not stored in the maps; as for the
   // original array-based implementation, such layers read as 0 energy.
-  double E(int sample) const
+  auto E(int sample) const -> double
   {
     auto it = m_E.find(sample);
     return it != m_E.end() ? it->second : 0.;
   };
-  double Efrac(int sample) const
+  auto Efrac(int sample) const -> double
   {
     auto it = m_Efrac.find(sample);
     return it != m_Efrac.end() ? it->second : 0.;
   };
-  int Ebin() const { return m_Ebin; };
+  auto Ebin() const -> int { return m_Ebin; };
 
   void set_Ebin(int bin) { m_Ebin = bin; };
   void set_E(int sample, double Esample) { m_E[sample] = Esample; };
@@ -65,18 +66,18 @@ public:
   // maps the cell id to the energy deposited in the cell
   using cellmap = std::unordered_map<unsigned long long, float>;
 
-  cellmap& cells() { return m_cells; };
-  const cellmap& cells() const { return m_cells; };
+  auto cells() -> cellmap& { return m_cells; };
+  auto cells() const -> const cellmap& { return m_cells; };
 
   void deposit(const unsigned long long cell_id, float E);
 
-  void Print(Option_t* option = "") const;
+  void Print(Option_t* option = "") const override;
 
   // TODO: Remove explicit functions for SF here and use
   // getAuxInfo<double>("SF"_FCShash) and setAuxInfo<double>("SF"_FCShash,mysf)
   // directly in the energy parametrization
   void set_SF(double mysf) { setAuxInfo<double>("SF"_FCShash, mysf); };
-  double get_SF() { return getAuxInfo<double>("SF"_FCShash); }
+  auto get_SF() -> double { return getAuxInfo<double>("SF"_FCShash); }
 
   void clear();
 
@@ -126,17 +127,18 @@ public:
 
   // FNV-1a 32bit hashing algorithm that is evaluated during compile time
   // function taken from https://gist.github.com/Lee-R/3839813
-  static constexpr std::uint32_t fnv1a_32(char const* s, std::size_t count)
+  static constexpr auto fnv1a_32(char const* s, std::size_t count)
+      -> std::uint32_t
   {
     return ((count ? fnv1a_32(s, count - 1) : 2166136261u) ^ s[count])
         * 16777619u;
   }
   // Run time call for hash function
-  static std::uint32_t getAuxIndex(const std::string& s);
-  static std::uint32_t getAuxIndex(const char* s);
+  static auto getAuxIndex(const std::string& s) -> std::uint32_t;
+  static auto getAuxIndex(const char* s) -> std::uint32_t;
 
   // Check if some auxiliary information is stored
-  bool hasAuxInfo(std::uint32_t index) const
+  auto hasAuxInfo(std::uint32_t index) const -> bool
   {
     return m_AuxInfo.find(index) != m_AuxInfo.end();
   };
@@ -144,7 +146,7 @@ public:
   // Get auxiliary info
   // Use as TFCSSimulationState::getAuxInfo<int>(index)
   template<class T>
-  inline const T getAuxInfo(std::uint32_t index) const
+  inline auto getAuxInfo(std::uint32_t index) const -> const T
   {
     return static_cast<T>(m_AuxInfo.at(index));
   }
@@ -209,7 +211,8 @@ inline void TFCSSimulationState::AuxInfo_t::set<void*>(void* val)
 
 // Implementation of the compile time text hash operator that can be used for
 // human readable indices to the AuxInfo
-constexpr std::uint32_t operator""_FCShash(char const* s, std::size_t count)
+constexpr auto operator""_FCShash(char const* s, std::size_t count)
+    -> std::uint32_t
 {
   return TFCSSimulationState::fnv1a_32(s, count);
 }

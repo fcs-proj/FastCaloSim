@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 //////////////////////////////////////////////////////////////////
 // TFCSGANDetectorRegion.h, (c) ATLAS Detector software
@@ -20,31 +20,32 @@
 class TFCSGANXMLParameters : public ISF_FCS::MLogging
 {
 public:
-  typedef std::map<int, TH2D> Binning;
+  using Binning = std::map<int, TH2D>;
 
   TFCSGANXMLParameters();
-  virtual ~TFCSGANXMLParameters();
+  ~TFCSGANXMLParameters() override;
 
   void InitialiseFromXML(int pid,
                          int etaMid,
                          const std::string& FastCaloGANInputFolderName);
   void Print() const;
 
-  const std::vector<int>& GetRelevantLayers() const
+  auto GetRelevantLayers() const -> const std::vector<int>&
   {
     return m_relevantlayers;
   };
-  const Binning& GetBinning() const { return m_binning; };
-  int GetLatentSpaceSize() const { return m_latentDim; };
-  int GetGANVersion() const { return m_ganVersion; };
-  bool IsSymmetrisedAlpha() const { return m_symmetrisedAlpha; };
-  const std::string& GetInputFolder() const
+  auto GetBinning() const -> const Binning& { return m_binning; };
+  auto GetLatentSpaceSize() const -> int { return m_latentDim; };
+  auto GetGANVersion() const -> int { return m_ganVersion; };
+  auto IsSymmetrisedAlpha() const -> bool { return m_symmetrisedAlpha; };
+  auto GetInputFolder() const -> const std::string&
   {
     return m_fastCaloGANInputFolderName;
   };
 
 private:
-  static bool ReadBooleanAttribute(const std::string& name, xmlNodePtr node);
+  static auto ReadBooleanAttribute(const std::string& name, xmlNodePtr node)
+      -> bool;
 
   bool m_symmetrisedAlpha {};
   Binning m_binning;

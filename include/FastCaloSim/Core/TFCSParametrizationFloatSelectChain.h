@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationFloatSelectChain_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationFloatSelectChain_h
@@ -18,21 +18,21 @@ public:
       : TFCSParametrizationBinnedChain(ref)
       , m_bin_low_edge(1, 0) {};
 
-  virtual int push_back_in_bin(TFCSParametrizationBase* param,
-                               float low,
-                               float up);
+  virtual auto push_back_in_bin(TFCSParametrizationBase* param,
+                                float low,
+                                float up) -> int;
   /// Should not be used unless the bin boundaries are already defined!
-  virtual void push_back_in_bin(TFCSParametrizationBase* param,
-                                unsigned int bin) override;
+  void push_back_in_bin(TFCSParametrizationBase* param,
+                        unsigned int bin) override;
 
   // return -1 if outside range
-  int val_to_bin(float val) const;
+  auto val_to_bin(float val) const -> int;
 
-  virtual double get_bin_low_edge(int bin) const
+  virtual auto get_bin_low_edge(int bin) const -> double
   {
     return m_bin_low_edge[bin];
   };
-  virtual double get_bin_up_edge(int bin) const
+  virtual auto get_bin_up_edge(int bin) const -> double
   {
     return m_bin_low_edge[bin + 1];
   };

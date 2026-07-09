@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 
@@ -44,30 +44,32 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
   recalc();
 }
 
-int TFCSParametrizationBinnedChain::get_bin(TFCSSimulationState&,
-                                            const TFCSTruthState*,
-                                            const TFCSExtrapolationState*) const
+auto TFCSParametrizationBinnedChain::get_bin(
+    TFCSSimulationState&,
+    const TFCSTruthState*,
+    const TFCSExtrapolationState*) const -> int
 {
   return 0;
 }
 
-const std::string TFCSParametrizationBinnedChain::get_variable_text(
+auto TFCSParametrizationBinnedChain::get_variable_text(
     TFCSSimulationState&,
     const TFCSTruthState*,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> const std::string
 {
   return std::string("NO VARIABLE DEFINED");
 }
 
-const std::string TFCSParametrizationBinnedChain::get_bin_text(int bin) const
+auto TFCSParametrizationBinnedChain::get_bin_text(int bin) const
+    -> const std::string
 {
   return std::string(Form("bin %d", bin));
 }
 
-FCSReturnCode TFCSParametrizationBinnedChain::simulate(
+auto TFCSParametrizationBinnedChain::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   Int_t retry = 0;
   Int_t retry_warning = 1;

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSSimpleLWTNNHandler.h"
 
@@ -51,15 +51,16 @@ void TFCSSimpleLWTNNHandler::setupNet()
   FCS_MSG_DEBUG("Finished output nodes.");
 }
 
-std::vector<std::string> TFCSSimpleLWTNNHandler::getOutputLayers() const
+auto TFCSSimpleLWTNNHandler::getOutputLayers() const -> std::vector<std::string>
 {
   return m_outputLayers;
 };
 
 // This is implement the specific compute, and ensure the output is returned in
 // regular format. For LWTNN, that's easy.
-TFCSSimpleLWTNNHandler::NetworkOutputs TFCSSimpleLWTNNHandler::compute(
+auto TFCSSimpleLWTNNHandler::compute(
     TFCSSimpleLWTNNHandler::NetworkInputs const& inputs) const
+    -> TFCSSimpleLWTNNHandler::NetworkOutputs
 {
   FCS_MSG_DEBUG("Running computation on LWTNN neural network");
   FCS_MSG_DEBUG(VNetworkBase::representNetworkInputs(inputs, 20));

@@ -15,12 +15,12 @@ public:
       TFCSLateralShapeParametrizationHitBase* hitsim);
 
 protected:
-  virtual bool check_all_hits_simulated(
+  auto check_all_hits_simulated(
       TFCSLateralShapeParametrizationHitBase::Hit& hit,
       TFCSSimulationState& simulstate,
       const TFCSTruthState* truth,
       const TFCSExtrapolationState* extrapol,
-      bool success) const override;
+      bool success) const -> bool override;
 
 private:
   ClassDefOverride(TFCSLateralShapeParametrizationFixedHitChain,

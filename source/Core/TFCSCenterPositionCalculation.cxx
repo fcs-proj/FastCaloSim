@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSCenterPositionCalculation.h"
 
@@ -17,11 +17,11 @@ TFCSCenterPositionCalculation::TFCSCenterPositionCalculation(const char* name,
 {
 }
 
-FCSReturnCode TFCSCenterPositionCalculation::simulate_hit(
+auto TFCSCenterPositionCalculation::simulate_hit(
     Hit& hit,
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* extrapol)
+    const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
   const int cs = calosample();
 

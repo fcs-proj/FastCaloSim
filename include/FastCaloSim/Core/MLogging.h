@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_MLogging_h
 #define ISF_FASTCALOSIMEVENT_MLogging_h
@@ -38,7 +38,7 @@ namespace ISF_FCS
 {
 // We can define a number of macros here to replace standard FCS_MSG
 // macros. This can only be done outside Athena or the compiler complains.
-typedef std::ostream MsgStream;
+using MsgStream = std::ostream;
 
 #define FCS_MSG_LVL(enum_lvl, x) \
   do { \
@@ -75,38 +75,38 @@ class FASTCALOSIM_EXPORT MLogging
 {
 public:
   /// Constructor
-  MLogging() {};
+  MLogging() = default;
   /// Copy constructor
   MLogging(const MLogging& other)
       : m_level(other.m_level) {};
   /// Assignment operator
-  MLogging& operator=(MLogging other)
+  auto operator=(MLogging other) -> MLogging&
   {
     m_level = other.m_level;
     return *this;
   };
 
   /// Destructor
-  virtual ~MLogging() {};
+  virtual ~MLogging() = default;
 
   /// Retrieve output level
-  FCS_MSG::Level level() const { return m_level; }
+  auto level() const -> FCS_MSG::Level { return m_level; }
   /// Update outputlevel
   virtual void setLevel(int level);
 
   /// Make a message to decorate the start of logging
-  static std::string startMsg(FCS_MSG::Level lvl,
-                              const std::string& file,
-                              int line);
+  static auto startMsg(FCS_MSG::Level lvl, const std::string& file, int line)
+      -> std::string;
 
   /// Return a stream for sending messages directly (no decoration)
-  MsgStream& msg() const { return *m_msg; }
+  auto msg() const -> MsgStream& { return *m_msg; }
   /// Return a stream for sending messages (incomplete decoration)
-  MsgStream& msg(const FCS_MSG::Level lvl) const;
+  auto msg(const FCS_MSG::Level lvl) const -> MsgStream&;
   /// Return a decorated starting stream for sending messages
-  MsgStream& stream(FCS_MSG::Level lvl, std::string file, int line) const;
+  auto stream(FCS_MSG::Level lvl, std::string file, int line) const
+      -> MsgStream&;
   /// Check whether the logging system is active at the provided verbosity level
-  bool msgLvl(const FCS_MSG::Level lvl) const;
+  auto msgLvl(const FCS_MSG::Level lvl) const -> bool;
 
   /// Print a whole decorated log message and then end the line.
   void print(FCS_MSG::Level lvl,
@@ -115,15 +115,15 @@ public:
              std::string message) const;
 
   /// Update and end the line if we print this level
-  std::string streamerEndLine(FCS_MSG::Level lvl) const;
+  auto streamerEndLine(FCS_MSG::Level lvl) const -> std::string;
 
 private:
   /// Checking the state of the streamer.
-  bool streamerInLine() const { return m_streamer_in_line; }
+  auto streamerInLine() const -> bool { return m_streamer_in_line; }
   /// Update if a new start is happening.
   void streamerInLine(bool is_in_line) const;
   /// Check if a new start should be done (changed file or level)
-  bool streamerNeedStart(FCS_MSG::Level lvl, std::string file) const;
+  auto streamerNeedStart(FCS_MSG::Level lvl, std::string file) const -> bool;
 
   FCS_MSG::Level m_level = FCS_MSG::INFO;  //! Do not persistify!
 

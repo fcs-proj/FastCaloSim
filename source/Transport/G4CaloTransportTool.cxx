@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
 
@@ -29,7 +29,7 @@ G4CaloTransportTool::~G4CaloTransportTool()
   }
 }
 
-bool G4CaloTransportTool::initializeGeometry()
+auto G4CaloTransportTool::initializeGeometry() -> bool
 {
   // The world volume is shared by all threads' navigators and must be created
   // exactly once, on the master thread. getWorldVolume() registers a
@@ -72,7 +72,7 @@ bool G4CaloTransportTool::initializeGeometry()
   return m_worldVolume != nullptr;
 }
 
-bool G4CaloTransportTool::initializePropagator()
+auto G4CaloTransportTool::initializePropagator() -> bool
 {
   // The shared world volume must have been created on the master thread by
   // initializeGeometry() before any worker transports a particle. Each call
@@ -171,8 +171,8 @@ void G4CaloTransportTool::doStep(G4PropagatorInField& propagator,
   }
 }
 
-std::vector<G4FieldTrack> G4CaloTransportTool::transport(
-    const G4Track& G4InputTrack)
+auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
+    -> std::vector<G4FieldTrack>
 {
   // Create a vector to store the output steps
   std::vector<G4FieldTrack> outputStepVector;

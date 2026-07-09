@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -20,7 +20,7 @@ void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const
   value[0] = rnd_to_fct(rnd[0]);
 }
 
-double TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1)
+auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
 {
   TH1D* h_input = (TH1D*)h_input1->Clone("h_input");
   TH1D* h_approx = (TH1D*)h_approx1->Clone("h_approx");
@@ -58,8 +58,9 @@ double TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1)
   return maxdev * 100.0;
 }
 
-double TFCS1DFunction::CheckAndIntegrate1DHistogram(
+auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
     const TH1* hist, std::vector<double>& integral_vec, int& first, int& last)
+    -> double
 {
   ISF_FCS::MLogging logger;
   Int_t nbins = hist->GetNbinsX();
@@ -102,10 +103,8 @@ double TFCS1DFunction::CheckAndIntegrate1DHistogram(
   return integral;
 }
 
-TH1* TFCS1DFunction::generate_histogram_random_slope(int nbinsx,
-                                                     double xmin,
-                                                     double xmax,
-                                                     double zerothreshold)
+auto TFCS1DFunction::generate_histogram_random_slope(
+    int nbinsx, double xmin, double xmax, double zerothreshold) -> TH1*
 {
   TH1* hist = new TH1D("test_slope1D", "test_slope1D", nbinsx, xmin, xmax);
   hist->Sumw2();
@@ -119,8 +118,9 @@ TH1* TFCS1DFunction::generate_histogram_random_slope(int nbinsx,
   return hist;
 }
 
-TH1* TFCS1DFunction::generate_histogram_random_gauss(
+auto TFCS1DFunction::generate_histogram_random_gauss(
     int nbinsx, int ntoy, double xmin, double xmax, double xpeak, double sigma)
+    -> TH1*
 {
   TH1* hist = new TH1D("test_gauss1D", "test_gauss1D", nbinsx, xmin, xmax);
   hist->Sumw2();

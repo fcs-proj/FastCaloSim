@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H
 #define G4ATLASTOOLS_G4CALOTRANSPORTTOOL_H
@@ -33,14 +33,14 @@ public:
   /// per-thread data for the world volume correctly sized across all workers.
   /// Idempotent: guarded by m_worldVolumeOnceFlag. Returns true on success
   /// (i.e. a valid world volume is available).
-  bool initializeGeometry();
+  auto initializeGeometry() -> bool;
 
   // Confirm that the current thread is ready to transport particles. Requires
   // initializeGeometry() to have run (on the master thread) first; returns
   // false if the shared world volume is not available. transport() builds its
   // own navigator/propagator per call, so this no longer caches any per-thread
   // state; it is kept as an explicit readiness check for callers.
-  bool initializePropagator();
+  auto initializePropagator() -> bool;
 
   // Transport input track through the geometry
   auto transport(const G4Track& G4InputTrack) -> std::vector<G4FieldTrack>;

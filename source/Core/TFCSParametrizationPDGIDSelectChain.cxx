@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 
@@ -24,10 +24,10 @@ void TFCSParametrizationPDGIDSelectChain::recalc()
   chain().shrink_to_fit();
 }
 
-FCSReturnCode TFCSParametrizationPDGIDSelectChain::simulate(
+auto TFCSParametrizationPDGIDSelectChain::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   Int_t retry = 0;
   Int_t retry_warning = 1;

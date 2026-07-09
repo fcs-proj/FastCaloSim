@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationPiecewiseLinear_h
 #define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationPiecewiseLinear_h
@@ -23,15 +23,15 @@ public:
                  ///< should only be scaled by the spline
   };
 
-  bool OnlyScaleEnergy() const { return TestBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
   void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
   void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
+  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
   };
-  virtual bool is_match_calosample(int /*calosample*/) const override
+  auto is_match_calosample(int /*calosample*/) const -> bool override
   {
     return true;
   };
@@ -43,12 +43,12 @@ public:
                            const Double_t Ekin[],
                            const Double_t response[]);
 
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
-  double evaluate(const double& Ekin) const;
+  auto evaluate(const double& Ekin) const -> double;
 
   void Print(Option_t* option = "") const override;
 

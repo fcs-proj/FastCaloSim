@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSLateralShapeTuning.h"
 
@@ -26,8 +26,9 @@ TFCSLateralShapeTuning::~TFCSLateralShapeTuning()
   m_parameterInterpol.clear();
 }
 
-FCSReturnCode TFCSLateralShapeTuning::initFromModelFile(
+auto TFCSLateralShapeTuning::initFromModelFile(
     const std::string& pathToModelParameters, int intMinEta, int intMaxEta)
+    -> FCSReturnCode
 {
   // get current calo layer
   int layer = TFCSLateralShapeParametrization::calosample();
@@ -77,8 +78,8 @@ FCSReturnCode TFCSLateralShapeTuning::initFromModelFile(
   return FCSSuccess;
 }
 
-FCSReturnCode TFCSLateralShapeTuning::initFromMap(
-    const interpolationMap& interpolationMap)
+auto TFCSLateralShapeTuning::initFromMap(
+    const interpolationMap& interpolationMap) -> FCSReturnCode
 {
   FCS_MSG_DEBUG(
       "[TFCSLateralShapeTuning] Initializing data tuning model from "
@@ -87,11 +88,11 @@ FCSReturnCode TFCSLateralShapeTuning::initFromMap(
   return FCSSuccess;
 }
 
-FCSReturnCode TFCSLateralShapeTuning::simulate_hit(
-    Hit& hit,
-    TFCSSimulationState&,
-    const TFCSTruthState* truth,
-    const TFCSExtrapolationState*)
+auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
+                                          TFCSSimulationState&,
+                                          const TFCSTruthState* truth,
+                                          const TFCSExtrapolationState*)
+    -> FCSReturnCode
 {
   // do not do anything if the parameter interpolation map is empty
   // this means we are in an pseudorapidity region, where no tuning to data is
@@ -177,8 +178,9 @@ FCSReturnCode TFCSLateralShapeTuning::simulate_hit(
   return FCSSuccess;
 }
 
-double TFCSLateralShapeTuning::getSeriesScalingFactor(
+auto TFCSLateralShapeTuning::getSeriesScalingFactor(
     double a0, double a1, double a2, double a3, double distToShowerCenter)
+    -> double
 {
   double meanDistToShowerCentre = 0.0039;
   double scaleFactor = 1 + a0 + a1 * distToShowerCenter / meanDistToShowerCentre

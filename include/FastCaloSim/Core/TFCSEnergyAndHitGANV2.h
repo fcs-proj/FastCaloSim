@@ -26,21 +26,21 @@ public:
                         const char* title = nullptr,
                         CaloGeo* geo = nullptr);
 
-  virtual void set_geometry(CaloGeo* geo) override
+  void set_geometry(CaloGeo* geo) override
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
   };
 
-  virtual ~TFCSEnergyAndHitGANV2();
+  ~TFCSEnergyAndHitGANV2() override;
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
+  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
   };
-  virtual bool is_match_calosample(int calosample) const override;
-  virtual bool is_match_all_Ekin_bin() const override { return true; };
-  virtual bool is_match_all_calosample() const override { return false; };
+  auto is_match_calosample(int calosample) const -> bool override;
+  auto is_match_all_Ekin_bin() const -> bool override { return true; };
+  auto is_match_all_calosample() const -> bool override { return false; };
 
   /// Status bit for chain persistency
   enum FCSGANfreemem
@@ -50,7 +50,7 @@ public:
                  ///< m_input should be freed after reading in athena
   };
 
-  bool GANfreemem() const { return TestBit(kGANfreemem); };
+  auto GANfreemem() const -> bool { return TestBit(kGANfreemem); };
   void set_GANfreemem() { SetBit(kGANfreemem); };
   void reset_GANfreemem() { ResetBit(kGANfreemem); };
 
@@ -62,47 +62,48 @@ public:
                  ///< should only be scaled by the GAN
   };
 
-  bool OnlyScaleEnergy() const { return TestBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
   void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
   void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
 
   /// use the layer to be done as binning of the GAN chain
-  virtual int get_bin(TFCSSimulationState& simulstate,
-                      const TFCSTruthState*,
-                      const TFCSExtrapolationState*) const override
+  auto get_bin(TFCSSimulationState& simulstate,
+               const TFCSTruthState*,
+               const TFCSExtrapolationState*) const -> int override
   {
     return simulstate.getAuxInfo<int>("GANlayer"_FCShash);
   };
-  virtual const std::string get_variable_text(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState*,
-      const TFCSExtrapolationState*) const override;
+  auto get_variable_text(TFCSSimulationState& simulstate,
+                         const TFCSTruthState*,
+                         const TFCSExtrapolationState*) const
+      -> const std::string override;
 
-  unsigned int get_nr_of_init(unsigned int bin) const;
+  auto get_nr_of_init(unsigned int bin) const -> unsigned int;
   void set_nr_of_init(unsigned int bin, unsigned int ninit);
 
-  const TFCSGANXMLParameters::Binning& get_Binning() const
+  auto get_Binning() const -> const TFCSGANXMLParameters::Binning&
   {
     return m_param.GetBinning();
   };
-  const TFCSGANEtaSlice::ExtrapolatorWeights& get_ExtrapolationWeights() const
+  auto get_ExtrapolationWeights() const
+      -> const TFCSGANEtaSlice::ExtrapolatorWeights&
   {
     return m_slice->GetExtrapolatorWeights();
   };
 
-  bool initializeNetwork(int const& pid,
+  auto initializeNetwork(int const& pid,
                          int const& etaMin,
-                         const std::string& FastCaloGANInputFolderName);
+                         const std::string& FastCaloGANInputFolderName) -> bool;
 
-  bool fillEnergy(TFCSSimulationState& simulstate,
+  auto fillEnergy(TFCSSimulationState& simulstate,
                   const TFCSTruthState* truth,
-                  const TFCSExtrapolationState* extrapol) const;
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+                  const TFCSExtrapolationState* extrapol) const -> bool;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
-  virtual void Print(Option_t* option = "") const override;
+  void Print(Option_t* option = "") const override;
 
 protected:
   CaloGeo* m_geo;  //! do not persistify
@@ -112,8 +113,8 @@ protected:
                                 std::string FastCaloGANInputFolderName);
 
 private:
-  static int GetBinsInFours(double const bins);
-  int GetAlphaBinsForRBin(const TAxis* x, int ix, int yBinNum) const;
+  static auto GetBinsInFours(double const bins) -> int;
+  auto GetAlphaBinsForRBin(const TAxis* x, int ix, int yBinNum) const -> int;
 
   std::vector<int> m_bin_ninit;
 

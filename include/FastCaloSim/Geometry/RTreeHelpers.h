@@ -1,4 +1,4 @@
-// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #pragma once
 
 #include <array>
@@ -19,7 +19,7 @@ enum class CoordinateSystem
 };
 
 // Normalize phi angle to [-π, π)
-inline double norm_phi(double angle)
+inline auto norm_phi(double angle) -> double
 {
   angle = std::fmod(angle + M_PI, 2.0 * M_PI);
   if (angle < 0)
@@ -28,10 +28,11 @@ inline double norm_phi(double angle)
 }
 
 // Create bounding boxes for eta-phi coordinates
-inline std::vector<std::array<double, 4>> build_eta_phi_boxes(double eta,
-                                                              double phi,
-                                                              double deta,
-                                                              double dphi)
+inline auto build_eta_phi_boxes(double eta,
+                                double phi,
+                                double deta,
+                                double dphi)
+    -> std::vector<std::array<double, 4>>
 {
   double half_deta = deta / 2.0;
   double half_dphi = dphi / 2.0;
@@ -52,10 +53,8 @@ inline std::vector<std::array<double, 4>> build_eta_phi_boxes(double eta,
 }
 
 // Create bounding box for x-y coordinates
-inline std::array<double, 4> build_xy_box(double x,
-                                          double y,
-                                          double dx,
-                                          double dy)
+inline auto build_xy_box(double x, double y, double dx, double dy)
+    -> std::array<double, 4>
 {
   double half_dx = dx / 2.0;
   double half_dy = dy / 2.0;

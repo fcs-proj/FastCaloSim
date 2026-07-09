@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 
@@ -20,10 +20,10 @@ TFCSEnergyInterpolationLinear::TFCSEnergyInterpolationLinear(const char* name,
 {
 }
 
-FCSReturnCode TFCSEnergyInterpolationLinear::simulate(
+auto TFCSEnergyInterpolationLinear::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> FCSReturnCode
 {
   const float Emean = m_slope * truth->Ekin() + m_offset;
 

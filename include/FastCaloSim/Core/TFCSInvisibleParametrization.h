@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSInvisibleParametrization_h
 #define ISF_FASTCALOSIMEVENT_TFCSInvisibleParametrization_h
@@ -12,19 +12,19 @@ public:
                                const char* title = nullptr)
       : TFCSParametrization(name, title) {};
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
+  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
   };
-  virtual bool is_match_calosample(int /*calosample*/) const override
+  auto is_match_calosample(int /*calosample*/) const -> bool override
   {
     return true;
   };
 
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
 private:
   ClassDefOverride(TFCSInvisibleParametrization,

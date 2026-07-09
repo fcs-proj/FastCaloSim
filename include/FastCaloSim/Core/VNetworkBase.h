@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 /**
  *
@@ -74,7 +74,7 @@ public:
 
   // virtual destructor, to ensure that it is always called, even
   // when a base class is deleted via a pointer to a derived class
-  virtual ~VNetworkBase();
+  ~VNetworkBase() override;
 
   // same as for lwtnn
   /**
@@ -89,7 +89,7 @@ public:
    * as parts of nodes do not always have the ability to carry
    * real string labels.
    **/
-  typedef std::map<std::string, std::map<std::string, double>> NetworkInputs;
+  using NetworkInputs = std::map<std::string, std::map<std::string, double>>;
   /**
    * @brief Format for network outputs.
    *
@@ -99,7 +99,7 @@ public:
    * a number to indicate which part of the node they came from.
    * So in multi-value nodes the format becomes "<node_name>_<part_n>"
    **/
-  typedef std::map<std::string, double> NetworkOutputs;
+  using NetworkOutputs = std::map<std::string, double>;
 
   /**
    * @brief String representation of network inputs
@@ -111,8 +111,8 @@ public:
    * @param maxValues  maximum number of values to include in the representation
    * @return           string represetning the inputs
    **/
-  static std::string representNetworkInputs(NetworkInputs const& inputs,
-                                            int maxValues = 3);
+  static auto representNetworkInputs(NetworkInputs const& inputs,
+                                     int maxValues = 3) -> std::string;
 
   /**
    * @brief String representation of network outputs
@@ -124,8 +124,8 @@ public:
    * @param maxValues  maximum number of values to include in the representation
    * @return           string represetning the outputs
    **/
-  static std::string representNetworkOutputs(NetworkOutputs const& outputs,
-                                             int maxValues = 3);
+  static auto representNetworkOutputs(NetworkOutputs const& outputs,
+                                      int maxValues = 3) -> std::string;
 
   // pure virtual, derived classes must implement this
   /**
@@ -140,7 +140,7 @@ public:
    * @see VNetworkBase::NetworkInputs
    * @see VNetworkBase::NetworkOutputs
    **/
-  virtual NetworkOutputs compute(NetworkInputs const& inputs) const = 0;
+  virtual auto compute(NetworkInputs const& inputs) const -> NetworkOutputs = 0;
 
   // Conversion to ostream
   // It's not possible to have a virtual friend function
@@ -153,8 +153,8 @@ public:
    * This can be altered by subclasses by changing the protected
    * print function of this class.
    **/
-  friend std::ostream& operator<<(std::ostream& strm,
-                                  const VNetworkBase& vNetworkBase)
+  friend auto operator<<(std::ostream& strm, const VNetworkBase& vNetworkBase)
+      -> std::ostream&
   {
     vNetworkBase.print(strm);
     return strm;
@@ -207,7 +207,7 @@ public:
    * returns the list of all strings that will index the outputs.
    *
    **/
-  virtual std::vector<std::string> getOutputLayers() const = 0;
+  virtual auto getOutputLayers() const -> std::vector<std::string> = 0;
 
   /**
    * @brief Check if a string is the path of a file on disk.
@@ -218,7 +218,7 @@ public:
    * @param inputFile  name of the pottential file
    * @return           is it a readable file on disk
    **/
-  static bool isFile(std::string const& inputFile);
+  static auto isFile(std::string const& inputFile) -> bool;
 
   /**
    * @brief Check if the argument inputFile is the path of a file on disk.
@@ -229,7 +229,7 @@ public:
    *
    * @return           is it a readable file on disk
    **/
-  bool isFile() const;
+  auto isFile() const -> bool;
 
   /**
    * @brief Get rid of any memory objects that aren't needed to run the net.
@@ -289,7 +289,7 @@ protected:
    *                   if blank, m_inputFile is used.
    * @return           is it the path of a root file
    **/
-  bool isRootFile(std::string const& filename = "") const;
+  auto isRootFile(std::string const& filename = "") const -> bool;
 
   /**
    * @brief Remove any common prefix from the outputs.

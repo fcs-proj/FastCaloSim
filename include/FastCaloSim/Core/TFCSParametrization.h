@@ -1,7 +1,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrization_h
 #  define ISF_FASTCALOSIMEVENT_TFCSParametrization_h
@@ -14,37 +14,37 @@ public:
   TFCSParametrization(const char* name = nullptr, const char* title = nullptr);
   void clear();
 
-  virtual bool is_match_pdgid(int id) const override
+  auto is_match_pdgid(int id) const -> bool override
   {
     return TestBit(kMatchAllPDGID) || m_pdgid.find(id) != m_pdgid.end();
   };
-  virtual bool is_match_Ekin(float Ekin) const override
+  auto is_match_Ekin(float Ekin) const -> bool override
   {
     return (Ekin >= m_Ekin_min) && (Ekin < m_Ekin_max);
   };
-  virtual bool is_match_eta(float eta) const override
+  auto is_match_eta(float eta) const -> bool override
   {
     return (eta >= m_eta_min) && (eta < m_eta_max);
   };
 
-  virtual bool is_match_all_Ekin() const override
+  auto is_match_all_Ekin() const -> bool override
   {
     return Ekin_min() == init_Ekin_min && Ekin_max() == init_Ekin_max;
   };
-  virtual bool is_match_all_eta() const override
+  auto is_match_all_eta() const -> bool override
   {
     return eta_min() == init_eta_min && eta_max() == init_eta_max;
   };
-  virtual bool is_match_all_Ekin_bin() const override { return true; };
-  virtual bool is_match_all_calosample() const override { return true; };
+  auto is_match_all_Ekin_bin() const -> bool override { return true; };
+  auto is_match_all_calosample() const -> bool override { return true; };
 
-  const std::set<int>& pdgid() const override { return m_pdgid; };
-  double Ekin_nominal() const override { return m_Ekin_nominal; };
-  double Ekin_min() const override { return m_Ekin_min; };
-  double Ekin_max() const override { return m_Ekin_max; };
-  double eta_nominal() const override { return m_eta_nominal; };
-  double eta_min() const override { return m_eta_min; };
-  double eta_max() const override { return m_eta_max; };
+  auto pdgid() const -> const std::set<int>& override { return m_pdgid; };
+  auto Ekin_nominal() const -> double override { return m_Ekin_nominal; };
+  auto Ekin_min() const -> double override { return m_Ekin_min; };
+  auto Ekin_max() const -> double override { return m_Ekin_max; };
+  auto eta_nominal() const -> double override { return m_eta_nominal; };
+  auto eta_min() const -> double override { return m_eta_min; };
+  auto eta_max() const -> double override { return m_eta_max; };
 
   virtual void set_pdgid(int id);
   virtual void set_pdgid(const std::set<int>& ids);
@@ -64,7 +64,7 @@ public:
   virtual void set_pdgid_Ekin_eta(const TFCSParametrizationBase& ref);
 
 protected:
-  bool compare(const TFCSParametrizationBase& ref) const;
+  auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:
   std::set<int> m_pdgid;

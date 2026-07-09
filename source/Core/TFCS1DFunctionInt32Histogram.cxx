@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
 #include <iostream>
@@ -59,7 +59,7 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
   }
 }
 
-double TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const
+auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
 {
   if (m_HistoContents.empty()) {
     return 0;
@@ -88,7 +88,8 @@ double TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const
   }
 }
 
-bool TFCS1DFunctionInt32Histogram::operator==(const TFCS1DFunction& ref) const
+auto TFCS1DFunctionInt32Histogram::operator==(const TFCS1DFunction& ref) const
+    -> bool
 {
   if (IsA() != ref.IsA())
     return false;

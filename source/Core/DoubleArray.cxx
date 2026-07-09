@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/DoubleArray.h"
 
@@ -13,6 +13,6 @@ DoubleArray::DoubleArray(int n)
 {
 }
 
-DoubleArray::DoubleArray() {}
+DoubleArray::DoubleArray() = default;
 
-DoubleArray::~DoubleArray() {}
+DoubleArray::~DoubleArray() = default;

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSInitWithEkin.h"
 
@@ -15,9 +15,10 @@ TFCSInitWithEkin::TFCSInitWithEkin(const char* name, const char* title)
   set_match_all_pdgid();
 }
 
-FCSReturnCode TFCSInitWithEkin::simulate(TFCSSimulationState& simulstate,
-                                         const TFCSTruthState* truth,
-                                         const TFCSExtrapolationState*) const
+auto TFCSInitWithEkin::simulate(TFCSSimulationState& simulstate,
+                                const TFCSTruthState* truth,
+                                const TFCSExtrapolationState*) const
+    -> FCSReturnCode
 {
   FCS_MSG_DEBUG("set E to Ekin=" << truth->Ekin());
   simulstate.set_E(truth->Ekin());

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 //////////////////////////////////////////////////////////////////
 // TFCSGANEtaSlice.h, (c) ATLAS Detector software
@@ -32,27 +32,31 @@ public:
                   int etaMin,
                   int etaMax,
                   const TFCSGANXMLParameters& param);
-  virtual ~TFCSGANEtaSlice();
+  ~TFCSGANEtaSlice() override;
 
   TFCSGANEtaSlice(const TFCSGANEtaSlice&) = delete;
-  TFCSGANEtaSlice& operator=(const TFCSGANEtaSlice&) = delete;
+  auto operator=(const TFCSGANEtaSlice&) -> TFCSGANEtaSlice& = delete;
 
-  typedef std::map<int, std::vector<double>> FitResultsPerLayer;
-  typedef std::map<int, double> ExtrapolatorWeights;
-  typedef std::map<std::string, std::map<std::string, double>> NetworkInputs;
-  typedef std::map<std::string, double> NetworkOutputs;
+  using FitResultsPerLayer = std::map<int, std::vector<double>>;
+  using ExtrapolatorWeights = std::map<int, double>;
+  using NetworkInputs = std::map<std::string, std::map<std::string, double>>;
+  using NetworkOutputs = std::map<std::string, double>;
 
-  bool LoadGAN();
+  auto LoadGAN() -> bool;
   void CalculateMeanPointFromDistributionOfR();
   void ExtractExtrapolatorMeansFromInputs();
 
-  NetworkOutputs GetNetworkOutputs(const TFCSTruthState* truth,
-                                   const TFCSExtrapolationState* extrapol,
-                                   TFCSSimulationState& simulstate) const;
+  auto GetNetworkOutputs(const TFCSTruthState* truth,
+                         const TFCSExtrapolationState* extrapol,
+                         TFCSSimulationState& simulstate) const
+      -> NetworkOutputs;
 
-  bool IsGanCorrectlyLoaded() const;
-  const FitResultsPerLayer& GetFitResults() const { return m_allFitResults; }
-  const ExtrapolatorWeights& GetExtrapolatorWeights() const
+  auto IsGanCorrectlyLoaded() const -> bool;
+  auto GetFitResults() const -> const FitResultsPerLayer&
+  {
+    return m_allFitResults;
+  }
+  auto GetExtrapolatorWeights() const -> const ExtrapolatorWeights&
   {
     return m_extrapolatorWeights;
   }
@@ -79,12 +83,13 @@ private:
   std::unique_ptr<VNetworkBase> m_net_low = nullptr;
   std::unique_ptr<VNetworkBase> m_net_high = nullptr;
   // getters so that we are insensitive to where the data actually is
-  VNetworkBase* GetNetAll() const;
-  VNetworkBase* GetNetLow() const;
-  VNetworkBase* GetNetHigh() const;
+  auto GetNetAll() const -> VNetworkBase*;
+  auto GetNetLow() const -> VNetworkBase*;
+  auto GetNetHigh() const -> VNetworkBase*;
 
-  bool LoadGANNoRange(std::string inputFileName);
-  bool LoadGANFromRange(std::string inputFileName, std::string energyRange);
+  auto LoadGANNoRange(std::string inputFileName) -> bool;
+  auto LoadGANFromRange(std::string inputFileName, std::string energyRange)
+      -> bool;
 
   TFCSGANXMLParameters m_param;
 

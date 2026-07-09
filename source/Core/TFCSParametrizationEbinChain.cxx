@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSParametrizationEbinChain.h"
 
@@ -10,10 +10,10 @@
 //======= TFCSParametrizationEbinChain =========
 //=============================================
 
-const std::string TFCSParametrizationEbinChain::get_variable_text(
+auto TFCSParametrizationEbinChain::get_variable_text(
     TFCSSimulationState& simulstate,
     const TFCSTruthState*,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> const std::string
 {
   return std::string(Form("Ebin=%d", simulstate.Ebin()));
 }

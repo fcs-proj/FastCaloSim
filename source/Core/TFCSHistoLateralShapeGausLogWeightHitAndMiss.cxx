@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeGausLogWeightHitAndMiss.h"
 
@@ -21,15 +21,13 @@ TFCSHistoLateralShapeGausLogWeightHitAndMiss::
 }
 
 TFCSHistoLateralShapeGausLogWeightHitAndMiss::
-    ~TFCSHistoLateralShapeGausLogWeightHitAndMiss()
-{
-}
+    ~TFCSHistoLateralShapeGausLogWeightHitAndMiss() = default;
 
-FCSReturnCode TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
+auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;
