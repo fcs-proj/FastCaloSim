@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 
@@ -10,15 +10,12 @@
 #include "TAxis.h"
 #include "TGraph.h"
 
-namespace Gaudi
-{
-namespace Units
+namespace Gaudi::Units
 {
 constexpr double megaelectronvolt = 1.;
 constexpr double kiloelectronvolt = 1.e-3 * megaelectronvolt;
 constexpr double keV = kiloelectronvolt;
-}  // namespace Units
-}  // namespace Gaudi
+}  // namespace Gaudi::Units
 
 //=============================================
 //======= TFCSEnergyInterpolation =========
@@ -30,10 +27,10 @@ TFCSEnergyInterpolationHistogram::TFCSEnergyInterpolationHistogram(
 {
 }
 
-FCSReturnCode TFCSEnergyInterpolationHistogram::simulate(
+auto TFCSEnergyInterpolationHistogram::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> FCSReturnCode
 {
   float Emean;
   float Einit;

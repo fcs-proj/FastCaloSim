@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateInterpolationExpHistogram_h
 #define ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateInterpolationExpHistogram_h
@@ -32,10 +32,10 @@ public:
   /// and returns function value according to a histogram distribution.
   /// An exponential interpolation is done within each bin
 
-  virtual void rnd_to_fct(float& valuex,
-                          float& valuey,
-                          float rnd,
-                          float rnd2) const
+  void rnd_to_fct(float& valuex,
+                  float& valuey,
+                  float rnd,
+                  float rnd2) const override
   {
     size_t nbins = get_nbins();
     if (nbins == 0) {

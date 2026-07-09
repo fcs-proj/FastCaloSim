@@ -1,10 +1,10 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
-inline FCSReturnCode TFCSParametrizationChain::simulate_and_retry(
+inline auto TFCSParametrizationChain::simulate_and_retry(
     TFCSParametrizationBase *parametrization, TFCSSimulationState &simulstate,
-    const TFCSTruthState *truth, const TFCSExtrapolationState *extrapol) const {
+    const TFCSTruthState *truth, const TFCSExtrapolationState *extrapol) const -> FCSReturnCode {
   int retry_warning = 1;
   int retry = 0;
   for (int i = 0; i <= retry; i++) {

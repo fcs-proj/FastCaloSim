@@ -19,32 +19,32 @@ class TFCSVoxelHistoLateralCovarianceFluctuations
 public:
   TFCSVoxelHistoLateralCovarianceFluctuations(const char* name = nullptr,
                                               const char* title = nullptr);
-  virtual ~TFCSVoxelHistoLateralCovarianceFluctuations();
+  ~TFCSVoxelHistoLateralCovarianceFluctuations() override;
 
-  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
-  CaloGeo* get_geometry() { return m_geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  auto get_geometry() -> CaloGeo* { return m_geo; };
 
-  bool initialize(TFile* inputfile, const std::string& folder);
+  auto initialize(TFile* inputfile, const std::string& folder) -> bool;
 
   /// create one fluctuated shape for a shower to be applied as scale factor to
   /// the average shape Store the fluctuation in simulstate
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
   /// weight the energy of one hit by the fluctuation calculated in
   /// simulate(...)
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
 protected:
   CaloGeo* m_geo = nullptr;  //! do not persistify
 
-  typedef std::vector<std::vector<float>> weight_t;
+  using weight_t = std::vector<std::vector<float>>;
 
   std::vector<std::vector<std::vector<TFCS1DFunction*>>> m_transform;
 

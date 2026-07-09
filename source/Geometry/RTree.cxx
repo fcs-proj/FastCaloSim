@@ -1,4 +1,4 @@
-// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #include <stdexcept>
 
 #include "FastCaloSim/Geometry/RTree.h"

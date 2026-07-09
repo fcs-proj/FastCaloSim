@@ -16,7 +16,7 @@ class TFCSMLCalorimeterSimulator : public ISF_FCS::MLogging
 {
 public:
   TFCSMLCalorimeterSimulator();
-  virtual ~TFCSMLCalorimeterSimulator();
+  ~TFCSMLCalorimeterSimulator() override;
 
   struct layer_t
   {
@@ -29,17 +29,16 @@ public:
     std::vector<layer_t> event_data;
   };
 
-  bool loadSimulator(const std::string& filename);
+  auto loadSimulator(const std::string& filename) -> bool;
 
   void Print() const;
 
-  VNetworkBase::NetworkOutputs predictVoxels(TFCSSimulationState& simulstate,
-                                             float eta,
-                                             float energy) const;
-  event_t getEvent(TFCSSimulationState& simulstate,
-                   float eta,
-                   float energy) const;
-  VNetworkBase::NetworkOutputs predictVoxels() const;
+  auto predictVoxels(TFCSSimulationState& simulstate,
+                     float eta,
+                     float energy) const -> VNetworkBase::NetworkOutputs;
+  auto getEvent(TFCSSimulationState& simulstate, float eta, float energy) const
+      -> event_t;
+  auto predictVoxels() const -> VNetworkBase::NetworkOutputs;
 
   void setInputShapes(std::vector<long unsigned int> layer_boundaries,
                       std::vector<long unsigned int> used_layers)

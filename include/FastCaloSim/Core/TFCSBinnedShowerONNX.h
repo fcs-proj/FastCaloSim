@@ -30,13 +30,13 @@ public:
     std::vector<float> alpha_size;
   };
 
-  typedef std::vector<layer_bins_t> event_bins_t;
+  using event_bins_t = std::vector<layer_bins_t>;
 
   TFCSBinnedShowerONNX(const char* name = nullptr, const char* title = nullptr);
 
-  virtual ~TFCSBinnedShowerONNX();
+  ~TFCSBinnedShowerONNX() override;
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
+  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
   };
@@ -45,7 +45,7 @@ public:
   void disable_upscaling() { m_use_upscaling = false; };
 
   // Loads the ONNX model for the calorimeter simulation.
-  bool load_simulator(const std::string& filename)
+  auto load_simulator(const std::string& filename) -> bool
   {
     if (m_ai_simulator) {
       delete m_ai_simulator;
@@ -75,20 +75,20 @@ public:
                           const std::vector<float>& alpha_lower,
                           const std::vector<float>& alpha_size);
 
-  const event_bins_t& get_coordinates() const { return m_coordinates; }
+  auto get_coordinates() const -> const event_bins_t& { return m_coordinates; }
 
   void set_coordinates(const event_bins_t& coordinates)
   {
     m_coordinates = coordinates;
   }
 
-  const std::vector<std::vector<std::vector<std::vector<float>>>>&
-  get_sub_bin_distribution() const
+  auto get_sub_bin_distribution() const
+      -> const std::vector<std::vector<std::vector<std::vector<float>>>>&
   {
     return m_sub_bin_distribution;
   }
 
-  const std::vector<float>& get_upscaling_energies() const
+  auto get_upscaling_energies() const -> const std::vector<float>&
   {
     return m_upscaling_energies;
   }
@@ -105,43 +105,42 @@ public:
 
 protected:
   // Returns the event to be used
-  virtual void get_event(
-      TFCSSimulationState& simulstate,
-      float eta_center,
-      float phi_center,
-      float e_init,
-      long unsigned int reference_layer_index) const override;
+  void get_event(TFCSSimulationState& simulstate,
+                 float eta_center,
+                 float phi_center,
+                 float e_init,
+                 long unsigned int reference_layer_index) const override;
 
   // Returns the number of hits that are going to be simulated in the given
   // layer.
-  virtual long unsigned int get_n_hits(
-      TFCSSimulationState& simulstate,
-      long unsigned int layer_index) const override;
+  auto get_n_hits(TFCSSimulationState& simulstate,
+                  long unsigned int layer_index) const
+      -> long unsigned int override;
 
   // Used to precompute the number of hits for all layers in the event.
   virtual void compute_n_hits_and_elayer(TFCSSimulationState& simulstate) const;
 
   // Returns the total deposited energy in the given layer for the current event
-  virtual float get_layer_energy(TFCSSimulationState& simulstate,
-                                 long unsigned int layer_index) const override;
+  auto get_layer_energy(TFCSSimulationState& simulstate,
+                        long unsigned int layer_index) const -> float override;
 
   // Returns the position and energy of the corresponding hit in the given
   // event, layer and bin
-  virtual std::tuple<float, float, float> get_hit_position_and_energy(
-      TFCSSimulationState& simulstate,
-      long unsigned int layer_index,
-      long unsigned int hit_index) const override;
+  auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
+                                   long unsigned int layer_index,
+                                   long unsigned int hit_index) const
+      -> std::tuple<float, float, float> override;
 
   // Delete all pointers that were created in get_event()
-  virtual void delete_event(TFCSSimulationState& simulstate) const override;
+  void delete_event(TFCSSimulationState& simulstate) const override;
 
 private:
   // Store the used event library
   event_bins_t m_coordinates;
 
-  std::tuple<float, float> get_coordinates(TFCSSimulationState& simulstate,
-                                           long unsigned int layer_index,
-                                           int bin_index) const;
+  auto get_coordinates(TFCSSimulationState& simulstate,
+                       long unsigned int layer_index,
+                       int bin_index) const -> std::tuple<float, float>;
 
   // If true, the sub-cell distribution is used to upscale the energy deposition
   bool m_use_upscaling = false;
@@ -160,12 +159,13 @@ private:
                long unsigned int layer_index,
                int bin_index) const;
 
-  long unsigned int get_energy_index(TFCSSimulationState& simulstate,
-                                     long unsigned int layer_index,
-                                     long unsigned int hit_index) const;
+  auto get_energy_index(TFCSSimulationState& simulstate,
+                        long unsigned int layer_index,
+                        long unsigned int hit_index) const -> long unsigned int;
   // Helper functions to load the HDF5 dataset
-  std::tuple<std::vector<float>, std::vector<hsize_t>, bool> load_hdf5_dataset(
-      const std::string& filename, const std::string& datasetname);
+  auto load_hdf5_dataset(const std::string& filename,
+                         const std::string& datasetname)
+      -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>;
 
   void load_bin_boundaries(const std::string& filename,
                            long unsigned int layer_index);

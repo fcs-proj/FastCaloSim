@@ -1,6 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFluctChain.h"
 
@@ -28,10 +28,10 @@ TFCSLateralShapeParametrizationFluctChain::
 {
 }
 
-float TFCSLateralShapeParametrizationFluctChain::get_E_hit(
+auto TFCSLateralShapeParametrizationFluctChain::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> float
 {
   const float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   const int sample = calosample();
@@ -45,10 +45,10 @@ float TFCSLateralShapeParametrizationFluctChain::get_E_hit(
     return simulstate.E(sample) * sigma2;
 }
 
-FCSReturnCode TFCSLateralShapeParametrizationFluctChain::simulate(
+auto TFCSLateralShapeParametrizationFluctChain::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   FCS_MSG::Level old_level = level();
   const bool debug = msgLvl(FCS_MSG::DEBUG);

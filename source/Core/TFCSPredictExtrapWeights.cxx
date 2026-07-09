@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <fstream>
 #include <iostream>
@@ -62,8 +62,8 @@ TFCSPredictExtrapWeights::~TFCSPredictExtrapWeights()
   }
 }
 
-bool TFCSPredictExtrapWeights::operator==(
-    const TFCSParametrizationBase& ref) const
+auto TFCSPredictExtrapWeights::operator==(
+    const TFCSParametrizationBase& ref) const -> bool
 {
   if (IsA() != ref.IsA()) {
     FCS_MSG_DEBUG("operator==: different class types "
@@ -85,8 +85,9 @@ bool TFCSPredictExtrapWeights::operator==(
 
 // getNormInputs()
 // Get values needed to normalize inputs
-bool TFCSPredictExtrapWeights::getNormInputs(
+auto TFCSPredictExtrapWeights::getNormInputs(
     const std::string& etaBin, const std::string& FastCaloTXTInputFolderName)
+    -> bool
 {
   FCS_MSG_DEBUG(" Getting normalization inputs... ");
 
@@ -144,8 +145,9 @@ bool TFCSPredictExtrapWeights::getNormInputs(
 
 // prepareInputs()
 // Prepare input variables to the Neural Network
-std::map<std::string, double> TFCSPredictExtrapWeights::prepareInputs(
-    TFCSSimulationState& simulstate, const float truthE) const
+auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
+                                             const float truthE) const
+    -> std::map<std::string, double>
 {
   std::map<std::string, double> inputVariables;
   for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
@@ -182,10 +184,10 @@ std::map<std::string, double> TFCSPredictExtrapWeights::prepareInputs(
 
 // simulate()
 // get predicted extrapolation weights and save them as AuxInfo in simulstate
-FCSReturnCode TFCSPredictExtrapWeights::simulate(
+auto TFCSPredictExtrapWeights::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   // Get inputs to Neural Network
   std::map<std::string, double> inputVariables =
@@ -218,11 +220,11 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate(
 }
 
 // simulate_hit()
-FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
+auto TFCSPredictExtrapWeights::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* extrapol)
+    const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
   const int cs = calosample();
 
@@ -293,10 +295,10 @@ FCSReturnCode TFCSPredictExtrapWeights::simulate_hit(
 
 // initializeNetwork()
 // Initialize lwtnn network
-bool TFCSPredictExtrapWeights::initializeNetwork(
+auto TFCSPredictExtrapWeights::initializeNetwork(
     int pid,
     const std::string& etaBin,
-    const std::string& FastCaloNNInputFolderName)
+    const std::string& FastCaloNNInputFolderName) -> bool
 {
   FCS_MSG_INFO(
       "Using FastCaloNNInputFolderName: " << FastCaloNNInputFolderName);

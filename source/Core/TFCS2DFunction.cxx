@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -23,8 +23,9 @@ void TFCS2DFunction::rnd_to_fct(float value[], const float rnd[]) const
 
 //================================================================================================================================
 
-double TFCS2DFunction::CheckAndIntegrate2DHistogram(
+auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
     const TH2* hist, std::vector<double>& integral_vec, int& first, int& last)
+    -> double
 {
   ISF_FCS::MLogging logger;
   Int_t nbinsx = hist->GetNbinsX();
@@ -75,7 +76,7 @@ double TFCS2DFunction::CheckAndIntegrate2DHistogram(
   return integral;
 }
 
-TH2* create_random_TH2(int nbinsx = 64, int nbinsy = 64)
+auto create_random_TH2(int nbinsx = 64, int nbinsy = 64) -> TH2*
 {
   TH2* hist = new TH2F("test2D", "test2D", nbinsx, 0, 1, nbinsy, 0, 1);
   hist->Sumw2();

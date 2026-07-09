@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_IntArray_h
 #define ISF_FASTCALOSIMEVENT_IntArray_h
@@ -13,7 +13,7 @@ class IntArray
 public:
   IntArray();
   IntArray(int);
-  ~IntArray();
+  ~IntArray() override;
 
 private:
   ClassDef(IntArray, 1)

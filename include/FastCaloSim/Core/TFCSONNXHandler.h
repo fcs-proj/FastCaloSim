@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 /**
  *
@@ -94,7 +94,7 @@ public:
    * @see VNetworkBase::NetworkInputs
    * @see VNetworkBase::NetworkOutputs
    **/
-  NetworkOutputs compute(NetworkInputs const& inputs) const override;
+  auto compute(NetworkInputs const& inputs) const -> NetworkOutputs override;
 
   // Output to a ttree file
   using VNetworkBase::writeNetToTTree;
@@ -119,7 +119,7 @@ public:
    * returns the list of all strings that will index the outputs.
    *
    **/
-  std::vector<std::string> getOutputLayers() const override;
+  auto getOutputLayers() const -> std::vector<std::string> override;
 
   /**
    * @brief Get rid of any memory objects that aren't needed to run the net.
@@ -140,7 +140,7 @@ protected:
    *
    * @param strm  output parameter, to which the description will be written.
    **/
-  virtual void print(std::ostream& strm) const override;
+  void print(std::ostream& strm) const override;
 
   /**
    * @brief Perform actions that prep data to create the net
@@ -179,8 +179,8 @@ private:
    * (which early strings required).
    *
    **/
-  std::vector<char> getSerializedSession(
-      const std::string& tree_name = m_defaultTreeName);
+  auto getSerializedSession(const std::string& tree_name = m_defaultTreeName)
+      -> std::vector<char>;
   /**
    * @brief Retrieve the content of the proto file from a TTree
    *
@@ -188,7 +188,7 @@ private:
    * this method will read it back into m_bytes.
    *
    **/
-  std::vector<char> readBytesFromTTree(TTree& tree);
+  auto readBytesFromTTree(TTree& tree) -> std::vector<char>;
   /**
    * @brief Write the content of the proto file to a TTree as a branch
    *
@@ -301,7 +301,7 @@ private:
    * for the session/net used as a member variable during setupNet.
    **/
   template<typename Tin, typename Tout>
-  NetworkOutputs computeTemplate(NetworkInputs const& input);
+  auto computeTemplate(NetworkInputs const& input) -> NetworkOutputs;
 
   /**
    * @brief computeTemplate with apropreate types selected.

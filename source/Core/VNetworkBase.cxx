@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 
@@ -30,10 +30,10 @@ VNetworkBase::VNetworkBase(const VNetworkBase& copy_from)
 // Nothing is needed from the destructor right now.
 // We don't use new anywhere, so the whole thing should clean
 // itself up.
-VNetworkBase::~VNetworkBase() {};
+VNetworkBase::~VNetworkBase() = default;
 
-std::string VNetworkBase::representNetworkInputs(
-    VNetworkBase::NetworkInputs const& inputs, int maxValues)
+auto VNetworkBase::representNetworkInputs(
+    VNetworkBase::NetworkInputs const& inputs, int maxValues) -> std::string
 {
   std::string representation =
       "NetworkInputs, outer size " + std::to_string(inputs.size());
@@ -53,8 +53,8 @@ std::string VNetworkBase::representNetworkInputs(
   return representation;
 };
 
-std::string VNetworkBase::representNetworkOutputs(
-    VNetworkBase::NetworkOutputs const& outputs, int maxValues)
+auto VNetworkBase::representNetworkOutputs(
+    VNetworkBase::NetworkOutputs const& outputs, int maxValues) -> std::string
 {
   std::string representation =
       "NetworkOutputs, size " + std::to_string(outputs.size()) + "; \n";
@@ -101,7 +101,7 @@ void VNetworkBase::writeNetToTTree(std::string const& root_name,
   root_file.Close();
 };
 
-bool VNetworkBase::isRootFile(std::string const& filename) const
+auto VNetworkBase::isRootFile(std::string const& filename) const -> bool
 {
   const std::string* to_check = &filename;
   if (filename.length() == 0) {
@@ -118,12 +118,12 @@ bool VNetworkBase::isRootFile(std::string const& filename) const
           == to_check->compare(filename_len - ending_len, ending_len, ending));
 };
 
-bool VNetworkBase::isFile() const
+auto VNetworkBase::isFile() const -> bool
 {
   return isFile(m_inputFile);
 };
 
-bool VNetworkBase::isFile(std::string const& inputFile)
+auto VNetworkBase::isFile(std::string const& inputFile) -> bool
 {
   if (FILE* file = std::fopen(inputFile.c_str(), "r")) {
     std::fclose(file);
@@ -135,7 +135,7 @@ bool VNetworkBase::isFile(std::string const& inputFile)
 
 namespace
 {
-int GetPrefixLength(const std::vector<std::string>& strings)
+auto GetPrefixLength(const std::vector<std::string>& strings) -> int
 {
   const std::string first = strings[0];
   int length = first.length();

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSFlatLateralShapeParametrization_h
 #define TFCSFlatLateralShapeParametrization_h
@@ -15,39 +15,39 @@ class TFCSFlatLateralShapeParametrization
 public:
   TFCSFlatLateralShapeParametrization(const char* name = nullptr,
                                       const char* title = nullptr);
-  virtual ~TFCSFlatLateralShapeParametrization();
+  ~TFCSFlatLateralShapeParametrization() override;
 
   /// set the integral of the histogram to the desired number of hits
   void set_number_of_hits(float nhits);
 
-  float get_number_of_expected_hits() const;
+  auto get_number_of_expected_hits() const -> float;
 
   /// default for this class is to simulate poisson(integral histogram) hits
-  virtual int get_number_of_hits(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto get_number_of_hits(TFCSSimulationState& simulstate,
+                          const TFCSTruthState* truth,
+                          const TFCSExtrapolationState* extrapol) const
+      -> int override;
 
   /// set the radius in which hits should be generated
   void set_dR(float _dR);
 
-  float dR() const;
+  auto dR() const -> float;
 
   /// set the radius in which hits should be generated
   void set_scale(float _scale);
 
-  float scale() const;
+  auto scale() const -> float;
 
   /// simulated one hit position with weight that should be put into simulstate
   /// sometime later all hit weights should be resacled such that their final
   /// sum is simulstate->E(sample) someone also needs to map all hits into cells
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
-  virtual void Print(Option_t* option = "") const override;
+  void Print(Option_t* option = "") const override;
 
 protected:
   /// Simulate hits flat in radius dR
@@ -60,18 +60,18 @@ private:
                    1)  // TFCSFlatLateralShapeParametrization
 };
 
-inline float TFCSFlatLateralShapeParametrization::get_number_of_expected_hits()
-    const
+inline auto TFCSFlatLateralShapeParametrization::get_number_of_expected_hits()
+    const -> float
 {
   return m_nhits;
 }
 
-inline float TFCSFlatLateralShapeParametrization::dR() const
+inline auto TFCSFlatLateralShapeParametrization::dR() const -> float
 {
   return m_dR;
 }
 
-inline float TFCSFlatLateralShapeParametrization::scale() const
+inline auto TFCSFlatLateralShapeParametrization::scale() const -> float
 {
   return m_scale;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/IntArray.h"
 
@@ -13,6 +13,6 @@ IntArray::IntArray(int n)
 {
 }
 
-IntArray::IntArray() {}
+IntArray::IntArray() = default;
 
-IntArray::~IntArray() {}
+IntArray::~IntArray() = default;

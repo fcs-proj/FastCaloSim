@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCS1DFunctionRegression.h"
 
@@ -12,7 +12,7 @@ using namespace std;
 //======= TFCS1DFunctionRegression =========
 //=============================================
 
-double TFCS1DFunctionRegression::regression_value(double uniform) const
+auto TFCS1DFunctionRegression::regression_value(double uniform) const -> double
 {
   double myresult = -1;
 
@@ -54,7 +54,7 @@ double TFCS1DFunctionRegression::regression_value(double uniform) const
   return myresult;
 }
 
-double TFCS1DFunctionRegression::rnd_to_fct(double rnd) const
+auto TFCS1DFunctionRegression::rnd_to_fct(double rnd) const -> double
 {
   double value = regression_value(rnd);
   return value;
@@ -81,7 +81,7 @@ void TFCS1DFunctionRegression::set_weights(
 ///
 /// From the mlpfit package (J.Schwindling   20-Jul-1999)
 
-double TFCS1DFunctionRegression::sigmoid(double x)
+auto TFCS1DFunctionRegression::sigmoid(double x) -> double
 {
   static const Double_t sigval[7000] = {-3.500000e+01,
                                         6.30511676014698530e-16,

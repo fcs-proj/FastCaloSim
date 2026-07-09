@@ -24,12 +24,12 @@ TFCSLateralShapeParametrizationFixedHitChain::
 {
 }
 
-bool TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
+auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol,
-    bool success) const
+    bool success) const -> bool
 {
   (void)success;  // unused parameter
   (void)truth;  // unused parameter

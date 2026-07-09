@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 ///////////////////////////////////////////////////////////////////
 // TFCSGANEtaSlice.cxx, (c) ATLAS Detector software             //
@@ -20,7 +20,7 @@
 #include "TH1D.h"
 #include "TTree.h"
 
-TFCSGANEtaSlice::TFCSGANEtaSlice() {}
+TFCSGANEtaSlice::TFCSGANEtaSlice() = default;
 
 TFCSGANEtaSlice::TFCSGANEtaSlice(int pid,
                                  int etaMin,
@@ -41,26 +41,26 @@ TFCSGANEtaSlice::~TFCSGANEtaSlice()
   delete m_gan_high;
 }
 
-VNetworkBase* TFCSGANEtaSlice::GetNetAll() const
+auto TFCSGANEtaSlice::GetNetAll() const -> VNetworkBase*
 {
   if (m_net_all != nullptr)
     return m_net_all.get();
   return m_gan_all;
 }
-VNetworkBase* TFCSGANEtaSlice::GetNetLow() const
+auto TFCSGANEtaSlice::GetNetLow() const -> VNetworkBase*
 {
   if (m_net_low != nullptr)
     return m_net_low.get();
   return m_gan_low;
 }
-VNetworkBase* TFCSGANEtaSlice::GetNetHigh() const
+auto TFCSGANEtaSlice::GetNetHigh() const -> VNetworkBase*
 {
   if (m_net_high != nullptr)
     return m_net_high.get();
   return m_gan_high;
 }
 
-bool TFCSGANEtaSlice::IsGanCorrectlyLoaded() const
+auto TFCSGANEtaSlice::IsGanCorrectlyLoaded() const -> bool
 {
   if (m_pid == 211 || m_pid == 2212) {
     if (GetNetAll() == nullptr) {
@@ -74,7 +74,7 @@ bool TFCSGANEtaSlice::IsGanCorrectlyLoaded() const
   return true;
 }
 
-bool TFCSGANEtaSlice::LoadGAN()
+auto TFCSGANEtaSlice::LoadGAN() -> bool
 {
   // Now load new data
   std::string inputFileName;
@@ -189,10 +189,10 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
   }
 }
 
-VNetworkBase::NetworkOutputs TFCSGANEtaSlice::GetNetworkOutputs(
-    const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol,
-    TFCSSimulationState& simulstate) const
+auto TFCSGANEtaSlice::GetNetworkOutputs(const TFCSTruthState* truth,
+                                        const TFCSExtrapolationState* extrapol,
+                                        TFCSSimulationState& simulstate) const
+    -> VNetworkBase::NetworkOutputs
 {
   double randUniformZ = 0.;
   NetworkInputs inputs;

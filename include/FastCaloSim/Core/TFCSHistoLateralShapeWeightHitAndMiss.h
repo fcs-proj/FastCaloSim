@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSHistoLateralShapeWeightHitAndMiss_h
 #define TFCSHistoLateralShapeWeightHitAndMiss_h
@@ -12,15 +12,15 @@ class TFCSHistoLateralShapeWeightHitAndMiss : public TFCSHistoLateralShapeWeight
 public:
   TFCSHistoLateralShapeWeightHitAndMiss(const char* name = nullptr,
                                         const char* title = nullptr);
-  virtual ~TFCSHistoLateralShapeWeightHitAndMiss();
+  ~TFCSHistoLateralShapeWeightHitAndMiss() override;
 
   /// weight the energy of one hit in order to generate fluctuations. If the hit
   /// energy is 0, discard the hit
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
 private:
   ClassDefOverride(TFCSHistoLateralShapeWeightHitAndMiss,

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 
@@ -13,10 +13,10 @@
 //======= TFCS1DFunctionSpline =========
 //=============================================
 
-double TFCS1DFunctionSpline::Initialize(TH1* hist,
-                                        double maxdevgoal,
-                                        double maxeffsiggoal,
-                                        int maxnp)
+auto TFCS1DFunctionSpline::Initialize(TH1* hist,
+                                      double maxdevgoal,
+                                      double maxeffsiggoal,
+                                      int maxnp) -> double
 {
   double max_penalty_best = -1;
   TSpline3 sp_best;
@@ -64,10 +64,10 @@ double TFCS1DFunctionSpline::Initialize(TH1* hist,
   return max_penalty_best;
 }
 
-double TFCS1DFunctionSpline::InitializeFromSpline(TH1* hist,
-                                                  const TSpline3& sp,
-                                                  double maxdevgoal,
-                                                  double maxeffsiggoal)
+auto TFCS1DFunctionSpline::InitializeFromSpline(TH1* hist,
+                                                const TSpline3& sp,
+                                                double maxdevgoal,
+                                                double maxeffsiggoal) -> double
 {
   TFCS1DFunctionInt32Histogram hist_fct(hist);
 
@@ -135,10 +135,10 @@ double TFCS1DFunctionSpline::InitializeFromSpline(TH1* hist,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
-                                                     double maxdevgoal,
-                                                     double maxeffsiggoal,
-                                                     int nsplinepoints)
+auto TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
+                                                   double maxdevgoal,
+                                                   double maxeffsiggoal,
+                                                   int nsplinepoints) -> double
 {
   TFCS1DFunctionInt32Histogram hist_fct(hist);
 
@@ -204,10 +204,11 @@ double TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::InitializeEqualProbability(TH1* hist,
-                                                        double maxdevgoal,
-                                                        double maxeffsiggoal,
-                                                        int nsplinepoints)
+auto TFCS1DFunctionSpline::InitializeEqualProbability(TH1* hist,
+                                                      double maxdevgoal,
+                                                      double maxeffsiggoal,
+                                                      int nsplinepoints)
+    -> double
 {
   TFCS1DFunctionInt32Histogram hist_fct(hist);
 
@@ -238,12 +239,12 @@ double TFCS1DFunctionSpline::InitializeEqualProbability(TH1* hist,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::optimize(TSpline3& sp_best,
-                                      std::vector<double>& nprop,
-                                      const TH1* hist,
-                                      TFCS1DFunctionInt32Histogram& hist_fct,
-                                      double maxdevgoal,
-                                      double maxeffsiggoal)
+auto TFCS1DFunctionSpline::optimize(TSpline3& sp_best,
+                                    std::vector<double>& nprop,
+                                    const TH1* hist,
+                                    TFCS1DFunctionInt32Histogram& hist_fct,
+                                    double maxdevgoal,
+                                    double maxeffsiggoal) -> double
 {
   int nsplinepoints = (int)nprop.size();
   // double xmin=hist->GetXaxis()->GetXmin();
@@ -324,12 +325,12 @@ double TFCS1DFunctionSpline::optimize(TSpline3& sp_best,
   return max_penalty;
 }
 
-double TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
-                                        const TSpline3& sp,
-                                        double& maxeffsig,
-                                        double& p_maxdev,
-                                        double& p_maxeffsig,
-                                        int ntoy)
+auto TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
+                                      const TSpline3& sp,
+                                      double& maxeffsig,
+                                      double& p_maxdev,
+                                      double& p_maxeffsig,
+                                      int ntoy) -> double
 {
   double maxdev = 0;
   maxeffsig = 0;
@@ -382,7 +383,7 @@ double TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
   return maxdev;
 }
 
-double TFCS1DFunctionSpline::rnd_to_fct(double rnd) const
+auto TFCS1DFunctionSpline::rnd_to_fct(double rnd) const -> double
 {
   return m_spline.Eval(rnd);
 }

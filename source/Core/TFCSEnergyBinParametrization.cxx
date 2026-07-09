@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -23,7 +23,7 @@ TFCSEnergyBinParametrization::TFCSEnergyBinParametrization(const char* name,
   m_number_of_Ekin_bins = 1;
 }
 
-bool TFCSEnergyBinParametrization::is_match_Ekin_bin(int Ekin_bin) const
+auto TFCSEnergyBinParametrization::is_match_Ekin_bin(int Ekin_bin) const -> bool
 {
   if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
     return true;
@@ -98,8 +98,8 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
   }
 }
 
-bool TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
-    int id, TFile* file, std::string prob_object_name)
+auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
+    int id, TFile* file, std::string prob_object_name) -> bool
 {
   add_pdgid(id);
 
@@ -181,10 +181,10 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
   }
 }
 
-FCSReturnCode TFCSEnergyBinParametrization::simulate(
+auto TFCSEnergyBinParametrization::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;

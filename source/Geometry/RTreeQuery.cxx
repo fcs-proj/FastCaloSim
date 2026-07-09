@@ -1,4 +1,4 @@
-// Copyright (c) 2025 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #include <cstring>
 #include <stdexcept>
 
@@ -16,7 +16,7 @@ void RTreeQuery::load(const std::string& base_path, size_t cache_size)
   localTree();  // validate now; throws on bad path as before
 }
 
-RTreeQuery::TreeHandle& RTreeQuery::localTree() const
+auto RTreeQuery::localTree() const -> RTreeQuery::TreeHandle&
 {
   TreeHandle& h = m_perThread.local();
   if (!h.tree) {

@@ -1,5 +1,5 @@
 // clang-format off
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/DoubleArray.h"
 #include "FastCaloSim/Core/IntArray.h"

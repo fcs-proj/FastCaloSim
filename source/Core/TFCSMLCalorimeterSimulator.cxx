@@ -5,11 +5,12 @@
 #include "CLHEP/Random/RandGauss.h"
 #include "FastCaloSim/Core/TFCSNetworkFactory.h"
 
-TFCSMLCalorimeterSimulator::TFCSMLCalorimeterSimulator() {}
+TFCSMLCalorimeterSimulator::TFCSMLCalorimeterSimulator() = default;
 
-TFCSMLCalorimeterSimulator::~TFCSMLCalorimeterSimulator() {}
+TFCSMLCalorimeterSimulator::~TFCSMLCalorimeterSimulator() = default;
 
-bool TFCSMLCalorimeterSimulator::loadSimulator(const std::string& filename)
+auto TFCSMLCalorimeterSimulator::loadSimulator(const std::string& filename)
+    -> bool
 {
   // Load the simulator
   try {
@@ -28,8 +29,10 @@ bool TFCSMLCalorimeterSimulator::loadSimulator(const std::string& filename)
   return true;
 }
 
-VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels(
-    TFCSSimulationState& simulstate, float eta, float energy) const
+auto TFCSMLCalorimeterSimulator::predictVoxels(TFCSSimulationState& simulstate,
+                                               float eta,
+                                               float energy) const
+    -> VNetworkBase::NetworkOutputs
 {
   // Bring eta into the needed range
   eta = std::abs(eta) * 10;
@@ -89,8 +92,10 @@ VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels(
   return outputs;
 }
 
-TFCSMLCalorimeterSimulator::event_t TFCSMLCalorimeterSimulator::getEvent(
-    TFCSSimulationState& simulstate, float eta, float energy) const
+auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
+                                          float eta,
+                                          float energy) const
+    -> TFCSMLCalorimeterSimulator::event_t
 {
   // Get the voxel energies
   VNetworkBase::NetworkOutputs outputs = predictVoxels(simulstate, eta, energy);
@@ -170,7 +175,8 @@ TFCSMLCalorimeterSimulator::event_t TFCSMLCalorimeterSimulator::getEvent(
   return event;
 }
 
-VNetworkBase::NetworkOutputs TFCSMLCalorimeterSimulator::predictVoxels() const
+auto TFCSMLCalorimeterSimulator::predictVoxels() const
+    -> VNetworkBase::NetworkOutputs
 {
   // For testing...
   // This function sets the input dimensionality and the number of predicted

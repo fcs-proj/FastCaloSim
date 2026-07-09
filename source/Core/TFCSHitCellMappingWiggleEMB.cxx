@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggleEMB.h"
 
@@ -52,7 +52,7 @@ TFCSHitCellMappingWiggleEMB::TFCSHitCellMappingWiggleEMB(const char* name,
   }
 }
 
-double TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand)
+auto TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) -> double
 {
   int layer = calosample();
 
@@ -91,11 +91,11 @@ double TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand)
   return wiggle;
 }
 
-FCSReturnCode TFCSHitCellMappingWiggleEMB::simulate_hit(
+auto TFCSHitCellMappingWiggleEMB::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol)
+    const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;

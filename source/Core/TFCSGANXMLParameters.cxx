@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 ///////////////////////////////////////////////////////////////////
 // TFCSGANXMLParameters.cxx, (c) ATLAS Detector software             //
@@ -19,7 +19,7 @@
 namespace
 {
 // Read an XML attribute and free the memory allocated by xmlGetProp
-std::string getXmlAttr(xmlNodePtr node, const char* name)
+auto getXmlAttr(xmlNodePtr node, const char* name) -> std::string
 {
   xmlChar* prop = xmlGetProp(node, BAD_CAST name);
   if (!prop)
@@ -29,7 +29,7 @@ std::string getXmlAttr(xmlNodePtr node, const char* name)
   return value;
 }
 
-int getXmlAttrInt(xmlNodePtr node, const char* name)
+auto getXmlAttrInt(xmlNodePtr node, const char* name) -> int
 {
   const std::string attribute = getXmlAttr(node, name);
   return attribute.empty() ? 0 : std::stoi(attribute);
@@ -147,8 +147,8 @@ void TFCSGANXMLParameters::InitialiseFromXML(
   }
 }
 
-bool TFCSGANXMLParameters::ReadBooleanAttribute(const std::string& name,
-                                                xmlNodePtr node)
+auto TFCSGANXMLParameters::ReadBooleanAttribute(const std::string& name,
+                                                xmlNodePtr node) -> bool
 {
   return getXmlAttr(node, name.c_str()) == "true";
 }

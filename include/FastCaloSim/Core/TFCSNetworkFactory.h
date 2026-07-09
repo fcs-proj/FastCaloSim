@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 /**
  *
@@ -47,7 +47,7 @@ public:
    * @param input  Either a file path, or the content of a file.
    *
    **/
-  static std::unique_ptr<VNetworkBase> create(std::string input);
+  static auto create(std::string input) -> std::unique_ptr<VNetworkBase>;
   // Specified TFCSGANLWTNNHandler or TFCSSimpleLWTNNHandler
   /**
    * @brief Given a string, and information about format, make a network.
@@ -69,8 +69,8 @@ public:
    * @param graph_form   Is the network the more complex graph form?
    *
    **/
-  static std::unique_ptr<VNetworkBase> create(std::string input,
-                                              bool graph_form);
+  static auto create(std::string input, bool graph_form)
+      -> std::unique_ptr<VNetworkBase>;
 
   /**
    * @brief Given a vector of chars (bytes), make a network.
@@ -81,7 +81,8 @@ public:
    * @param input        The content of an onnx proto file.
    *
    **/
-  static std::unique_ptr<VNetworkBase> create(std::vector<char> const& input);
+  static auto create(std::vector<char> const& input)
+      -> std::unique_ptr<VNetworkBase>;
 
   /**
    * @brief Create a network from whichever input isn't empty.
@@ -92,8 +93,8 @@ public:
    * @param vector_input        The content of an onnx proto file.
    * @param string_input        Either a file path, or the content of a file.
    **/
-  static std::unique_ptr<VNetworkBase> create(
-      std::vector<char> const& vector_input, std::string string_input);
+  static auto create(std::vector<char> const& vector_input,
+                     std::string string_input) -> std::unique_ptr<VNetworkBase>;
   /**
    * @brief Create a network from whichever input isn't empty.
    *
@@ -105,10 +106,9 @@ public:
    * @param string_input        Either a file path, or the content of a file.
    * @param graph_form   Is the network the more complex graph form?
    **/
-  static std::unique_ptr<VNetworkBase> create(
-      std::vector<char> const& vector_input,
-      std::string string_input,
-      bool graph_form);
+  static auto create(std::vector<char> const& vector_input,
+                     std::string string_input,
+                     bool graph_form) -> std::unique_ptr<VNetworkBase>;
 
 private:
   /**
@@ -129,7 +129,7 @@ private:
    *
    * @param filename  Path to check.
    **/
-  static bool isOnnxFile(std::string const& filename);
+  static auto isOnnxFile(std::string const& filename) -> bool;
 };
 
 #endif  // TFCSNETWORKFACTORY_H

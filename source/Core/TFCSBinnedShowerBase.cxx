@@ -30,12 +30,12 @@ TFCSBinnedShowerBase::TFCSBinnedShowerBase(const char* name, const char* title)
   reset_OnlyScaleEnergy();
 }
 
-TFCSBinnedShowerBase::~TFCSBinnedShowerBase() {}
+TFCSBinnedShowerBase::~TFCSBinnedShowerBase() = default;
 
-FCSReturnCode TFCSBinnedShowerBase::simulate(
+auto TFCSBinnedShowerBase::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   // Clean up any event data from a previous simulation call
   delete_event(simulstate);
@@ -87,11 +87,11 @@ FCSReturnCode TFCSBinnedShowerBase::simulate(
   return FCSSuccess;
 }
 
-FCSReturnCode TFCSBinnedShowerBase::simulate_hit(
+auto TFCSBinnedShowerBase::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   const int pdgId = truth->pdgid();
   const float charge = ParticleData::charge(pdgId);

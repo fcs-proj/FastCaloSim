@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSFlatLateralShapeParametrization.h"
 
@@ -22,12 +22,13 @@ TFCSFlatLateralShapeParametrization::TFCSFlatLateralShapeParametrization(
 {
 }
 
-TFCSFlatLateralShapeParametrization::~TFCSFlatLateralShapeParametrization() {}
+TFCSFlatLateralShapeParametrization::~TFCSFlatLateralShapeParametrization() =
+    default;
 
-int TFCSFlatLateralShapeParametrization::get_number_of_hits(
+auto TFCSFlatLateralShapeParametrization::get_number_of_hits(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> int
 {
   if (!simulstate.randomEngine()) {
     return -1;
@@ -51,11 +52,11 @@ void TFCSFlatLateralShapeParametrization::set_scale(float _scale)
   m_scale = _scale;
 }
 
-FCSReturnCode TFCSFlatLateralShapeParametrization::simulate_hit(
+auto TFCSFlatLateralShapeParametrization::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;

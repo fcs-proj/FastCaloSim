@@ -21,11 +21,11 @@
 
 namespace
 {
-std::uint32_t layer_hash(unsigned int layer)
+auto layer_hash(unsigned int layer) -> std::uint32_t
 {
   return static_cast<std::uint32_t>(layer);
 }
-std::uint32_t layer_hash_geo(unsigned int layer)
+auto layer_hash_geo(unsigned int layer) -> std::uint32_t
 {
   return static_cast<std::uint32_t>(layer) | 0x80000000u;
 }
@@ -39,12 +39,10 @@ TFCSVoxelHistoLateralCovarianceFluctuations::
 }
 
 TFCSVoxelHistoLateralCovarianceFluctuations::
-    ~TFCSVoxelHistoLateralCovarianceFluctuations()
-{
-}
+    ~TFCSVoxelHistoLateralCovarianceFluctuations() = default;
 
-bool TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
-    TFile* inputfile, const std::string& folder)
+auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
+    TFile* inputfile, const std::string& folder) -> bool
 {
   // load m_eigenvariances and m_parMeans from input file
   // load histograms for each cell from input file
@@ -167,10 +165,10 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
   genPars = m_EigenVectors[Ebin - 1] * genPars;
 }
 
-FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
+auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;
@@ -269,11 +267,11 @@ FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   return FCSSuccess;
 }
 
-FCSReturnCode TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
+auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/)
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   const double center_eta = hit.center_eta();
   const double center_phi = hit.center_phi();

@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
 #include <vector>
@@ -9,15 +9,12 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
-namespace Gaudi
-{
-namespace Units
+namespace Gaudi::Units
 {
 constexpr double megaelectronvolt = 1.;
 constexpr double kiloelectronvolt = 1.e-3 * megaelectronvolt;
 constexpr double keV = kiloelectronvolt;
-}  // namespace Units
-}  // namespace Gaudi
+}  // namespace Gaudi::Units
 
 //=============================================
 //======= TFCSEnergyInterpolation =========
@@ -53,10 +50,10 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInEkin(Int_t np,
   InitFromArrayInLogEkin(np, logEkin.data(), response, opt, valbeg, valend);
 }
 
-FCSReturnCode TFCSEnergyInterpolationSpline::simulate(
+auto TFCSEnergyInterpolationSpline::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const
+    const TFCSExtrapolationState*) const -> FCSReturnCode
 {
   float Emean;
   float Einit;

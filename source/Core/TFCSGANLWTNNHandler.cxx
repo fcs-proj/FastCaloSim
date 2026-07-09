@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSGANLWTNNHandler.h"
 
@@ -61,15 +61,16 @@ void TFCSGANLWTNNHandler::setupNet()
   FCS_MSG_VERBOSE("Finished output nodes.");
 };
 
-std::vector<std::string> TFCSGANLWTNNHandler::getOutputLayers() const
+auto TFCSGANLWTNNHandler::getOutputLayers() const -> std::vector<std::string>
 {
   return m_outputLayers;
 };
 
 // This is implement the specific compute, and ensure the output is returned in
 // regular format. For LWTNN, that's easy.
-TFCSGANLWTNNHandler::NetworkOutputs TFCSGANLWTNNHandler::compute(
+auto TFCSGANLWTNNHandler::compute(
     TFCSGANLWTNNHandler::NetworkInputs const& inputs) const
+    -> TFCSGANLWTNNHandler::NetworkOutputs
 {
   FCS_MSG_DEBUG("Running computation on LWTNN graph network");
   NetworkInputs local_copy = inputs;

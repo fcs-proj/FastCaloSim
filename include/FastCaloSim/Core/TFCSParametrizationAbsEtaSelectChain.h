@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationAbsEtaSelectChain_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationAbsEtaSelectChain_h
@@ -13,15 +13,14 @@ public:
                                        const char* title = nullptr)
       : TFCSParametrizationEtaSelectChain(name, title) {};
   TFCSParametrizationAbsEtaSelectChain(
-      const TFCSParametrizationAbsEtaSelectChain& ref)
-      : TFCSParametrizationEtaSelectChain(ref) {};
+      const TFCSParametrizationAbsEtaSelectChain& ref) = default;
 
   // selects on |extrapol->IDCaloBoundary_eta()|
   // return -1 if outside range
-  virtual int get_bin(TFCSSimulationState&,
-                      const TFCSTruthState* truth,
-                      const TFCSExtrapolationState* extrapol) const override;
-  virtual const std::string get_bin_text(int bin) const override;
+  auto get_bin(TFCSSimulationState&,
+               const TFCSTruthState* truth,
+               const TFCSExtrapolationState* extrapol) const -> int override;
+  auto get_bin_text(int bin) const -> const std::string override;
 
 private:
   ClassDefOverride(TFCSParametrizationAbsEtaSelectChain,

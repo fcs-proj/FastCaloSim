@@ -89,9 +89,9 @@ void TFCSBinnedShowerONNX::load_meta_data(
   return;
 }
 
-std::tuple<std::vector<float>, std::vector<hsize_t>, bool>
-TFCSBinnedShowerONNX::load_hdf5_dataset(const std::string& filename,
-                                        const std::string& datasetname)
+auto TFCSBinnedShowerONNX::load_hdf5_dataset(const std::string& filename,
+                                             const std::string& datasetname)
+    -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>
 {
   // Open the HDF5 file and dataset
   H5::H5File file(filename, H5F_ACC_RDONLY);
@@ -110,7 +110,7 @@ TFCSBinnedShowerONNX::load_hdf5_dataset(const std::string& filename,
   // Get the number of dimensions and the size of each dimension
   int rank = dataspace.getSimpleExtentNdims();
   std::vector<hsize_t> dims_out(rank);
-  dataspace.getSimpleExtentDims(dims_out.data(), NULL);
+  dataspace.getSimpleExtentDims(dims_out.data(), nullptr);
 
   // Calculate the total number of elements
   hsize_t totalSize = 1;
@@ -254,8 +254,9 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
   simulstate.setAuxInfo<void*>("BSELayer"_FCShash, elayer_ptr);
 }
 
-long unsigned int TFCSBinnedShowerONNX::get_n_hits(
-    TFCSSimulationState& simulstate, long unsigned int layer_index) const
+auto TFCSBinnedShowerONNX::get_n_hits(TFCSSimulationState& simulstate,
+                                      long unsigned int layer_index) const
+    -> long unsigned int
 {
   std::vector<std::vector<long unsigned int>>* hits_per_layer_ptr =
       static_cast<std::vector<std::vector<long unsigned int>>*>(
@@ -269,8 +270,9 @@ long unsigned int TFCSBinnedShowerONNX::get_n_hits(
   return hits_per_layer_ptr->at(layer_index).back();
 }
 
-float TFCSBinnedShowerONNX::get_layer_energy(
-    TFCSSimulationState& simulstate, long unsigned int layer_index) const
+auto TFCSBinnedShowerONNX::get_layer_energy(TFCSSimulationState& simulstate,
+                                            long unsigned int layer_index) const
+    -> float
 {
   std::vector<float>* elayer_ptr = static_cast<std::vector<float>*>(
       simulstate.getAuxInfo<void*>("BSELayer"_FCShash));
@@ -288,10 +290,10 @@ float TFCSBinnedShowerONNX::get_layer_energy(
   return elayer_ptr->at(layer_index);
 }
 
-long unsigned int TFCSBinnedShowerONNX::get_energy_index(
-    TFCSSimulationState& simulstate,
-    long unsigned int layer_index,
-    long unsigned int hit_index) const
+auto TFCSBinnedShowerONNX::get_energy_index(TFCSSimulationState& simulstate,
+                                            long unsigned int layer_index,
+                                            long unsigned int hit_index) const
+    -> long unsigned int
 {
   std::vector<std::vector<long unsigned int>>* hits_per_layer_ptr =
       static_cast<std::vector<std::vector<long unsigned int>>*>(
@@ -327,10 +329,10 @@ long unsigned int TFCSBinnedShowerONNX::get_energy_index(
   return energy_index;
 }
 
-std::tuple<float, float> TFCSBinnedShowerONNX::get_coordinates(
-    TFCSSimulationState& simulstate,
-    long unsigned int layer_index,
-    int bin_index) const
+auto TFCSBinnedShowerONNX::get_coordinates(TFCSSimulationState& simulstate,
+                                           long unsigned int layer_index,
+                                           int bin_index) const
+    -> std::tuple<float, float>
 {
   float R_min = m_coordinates.at(layer_index).R_lower.at(bin_index);
   float R_max = m_coordinates.at(layer_index).R_size.at(bin_index)
@@ -461,11 +463,10 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
   R_max = R_min;
 }
 
-std::tuple<float, float, float>
-TFCSBinnedShowerONNX::get_hit_position_and_energy(
+auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
     TFCSSimulationState& simulstate,
     long unsigned int layer_index,
-    long unsigned int hit_index) const
+    long unsigned int hit_index) const -> std::tuple<float, float, float>
 {
   TFCSMLCalorimeterSimulator::event_t* event =
       static_cast<TFCSMLCalorimeterSimulator::event_t*>(

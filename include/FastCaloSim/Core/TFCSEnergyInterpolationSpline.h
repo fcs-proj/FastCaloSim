@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h
 #define ISF_FASTCALOSIMEVENT_TFCSEnergyInterpolationSpline_h
@@ -22,15 +22,15 @@ public:
                  ///< should only be scaled by the spline
   };
 
-  bool OnlyScaleEnergy() const { return TestBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
   void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
   void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const override
+  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
   };
-  virtual bool is_match_calosample(int /*calosample*/) const override
+  auto is_match_calosample(int /*calosample*/) const -> bool override
   {
     return true;
   };
@@ -59,14 +59,14 @@ public:
                            Double_t valbeg = 0,
                            Double_t valend = 0);
 
-  const TSpline3& spline() const { return m_spline; };
+  auto spline() const -> const TSpline3& { return m_spline; };
 
   /// Initialize simulstate with the mean reconstructed energy in the
   /// calorimater expected from the true kinetic energy
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
   void Print(Option_t* option = "") const override;
 

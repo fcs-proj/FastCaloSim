@@ -1,6 +1,6 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
 #  define ISF_FASTCALOSIMEVENT_TFCS1DFunctionTemplateHistogram_h
@@ -15,23 +15,26 @@ template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateHistogram : public TFCS1DFunction
 {
 public:
-  typedef TFCS1DFunction_size_t size_t;
-  typedef Trandom random_type;
-  typedef Txvec xvec_type;
-  typedef Ty y_value_type;
+  using size_t = TFCS1DFunction_size_t;
+  using random_type = Trandom;
+  using xvec_type = Txvec;
+  using y_value_type = Ty;
 
   TFCS1DFunctionTemplateHistogram(TH1* hist = nullptr, bool doprint = true)
   {
     if (hist)
       Initialize(hist, doprint);
   };
-  ~TFCS1DFunctionTemplateHistogram() {};
+  ~TFCS1DFunctionTemplateHistogram() override = default;
 
-  std::size_t MemorySizeArray() const
+  auto MemorySizeArray() const -> std::size_t
   {
     return m_HistoBorders.MemorySizeArray() + m_HistoContents.MemorySizeArray();
   };
-  std::size_t MemorySize() const { return sizeof(*this) + MemorySizeArray(); };
+  auto MemorySize() const -> std::size_t override
+  {
+    return sizeof(*this) + MemorySizeArray();
+  };
 
   /// set number of bins
   void set_nbins(size_t nbins)
@@ -41,7 +44,10 @@ public:
   };
 
   /// return number of bins
-  inline size_t get_nbins() const { return m_HistoContents.get_nbins(); };
+  inline auto get_nbins() const -> size_t
+  {
+    return m_HistoContents.get_nbins();
+  };
 
   /// Initialize from root histogram. Depending on the precision of the x- and
   /// y-axis, bins are merged if numerical identical
@@ -123,7 +129,7 @@ public:
 
   /// Function gets random number rnd in the range [0,1) as argument
   /// and returns function value according to a histogram distribution
-  virtual double rnd_to_fct(double rnd) const
+  auto rnd_to_fct(double rnd) const -> double override
   {
     if (m_HistoContents.get_nbins() == 0)
       return 0;
@@ -135,15 +141,19 @@ public:
     return m_HistoBorders.position(ibin, residual_rnd);
   }
 
-  inline const Txvec& get_HistoBordersx() const { return m_HistoBorders; };
-  inline Txvec& get_HistoBordersx() { return m_HistoBorders; };
+  inline auto get_HistoBordersx() const -> const Txvec&
+  {
+    return m_HistoBorders;
+  };
+  inline auto get_HistoBordersx() -> Txvec& { return m_HistoBorders; };
 
-  inline const TFCS1DFunction_HistogramContent<Ty, Trandom>& get_HistoContents()
-      const
+  inline auto get_HistoContents() const
+      -> const TFCS1DFunction_HistogramContent<Ty, Trandom>&
   {
     return m_HistoContents;
   };
-  inline TFCS1DFunction_HistogramContent<Ty, Trandom>& get_HistoContents()
+  inline auto get_HistoContents()
+      -> TFCS1DFunction_HistogramContent<Ty, Trandom>&
   {
     return m_HistoContents;
   };

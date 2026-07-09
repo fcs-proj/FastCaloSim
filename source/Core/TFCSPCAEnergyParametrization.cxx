@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSPCAEnergyParametrization.h"
 
@@ -29,14 +29,15 @@ TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char* name,
   do_rescale = 1;
 }
 
-bool TFCSPCAEnergyParametrization::is_match_Ekin_bin(int Ekin_bin) const
+auto TFCSPCAEnergyParametrization::is_match_Ekin_bin(int Ekin_bin) const -> bool
 {
   if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
     return true;
   return false;
 }
 
-bool TFCSPCAEnergyParametrization::is_match_calosample(int calosample) const
+auto TFCSPCAEnergyParametrization::is_match_calosample(int calosample) const
+    -> bool
 {
   for (unsigned int i = 0; i < m_RelevantLayers.size(); i++) {
     if (m_RelevantLayers[i] == calosample)
@@ -67,7 +68,7 @@ void TFCSPCAEnergyParametrization::Print(Option_t* option) const
   }
 }
 
-float interpolate_get_y(TH1* hist, float x)
+auto interpolate_get_y(TH1* hist, float x) -> float
 {
   float m = 0;
   float n = 0;
@@ -112,8 +113,8 @@ void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(int Ekin_bin,
   m_totalE_probability_ratio[Ekin_bin - 1] = hist;
 }
 
-TH1* TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
-    int Ekin_bin) const
+auto TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
+    int Ekin_bin) const -> TH1*
 {
   if (Ekin_bin < 1)
     return nullptr;
@@ -122,10 +123,10 @@ TH1* TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
   return m_totalE_probability_ratio[Ekin_bin - 1];
 }
 
-FCSReturnCode TFCSPCAEnergyParametrization::simulate(
+auto TFCSPCAEnergyParametrization::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;
@@ -261,15 +262,15 @@ void TFCSPCAEnergyParametrization::P2X(TVectorD* SigmaValues,
   }
 }
 
-bool TFCSPCAEnergyParametrization::loadInputs(TFile* file)
+auto TFCSPCAEnergyParametrization::loadInputs(TFile* file) -> bool
 {
   return loadInputs(file, "");
 }
 
-bool TFCSPCAEnergyParametrization::loadInputs(TFile* file,
-                                              const std::string& folder)
+auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
+                                              const std::string& folder) -> bool
 {
-  bool load_ok = 1;
+  bool load_ok = true;
 
   int trynext = 1;
   TString x;

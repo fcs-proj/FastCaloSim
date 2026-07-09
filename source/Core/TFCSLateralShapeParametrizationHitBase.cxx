@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
@@ -16,26 +16,26 @@ TFCSLateralShapeParametrizationHitBase::TFCSLateralShapeParametrizationHitBase(
 {
 }
 
-double TFCSLateralShapeParametrizationHitBase::get_sigma2_fluctuation(
+auto TFCSLateralShapeParametrizationHitBase::get_sigma2_fluctuation(
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
   return -1;
 }
 
-int TFCSLateralShapeParametrizationHitBase::get_number_of_hits(
+auto TFCSLateralShapeParametrizationHitBase::get_number_of_hits(
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* /*extrapol*/) const
+    const TFCSExtrapolationState* /*extrapol*/) const -> int
 {
   return -1;
 }
 
-float TFCSLateralShapeParametrizationHitBase::get_E_hit(
+auto TFCSLateralShapeParametrizationHitBase::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const
+    const TFCSExtrapolationState* extrapol) const -> float
 {
   const int nhits = get_number_of_hits(simulstate, truth, extrapol);
   const int sample = calosample();
@@ -45,21 +45,21 @@ float TFCSLateralShapeParametrizationHitBase::get_E_hit(
     return simulstate.E(sample) / nhits;
 }
 
-float TFCSLateralShapeParametrizationHitBase::getMinWeight() const
+auto TFCSLateralShapeParametrizationHitBase::getMinWeight() const -> float
 {
   return -1.;
 }
 
-float TFCSLateralShapeParametrizationHitBase::getMaxWeight() const
+auto TFCSLateralShapeParametrizationHitBase::getMaxWeight() const -> float
 {
   return -1.;
 }
 
-FCSReturnCode TFCSLateralShapeParametrizationHitBase::simulate_hit(
+auto TFCSLateralShapeParametrizationHitBase::simulate_hit(
     Hit& hit,
     TFCSSimulationState& /*simulstate*/,
     const TFCSTruthState* /*truth*/,
-    const TFCSExtrapolationState* extrapol)
+    const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
   int cs = calosample();
   hit.set_eta_x(0.5

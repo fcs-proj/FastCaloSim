@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <fstream>
 #include <sstream>
@@ -22,7 +22,7 @@ VNetworkLWTNN::VNetworkLWTNN(const VNetworkLWTNN& copy_from)
   };
 };
 
-VNetworkLWTNN::~VNetworkLWTNN() {};
+VNetworkLWTNN::~VNetworkLWTNN() = default;
 
 // This setup is going to do it's best to
 // fill in m_json.
@@ -73,7 +73,7 @@ void VNetworkLWTNN::fillJson(std::string const& tree_name)
   }
 }
 
-std::string VNetworkLWTNN::readStringFromTTree(TTree& tree)
+auto VNetworkLWTNN::readStringFromTTree(TTree& tree) -> std::string
 {
   std::string found = std::string();
   std::string* to_found = &found;

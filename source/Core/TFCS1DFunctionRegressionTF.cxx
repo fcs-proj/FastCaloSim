@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCS1DFunctionRegressionTF.h"
 
@@ -20,12 +20,12 @@ TFCS1DFunctionRegressionTF::TFCS1DFunctionRegressionTF(float rangeval,
   m_startval = startval;
 }
 
-double TFCS1DFunctionRegressionTF::retransform(double value) const
+auto TFCS1DFunctionRegressionTF::retransform(double value) const -> double
 {
   return (value * m_rangeval + m_startval);
 }
 
-double TFCS1DFunctionRegressionTF::rnd_to_fct(double rnd) const
+auto TFCS1DFunctionRegressionTF::rnd_to_fct(double rnd) const -> double
 {
   double value = regression_value(rnd);
   if (m_rangeval > 0)

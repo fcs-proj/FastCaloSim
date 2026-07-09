@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSTruthState_h
 #define ISF_FASTCALOSIMEVENT_TFCSTruthState_h
@@ -24,12 +24,12 @@ public:
   };
   void set_Ekin_off(double val) { m_ekin_off = val; };
 
-  int pdgid() const { return m_pdgid; };
-  double Ekin() const { return E() - M() + m_ekin_off; };
-  double Ekin_off() const { return m_ekin_off; };
-  const TLorentzVector& vertex() const { return m_vertex; };
+  auto pdgid() const -> int { return m_pdgid; };
+  auto Ekin() const -> double { return E() - M() + m_ekin_off; };
+  auto Ekin_off() const -> double { return m_ekin_off; };
+  auto vertex() const -> const TLorentzVector& { return m_vertex; };
 
-  void Print(Option_t* option = "") const;
+  void Print(Option_t* option = "") const override;
 
 private:
   int m_pdgid;

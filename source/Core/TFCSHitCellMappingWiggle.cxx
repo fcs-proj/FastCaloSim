@@ -1,7 +1,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggle.h"
 
@@ -114,11 +114,11 @@ void TFCSHitCellMappingWiggle::initialize(
   initialize(functions, bin_low_edges);
 }
 
-FCSReturnCode TFCSHitCellMappingWiggle::simulate_hit(
+auto TFCSHitCellMappingWiggle::simulate_hit(
     Hit& hit,
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol)
+    const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
   if (!simulstate.randomEngine()) {
     return FCSFatal;
@@ -151,8 +151,8 @@ FCSReturnCode TFCSHitCellMappingWiggle::simulate_hit(
   return TFCSHitCellMapping::simulate_hit(hit, simulstate, truth, extrapol);
 }
 
-bool TFCSHitCellMappingWiggle::operator==(
-    const TFCSParametrizationBase& ref) const
+auto TFCSHitCellMappingWiggle::operator==(
+    const TFCSParametrizationBase& ref) const -> bool
 {
   if (TFCSParametrizationBase::compare(ref))
     return true;
@@ -187,7 +187,8 @@ void TFCSHitCellMappingWiggle::Print(Option_t* option) const
   }
 }
 
-bool TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
+auto TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
+    -> bool
 {
   if (IsA() != ref.IsA()) {
     FCS_MSG_DEBUG("compare(): different class types "

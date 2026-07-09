@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSLateralShapeTuning_h
 #define TFCSLateralShapeTuning_h
@@ -13,30 +13,33 @@
 
 class TFCSLateralShapeTuning : public TFCSLateralShapeParametrizationHitBase
 {
-  typedef std::map<std::string, TFCSEnergyInterpolationPiecewiseLinear*>
-      interpolationMap;
+  using interpolationMap =
+      std::map<std::string, TFCSEnergyInterpolationPiecewiseLinear*>;
 
 public:
   /// Constructor
   TFCSLateralShapeTuning(const char* name = nullptr,
                          const char* title = nullptr);
   // Destructor
-  ~TFCSLateralShapeTuning();
+  ~TFCSLateralShapeTuning() override;
   // Simulation call
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
   // Initialization from model parameter file
-  FCSReturnCode initFromModelFile(const std::string& pathToModelParameters,
-                                  int intMinEta,
-                                  int intMaxEta);
+  auto initFromModelFile(const std::string& pathToModelParameters,
+                         int intMinEta,
+                         int intMaxEta) -> FCSReturnCode;
   // Initialization from interpolation map
-  FCSReturnCode initFromMap(const interpolationMap&);
+  auto initFromMap(const interpolationMap&) -> FCSReturnCode;
   // Helper function for strip layer model
-  static double getSeriesScalingFactor(
-      double a0, double a1, double a2, double a3, double distToShowerCenter);
+  static auto getSeriesScalingFactor(double a0,
+                                     double a1,
+                                     double a2,
+                                     double a3,
+                                     double distToShowerCenter) -> double;
 
 private:
   // mapping between the parameter names of the model and its pieciewise linear

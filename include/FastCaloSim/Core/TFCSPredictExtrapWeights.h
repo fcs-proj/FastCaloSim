@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSPREDICTEXTRAPWEIGHTS_h
 #define ISF_FASTCALOSIMEVENT_TFCSPREDICTEXTRAPWEIGHTS_h
@@ -21,24 +21,24 @@ public:
                            const char* title = nullptr,
                            CaloGeo* geo = nullptr);
 
-  virtual void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
 
-  virtual ~TFCSPredictExtrapWeights();
+  ~TFCSPredictExtrapWeights() override;
 
-  virtual bool operator==(const TFCSParametrizationBase& ref) const override;
+  auto operator==(const TFCSParametrizationBase& ref) const -> bool override;
 
   // Used to decorate simulstate with extrapolation weights
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
   // Used to decorate Hit with extrapolated center positions
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
   // Status bit for chain persistency
   enum FCSfreemem
@@ -46,21 +46,21 @@ public:
     kfreemem = BIT(17)  ///< Set this bit in the TObject bit if the memory for
                         ///< m_input should be freed after reading in athena
   };
-  bool freemem() const { return TestBit(kfreemem); };
+  auto freemem() const -> bool { return TestBit(kfreemem); };
   void set_freemem() { SetBit(kfreemem); };
 
   // Initialize Neural Network
-  bool initializeNetwork(int pid,
+  auto initializeNetwork(int pid,
                          const std::string& etaBin,
-                         const std::string& FastCaloNNInputFolderName);
+                         const std::string& FastCaloNNInputFolderName) -> bool;
 
   // Get inputs needed to normalize data
-  bool getNormInputs(const std::string& etaBin,
-                     const std::string& FastCaloTXTInputFolderName);
+  auto getNormInputs(const std::string& etaBin,
+                     const std::string& FastCaloTXTInputFolderName) -> bool;
 
   // Prepare inputs to the Neural Network
-  std::map<std::string, double> prepareInputs(TFCSSimulationState& simulstate,
-                                              const float truthE) const;
+  auto prepareInputs(TFCSSimulationState& simulstate, const float truthE) const
+      -> std::map<std::string, double>;
 
   // Print()
   void Print(Option_t* option = "") const override;
@@ -70,7 +70,10 @@ public:
   {
     kUseHardcodedWeight = BIT(15)
   };
-  bool UseHardcodedWeight() const { return TestBit(kUseHardcodedWeight); };
+  auto UseHardcodedWeight() const -> bool
+  {
+    return TestBit(kUseHardcodedWeight);
+  };
   void set_UseHardcodedWeight() { SetBit(kUseHardcodedWeight); };
   void reset_UseHardcodedWeight() { ResetBit(kUseHardcodedWeight); };
 

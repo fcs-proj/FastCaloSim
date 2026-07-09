@@ -61,7 +61,7 @@ public:
 
   // virtual destructor, to ensure that it is always called, even
   // when a base class is deleted via a pointer to a derived class
-  virtual ~VNetworkLWTNN();
+  ~VNetworkLWTNN() override;
 
   /**
    * @brief Get rid of any memory objects that aren't needed to run the net.
@@ -93,7 +93,7 @@ protected:
    *
    * @param strm  output parameter, to which the description will be written.
    **/
-  virtual void print(std::ostream& strm) const override;
+  void print(std::ostream& strm) const override;
 
   /**
    * @brief Perform actions that prep data to create the net
@@ -127,7 +127,7 @@ private:
    *
    * @param tree   TTree with the json saved inside.
    **/
-  std::string readStringFromTTree(TTree& tree);
+  auto readStringFromTTree(TTree& tree) -> std::string;
 
   /**
    * @brief Get json string from TTree.

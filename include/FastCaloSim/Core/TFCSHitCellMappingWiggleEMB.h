@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSHitCellMappingWiggleEMB_h
 #define TFCSHitCellMappingWiggleEMB_h
@@ -14,11 +14,11 @@ public:
 
   /// modify one hit position to emulate the LAr accordion shape
   /// and then fills all hits into calorimeter cells
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
 private:
   //** Array for the hit-to-cell assignment accordion structure fix (wiggle)
@@ -28,7 +28,7 @@ private:
   double m_wiggleLayer2[50];
   double m_wiggleLayer3[50];
 
-  double doWiggle(double searchRand);
+  auto doWiggle(double searchRand) -> double;
 
   ClassDefOverride(TFCSHitCellMappingWiggleEMB,
                    1)  // TFCSHitCellMappingWiggleEMB

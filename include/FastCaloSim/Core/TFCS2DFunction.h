@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunction_h
 #define ISF_FASTCALOSIMEVENT_TFCS2DFunction_h
@@ -12,21 +12,21 @@ class TH2;
 class TFCS2DFunction : public TFCSFunction
 {
 public:
-  TFCS2DFunction() {};
-  ~TFCS2DFunction() {};
+  TFCS2DFunction() = default;
+  ~TFCS2DFunction() override = default;
 
-  virtual int ndim() const { return 2; };
+  auto ndim() const -> int override { return 2; };
 
   virtual void rnd_to_fct(float& valuex,
                           float& valuey,
                           float rnd0,
                           float rnd1) const = 0;
-  virtual void rnd_to_fct(float value[], const float rnd[]) const;
+  void rnd_to_fct(float value[], const float rnd[]) const override;
 
-  static double CheckAndIntegrate2DHistogram(const TH2* hist,
-                                             std::vector<double>& integral_vec,
-                                             int& first,
-                                             int& last);
+  static auto CheckAndIntegrate2DHistogram(const TH2* hist,
+                                           std::vector<double>& integral_vec,
+                                           int& first,
+                                           int& last) -> double;
 
 private:
   ClassDef(TFCS2DFunction, 1)  // TFCS2DFunction

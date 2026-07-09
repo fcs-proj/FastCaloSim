@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegression_h
 #define ISF_FASTCALOSIMEVENT_TFCS1DFunctionRegression_h
@@ -12,15 +12,15 @@
 class TFCS1DFunctionRegression : public TFCS1DFunction
 {
 public:
-  TFCS1DFunctionRegression() {};
-  ~TFCS1DFunctionRegression() {};
+  TFCS1DFunctionRegression() = default;
+  ~TFCS1DFunctionRegression() override = default;
 
   using TFCS1DFunction::rnd_to_fct;
-  virtual double rnd_to_fct(double rnd) const;
-  double regression_value(double uniform) const;
+  auto rnd_to_fct(double rnd) const -> double override;
+  auto regression_value(double uniform) const -> double;
   void set_weights(const std::vector<std::vector<double>>& fWeightMatrix0to1,
                    const std::vector<std::vector<double>>& fWeightMatrix1to2);
-  static double sigmoid(double);
+  static auto sigmoid(double) -> double;
 
 private:
   std::vector<std::vector<double>> m_fWeightMatrix0to1;

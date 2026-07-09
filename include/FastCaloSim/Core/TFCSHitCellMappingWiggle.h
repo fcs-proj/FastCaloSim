@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef TFCSHitCellMappingWiggle_h
 #define TFCSHitCellMappingWiggle_h
@@ -14,7 +14,7 @@ public:
   TFCSHitCellMappingWiggle(const char* name = nullptr,
                            const char* title = nullptr,
                            CaloGeo* geo = nullptr);
-  ~TFCSHitCellMappingWiggle();
+  ~TFCSHitCellMappingWiggle() override;
 
   void initialize(TFCS1DFunction* func);
   void initialize(const std::vector<const TFCS1DFunction*>& functions,
@@ -27,41 +27,47 @@ public:
 
   void clear();
 
-  inline unsigned int get_number_of_bins() const { return m_functions.size(); };
+  inline auto get_number_of_bins() const -> unsigned int
+  {
+    return m_functions.size();
+  };
 
-  inline double get_bin_low_edge(int bin) const { return m_bin_low_edge[bin]; };
-  inline double get_bin_up_edge(int bin) const
+  inline auto get_bin_low_edge(int bin) const -> double
+  {
+    return m_bin_low_edge[bin];
+  };
+  inline auto get_bin_up_edge(int bin) const -> double
   {
     return m_bin_low_edge[bin + 1];
   };
 
-  inline const TFCS1DFunction* get_function(int bin) const
+  inline auto get_function(int bin) const -> const TFCS1DFunction*
   {
     return m_functions[bin];
   };
-  const std::vector<const TFCS1DFunction*>& get_functions() const
+  auto get_functions() const -> const std::vector<const TFCS1DFunction*>&
   {
     return m_functions;
   };
-  const std::vector<float>& get_bin_low_edges() const
+  auto get_bin_low_edges() const -> const std::vector<float>&
   {
     return m_bin_low_edge;
   };
 
   /// modify one hit position to emulate the LAr accordion shape
   /// and then fills all hits into calorimeter cells
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
-  virtual bool operator==(const TFCSParametrizationBase& ref) const override;
+  auto operator==(const TFCSParametrizationBase& ref) const -> bool override;
 
   void Print(Option_t* option = "") const override;
 
 protected:
-  bool compare(const TFCSParametrizationBase& ref) const;
+  auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:
   //** Function for the hit-to-cell assignment accordion structure fix (wiggle)

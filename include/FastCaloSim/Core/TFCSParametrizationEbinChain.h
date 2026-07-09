@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationEbinChain_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationEbinChain_h
@@ -12,21 +12,21 @@ public:
   TFCSParametrizationEbinChain(const char* name = nullptr,
                                const char* title = nullptr)
       : TFCSParametrizationBinnedChain(name, title) {};
-  TFCSParametrizationEbinChain(const TFCSParametrizationEbinChain& ref)
-      : TFCSParametrizationBinnedChain(ref) {};
+  TFCSParametrizationEbinChain(const TFCSParametrizationEbinChain& ref) =
+      default;
 
   /// current convention is to start Ebin counting at 1, to be updated to start
   /// counting with 0
-  virtual int get_bin(TFCSSimulationState& simulstate,
-                      const TFCSTruthState*,
-                      const TFCSExtrapolationState*) const override
+  auto get_bin(TFCSSimulationState& simulstate,
+               const TFCSTruthState*,
+               const TFCSExtrapolationState*) const -> int override
   {
     return simulstate.Ebin();
   };
-  virtual const std::string get_variable_text(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState*,
-      const TFCSExtrapolationState*) const override;
+  auto get_variable_text(TFCSSimulationState& simulstate,
+                         const TFCSTruthState*,
+                         const TFCSExtrapolationState*) const
+      -> const std::string override;
 
 private:
   ClassDefOverride(TFCSParametrizationEbinChain,

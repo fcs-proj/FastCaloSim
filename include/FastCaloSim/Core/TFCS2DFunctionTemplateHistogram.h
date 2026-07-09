@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateHistogram_h
 #define ISF_FASTCALOSIMEVENT_TFCS2DFunctionTemplateHistogram_h
@@ -15,25 +15,28 @@ template<typename Txvec, typename Tyvec, typename Tz, typename Trandom = float>
 class TFCS2DFunctionTemplateHistogram : public TFCS2DFunction
 {
 public:
-  typedef TFCS1DFunction_size_t size_t;
-  typedef Trandom random_type;
-  typedef Txvec xvec_type;
-  typedef Tyvec yvec_type;
-  typedef Tz z_value_type;
+  using size_t = TFCS1DFunction_size_t;
+  using random_type = Trandom;
+  using xvec_type = Txvec;
+  using yvec_type = Tyvec;
+  using z_value_type = Tz;
 
   TFCS2DFunctionTemplateHistogram(TH2* hist = nullptr)
   {
     if (hist)
       Initialize(hist);
   };
-  ~TFCS2DFunctionTemplateHistogram() {};
+  ~TFCS2DFunctionTemplateHistogram() override = default;
 
-  std::size_t MemorySizeArray() const
+  auto MemorySizeArray() const -> std::size_t
   {
     return m_HistoBordersx.MemorySizeArray() + m_HistoBordersy.MemorySizeArray()
         + m_HistoContents.MemorySizeArray();
   };
-  std::size_t MemorySize() const { return sizeof(*this) + MemorySizeArray(); };
+  auto MemorySize() const -> std::size_t override
+  {
+    return sizeof(*this) + MemorySizeArray();
+  };
 
   /// set number of bins
   void set_nbins(size_t nbinsx, size_t nbinsy)
@@ -44,7 +47,10 @@ public:
   };
 
   /// return number of bins
-  inline size_t get_nbins() const { return m_HistoContents.get_nbins(); };
+  inline auto get_nbins() const -> size_t
+  {
+    return m_HistoContents.get_nbins();
+  };
   // inline size_t get_nbinsx() const {return m_HistoBordersx.get_nbins();};
   // inline size_t get_nbinsy() const {return m_HistoBordersy.get_nbins();};
 
@@ -191,10 +197,10 @@ public:
     // valuey = 1200.0 + rnd*500.0;
   }
 
-  virtual void rnd_to_fct(float& valuex,
-                          float& valuey,
-                          float rnd,
-                          float rnd2) const
+  void rnd_to_fct(float& valuex,
+                  float& valuey,
+                  float rnd,
+                  float rnd2) const override
   {
     if (m_HistoContents.get_nbins() == 0) {
       valuex = 0.0;
@@ -228,21 +234,28 @@ public:
           //valuey = 1200.0 + rnd2*500.0;
   }*/
 
-  inline const Txvec& get_HistoBordersx() const { return m_HistoBordersx; };
-  inline const Tyvec& get_HistoBordersy() const { return m_HistoBordersy; };
+  inline auto get_HistoBordersx() const -> const Txvec&
+  {
+    return m_HistoBordersx;
+  };
+  inline auto get_HistoBordersy() const -> const Tyvec&
+  {
+    return m_HistoBordersy;
+  };
 
   /////inline void get_XYZfromGlobal(int &ix, int &iy, int &iz, int global)
   /// const {hist;};
 
-  inline Txvec& get_HistoBordersx() { return m_HistoBordersx; };
-  inline Tyvec& get_HistoBordersy() { return m_HistoBordersy; };
+  inline auto get_HistoBordersx() -> Txvec& { return m_HistoBordersx; };
+  inline auto get_HistoBordersy() -> Tyvec& { return m_HistoBordersy; };
 
-  inline const TFCS1DFunction_HistogramContent<Tz, Trandom>& get_HistoContents()
-      const
+  inline auto get_HistoContents() const
+      -> const TFCS1DFunction_HistogramContent<Tz, Trandom>&
   {
     return m_HistoContents;
   };
-  inline TFCS1DFunction_HistogramContent<Tz, Trandom>& get_HistoContents()
+  inline auto get_HistoContents()
+      -> TFCS1DFunction_HistogramContent<Tz, Trandom>&
   {
     return m_HistoContents;
   };

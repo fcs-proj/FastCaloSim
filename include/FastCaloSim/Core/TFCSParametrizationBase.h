@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationBase_h
@@ -61,33 +61,42 @@ public:
         14)  ///< Set this bit in the TObject bit field if valid for all PDGID
   };
 
-  virtual bool is_match_pdgid(int /*id*/) const
+  virtual auto is_match_pdgid(int /*id*/) const -> bool
   {
     return TestBit(kMatchAllPDGID);
   };
-  virtual bool is_match_Ekin(float /*Ekin*/) const { return false; };
-  virtual bool is_match_eta(float /*eta*/) const { return false; };
+  virtual auto is_match_Ekin(float /*Ekin*/) const -> bool { return false; };
+  virtual auto is_match_eta(float /*eta*/) const -> bool { return false; };
 
-  virtual bool is_match_Ekin_bin(int /*Ekin_bin*/) const { return false; };
-  virtual bool is_match_calosample(int /*calosample*/) const { return false; };
+  virtual auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool
+  {
+    return false;
+  };
+  virtual auto is_match_calosample(int /*calosample*/) const -> bool
+  {
+    return false;
+  };
 
-  virtual bool is_match_all_pdgid() const { return TestBit(kMatchAllPDGID); };
-  virtual bool is_match_all_Ekin() const { return false; };
-  virtual bool is_match_all_eta() const { return false; };
-  virtual bool is_match_all_Ekin_bin() const { return false; };
-  virtual bool is_match_all_calosample() const { return false; };
+  virtual auto is_match_all_pdgid() const -> bool
+  {
+    return TestBit(kMatchAllPDGID);
+  };
+  virtual auto is_match_all_Ekin() const -> bool { return false; };
+  virtual auto is_match_all_eta() const -> bool { return false; };
+  virtual auto is_match_all_Ekin_bin() const -> bool { return false; };
+  virtual auto is_match_all_calosample() const -> bool { return false; };
 
-  virtual const std::set<int>& pdgid() const
+  virtual auto pdgid() const -> const std::set<int>&
   {
     static const std::set<int> empty;
     return empty;
   };
-  virtual double Ekin_nominal() const { return init_Ekin_nominal; };
-  virtual double Ekin_min() const { return init_Ekin_min; };
-  virtual double Ekin_max() const { return init_Ekin_max; };
-  virtual double eta_nominal() const { return init_eta_nominal; };
-  virtual double eta_min() const { return init_eta_min; };
-  virtual double eta_max() const { return init_eta_max; };
+  virtual auto Ekin_nominal() const -> double { return init_Ekin_nominal; };
+  virtual auto Ekin_min() const -> double { return init_Ekin_min; };
+  virtual auto Ekin_max() const -> double { return init_Ekin_max; };
+  virtual auto eta_nominal() const -> double { return init_eta_nominal; };
+  virtual auto eta_min() const -> double { return init_eta_min; };
+  virtual auto eta_max() const -> double { return init_eta_max; };
 
   virtual void set_match_all_pdgid() { SetBit(kMatchAllPDGID); };
   virtual void reset_match_all_pdgid() { ResetBit(kMatchAllPDGID); };
@@ -99,12 +108,13 @@ public:
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual unsigned int size() const { return 0; };
+  virtual auto size() const -> unsigned int { return 0; };
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual const TFCSParametrizationBase* operator[](unsigned int /*ind*/) const
+  virtual auto operator[](unsigned int /*ind*/) const
+      -> const TFCSParametrizationBase*
   {
     return nullptr;
   };
@@ -112,7 +122,7 @@ public:
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual TFCSParametrizationBase* operator[](unsigned int /*ind*/)
+  virtual auto operator[](unsigned int /*ind*/) -> TFCSParametrizationBase*
   {
     return nullptr;
   };
@@ -126,22 +136,23 @@ public:
   /// The == operator compares the content of instances.
   /// The implementation in the base class only returns true for a comparison
   /// with itself
-  virtual bool operator==(const TFCSParametrizationBase& ref) const
+  virtual auto operator==(const TFCSParametrizationBase& ref) const -> bool
   {
     return compare(ref);
   };
 
   /// Method in all derived classes to do some simulation
-  virtual FCSReturnCode simulate(TFCSSimulationState& simulstate,
-                                 const TFCSTruthState* truth,
-                                 const TFCSExtrapolationState* extrapol) const;
+  virtual auto simulate(TFCSSimulationState& simulstate,
+                        const TFCSTruthState* truth,
+                        const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode;
 
   /// Method in all derived classes to delete objects stored in the simulstate
   /// AuxInfo
   virtual void CleanAuxInfo(TFCSSimulationState& /*simulstate*/) const {};
 
   /// Print object information.
-  void Print(Option_t* option = "") const;
+  void Print(Option_t* option = "") const override;
 
   struct Duplicate_t
   {
@@ -149,8 +160,8 @@ public:
     std::vector<TFCSParametrizationBase*> mother;
     std::vector<unsigned int> index;
   };
-  typedef std::map<TFCSParametrizationBase*, Duplicate_t> FindDuplicates_t;
-  typedef std::map<std::string, FindDuplicates_t> FindDuplicateClasses_t;
+  using FindDuplicates_t = std::map<TFCSParametrizationBase*, Duplicate_t>;
+  using FindDuplicateClasses_t = std::map<std::string, FindDuplicates_t>;
   void FindDuplicates(FindDuplicateClasses_t& dup);
   void RemoveDuplicates();
   void RemoveNameTitle();
@@ -163,7 +174,7 @@ protected:
   static constexpr double init_eta_min = -100;  //! Do not persistify!
   static constexpr double init_eta_max = 100;  //! Do not persistify!
 
-  bool compare(const TFCSParametrizationBase& ref) const;
+  auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 public:
   /// Update outputlevel

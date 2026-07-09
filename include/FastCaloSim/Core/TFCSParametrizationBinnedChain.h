@@ -1,4 +1,4 @@
-// Copyright (c) 2024 CERN for the benefit of the FastCaloSim project
+// Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #ifndef ISF_FASTCALOSIMEVENT_TFCSParametrizationBinnedChain_h
 #define ISF_FASTCALOSIMEVENT_TFCSParametrizationBinnedChain_h
@@ -12,15 +12,14 @@ public:
                                  const char* title = nullptr)
       : TFCSParametrizationChain(name, title)
       , m_bin_start(1, 0) {};
-  TFCSParametrizationBinnedChain(const TFCSParametrizationBinnedChain& ref)
-      : TFCSParametrizationChain(ref)
-      , m_bin_start(ref.m_bin_start) {};
+  TFCSParametrizationBinnedChain(const TFCSParametrizationBinnedChain& ref) =
+      default;
 
   virtual void push_before_first_bin(TFCSParametrizationBase* param);
   virtual void push_back_in_bin(TFCSParametrizationBase* param,
                                 unsigned int bin);
 
-  virtual unsigned int get_number_of_bins() const
+  virtual auto get_number_of_bins() const -> unsigned int
   {
     return m_bin_start.size() - 1;
   };
@@ -28,20 +27,20 @@ public:
   /// this method should determine in derived classes which bin to simulate, so
   /// that the simulate method can call the appropriate TFCSParametrizationBase
   /// simulations return -1 if no bin matches
-  virtual int get_bin(TFCSSimulationState& simulstate,
-                      const TFCSTruthState*,
-                      const TFCSExtrapolationState*) const;
-  virtual const std::string get_variable_text(
-      TFCSSimulationState&,
-      const TFCSTruthState*,
-      const TFCSExtrapolationState*) const;
+  virtual auto get_bin(TFCSSimulationState& simulstate,
+                       const TFCSTruthState*,
+                       const TFCSExtrapolationState*) const -> int;
+  virtual auto get_variable_text(TFCSSimulationState&,
+                                 const TFCSTruthState*,
+                                 const TFCSExtrapolationState*) const
+      -> const std::string;
   /// print the range of a bin; for bin -1, print the allowed range
-  virtual const std::string get_bin_text(int bin) const;
+  virtual auto get_bin_text(int bin) const -> const std::string;
 
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
   void Print(Option_t* option = "") const override;
 
 protected:

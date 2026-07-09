@@ -21,7 +21,7 @@ class TFCSBinnedShowerBase : public TFCSLateralShapeParametrizationHitBase
 public:
   TFCSBinnedShowerBase(const char* name = nullptr, const char* title = nullptr);
 
-  virtual ~TFCSBinnedShowerBase();
+  ~TFCSBinnedShowerBase() override;
 
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
@@ -31,7 +31,7 @@ public:
                  ///< should only be scaled by the GAN
   };
 
-  bool OnlyScaleEnergy() const { return TestBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
 
   void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
 
@@ -49,35 +49,35 @@ public:
     m_max_hits_per_voxel = max_hits;
   }
 
-  float get_default_hit_energy() const { return m_default_hit_energy; }
+  auto get_default_hit_energy() const -> float { return m_default_hit_energy; }
 
-  int get_max_hits_per_voxel() const { return m_max_hits_per_voxel; }
+  auto get_max_hits_per_voxel() const -> int { return m_max_hits_per_voxel; }
 
   // Fill layer energies
-  virtual FCSReturnCode simulate(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const override;
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* truth,
+                const TFCSExtrapolationState* extrapol) const
+      -> FCSReturnCode override;
 
   // Do hit simulation
-  virtual FCSReturnCode simulate_hit(
-      Hit& hit,
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) override;
+  auto simulate_hit(Hit& hit,
+                    TFCSSimulationState& simulstate,
+                    const TFCSTruthState* truth,
+                    const TFCSExtrapolationState* extrapol)
+      -> FCSReturnCode override;
 
-  CaloGeo* get_geometry() { return m_geo; };
+  auto get_geometry() -> CaloGeo* { return m_geo; };
 
-  virtual void set_geometry(CaloGeo* geo) override
+  void set_geometry(CaloGeo* geo) override
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
   };
 
-  virtual int get_number_of_hits(
-      TFCSSimulationState& simulstate,
-      const TFCSTruthState* /*truth*/,
-      const TFCSExtrapolationState* /*extrapol*/) const override
+  auto get_number_of_hits(TFCSSimulationState& simulstate,
+                          const TFCSTruthState* /*truth*/,
+                          const TFCSExtrapolationState* /*extrapol*/) const
+      -> int override
   {
     long unsigned int nhits = get_n_hits(simulstate, calosample());
     if (nhits == 0)
@@ -97,20 +97,22 @@ protected:
                          long unsigned int reference_layer_index) const = 0;
 
   // Returns the number of bins that are used in the given layer
-  virtual long unsigned int get_n_hits(TFCSSimulationState& simulstate,
-                                       long unsigned int layer_index) const = 0;
+  virtual auto get_n_hits(TFCSSimulationState& simulstate,
+                          long unsigned int layer_index) const
+      -> long unsigned int = 0;
 
   /// Returns the total deposited energy in the given layer for the current
   /// event
-  virtual float get_layer_energy(TFCSSimulationState& simulstate,
-                                 long unsigned int layer_index) const = 0;
+  virtual auto get_layer_energy(TFCSSimulationState& simulstate,
+                                long unsigned int layer_index) const
+      -> float = 0;
 
   // Returns the position and energy of the corresponding hit in the given
   // event, layer and bin
-  virtual std::tuple<float, float, float> get_hit_position_and_energy(
-      TFCSSimulationState& simulstate,
-      long unsigned int layer_index,
-      long unsigned int hit_index) const = 0;
+  virtual auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
+                                           long unsigned int layer_index,
+                                           long unsigned int hit_index) const
+      -> std::tuple<float, float, float> = 0;
 
   // Delete all pointers that were created in get_event()
   virtual void delete_event(TFCSSimulationState& simulstate) const = 0;
