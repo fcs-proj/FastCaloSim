@@ -443,20 +443,20 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
     p_r = 0.25;  // Values below 0.25 are not allowed for linear pdf
   } else if (p_r > 0.75) {
     p_r = 0.75;  // Values above 0.75 are not allowed for linear pdf
-  } else if (TMath::Abs(p_r - 0.5) < std::numeric_limits<float>::epsilon()) {
+  } else if (std::abs(p_r - 0.5) < std::numeric_limits<float>::epsilon()) {
     return;  // Best upscaling is uniform sampling. Nothing to do here.
   }
 
   // Inverse CDF for linear pdf
   float r = (1. - 4. * p_r) / (2. - 4. * p_r)
-      - TMath::Sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
-                        * ((1. - 4. * p_r) / (2. - 4. * p_r))
-                    + p / ((1. / 2.) - p_r));
+      - std::sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
+                      * ((1. - 4. * p_r) / (2. - 4. * p_r))
+                  + p / ((1. / 2.) - p_r));
   if (r < 0) {
     r = (1. - 4. * p_r) / (2. - 4. * p_r)
-        + TMath::Sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
-                          * ((1. - 4. * p_r) / (2. - 4. * p_r))
-                      + p / ((1. / 2.) - p_r));
+        + std::sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
+                        * ((1. - 4. * p_r) / (2. - 4. * p_r))
+                    + p / ((1. / 2.) - p_r));
   }
 
   R_min = R_min + r / 2 * (R_max - R_min);

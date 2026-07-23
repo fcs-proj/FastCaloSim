@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCSParametrizationEkinSelectChain.h"
@@ -72,9 +73,9 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
     if (!first_in_prevbin)
       return bin;
 
-    float logEkin = TMath::Log(Ekin);
-    float logEkin_nominal = TMath::Log(first_in_bin->Ekin_nominal());
-    float logEkin_previous = TMath::Log(first_in_prevbin->Ekin_nominal());
+    float logEkin = std::log(Ekin);
+    float logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
+    float logEkin_previous = std::log(first_in_prevbin->Ekin_nominal());
     float numerator = logEkin - logEkin_previous;
     float denominator = logEkin_nominal - logEkin_previous;
     if (denominator <= 0)
@@ -100,9 +101,9 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
     if (!first_in_nextbin)
       return bin;
 
-    float logEkin = TMath::Log(Ekin);
-    float logEkin_nominal = TMath::Log(first_in_bin->Ekin_nominal());
-    float logEkin_next = TMath::Log(first_in_nextbin->Ekin_nominal());
+    float logEkin = std::log(Ekin);
+    float logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
+    float logEkin_next = std::log(first_in_nextbin->Ekin_nominal());
     float numerator = logEkin - logEkin_nominal;
     float denominator = logEkin_next - logEkin_nominal;
     if (denominator <= 0)

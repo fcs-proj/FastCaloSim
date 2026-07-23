@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
@@ -42,7 +44,7 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
 {
   std::vector<Double_t> logEkin(np);
   for (int i = 0; i < np; i++)
-    logEkin[i] = TMath::Log(Ekin[i]);
+    logEkin[i] = std::log(Ekin[i]);
   InitFromArrayInLogEkin(np, logEkin.data(), response);
 }
 
@@ -56,9 +58,8 @@ auto TFCSEnergyInterpolationPiecewiseLinear::simulate(
 
   // catch very small values of Ekin (use 1 keV here) and fix the interpolation
   // lookup to the 1keV value
-  const float logEkin = Ekin > Gaudi::Units::keV
-      ? TMath::Log(Ekin)
-      : TMath::Log(Gaudi::Units::keV);
+  const float logEkin =
+      Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV);
 
   float Emean;
   if (logEkin < m_MinMaxlogEkin.first) {
@@ -95,9 +96,8 @@ auto TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double& Ekin) const
 
   // catch very small values of Ekin (use 1 keV here) and fix the interpolation
   // lookup to the 1keV value
-  const float logEkin = Ekin > Gaudi::Units::keV
-      ? TMath::Log(Ekin)
-      : TMath::Log(Gaudi::Units::keV);
+  const float logEkin =
+      Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV);
 
   if (logEkin < m_MinMaxlogEkin.first)
     return m_linInterpol.Eval(m_MinMaxlogEkin.first);
@@ -122,8 +122,8 @@ void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t* option) const
                           << "linInterpol N=" << m_logEkin.size() << " "
                           << m_MinMaxlogEkin.first
                           << "<=log(Ekin)<=" << m_MinMaxlogEkin.second << " "
-                          << TMath::Exp(m_MinMaxlogEkin.first)
-                          << "<=Ekin<=" << TMath::Exp(m_MinMaxlogEkin.second));
+                          << std::exp(m_MinMaxlogEkin.first)
+                          << "<=Ekin<=" << std::exp(m_MinMaxlogEkin.second));
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer& R__b)

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 
 class TFCSLateralShapeParametrizationHitBase
@@ -114,9 +116,9 @@ public:
     inline auto r() const -> const auto
     {
       if (m_useXYZ)
-        return sqrt(m_eta_x * m_eta_x + m_phi_y * m_phi_y);
+        return std::sqrt(m_eta_x * m_eta_x + m_phi_y * m_phi_y);
       else
-        return m_z / sinh(m_eta_x);
+        return m_z / std::sinh(m_eta_x);
     }
     inline auto center_r() const -> const auto& { return m_center_r; }
     inline auto center_z() const -> const auto& { return m_center_z; }

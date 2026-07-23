@@ -9,10 +9,11 @@
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 // External includes
+#include <cmath>
+
 #include <RtypesCore.h>
 #include <TFile.h>
 #include <TH2F.h>
-#include <TMath.h>
 #include <TParameter.h>
 
 //=============================================
@@ -151,7 +152,7 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
     float phi, float eta, long unsigned int layer_index) const
     -> std::tuple<int, long unsigned int, long unsigned int>
 {
-  float eta_abs = TMath::Abs(eta);
+  float eta_abs = std::abs(eta);
 
   auto eta_it = std::upper_bound(m_min_eta.at(layer_index).begin(),
                                  m_min_eta.at(layer_index).end(),
@@ -200,7 +201,7 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
 
   float phi_cell_size = get_phi_cell_size(layer_index, eta);
 
-  phi_within_cell = fmod(phi_within_cell, phi_cell_size);
+  phi_within_cell = std::fmod(phi_within_cell, phi_cell_size);
 
   if (phi_within_cell < 0)
     phi_within_cell += phi_cell_size;

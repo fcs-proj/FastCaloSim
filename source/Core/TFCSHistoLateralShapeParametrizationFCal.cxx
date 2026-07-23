@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSHistoLateralShapeParametrizationFCal.h"
 
 #include "CLHEP/Random/RandFlat.h"
@@ -75,8 +77,8 @@ auto TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
     return FCSFatal;
   }
 
-  const float hit_r = r * cos(alpha) + center_r;
-  float delta_phi = r * sin(alpha) / center_r;
+  const float hit_r = r * std::cos(alpha) + center_r;
+  float delta_phi = r * std::sin(alpha) / center_r;
   // We derive the shower shapes for electrons and positively charged hadrons.
   // Particle with the opposite charge are expected to have the same shower
   // shape after the transformation: delta_phi --> -delta_phi
@@ -84,7 +86,8 @@ auto TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
     delta_phi = -delta_phi;
   const float hit_phi = delta_phi + center_phi;
 
-  hit.setXYZE(hit_r * cos(hit_phi), hit_r * sin(hit_phi), center_z, hit.E());
+  hit.setXYZE(
+      hit_r * std::cos(hit_phi), hit_r * std::sin(hit_phi), center_z, hit.E());
 
   FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " x=" << hit.x()
                           << " y=" << hit.y() << " z=" << hit.z() << " r=" << r

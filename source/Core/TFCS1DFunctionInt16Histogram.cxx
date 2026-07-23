@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS1DFunctionInt16Histogram.h"
@@ -29,7 +30,7 @@ void TFCS1DFunctionInt16Histogram::Initialize(const TH1* hist)
     if (binval < 0) {
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
-      if (TMath::Abs(fraction) > 1e-5) {
+      if (std::abs(fraction) > 1e-5) {
         FCS_MSG_WARNING("bin content is negative in histogram "
                         << hist->GetName() << " : " << hist->GetTitle()
                         << " binval=" << binval << " " << fraction * 100

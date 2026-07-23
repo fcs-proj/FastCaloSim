@@ -3,6 +3,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
+#include <cmath>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS1DFunctionHistogram.h"
@@ -146,7 +147,7 @@ auto TFCS1DFunctionHistogram::get_maxdev(TH1* h_in, TH1D* h_out) -> double
   double maxdev = 0;
   for (int i = 1; i <= h_in->GetNbinsX(); i++) {
     int bin = h_out->FindBin(h_in->GetBinCenter(i));
-    double val = fabs(h_out->GetBinContent(bin) - h_in->GetBinContent(i));
+    double val = std::fabs(h_out->GetBinContent(bin) - h_in->GetBinContent(i));
     if (val > maxdev)
       maxdev = val;
   }
@@ -188,7 +189,7 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input) -> TH1D*
     double nextBin = h_out1->GetBinContent(b + 1);
     double width = h_out1->GetBinWidth(b);
     double nextwidth = h_out1->GetBinWidth(b + 1);
-    double diff = fabs(nextBin - thisBin);
+    double diff = std::fabs(nextBin - thisBin);
     if (!skip && (diff > change || merged)) {
       binborder.push_back(h_out1->GetBinLowEdge(b + 1));
       content.push_back(thisBin);
@@ -258,9 +259,9 @@ auto TFCS1DFunctionHistogram::non_linear(
   if ((y2 - y1) < eps)
     x = x1;
   else {
-    double b = (x1 - x2) / (sqrt(y1) - sqrt(y2));
-    double a = x1 - b * sqrt(y1);
-    x = a + b * sqrt(y);
+    double b = (x1 - x2) / (std::sqrt(y1) - std::sqrt(y2));
+    double a = x1 - b * std::sqrt(y1);
+    x = a + b * std::sqrt(y);
   }
   return x;
 }

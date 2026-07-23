@@ -154,7 +154,7 @@ auto TFCSBinnedShower::find_best_match(float eta_center,
       float phi_diff = (phi_mod - phi_within_cell) / phi_cell_size;
       dist2 = dist2 + phi_diff * phi_diff;
     }
-    float distance = TMath::Sqrt(dist2);
+    float distance = std::sqrt(dist2);
 
     if (distance < best_distance) {
       best_distance = distance;
@@ -373,7 +373,7 @@ auto TFCSBinnedShower::get_coordinates(TFCSSimulationState& simulstate,
         simulstate, R_min, R_max, alpha_min, alpha_max, layer_index, bin_index);
   }
   float R;
-  if (TMath::Abs(R_max - R_min) > std::numeric_limits<float>::epsilon()) {
+  if (std::abs(R_max - R_min) > std::numeric_limits<float>::epsilon()) {
     R = CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
   } else {
     R = R_min;  // If the range is too small, just use the minimum value
@@ -473,20 +473,20 @@ void TFCSBinnedShower::upscale(TFCSSimulationState& simulstate,
     p_r = 0.25;  // Values below 0.25 are not allowed for linear pdf
   } else if (p_r > 0.75) {
     p_r = 0.75;  // Values above 0.75 are not allowed for linear pdf
-  } else if (TMath::Abs(p_r - 0.5) < std::numeric_limits<float>::epsilon()) {
+  } else if (std::abs(p_r - 0.5) < std::numeric_limits<float>::epsilon()) {
     return;  // Best upscaling is uniform sampling. Nothing to do here.
   }
 
   // Inverse CDF for linear pdf
   float r = (1. - 4. * p_r) / (2. - 4. * p_r)
-      - TMath::Sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
-                        * ((1. - 4. * p_r) / (2. - 4. * p_r))
-                    + p / ((1. / 2.) - p_r));
+      - std::sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
+                      * ((1. - 4. * p_r) / (2. - 4. * p_r))
+                  + p / ((1. / 2.) - p_r));
   if (r < 0) {
     r = (1. - 4. * p_r) / (2. - 4. * p_r)
-        + TMath::Sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
-                          * ((1. - 4. * p_r) / (2. - 4. * p_r))
-                      + p / ((1. / 2.) - p_r));
+        + std::sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
+                        * ((1. - 4. * p_r) / (2. - 4. * p_r))
+                    + p / ((1. / 2.) - p_r));
   }
 
   R_min = R_min + r / 2 * (R_max - R_min);
