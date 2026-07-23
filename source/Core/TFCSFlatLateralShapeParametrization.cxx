@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSFlatLateralShapeParametrization.h"
 
 #include "CLHEP/Random/RandFlat.h"
@@ -79,8 +81,8 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
   alpha = 2 * TMath::Pi() * CLHEP::RandFlat::shoot(simulstate.randomEngine());
   r = m_dR * CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
-  float delta_eta = r * cos(alpha);
-  float delta_phi = r * sin(alpha);
+  float delta_eta = r * std::cos(alpha);
+  float delta_phi = r * std::sin(alpha);
 
   hit.setEtaPhiZE(center_eta + delta_eta,
                   center_phi + delta_phi,

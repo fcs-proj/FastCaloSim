@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
 #include <iostream>
 #include <vector>
 
@@ -46,7 +47,7 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInEkin(Int_t np,
 {
   std::vector<Double_t> logEkin(np);
   for (int i = 0; i < np; ++i)
-    logEkin[i] = TMath::Log(Ekin[i]);
+    logEkin[i] = std::log(Ekin[i]);
   InitFromArrayInLogEkin(np, logEkin.data(), response, opt, valbeg, valend);
 }
 
@@ -65,8 +66,7 @@ auto TFCSEnergyInterpolationSpline::simulate(
   // catch very small values of Ekin (use 1 keV here) and fix the spline lookup
   // to the 1keV value
   const float logEkin =
-      (Ekin > Gaudi::Units::keV ? TMath::Log(Ekin)
-                                : TMath::Log(Gaudi::Units::keV));
+      (Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV));
   if (logEkin < m_spline.GetXmin()) {
     Emean = m_spline.Eval(m_spline.GetXmin()) * Einit;
   } else {
@@ -106,6 +106,6 @@ void TFCSEnergyInterpolationSpline::Print(Option_t* option) const
                           << "Spline N=" << m_spline.GetNp() << " "
                           << m_spline.GetXmin()
                           << "<=log(Ekin)<=" << m_spline.GetXmax() << " "
-                          << TMath::Exp(m_spline.GetXmin())
-                          << "<=Ekin<=" << TMath::Exp(m_spline.GetXmax()));
+                          << std::exp(m_spline.GetXmin())
+                          << "<=Ekin<=" << std::exp(m_spline.GetXmax()));
 }

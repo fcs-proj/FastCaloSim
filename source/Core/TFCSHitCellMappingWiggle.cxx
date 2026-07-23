@@ -3,6 +3,8 @@
 
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggle.h"
 
 #include <TClass.h>
@@ -124,7 +126,7 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
     return FCSFatal;
   }
 
-  float eta = fabs(hit.eta());
+  float eta = std::fabs(hit.eta());
   if (eta < m_bin_low_edge[0] || eta >= m_bin_low_edge[get_number_of_bins()]) {
     return TFCSHitCellMapping::simulate_hit(hit, simulstate, truth, extrapol);
   }

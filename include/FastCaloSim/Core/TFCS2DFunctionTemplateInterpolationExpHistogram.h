@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS2DFunctionTemplateHistogram.h"
@@ -78,7 +79,7 @@ public:
     }
 
     if (dfrac > 0.0 && dfracprev > 0.0) {
-      ldfrac = log(dfrac / l) - log(dfracprev / lprev);
+      ldfrac = std::log(dfrac / l) - std::log(dfracprev / lprev);
     }
 
     Trandom dfracnext = 0.0;
@@ -92,7 +93,7 @@ public:
     }
 
     if (dfrac > 0.0 && dfracnext > 0.0) {
-      ldfracnext = log(dfracnext / lnext) - log(dfrac / l);
+      ldfracnext = std::log(dfracnext / lnext) - std::log(dfrac / l);
     }
 
     Trandom beta = 0.0, betaprev = 0.0, betanext = 0.0;

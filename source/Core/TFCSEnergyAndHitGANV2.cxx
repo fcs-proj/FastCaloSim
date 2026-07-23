@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <limits>
 
@@ -15,6 +17,7 @@
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TF1.h"
+#include "TMath.h"
 
 //=============================================
 //======= TFCSEnergyAndHitGANV2 =========
@@ -244,8 +247,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
       const int bin = get_bin(simulstate, truth, extrapol);
       if (bin >= 0 && bin < (int)get_number_of_bins()) {
         for (unsigned int ichain = m_bin_start[bin];
-             ichain < TMath::Min(m_bin_start[bin] + get_nr_of_init(bin),
-                                 m_bin_start[bin + 1]);
+             ichain < std::min(m_bin_start[bin] + get_nr_of_init(bin),
+                               m_bin_start[bin + 1]);
              ++ichain)
         {
           FCS_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
@@ -296,10 +299,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     FCS_MSG_VERBOSE(" Layer " << layer << " Extrap eta " << center_eta
                               << " phi " << center_phi << " R " << center_r);
 
-    const float dist000 =
-        TMath::Sqrt(center_r * center_r + center_z * center_z);
-    const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
-                                        / (1.0 + TMath::Exp(-2 * center_eta)));
+    const float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
+    const float eta_jakobi = std::abs(2.0 * std::exp(-center_eta)
+                                      / (1.0 + std::exp(-2 * center_eta)));
 
     int nHitsAlpha {};
     int nHitsR {};
@@ -335,14 +337,14 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           if (yBinNum == 1) {
             // nbins in alpha depend on circumference length
             const double r = x->GetBinUpEdge(ix);
-            nHitsAlpha = ceil(2 * TMath::Pi() * r / binResolution);
+            nHitsAlpha = std::ceil(2 * TMath::Pi() * r / binResolution);
           } else {
             // d = 2*r*sin (a/2r) this distance at the upper r must be 1mm for
             // layer 1 or 5, 5mm otherwise.
             const double angle = y->GetBinUpEdge(iy) - y->GetBinLowEdge(iy);
             const double r = x->GetBinUpEdge(ix);
-            const double d = 2 * r * sin(angle / 2 * r);
-            nHitsAlpha = ceil(d / binResolution);
+            const double d = 2 * r * std::sin(angle / 2 * r);
+            nHitsAlpha = std::ceil(d / binResolution);
           }
 
           if (layer != 1 && layer != 5) {
@@ -367,7 +369,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                                                   x->GetBinLowEdge(ix),
                                                   x->GetBinUpEdge(ix));
                 double rand_r =
-                    log((a - x->GetBinLowEdge(ix)) / (x->GetBinWidth(ix)))
+                    std::log((a - x->GetBinLowEdge(ix)) / (x->GetBinWidth(ix)))
                     / fitResults.at(layer)[ix - 1];
                 while ((rand_r < x->GetBinLowEdge(ix)
                         || rand_r > x->GetBinUpEdge(ix))
@@ -376,8 +378,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                   a = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
                                              x->GetBinLowEdge(ix),
                                              x->GetBinUpEdge(ix));
-                  rand_r =
-                      log((a - x->GetBinLowEdge(ix)) / (x->GetBinWidth(ix)))
+                  rand_r = std::log((a - x->GetBinLowEdge(ix))
+                                    / (x->GetBinWidth(ix)))
                       / fitResults.at(layer)[ix - 1];
                   tries++;
                 }
@@ -416,8 +418,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             hit.set_E(Einit * energyInVoxel / (nHitsAlpha * nHitsR));
 
             if (layer <= 20) {
-              float delta_eta_mm = r * cos(alpha);
-              float delta_phi_mm = r * sin(alpha);
+              float delta_eta_mm = r * std::cos(alpha);
+              float delta_phi_mm = r * std::sin(alpha);
 
               FCS_MSG_VERBOSE("delta_eta_mm " << delta_eta_mm
                                               << " delta_phi_mm "
@@ -444,8 +446,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               FCS_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                           << " layer " << layer);
             } else {  // FCAL is in (x,y,z)
-              const float hit_r = r * cos(alpha) + center_r;
-              float delta_phi = r * sin(alpha) / center_r;
+              const float hit_r = r * std::cos(alpha) + center_r;
+              float delta_phi = r * std::sin(alpha) / center_r;
               // We derive the shower shapes for electrons and positively
               // charged hadrons. Particle with the opposite charge are expected
               // to have the same shower shape after the transformation:
@@ -454,8 +456,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                 delta_phi = -delta_phi;
               const float hit_phi =
                   TVector2::Phi_mpi_pi(center_phi + delta_phi);
-              hit.set_eta_x(hit_r * cos(hit_phi));
-              hit.set_phi_y(hit_r * sin(hit_phi));
+              hit.set_eta_x(hit_r * std::cos(hit_phi));
+              hit.set_phi_y(hit_r * std::sin(hit_phi));
               hit.set_z(center_z);
               FCS_MSG_VERBOSE(" Hit x " << hit.x() << " y " << hit.y()
                                         << " layer " << layer);

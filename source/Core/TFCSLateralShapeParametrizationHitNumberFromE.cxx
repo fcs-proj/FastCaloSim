@@ -2,6 +2,8 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitNumberFromE.h"
 
 #include <TClass.h>
@@ -58,7 +60,7 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     return 1;
   }
 
-  double sqrtE = sqrt(energy / 1000.0);
+  double sqrtE = std::sqrt(energy / 1000.0);
   double sigma_stochastic = m_stochastic / sqrtE;
   double sigma_stochastic_hadron = m_stochastic_hadron / sqrtE;
 

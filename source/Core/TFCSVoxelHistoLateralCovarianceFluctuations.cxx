@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSVoxelHistoLateralCovarianceFluctuations.h"
 
 #include "CLHEP/Random/RandFlat.h"
@@ -157,10 +159,10 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
       variance = 0;
     }
     genPars[iPar] = CLHEP::RandGauss::shoot(
-        simulstate.randomEngine(), rotParMeans[iPar], sqrt(variance));
+        simulstate.randomEngine(), rotParMeans[iPar], std::sqrt(variance));
     FCS_MSG_DEBUG("genPars[" << iPar << "]=" << genPars[iPar]
                              << " rotParMeans[iPar]=" << rotParMeans[iPar]
-                             << " sqrt(variance)=" << sqrt(variance));
+                             << " sqrt(variance)=" << std::sqrt(variance));
   }
   genPars = m_EigenVectors[Ebin - 1] * genPars;
 }
@@ -338,9 +340,9 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     deta_hit_minus_extrapol = -deta_hit_minus_extrapol;
 
   float phi_dist2r = 1.0;
-  float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-hit.eta())
-                                / (1.0 + TMath::Exp(-2 * hit.eta())));
+  float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
+  float eta_jakobi =
+      std::abs(2.0 * std::exp(-hit.eta()) / (1.0 + std::exp(-2 * hit.eta())));
 
   float deta_hit_minus_extrapol_mm =
       deta_hit_minus_extrapol * eta_jakobi * dist000;
@@ -348,10 +350,10 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
       dphi_hit_minus_extrapol * center_r * phi_dist2r;
 
   float alpha_mm =
-      TMath::ATan2(dphi_hit_minus_extrapol_mm, deta_hit_minus_extrapol_mm);
+      std::atan2(dphi_hit_minus_extrapol_mm, deta_hit_minus_extrapol_mm);
   float radius_mm =
-      TMath::Sqrt(dphi_hit_minus_extrapol_mm * dphi_hit_minus_extrapol_mm
-                  + deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
+      std::sqrt(dphi_hit_minus_extrapol_mm * dphi_hit_minus_extrapol_mm
+                + deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
 
   int ix;
   int iy = voxel_template->GetYaxis()->FindBin(radius_mm) - 1;
@@ -361,7 +363,8 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     ix = 0;
   } else {
     if (alpha_mm < 0)
-      ix = voxel_template->GetXaxis()->FindBin(2 * TMath::Pi() - fabs(alpha_mm))
+      ix = voxel_template->GetXaxis()->FindBin(2 * TMath::Pi()
+                                               - std::fabs(alpha_mm))
           - 1;
     else
       ix = voxel_template->GetXaxis()->FindBin(alpha_mm) - 1;

@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCS2DFunctionLateralShapeParametrization.h"
 
 #include "CLHEP/Random/RandFlat.h"
@@ -113,8 +115,8 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  float delta_eta_mm = r * cos(alpha);
-  float delta_phi_mm = r * sin(alpha);
+  float delta_eta_mm = r * std::cos(alpha);
+  float delta_phi_mm = r * std::sin(alpha);
 
   // Particles with negative eta are expected to have the same shape as those
   // with positive eta after transformation: delta_eta --> -delta_eta
@@ -126,9 +128,9 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi_mm = -delta_phi_mm;
 
-  const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
-                                      / (1.0 + TMath::Exp(-2 * center_eta)));
+  const float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
+  const float eta_jakobi =
+      std::abs(2.0 * std::exp(-center_eta) / (1.0 + std::exp(-2 * center_eta)));
 
   const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
   const float delta_phi = delta_phi_mm / center_r;

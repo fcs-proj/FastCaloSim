@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSParametrizationAbsEtaSelectChain.h"
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
@@ -15,7 +17,7 @@ auto TFCSParametrizationAbsEtaSelectChain::get_bin(
     const TFCSTruthState*,
     const TFCSExtrapolationState* extrapol) const -> int
 {
-  return val_to_bin(TMath::Abs(extrapol->IDCaloBoundary_eta()));
+  return val_to_bin(std::abs(extrapol->IDCaloBoundary_eta()));
 }
 
 auto TFCSParametrizationAbsEtaSelectChain::get_bin_text(int bin) const

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
 class MeanAndRMS
 {
@@ -61,21 +61,21 @@ public:
   {
     double r2 = rms2();
     if (r2 >= 0)
-      return sqrt(r2);
+      return std::sqrt(r2);
     else
       return 0;
   };
   double mean_error() const
   {
     if (m_w > 0)
-      return rms() / sqrt(m_w);
+      return rms() / std::sqrt(m_w);
     else
       return 0;
   };
   double rms_error() const
   {
     if (m_w > 0)
-      return rms() / sqrt(2 * m_w);
+      return rms() / std::sqrt(2 * m_w);
     else
       return 0;
   };
