@@ -122,6 +122,23 @@ ROOT_GENERATE_DICTIONARY( ${_dictName} MODULE ${_libName} LINKDEF include/FastCa
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
 deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim fmt::fmt)
 
+# ROOT >= 6.40 emits the generated dictionary as its own (object-library) target
+# and links it PRIVATE into the module. In a static build (BUILD_SHARED_LIBS=OFF)
+# CMake propagates that private dependency into the library's public
+# INTERFACE_LINK_LIBRARIES as $<LINK_ONLY:FastCaloSim_dict>, and
+# install(EXPORT) then rejects the exported target because the dictionary helper
+# is not itself installed/exported. The dictionary object is already compiled
+# into the archive, so consumers never need to link it separately -- strip it
+# from the interface. (Harmless on shared builds / older ROOT: guarded below.)
+if(NOT BUILD_SHARED_LIBS AND TARGET FastCaloSim_dict)
+  get_target_property(_fcs_ill FastCaloSim_FastCaloSim INTERFACE_LINK_LIBRARIES)
+  if(_fcs_ill)
+    list(REMOVE_ITEM _fcs_ill "$<LINK_ONLY:FastCaloSim_dict>" "FastCaloSim_dict")
+    set_target_properties(FastCaloSim_FastCaloSim
+      PROPERTIES INTERFACE_LINK_LIBRARIES "${_fcs_ill}")
+  endif()
+endif()
+
 include(GenerateExportHeader)
 generate_export_header(
     FastCaloSim_FastCaloSim
