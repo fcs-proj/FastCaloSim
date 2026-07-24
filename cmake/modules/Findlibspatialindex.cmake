@@ -42,3 +42,7 @@ if(NOT TARGET spatialindex)
     set(BUILD_TESTING ON CACHE BOOL "Enable tests again" FORCE)
   endif()
 endif()
+
+if(TARGET spatialindex AND NOT TARGET libspatialindex::spatialindex)
+  add_library(libspatialindex::spatialindex ALIAS spatialindex)
+endif()
