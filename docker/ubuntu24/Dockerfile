@@ -19,7 +19,7 @@ RUN apt-get update -qq \
 
 # Build CMake from source
 # See https://cmake.org/install/ for build instructions
-ARG CMAKE_VERSION=3.29.2
+ARG CMAKE_VERSION=3.30.6
 RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz \
  && tar -xzvf cmake-${CMAKE_VERSION}.tar.gz \
  && cd cmake-${CMAKE_VERSION} \
@@ -32,7 +32,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cm
 # Build ROOT from source
 # Note: mathmore is needed for interpolation, clad is deactivated due to build issues
 # See https://root.cern/install/build_from_source/ for build instructions
-ARG ROOT_VERSION=6-30-06
+ARG ROOT_VERSION=6-40-02
 RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-project/root.git root_src \
  && mkdir root_build && cd root_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -46,7 +46,7 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
 # Build Geant4 from source with GDML support and installed data
 # Note: -ffp-contract=off -fno-fast-math ensures floating point reproducibility across optimization levels
 # See https://geant4-userdoc.web.cern.ch/UsersGuides/InstallationGuide/html/buildtools.html for build instructions
-ARG GEANT4_VERSION=11.2.1
+ARG GEANT4_VERSION=11.4.1
 RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/geant4 geant4_src \
  && mkdir geant4_build && cd geant4_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -61,7 +61,7 @@ RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/ge
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
-ARG ONNXRUNTIME_VERSION=1.24.4
+ARG ONNXRUNTIME_VERSION=1.26.0
 RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
  && mkdir onnx_build && cd onnx_build \
  && ../onnx_src/build.sh \
@@ -80,7 +80,7 @@ RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Mi
 
 # Build lwtnn for inference from source
 # See https://github.com/lwtnn/lwtnn for instructions
-ARG LWTNN_VERSION=2.13
+ARG LWTNN_VERSION=2.14.1
 RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtnn.git lwtnn_src \
  && mkdir lwtnn_build && cd lwtnn_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -93,7 +93,7 @@ RUN git clone --branch v${LWTNN_VERSION} --depth=1 https://github.com/lwtnn/lwtn
 
 # Build CLHEP from source
 # See https://gitlab.cern.ch/CLHEP/CLHEP for instructions
-ARG CLHEP_VERSION=2_4_7_1
+ARG CLHEP_VERSION=2_4_7_2
 RUN git clone --branch CLHEP_${CLHEP_VERSION} --depth=1 https://gitlab.cern.ch/CLHEP/CLHEP.git clhep_src \
  && mkdir clhep_build && cd clhep_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
