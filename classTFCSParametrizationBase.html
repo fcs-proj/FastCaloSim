@@ -238,6 +238,10 @@
               <span class="m-doc-wrap-bumper">void <a href="#a28c4f407c0a95bd7e8a75e4b9e9cb0db" class="m-doc">CleanAuxInfo</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp;) const <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#ac06578dd11c75df3d6f56e295de8e6fa" class="m-doc">fixHists</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd></dd>
             <dt id="a1c92a15a314481c1662c8ddc43ec8001">
               <span class="m-doc-wrap-bumper">void <a href="#a1c92a15a314481c1662c8ddc43ec8001" class="m-doc-self">Print</a>(</span><span class="m-doc-wrap">Option_t* option = &quot;&quot;) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
@@ -363,6 +367,12 @@
               <span class="m-doc-wrap-bumper">void TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a28c4f407c0a95bd7e8a75e4b9e9cb0db" class="m-doc-self">CleanAuxInfo</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp;) const <span class="m-label m-warning">virtual</span></span></span>
             </h3>
 <p>Method in all derived classes to delete objects stored in the simulstate AuxInfo</p>
+          </div></section>
+          <section class="m-doc-details" id="ac06578dd11c75df3d6f56e295de8e6fa"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSParametrizationBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac06578dd11c75df3d6f56e295de8e6fa" class="m-doc-self">fixHists</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+<p>Called immediately after being read from file to fix histograms that erroneously have kIsOnHeap set. See ATLASSIM-7031.</p>
           </div></section>
         </section>
       </div>
