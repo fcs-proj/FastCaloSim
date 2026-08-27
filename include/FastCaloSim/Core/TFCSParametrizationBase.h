@@ -150,6 +150,10 @@ public:
   /// AuxInfo
   virtual void CleanAuxInfo(TFCSSimulationState& /*simulstate*/) const {};
 
+  /// Called immediately after being read from file to fix histograms that
+  /// erroneously have kIsOnHeap set. See ATLASSIM-7031.
+  virtual void fixHists() {}
+
   /// Print object information.
   void Print(Option_t* option = "") const override;
 

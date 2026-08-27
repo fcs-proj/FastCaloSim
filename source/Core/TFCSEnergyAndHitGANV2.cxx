@@ -143,9 +143,6 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     return false;
   }
 
-  // Protect the GAN inference and network outputs when the same
-  // parametrization object is shared between threads (see ATLASSIM-7031)
-  std::scoped_lock lock(m_mutex);
   TFCSGANEtaSlice::NetworkOutputs outputs =
       m_slice->GetNetworkOutputs(truth, extrapol, simulstate);
   FCS_MSG_VERBOSE("network outputs size: " << outputs.size());
@@ -172,11 +169,6 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
   int vox = 0;
   for (const auto& [layer, h] : binsInLayers) {
-    if (h.IsZombie()) {
-      FCS_MSG_ERROR("Histogram for layer " << layer << " is broken");
-      return false;
-    }
-
     const int xBinNum = h.GetNbinsX();
     const int yBinNum = h.GetNbinsY();
     const TAxis* x = h.GetXaxis();
@@ -623,4 +615,14 @@ auto TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
                                    << x->GetBinUpEdge(ix) << ")");
   }
   return binsInAlphaInRBin;
+}
+
+void TFCSEnergyAndHitGANV2::fixHists()
+{
+  m_param.fixHists();
+  // m_slice is persistified as well and holds its own copy of the binning
+  // histograms, so it needs the same treatment. See ATLASSIM-7031.
+  if (m_slice != nullptr) {
+    m_slice->fixHists();
+  }
 }

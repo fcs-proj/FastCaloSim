@@ -283,3 +283,8 @@ void TFCSGANEtaSlice::Print() const
   FCS_MSG_INFO("  etaMax: " << m_etaMax);
   m_param.Print();
 }
+
+void TFCSGANEtaSlice::fixHists()
+{
+  m_param.fixHists();
+}
