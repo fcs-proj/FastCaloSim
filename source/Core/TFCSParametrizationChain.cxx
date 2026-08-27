@@ -269,8 +269,13 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
         }
         if (R__t) {
           R__t->fixHists();
-          R__stl.emplace_back(R__t.release());
+        } else {
+          Error("TFCSParametrizationChain::Streamer",
+                "Failed to read element %d of %d in the parametrization chain",
+                R__i,
+                R__n);
         }
+        R__stl.emplace_back(R__t.release());
       }
 
       R__b.CheckByteCount(R__s, R__c, TFCSParametrizationChain::IsA());
