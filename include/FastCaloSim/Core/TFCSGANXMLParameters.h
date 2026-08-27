@@ -29,6 +29,10 @@ public:
                          const std::string& FastCaloGANInputFolderName);
   void Print() const;
 
+  /// Called immediately after being read from file to fix histograms that
+  /// erroneously have kIsOnHeap set. See ATLASSIM-7031.
+  void fixHists();
+
   auto GetRelevantLayers() const -> const std::vector<int>&
   {
     return m_relevantlayers;

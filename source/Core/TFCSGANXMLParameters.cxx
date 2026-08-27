@@ -14,7 +14,9 @@
 
 #include <libxml/parser.h>
 
+#include "RVersion.h"
 #include "TMath.h"
+#include "TObject.h"
 
 namespace
 {
@@ -33,6 +35,19 @@ auto getXmlAttrInt(xmlNodePtr node, const char* name) -> int
 {
   const std::string attribute = getXmlAttr(node, name);
   return attribute.empty() ? 0 : std::stoi(attribute);
+}
+
+// Clear the kIsOnHeap flag, which ROOT can erroneously set on objects living
+// inside STL containers. Only ROOT >= 6.40 can do this: TObject::ResetBit
+// cannot, as kIsOnHeap (0x01000000) is masked out by kBitMask (0x00ffffff).
+// On older versions the caller's SetDirectory(nullptr) is what keeps the
+// histogram safe, by removing it from the directory list that the close-time
+// delete walks. See ATLASSIM-7031.
+void markNotOnHeap([[maybe_unused]] TObject& obj)
+{
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
+  ROOT::Internal::MarkTObjectAsNotOnHeap(obj);
+#endif
 }
 }  // namespace
 
@@ -135,6 +150,7 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                       // owned by this object and must not be registered in
                       // the (thread-unsafe) global directory
                       h.SetDirectory(nullptr);
+                      markNotOnHeap(h);
                     }
                   }
                 }
@@ -169,12 +185,6 @@ void TFCSGANXMLParameters::Print() const
     int layer = element.first;
     const TH2D* h = &element.second;
 
-    if (h->IsZombie()) {
-      FCS_MSG_WARNING("Histogram for layer " << layer
-                                             << " is broken. Skipping.");
-      continue;
-    }
-
     int xBinNum = h->GetNbinsX();
     const TAxis* x = h->GetXaxis();
 
@@ -190,5 +200,22 @@ void TFCSGANXMLParameters::Print() const
       FCS_MSG(INFO) << x->GetBinUpEdge(ix) << ",";
     }
     FCS_MSG(INFO) << END_FCS_MSG(INFO);
+  }
+}
+
+void TFCSGANXMLParameters::fixHists()
+{
+  for (auto& [layer, h] : m_binning) {
+    // The histograms we've read in are in an STL container. Rarely, ROOT can
+    // falsely set the kIsOnHeap flag on one of them, and it will then try to
+    // delete a histogram it does not own when the file is closed, crashing
+    // later on. Detaching from the TDirectory is what prevents this: the
+    // close-time delete only reaches objects on the directory's own list, so
+    // a detached histogram is safe even with kIsOnHeap still set.
+    //
+    // Upstream Athena calls TObject::ResetBit here, which is a no-op; see
+    // markNotOnHeap above. See ATLASSIM-7031.
+    h.SetDirectory(nullptr);
+    markNotOnHeap(h);
   }
 }
