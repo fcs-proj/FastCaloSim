@@ -8,3 +8,4 @@ pre-commit
 distinctipy
 scipy
 tqdm
+clang-format==20.1.8
