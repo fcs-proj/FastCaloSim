@@ -174,7 +174,7 @@ jobs:
     strategy:
       matrix:
         # See https://lcginfo.cern.ch/ for info on available LCG releases
-        lcg: [ LCG_106, LCG_107a ]
+        lcg: [ LCG_108, LCG_110 ]
     steps:
     - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -186,10 +186,7 @@ jobs:
           source .github/scripts/setup_pyvenv.sh
 
           echo "::group::Install Python test dependencies"
-          pip install --user pipreqs
-          pipreqs test/python --mode no-pin
           pip install --user -r test/python/requirements.txt
-          pip install --user --verbose --upgrade --force-reinstall --ignore-installed pygeosimplify
 
           echo "::group::Configure"
           cmake "--preset=ci-linux-lcg"
@@ -216,12 +213,12 @@ jobs:
 
     strategy:
       matrix:
-        releases: [ 2025-01-28 ]
+        releases: [ 2026-04-08 ]
 
     env:
       KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
       KEY4HEP_VERSION: ${{ matrix.releases }}
-      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt
+      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc14-opt
     steps:
     - uses: actions/checkout@v6
 
@@ -244,10 +241,7 @@ jobs:
             source .github/scripts/setup_pyvenv.sh
 
             echo "::group::Install Python test dependencies"
-            pip install --user pipreqs
-            pipreqs test/python --mode no-pin
             pip install --user -r test/python/requirements.txt
-            pip install --user --verbose --upgrade --force-reinstall --ignore-installed pygeosimplify
 
             echo "::group::Configure"
             cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'

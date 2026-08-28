@@ -1,0 +1,6 @@
+# Python dependencies of the plotting scripts in test/python/scripts.
+matplotlib
+numpy
+pandas
+Pillow
+pygeosimplify

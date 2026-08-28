@@ -7,6 +7,10 @@ macro(default name)
 endmacro()
 
 default(FORMAT_COMMAND clang-format)
+# clang-format's output changes between releases, so the whole tree must be
+# formatted with one version. The dev containers pin this exact version via
+# docker/*/python_packages.txt; keep the two in sync when bumping.
+default(EXPECTED_FORMAT_VERSION 20.1.8)
 default(
     PATTERNS
     source/*.cxx source/*.h
@@ -21,6 +25,26 @@ set(args OUTPUT_VARIABLE output)
 if(FIX)
   set(flag -i)
   set(args "")
+endif()
+
+execute_process(
+    COMMAND "${FORMAT_COMMAND}" --version
+    RESULT_VARIABLE version_result
+    OUTPUT_VARIABLE version_output
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+if(NOT version_result EQUAL "0")
+  message(FATAL_ERROR "'${FORMAT_COMMAND}': could not be run to query its version")
+endif()
+if(NOT version_output MATCHES "([0-9]+\\.[0-9]+\\.[0-9]+)")
+  message(WARNING "Could not parse a version from '${version_output}'")
+elseif(NOT CMAKE_MATCH_1 VERSION_EQUAL EXPECTED_FORMAT_VERSION)
+  message(WARNING
+      "clang-format ${CMAKE_MATCH_1} does not match the expected version "
+      "${EXPECTED_FORMAT_VERSION}, so results will differ from CI. The dev "
+      "containers ship the expected version; outside them install it with "
+      "'pip install clang-format==${EXPECTED_FORMAT_VERSION}'."
+  )
 endif()
 
 file(GLOB_RECURSE files ${PATTERNS})
