@@ -186,10 +186,7 @@ jobs:
           source .github/scripts/setup_pyvenv.sh
 
           echo "::group::Install Python test dependencies"
-          pip install --user pipreqs
-          pipreqs test/python --mode no-pin
           pip install --user -r test/python/requirements.txt
-          pip install --user --verbose --upgrade --force-reinstall --ignore-installed pygeosimplify
 
           echo "::group::Configure"
           cmake "--preset=ci-linux-lcg"
@@ -244,10 +241,7 @@ jobs:
             source .github/scripts/setup_pyvenv.sh
 
             echo "::group::Install Python test dependencies"
-            pip install --user pipreqs
-            pipreqs test/python --mode no-pin
             pip install --user -r test/python/requirements.txt
-            pip install --user --verbose --upgrade --force-reinstall --ignore-installed pygeosimplify
 
             echo "::group::Configure"
             cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
