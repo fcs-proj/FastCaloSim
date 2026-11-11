@@ -36,8 +36,8 @@ public:
    * @param pos The position to query
    * @return ID of the cell whose rectangle contains the position.
    *
-   * The rectangles of neighbouring cells can overlap slightly. Where several
-   * contain the position, the cell with the nearest rectangle centre is
+   * The rectangles of neighboring cells can overlap slightly. Where several
+   * contain the position, the cell with the nearest rectangle center is
    * returned (the smaller ID on an exact tie). Where none contains it (in a
    * gap between cells or outside the layer), the cell with the nearest
    * rectangle is returned.

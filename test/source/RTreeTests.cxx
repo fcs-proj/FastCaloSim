@@ -24,13 +24,13 @@ namespace
 {
 const auto kEtaPhi = RTreeHelpers::CoordinateSystem::EtaPhiR;
 
-// A cell centred at (eta, phi) with full widths (deta, dphi)
+// A cell centered at (eta, phi) with full widths (deta, dphi)
 auto eta_phi_cell(uint64_t id, double eta, double phi, double deta, double dphi)
     -> Cell
 {
-  const Position centre {0, 0, 0, eta, phi, 0};
+  const Position center {0, 0, 0, eta, phi, 0};
   return Cell(
-      id, centre, 0, true, false, true, false, false, 0, 0, 0, deta, dphi, 0);
+      id, center, 0, true, false, true, false, false, 0, 0, 0, deta, dphi, 0);
 }
 
 auto at_eta_phi(double eta, double phi) -> Position
@@ -57,10 +57,10 @@ TEST(RTreeTests, PositionInOverlapOfTwoCells)
       {eta_phi_cell(1, 0.5, 0.0, 1.25, 0.2),  // eta in [-0.125, 1.125]
        eta_phi_cell(2, 1.5, 0.0, 1.25, 0.2)});  // eta in [0.875, 2.125]
 
-  // The cell with the nearest centre is taken
+  // The cell with the nearest center is taken
   EXPECT_EQ(rtree.query_point(at_eta_phi(0.9, 0.0)), 1);
   EXPECT_EQ(rtree.query_point(at_eta_phi(1.1, 0.0)), 2);
-  // Both centres equally far: the smaller ID
+  // Both centers equally far: the smaller ID
   EXPECT_EQ(rtree.query_point(at_eta_phi(1.0, 0.0)), 1);
 }
 
@@ -112,7 +112,7 @@ struct Rect
     return du * du + dv * dv;
   }
 
-  auto centre_distance2(double u, double v) const -> double
+  auto center_distance2(double u, double v) const -> double
   {
     const double du = 0.5 * (u_min + u_max) - u;
     const double dv = 0.5 * (v_min + v_max) - v;
@@ -162,15 +162,15 @@ protected:
                                double u,
                                double v) -> bool
   {
-    // Of the rectangles containing (u, v): the nearest centre, then smaller ID
+    // Of the rectangles containing (u, v): the nearest center, then smaller ID
     const Rect* best = nullptr;
     for (const auto& r : rects) {
       if (!r.contains(u, v)) {
         continue;
       }
       if (best == nullptr
-          || std::pair(r.centre_distance2(u, v), r.cell_id)
-              < std::pair(best->centre_distance2(u, v), best->cell_id))
+          || std::pair(r.center_distance2(u, v), r.cell_id)
+              < std::pair(best->center_distance2(u, v), best->cell_id))
       {
         best = &r;
       }

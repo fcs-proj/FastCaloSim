@@ -62,7 +62,7 @@ auto RTree::query_point(const Position& pos) const -> uint64_t
       : Point(pos.eta(), pos.phi());
 
   // The cells whose rectangle contains the point: normally exactly one, but
-  // the rectangles of neighbouring cells can overlap slightly
+  // the rectangles of neighboring cells can overlap slightly
   boost::container::small_vector<Entry, 4> candidates;
   m_impl->tree.query(bgi::intersects(point), std::back_inserter(candidates));
 
@@ -74,17 +74,17 @@ auto RTree::query_point(const Position& pos) const -> uint64_t
     throw std::invalid_argument("No cell found for query point");
   }
 
-  // Of several candidates, take the cell whose rectangle centre is nearest
+  // Of several candidates, take the cell whose rectangle center is nearest
   // (and the smaller cell ID on an exact tie)
-  const auto centre_distance_and_id = [&point](const Entry& entry)
+  const auto center_distance_and_id = [&point](const Entry& entry)
   {
-    const auto centre = bg::return_centroid<Point>(entry.first);
-    return std::pair(bg::comparable_distance(point, centre), entry.second);
+    const auto center = bg::return_centroid<Point>(entry.first);
+    return std::pair(bg::comparable_distance(point, center), entry.second);
   };
   const auto best = std::min_element(
       candidates.begin(),
       candidates.end(),
       [&](const Entry& a, const Entry& b)
-      { return centre_distance_and_id(a) < centre_distance_and_id(b); });
+      { return center_distance_and_id(a) < center_distance_and_id(b); });
   return best->second;
 }
