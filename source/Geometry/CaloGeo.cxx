@@ -30,14 +30,14 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
   }
 
   // Default path: R-tree + cell store lookup
-  auto query_it = m_layer_rtree_queries.find(layer);
-  if (query_it == m_layer_rtree_queries.end()) {
+  auto rtree_it = m_layer_rtrees.find(layer);
+  if (rtree_it == m_layer_rtrees.end()) {
     throw std::runtime_error("No RTree loaded for layer "
                              + std::to_string(layer));
   }
 
   // Query the RTree to get the cell ID directly
-  auto cell_id = query_it->second->query_point(pos);
+  auto cell_id = rtree_it->second->query_point(pos);
 
   // Look up the cell in the repository
   return get_cell(cell_id);
@@ -166,7 +166,7 @@ void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
 }
 
 // Method to build geometry
-void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
+void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
 {
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
@@ -279,32 +279,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
 
   // Write the cell store to disk
   // Memory will be freed after writing
-  cell_store_builder.write(rtree_base_path + "/cellstore");
-
-  // Temporary cell store
-  CellStore temp_cell_store;
-  temp_cell_store.load(rtree_base_path + "/cellstore");
-
-  // Build RTrees for each layer
-  for (const auto& [layer_id, cell_ids] : m_layer_cell_ids) {
-    // Get coordinate system directly from layer flags
-    auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
-
-    std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
-    std::string rtree_path = rtree_base_path + "/" + rtree_name;
-
-    // Build the RTree
-    RTreeBuilder rtree_builder(coord_sys);
-
-    for (size_t i = 0; i < cell_ids.size(); ++i) {
-      const Cell& cell = temp_cell_store.get(cell_ids[i]);
-      rtree_builder.add_cell(&cell);
-    }
-    rtree_builder.build(rtree_path);
-
-    std::cout << "Built RTree for layer " << layer_id << " with "
-              << cell_ids.size() << " cells" << std::endl;
-  }
+  cell_store_builder.write(base_path + "/cellstore");
 
   auto end_time = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed = end_time - start_time;
@@ -316,15 +291,13 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& rtree_base_path)
 }
 
 // Method to load geometry
-void CaloGeo::load(
-    const std::string& rtree_base_path,
-    size_t rtree_cache_size)  // per-layer r-tree cache size in bytes
+void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
 {
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
 
   // Load the cell store
-  m_cell_store.load(rtree_base_path + "/cellstore");
+  m_cell_store.load(base_path + "/cellstore");
 
   // Rebuild the layer cell ID map
   m_layer_cell_ids.clear();
@@ -382,17 +355,16 @@ void CaloGeo::load(
 
   m_n_layers = unique_layers.size();
 
-  // Load the RTrees for each layer
+  // Build the RTree of each layer from its cells
   for (const auto& [layer_id, cell_ids] : m_layer_cell_ids) {
+    std::vector<Cell> cells;
+    cells.reserve(cell_ids.size());
+    for (const auto cell_id : cell_ids) {
+      cells.push_back(m_cell_store.get(cell_id));
+    }
+
     auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
-
-    std::string rtree_name = "rtree_layer_" + std::to_string(layer_id);
-    std::string rtree_path = rtree_base_path + "/" + rtree_name;
-
-    // Load the RTree for querying
-    m_layer_rtree_queries[layer_id] = std::make_unique<RTreeQuery>(coord_sys);
-    // Load the RTree from disk with specified cache size
-    m_layer_rtree_queries[layer_id]->load(rtree_path, rtree_cache_size);
+    m_layer_rtrees[layer_id] = std::make_unique<RTree>(coord_sys, cells);
   }
 
   auto end_time = std::chrono::high_resolution_clock::now();

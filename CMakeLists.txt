@@ -53,8 +53,6 @@ find_package(CLHEP REQUIRED)
 find_package(Eigen3 REQUIRED)
 # TBB for Geant4 transport
 find_package(TBB REQUIRED)
-# libspatialindex for geometry
-find_package(libspatialindex REQUIRED)
 # MPI is not used directly, but the key4hep HDF5 build was compiled with MPI
 # support, so MPI must be found first to satisfy HDF5's CMake dependencies
 enable_language(C)
@@ -93,7 +91,6 @@ target_link_libraries(
         CLHEP::CLHEP
         ${Geant4_LIBRARIES}
         TBB::tbb
-        libspatialindex::spatialindex
     PRIVATE
         ONNXRuntime::ONNXRuntime
         lwtnn::lwtnn

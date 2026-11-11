@@ -1,61 +1,46 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #pragma once
 
+#include <cstdint>
 #include <memory>
-#include <string>
+#include <vector>
+
+#include <FastCaloSim/FastCaloSim_export.h>
 
 #include "FastCaloSim/Geometry/Cell.h"
-#include "FastCaloSim/Geometry/RTreeBuilder.h"
 #include "FastCaloSim/Geometry/RTreeHelpers.h"
-#include "FastCaloSim/Geometry/RTreeQuery.h"
 
 /**
- * @brief Main R-tree class providing a unified interface
+ * @brief Finds the cell of a layer that a position belongs to
  *
- * This class delegates to specialized components for building,
- * persisting, loading, and querying R-trees. It provides a simple
- * interface for working with R-trees at the layer level with a
- * known coordinate system.
- *
- * The class supports:
- * 1. Bulk loading of R-tree for better performance
- * 2. Memory persistence capability
- * 3. Efficient caching for fast lookups
+ * In the lookup coordinates of its layer, (x, y) or (eta, phi), every cell
+ * is a rectangle. The rectangles of all cells of the layer are held in an
+ * R-tree (Boost.Geometry), which is built once, kept in memory and shared
+ * read-only by all threads.
  */
-class RTree
+class FASTCALOSIM_EXPORT RTree
 {
 public:
   /**
-   * @brief Construct an RTree with a specific coordinate system
-   * @param coordSys The coordinate system for this layer's cells
+   * @brief Build the R-tree of a layer
+   * @param coord_sys The coordinate system of the layer's cells
+   * @param cells The cells of the layer
    */
-  explicit RTree(RTreeHelpers::CoordinateSystem coordSys);
+  RTree(RTreeHelpers::CoordinateSystem coord_sys,
+        const std::vector<Cell>& cells);
 
-  ~RTree() = default;
+  ~RTree();
 
   /**
-   * @brief Insert a cell into the collection for bulk loading
-   * @param cell Reference to the cell to insert
-   */
-  void insert_cell(const Cell& cell);
-
-  /**
-   * @brief Build the RTree using bulk loading and store to disk
-   * @param base_path Path to store the R-tree
-   */
-  void build(const std::string& base_path);
-
-  /**
-   * @brief Load a previously saved RTree from file with caching
-   * @param base_path Path to the input file
-   * @param cache_size Size of the cache in bytes (default: 256KB)
-   */
-  void load(const std::string& base_path, size_t cache_size = 262144);
-
-  /**
-   * @brief Query the nearest cell for a given position
+   * @brief Find the cell for a given position
    * @param pos The position to query
-   * @return Identifier (uint64_t) of the nearest cell
+   * @return ID of the cell whose rectangle contains the position.
+   *
+   * The rectangles of neighboring cells can overlap slightly. Where several
+   * contain the position, the cell with the nearest rectangle center is
+   * returned (the smaller ID on an exact tie). Where none contains it (in a
+   * gap between cells or outside the layer), the cell with the nearest
+   * rectangle is returned.
    */
   auto query_point(const Position& pos) const -> uint64_t;
 
@@ -63,7 +48,8 @@ private:
   // Coordinate system for this layer
   RTreeHelpers::CoordinateSystem m_coordinate_system;
 
-  // Separate components for building and querying
-  std::unique_ptr<RTreeBuilder> m_builder;
-  std::unique_ptr<RTreeQuery> m_query;
+  // The Boost.Geometry R-tree. It is defined in the source file, so that the
+  // installed headers do not depend on Boost.
+  struct Impl;
+  std::unique_ptr<const Impl> m_impl;
 };

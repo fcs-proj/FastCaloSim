@@ -27,11 +27,13 @@ public:
   // Default constructor
   CaloGeo() = default;
 
-  // Method to build geometry
-  void build(ROOT::RDataFrame& geo, const std::string& rtree_base_path);
+  // Method to build geometry: writes the cell store into the directory
+  void build(ROOT::RDataFrame& geo, const std::string& base_path);
 
-  // Method to load geometry
-  void load(const std::string& rtree_base_path,
+  // Method to load geometry from the directory written by build()
+  // (rtree_cache_size is unused and only kept for compatibility: the R-trees
+  // are built in memory)
+  void load(const std::string& base_path,
             size_t rtree_cache_size = 5 * 1024 * 1024);
 
   // Retrieve the best matching cell for a given position
@@ -115,9 +117,8 @@ private:
   /// @brief The total number of cells
   unsigned int m_n_total_cells {};
 
-  /// @brief Maps layer id -> RTreeQuery (for loaded trees)
-  std::unordered_map<unsigned int, std::unique_ptr<RTreeQuery>>
-      m_layer_rtree_queries;
+  /// @brief Maps layer id -> R-tree for the cell lookup
+  std::unordered_map<unsigned int, std::unique_ptr<RTree>> m_layer_rtrees;
 
   /// @brief The memory-mapped cell store
   CellStore m_cell_store;
