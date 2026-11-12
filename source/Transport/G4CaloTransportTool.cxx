@@ -107,15 +107,16 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
   // motion below), as a freshly built propagator does: a framework may replace
   // the field manager after this tool was built (Athena does when it sets up
   // its magnetic field). ClearPropagatorState() resets the propagator's
-  // per-track state (looping and zero-step counters, first-step flags), the
-  // absolute locate below resets the navigator's history and state, and the
-  // chord finder is cleared further down. Each transport() call therefore sees
-  // only its own input track, whatever was transported before, which keeps
-  // single- and multi-threaded results identical.
+  // per-track state (looping and zero-step counters, first-step flags),
+  // ResetStackAndState() the navigator's history and state, and the chord
+  // finder is cleared further down. Each transport() call therefore sees only
+  // its own input track, whatever was transported before, which keeps single-
+  // and multi-threaded results identical.
   m_propagator->SetDetectorFieldManager(
       G4TransportationManager::GetTransportationManager()->GetFieldManager());
   m_propagator->FindAndSetFieldManager(nullptr);
   m_propagator->ClearPropagatorState();
+  m_navigator->ResetStackAndState();
 
   // Configure the (thread-persistent, shared) equation of motion with THIS
   // particle's charge/mass/moments before stepping, exactly as real Geant4
@@ -151,12 +152,9 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
   G4FieldTrack tmpFieldTrack('0');
   G4FieldTrackUpdator::Update(&tmpFieldTrack, &G4InputTrack);
 
-  // Establish the starting location with an absolute (non-relative) search so
-  // the first step does not depend on any prior navigator history. The
-  // direction decides the volume for a particle on a boundary.
-  G4ThreeVector direction = tmpFieldTrack.GetMomentumDirection();
+  // Locate the starting volume with an absolute (non-relative) search
   G4VPhysicalVolume* volume = m_navigator->LocateGlobalPointAndSetup(
-      tmpFieldTrack.GetPosition(), &direction, /*relativeSearch=*/false);
+      tmpFieldTrack.GetPosition(), nullptr, /*relativeSearch=*/false);
 
   // Fill with the initial particle position
   outputStepVector.push_back(tmpFieldTrack);
@@ -167,8 +165,9 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
     doStep(tmpFieldTrack, volume);
     // Fill the output vector with the updated track
     outputStepVector.push_back(tmpFieldTrack);
-    // Locate the volume the particle is now in, which the next step starts from
-    direction = tmpFieldTrack.GetMomentumDirection();
+    // Locate the volume the particle is now in, which the next step starts
+    // from. The direction resolves the volume if the step ended on an edge.
+    const G4ThreeVector direction = tmpFieldTrack.GetMomentumDirection();
     volume = m_navigator->LocateGlobalPointAndSetup(tmpFieldTrack.GetPosition(),
                                                     &direction);
     if (volume != nullptr) {
