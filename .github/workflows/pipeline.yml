@@ -169,19 +169,22 @@ jobs:
   test_lcg:
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
-      # gcc15 views ship ROOT built with C++23, the standard of this project
-      platform: x86_64-el9-gcc15-opt
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        # See https://lcginfo.cern.ch/ for info on available LCG releases
-        lcg: [ LCG_109a, LCG_110a ]
+        # See https://lcginfo.cern.ch/ for info on available LCG releases.
+        # Only views whose ROOT is built with C++23, the standard of this project.
+        include:
+          - { lcg: LCG_109a, platform: x86_64-el9-gcc15-opt }
+          - { lcg: LCG_110a, platform: x86_64-el9-gcc15-opt }
+          - { lcg: LCG_110a, platform: x86_64-el9-gcc16-opt }
+          - { lcg: LCG_110a, platform: x86_64-el9-clang22-opt }
     steps:
     - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: aidasoft/run-lcg-view@v4
       with:
-        release-platform: "${{matrix.lcg}}/${{env.platform}}"
+        release-platform: "${{matrix.lcg}}/${{matrix.platform}}"
         run: |
           echo ":: Set-up python environment"
           source .github/scripts/setup_pyvenv.sh
@@ -203,7 +206,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: artifacts-${{ matrix.lcg }}
+        name: artifacts-${{ matrix.lcg }}-${{ matrix.platform }}
         path: test/output
         if-no-files-found: error
         retention-days: 90
