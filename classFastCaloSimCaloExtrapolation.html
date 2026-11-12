@@ -52,7 +52,7 @@
           FastCaloSimCaloExtrapolation <span class="m-thin">class</span>
           <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="FastCaloSimCaloExtrapolation_8h.html">&lt;FastCaloSimCaloExtrapolation.h&gt;</a></div>
         </h1>
-        <p><span></span></p>
+        <p>Extrapolates a particle, given by the steps of its transport, to the ID-calo boundary and to the entrance, middle and exit of each calorimeter layer.</p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
@@ -60,42 +60,17 @@
               Reference
               <ul>
                 <li><a href="#base-classes">Base classes</a></li>
-                <li><a href="#pub-types">Public types</a></li>
-                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
+<p>Each of these surfaces is approximated by a cylinder around the beam axis. The particle is extrapolated to it along the straight lines between its transport steps.</p>
         <section id="base-classes">
           <h2><a href="#base-classes">Base classes</a></h2>
           <dl class="m-doc">
             <dt>
               class <a href="classFastCaloSim_1_1MLogging.html" class="m-doc">FastCaloSim::MLogging</a>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section id="pub-types">
-          <h2><a href="#pub-types">Public types</a></h2>
-          <dl class="m-doc">
-            <dt id="ad1e80bfa8754219af360a1a89f7c9be8">
-              <span class="m-doc-wrap-bumper">enum <a href="#ad1e80bfa8754219af360a1a89f7c9be8" class="m-doc-self">HITPOSITION</a> { </span><span class="m-doc-wrap"><a href="#ad1e80bfa8754219af360a1a89f7c9be8a278b08271d63079db2e7a4bc7d28e7fc" class="m-doc">INSIDE</a>,
-              <a href="#ad1e80bfa8754219af360a1a89f7c9be8ae210422551a56307a9b5c367a4fec744" class="m-doc">OUTSIDE</a>,
-              <a href="#ad1e80bfa8754219af360a1a89f7c9be8ad4135a2fbe436cec6a3f69ae9c402499" class="m-doc">ON</a> }</span>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section id="typeless-methods">
-          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
-          <dl class="m-doc">
-            <dt id="ad7a943840f23bd6792849a10ba30a195">
-              <span class="m-doc-wrap-bumper"><a href="#ad7a943840f23bd6792849a10ba30a195" class="m-doc-self">FastCaloSimCaloExtrapolation</a>(</span><span class="m-doc-wrap">)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="af141c2da9f456e3e64e1378411b4e123">
-              <span class="m-doc-wrap-bumper"><a href="#af141c2da9f456e3e64e1378411b4e123" class="m-doc-self">~FastCaloSimCaloExtrapolation</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -106,13 +81,13 @@
             <dt id="a811548400fbec2992b772ddf810d7129">
               <span class="m-doc-wrap-bumper">void <a href="#a811548400fbec2992b772ddf810d7129" class="m-doc-self">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo)</span>
             </dt>
-            <dd><span></span></dd>
-            <dt id="a491bd52cd7330d97001d8261912fd07f">
-              <span class="m-doc-wrap-bumper">void <a href="#a491bd52cd7330d97001d8261912fd07f" class="m-doc-self">extrapolate</a>(</span><span class="m-doc-wrap"><a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>&amp; result,
+            <dd>Set the geometry of the calorimeter layers.</dd>
+            <dt id="a6be5f5574b47585b3247626abcbf2a37">
+              <span class="m-doc-wrap-bumper">void <a href="#a6be5f5574b47585b3247626abcbf2a37" class="m-doc-self">extrapolate</a>(</span><span class="m-doc-wrap"><a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>&amp; result,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
-              const std::vector&lt;G4FieldTrack&gt;&amp; caloSteps) const <span class="m-label m-flat m-warning">virtual</span></span>
+              const std::vector&lt;G4FieldTrack&gt;&amp; caloSteps) const</span>
             </dt>
-            <dd><span></span></dd>
+            <dd>Fill result with the positions of the particle on the ID-calo boundary and in the calorimeter layers. The layers are left empty if the particle does not reach the calorimeter.</dd>
           </dl>
         </section>
       </div>
