@@ -603,7 +603,8 @@ void FastCaloSimCaloExtrapolation::findPCA(float cylR,
       }
     }
 
-    else {
+    else
+    {
       // figure out all other cases iteratively beginning with BoundA and BoundB
       Vector3D BoundA, BoundB;
       // this is point on line closest to {0, 0, cylZ}, always on segment
