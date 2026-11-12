@@ -14,7 +14,7 @@ function(add_exec NAME)
     fmt::fmt-header-only
   )
 
-  target_compile_features("${NAME}" PRIVATE cxx_std_17)
+  target_compile_features("${NAME}" PRIVATE cxx_std_23)
 
   add_custom_target("run_${NAME}"
     COMMAND "${NAME}"

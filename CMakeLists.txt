@@ -167,7 +167,7 @@ target_include_directories(
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/export>"
 )
 
-target_compile_features(FastCaloSim_FastCaloSim PUBLIC cxx_std_17)
+target_compile_features(FastCaloSim_FastCaloSim PUBLIC cxx_std_23)
 
 
 # Define the list of targets to install

@@ -4,6 +4,10 @@ FROM ubuntu:24.04
 # Build type for all dependencies
 ARG BUILD_TYPE=RelWithDebInfo
 
+# Build everything with GCC 14: the default GCC 13 lacks much of the C++23
+# standard library
+ENV CC=gcc-14 CXX=g++-14
+
 # Install extra packages and ROOT dependencies
 # Note: ROOT packages taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu2404/packages.txt
 COPY extra_packages.txt extra_packages.txt
@@ -37,6 +41,7 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && mkdir root_build && cd root_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
           -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DCMAKE_CXX_STANDARD=23 \
           -Dmathmore=ON \
           -Dclad=OFF \
           ../root_src \
