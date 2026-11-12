@@ -177,7 +177,9 @@ auto closestPointToSurface(const Cylinder& cylinder,
     return (projA - a).mag() < (projB - b).mag() ? a : b;
   }
 
-  const Vector3D endcapCenter(0, 0, halfLength);
+  // The endcap on the side of the segment
+  const double endcapZ = a.z() + b.z() >= 0 ? halfLength : -halfLength;
+  const Vector3D endcapCenter(0, 0, endcapZ);
   const bool parallelToEndcaps = std::abs(a.z() - b.z()) < 0.00001;
   if (!parallelToEndcaps) {
     // Search between the point closest to the endcap center and the crossing
@@ -185,7 +187,7 @@ auto closestPointToSurface(const Cylinder& cylinder,
     const Vector3D closestToCenter =
         pointOnSegment(a, b, (endcapCenter - a).dot(ab) / ab.dot(ab));
     const Vector3D planeCrossing =
-        pointOnSegment(a, b, (halfLength - a.z()) / ab.z());
+        pointOnSegment(a, b, (endcapZ - a.z()) / ab.z());
     return iterativeClosestPoint(cylinder, closestToCenter, planeCrossing);
   }
 
