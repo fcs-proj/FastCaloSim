@@ -3,6 +3,9 @@
 /* Header include */
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
 
+/* Standard library */
+#include <optional>
+
 /* FastCaloSim includes */
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
@@ -169,40 +172,58 @@ void FastCaloSimCaloExtrapolation::extrapolateToLayers(
                         result.IDCaloBoundary_phi(),
                         result.IDCaloBoundary_r()};
 
+    // Positions far out on either side of the detector, at the particle's phi:
+    // set eta to a dummy value of 1000 and -1000 to force detector side
+    Position pos_eta {}, neg_eta {};
+    pos_eta.m_phi = result.IDCaloBoundary_phi();
+    neg_eta.m_phi = result.IDCaloBoundary_phi();
+    pos_eta.m_eta = 1000;
+    neg_eta.m_eta = -1000;
+
+    // z position of the EME1 front end surface, used for EMB0 - EMB3. The same
+    // for all of them, so it is looked up once (when first needed).
+    std::optional<double> emb_cylZ;
+
     // now try to extrapolate to all calo layers that contain energy
     for (int sample = 0; sample < m_geo->n_layers(); ++sample) {
+      const bool is_barrel = m_geo->is_barrel(sample);
+
+      // The cells that define this layer's cylinder. They do not depend on
+      // the sub-position, so they are looked up once per layer and the
+      // entrance, middle and exit positions are read from them.
+      const Cell cell = m_geo->get_cell(sample, IDCaloPos);
+      std::optional<Cell> pos_eta_cell, neg_eta_cell;
+      if (is_barrel && sample >= 4) {
+        pos_eta_cell = m_geo->get_cell(sample, pos_eta);
+        neg_eta_cell = m_geo->get_cell(sample, neg_eta);
+      }
+
       for (int subpos = Cell::SubPos::MID; subpos <= Cell::SubPos::EXT;
            ++subpos)
       {
+        const auto sub_pos = static_cast<Cell::SubPos>(subpos);
         float cylR, cylZ;
-        if (m_geo->is_barrel(sample)) {
-          cylR = std::abs(m_geo->rpos(
-              sample, IDCaloPos, static_cast<Cell::SubPos>(subpos)));
+        if (is_barrel) {
+          cylR = std::abs(cell.r(sub_pos));
           // EMB0 - EMB3 use z position of EME1 front end surface for
           // extrapolation else extrapolate to cylinder with symmetrized maximum
-          // Z bounds set eta to a dummy value of 1000 and -1000 to force
-          // detector side
-          Position pos_eta {}, neg_eta {};
-          pos_eta.m_phi = result.IDCaloBoundary_phi();
-          neg_eta.m_phi = result.IDCaloBoundary_phi();
-          pos_eta.m_eta = 1000;
-          neg_eta.m_eta = -1000;
+          // Z bounds
           if (sample < 4) {
-            Position tmp_pos =
-                result.IDCaloBoundary_eta() > 0 ? pos_eta : neg_eta;
-            cylZ = std::abs(m_geo->zpos(5, tmp_pos, Cell::SubPos::ENT));
+            if (!emb_cylZ) {
+              const Position& tmp_pos =
+                  result.IDCaloBoundary_eta() > 0 ? pos_eta : neg_eta;
+              emb_cylZ = std::abs(m_geo->zpos(5, tmp_pos, Cell::SubPos::ENT));
+            }
+            cylZ = *emb_cylZ;
           } else {
             cylZ = 0.5
-                * (std::abs(m_geo->zpos(
-                       sample, pos_eta, static_cast<Cell::SubPos>(subpos)))
-                   + std::abs(m_geo->zpos(
-                       sample, neg_eta, static_cast<Cell::SubPos>(subpos))));
+                * (std::abs(pos_eta_cell->z(sub_pos))
+                   + std::abs(neg_eta_cell->z(sub_pos)));
           }
         } else {
           // if we are not at barrel surface, extrapolate to cylinder with
           // maximum R to reduce extrapolation length
-          cylZ = std::abs(m_geo->zpos(
-              sample, IDCaloPos, static_cast<Cell::SubPos>(subpos)));
+          cylZ = std::abs(cell.z(sub_pos));
 
           // Decide on detector side
           CaloGeo::DetectorSide side = result.IDCaloBoundary_eta() > 0
@@ -582,8 +603,7 @@ void FastCaloSimCaloExtrapolation::findPCA(float cylR,
       }
     }
 
-    else
-    {
+    else {
       // figure out all other cases iteratively beginning with BoundA and BoundB
       Vector3D BoundA, BoundB;
       // this is point on line closest to {0, 0, cylZ}, always on segment
