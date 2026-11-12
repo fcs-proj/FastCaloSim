@@ -303,7 +303,7 @@ auto extrapolateWithIntersection(const std::vector<TrackPoint>& track,
         ? intersections.points[0]
         : selectIntersection(p1, p2, location1, location2, intersections);
 
-    const bool isForward = (intersection.x() - p1.x()) / (p2.x() - p1.x()) >= 0;
+    const bool isForward = (intersection - p1).dot(p2 - p1) >= 0;
     const bool crossesSurface =
         (location1 == Location::Inside) != (location2 == Location::Inside);
 
