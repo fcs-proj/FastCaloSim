@@ -45,6 +45,8 @@ public:
 private:
   // Pointer to the thread-local fields
   G4Cache<G4MagneticField*> fField;
+  // World volume of the simplified geometry for the particle transport
+  G4VPhysicalVolume* fTransportWorld = nullptr;
   // Name of the fast simulation trigger region
   const std::string fFastSimTriggerRegionName = "FastSimTriggerRegion";
   // Method to add a cylinder to the fast simulation trigger region

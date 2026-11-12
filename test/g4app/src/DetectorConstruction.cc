@@ -53,6 +53,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     add_cylinder(world_log, detectorRegion, cyl, name);
   }
 
+  // World of the simplified geometry through which the fast simulation model
+  // transports particles. It is shared by the models of all threads.
+  fTransportWorld = G4CaloTransportTool::createSimplifiedWorld("WorldLog");
+
   return world_phys;
 }
 
@@ -96,7 +100,7 @@ void DetectorConstruction::ConstructSDandField()
   // Create the fast simulation model
   auto triggerRegion =
       G4RegionStore::GetInstance()->GetRegion(fFastSimTriggerRegionName);
-  auto fastSimModel = new FastSimModel("model", triggerRegion);
+  auto fastSimModel = new FastSimModel("model", triggerRegion, fTransportWorld);
 }
 
 void DetectorConstruction::add_cylinder(G4LogicalVolume* world_log,

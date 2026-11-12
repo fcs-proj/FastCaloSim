@@ -16,29 +16,15 @@
 class G4ParticleDefinition;
 
 
-FastSimModel::FastSimModel(G4String aModelName, G4Region* aEnvelope)
+FastSimModel::FastSimModel(G4String aModelName,
+                           G4Region* aEnvelope,
+                           G4VPhysicalVolume* transportWorld)
   : G4VFastSimulationModel(aModelName, aEnvelope)
+  , fTransportTool(transportWorld)
   , fDoSimulation(true)
   , m_debug(false)
   , fParametrization(nullptr)
 {
-   // Build the shared world volume (once) and this thread's propagator. In this
-  // single-threaded test app both run on the same thread. Fail loudly if either
-  // step fails: continuing would silently yield empty transport results.
-  if (!fTransportTool.initializeGeometry()) {
-    G4Exception("FastSimModel::FastSimModel",
-                "TransportGeometryInitFailed",
-                FatalException,
-                "G4CaloTransportTool::initializeGeometry() failed. Ensure the "
-                "transport geometry is loaded before the model is constructed.");
-  }
-  if (!fTransportTool.initializePropagator()) {
-    G4Exception("FastSimModel::FastSimModel",
-                "TransportPropagatorInitFailed",
-                FatalException,
-                "G4CaloTransportTool::initializePropagator() failed.");
-  }
-
   m_random_engine.setSeed(42);
 }
 

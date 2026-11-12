@@ -22,13 +22,16 @@
 class G4FastTrack;
 class G4ParticleDefinition;
 class G4Region;
+class G4VPhysicalVolume;
 class G4FieldTrack;
 class G4Navigator;
 
 class FastSimModel : public G4VFastSimulationModel
 {
  public:
-  FastSimModel(G4String, G4Region*);
+  // The model transports particles through transportWorld, which is shared by
+  // the models of all threads
+  FastSimModel(G4String, G4Region*, G4VPhysicalVolume* transportWorld);
   ~FastSimModel();
 
   virtual G4bool ModelTrigger(const G4FastTrack&) final;
@@ -61,7 +64,7 @@ class FastSimModel : public G4VFastSimulationModel
 
   private:
 
-  // Geant4 transport tool
+  // Geant4 transport tool of this model's thread
   G4CaloTransportTool fTransportTool;
   // Extrapolation tool
   FastCaloSimCaloExtrapolation fExtrapolationTool;

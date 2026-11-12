@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <mutex>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -17,47 +17,34 @@ class G4PropagatorInField;
 /// @class G4CaloTransportTool
 /// @brief A tool which transports particles through the Geant4 geometry.
 ///
+/// The tool holds a Geant4 navigator and propagator, which keep the state of
+/// the particle being transported. Like any Geant4 object with such state, it
+/// belongs to one thread: use one instance per thread, constructed on the
+/// thread that uses it, e.g. as a member of a per-thread fast simulation model.
+/// The world volume it navigates is shared by all instances.
+///
 /// @author Joshua Falco Beirer <joshua.falco.beirer@cern.ch>
 ///
 class FASTCALOSIM_EXPORT G4CaloTransportTool
 {
 public:
-  G4CaloTransportTool();
+  /// @brief Transport particles through the given world volume, e.g. the one
+  /// of createSimplifiedWorld() or the world of the full Geant4 geometry.
+  explicit G4CaloTransportTool(G4VPhysicalVolume* world);
   ~G4CaloTransportTool();
 
-  /// @brief Create the shared world volume. Must be called on the master
-  /// thread, exactly once, after the (simplified) transport geometry has been
-  /// loaded into the global Geant4 geometry stores. Building the world here
-  /// (rather than lazily on a worker thread) keeps the Geant4 split-class
-  /// per-thread data for the world volume correctly sized across all workers.
-  /// Idempotent: guarded by m_worldVolumeOnceFlag. Returns true on success
-  /// (i.e. a valid world volume is available).
-  auto initializeGeometry() -> bool;
+  G4CaloTransportTool(const G4CaloTransportTool&) = delete;
+  auto operator=(const G4CaloTransportTool&) -> G4CaloTransportTool& = delete;
 
-  // Confirm that the current thread is ready to transport particles. Requires
-  // initializeGeometry() to have run (on the master thread) first; returns
-  // false if the shared world volume is not available. transport() builds its
-  // own navigator/propagator per call, so this no longer caches any per-thread
-  // state; it is kept as an explicit readiness check for callers.
-  auto initializePropagator() -> bool;
+  /// @brief Place the world volume of the simplified geometry, whose logical
+  /// volumes must have been loaded (e.g. from GDML) into the Geant4 geometry
+  /// stores. Call it once, on the master thread, and pass the result to the
+  /// tools of all threads. The volume is owned by the Geant4 geometry store.
+  static auto createSimplifiedWorld(const std::string& worldLogicalVolumeName)
+      -> G4VPhysicalVolume*;
 
-  // Transport input track through the geometry
+  /// @brief Transport the track through the geometry and return its steps
   auto transport(const G4Track& G4InputTrack) -> std::vector<G4FieldTrack>;
-
-  //--------------------------------------------------------------------------
-  //  Setter methods for configuration
-  //--------------------------------------------------------------------------
-  /// @brief Turn on/off the use of simplified geometry.
-  void setUseSimplifiedGeo(bool useSimplifiedGeo)
-  {
-    m_useSimplifiedGeo = useSimplifiedGeo;
-  }
-
-  /// @brief Set the name of the logical volume for the simplified world
-  void setSimplifiedWorldLogName(const std::string& simplifiedWorldLogName)
-  {
-    m_simplifiedWorldLogName = simplifiedWorldLogName;
-  }
 
   /// @brief Set the name of the volume until which to transport the particle
   void setTransportLimitVolume(const std::string& transportLimitVolume)
@@ -69,29 +56,15 @@ public:
   void setMaxSteps(unsigned int maxSteps) { m_maxSteps = maxSteps; }
 
 private:
-  /// @brief Obtain the world volume in which particle transport is performed
-  auto getWorldVolume() -> G4VPhysicalVolume*;
+  /// @brief Advance the track by one Geant4 step, starting in the volume the
+  /// navigator located the track in last.
+  void doStep(G4FieldTrack& fieldTrack, G4VPhysicalVolume* currentPhysVol);
 
-  /// @brief Advance the track by one Geant4 step in the geometry, using the
-  /// propagator (and its navigator) supplied by transport().
-  void doStep(G4PropagatorInField& propagator, G4FieldTrack& fieldTrack);
+  /// Navigator of this tool in the shared world volume
+  std::unique_ptr<G4Navigator> m_navigator;
 
-  /// Pointer to the physical volume of the world (either simplified or full
-  /// geometry). Shared across all threads; created exactly once via
-  /// m_worldVolumeOnceFlag.
-  G4VPhysicalVolume* m_worldVolume {};
-
-  /// Guards one-time creation of the shared world volume in
-  /// initializeGeometry(). getWorldVolume() mutates the global Geant4 geometry
-  /// stores, so the world must be built exactly once (on the master thread);
-  /// the flag also protects against any accidental concurrent call.
-  std::once_flag m_worldVolumeOnceFlag;
-
-  /// Whether to use simplified geometry for particle transport
-  bool m_useSimplifiedGeo = true;
-
-  /// Name of the logical volume of the simplified world (as defined in GDML)
-  std::string m_simplifiedWorldLogName = "WorldLog";
+  /// Propagator of charged particles in the magnetic field, using m_navigator
+  std::unique_ptr<G4PropagatorInField> m_propagator;
 
   /// Name of the volume in which to stop tracking the particle
   std::string m_transportLimitVolume = "Envelope";
