@@ -169,12 +169,13 @@ jobs:
   test_lcg:
     env:
       views_path: /cvmfs/sft.cern.ch/lcg/views
-      platform: x86_64-el9-gcc13-opt
+      # gcc15 views ship ROOT built with C++23, the standard of this project
+      platform: x86_64-el9-gcc15-opt
     runs-on: ubuntu-24.04
     strategy:
       matrix:
         # See https://lcginfo.cern.ch/ for info on available LCG releases
-        lcg: [ LCG_108, LCG_110 ]
+        lcg: [ LCG_109a, LCG_110a ]
     steps:
     - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
@@ -207,17 +208,12 @@ jobs:
         if-no-files-found: error
         retention-days: 90
 
-  # Test against key4hep releases
+  # Test against the latest key4hep nightly
   test_key4hep:
     runs-on: ubuntu-24.04
 
-    strategy:
-      matrix:
-        releases: [ 2026-04-08 ]
-
     env:
       KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
-      KEY4HEP_VERSION: ${{ matrix.releases }}
       LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc14-opt
     steps:
     - uses: actions/checkout@v6
@@ -236,7 +232,7 @@ jobs:
           bash -e -c '
 
             echo "::group::Set up key4hep environment"
-            source /cvmfs/sw.hsf.org/key4hep/setup.sh -r '${{ env.KEY4HEP_VERSION }}'
+            source /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
             echo "::group::Set-up Python environment"
             source .github/scripts/setup_pyvenv.sh
 
