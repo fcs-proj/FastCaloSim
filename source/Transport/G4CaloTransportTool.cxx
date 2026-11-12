@@ -101,19 +101,20 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
   // Create a vector to store the output steps
   std::vector<G4FieldTrack> outputStepVector;
 
-  // Propagate in the thread's current global field manager, as Geant4 does for
-  // its own propagator: a framework may replace the field manager after this
-  // tool was built (Athena does when it sets up its magnetic field).
+  // Reset the navigator and propagator to the state of freshly built ones.
+  // The propagator uses the thread's current global field manager, both as
+  // the detector one and as the current one (which provides the equation of
+  // motion below), as a freshly built propagator does: a framework may replace
+  // the field manager after this tool was built (Athena does when it sets up
+  // its magnetic field). ClearPropagatorState() resets the propagator's
+  // per-track state (looping and zero-step counters, first-step flags), the
+  // absolute locate below resets the navigator's history and state, and the
+  // chord finder is cleared further down. Each transport() call therefore sees
+  // only its own input track, whatever was transported before, which keeps
+  // single- and multi-threaded results identical.
   m_propagator->SetDetectorFieldManager(
       G4TransportationManager::GetTransportationManager()->GetFieldManager());
-
-  // Reset the navigator and propagator to the state of freshly built ones:
-  // ClearPropagatorState() resets the propagator's per-track state (looping
-  // and zero-step counters, first-step flags), the absolute locate below
-  // resets the navigator's history and state, and the chord finder is cleared
-  // further down. Each transport() call therefore sees only its own input
-  // track, whatever was transported before, which keeps single- and
-  // multi-threaded results identical.
+  m_propagator->FindAndSetFieldManager(nullptr);
   m_propagator->ClearPropagatorState();
 
   // Configure the (thread-persistent, shared) equation of motion with THIS

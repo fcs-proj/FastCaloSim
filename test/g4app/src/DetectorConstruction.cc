@@ -62,9 +62,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 void DetectorConstruction::ConstructSDandField()
 {
-  // Retrieve the static Geant4 field manager
-  G4FieldManager* fieldMgr =
-        G4TransportationManager::GetTransportationManager()->GetFieldManager();
+  // Create the fast simulation model before the magnetic field is set up in a
+  // new global field manager, as frameworks like Athena do: the transport must
+  // use the field manager that is current when it runs
+  auto triggerRegion =
+      G4RegionStore::GetInstance()->GetRegion(fFastSimTriggerRegionName);
+  new FastSimModel("model", triggerRegion, fTransportWorld);
+
+  // Replace the global Geant4 field manager by a new one for the field
+  G4FieldManager* fieldMgr = new G4FieldManager();
+  G4TransportationManager::GetTransportationManager()->SetFieldManager(fieldMgr);
 
   if (fUseAtlasField){
     G4cout<<"*************************************************"<<G4endl;
@@ -95,12 +102,6 @@ void DetectorConstruction::ConstructSDandField()
     fieldMgr->CreateChordFinder(uniformMagField);
 
   }
-
-
-  // Create the fast simulation model
-  auto triggerRegion =
-      G4RegionStore::GetInstance()->GetRegion(fFastSimTriggerRegionName);
-  auto fastSimModel = new FastSimModel("model", triggerRegion, fTransportWorld);
 }
 
 void DetectorConstruction::add_cylinder(G4LogicalVolume* world_log,
