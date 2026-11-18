@@ -304,6 +304,34 @@
 #pragma link C++ class TFCS2DFunctionInt32Int32Int16InterpolationHistogram + ;
 #pragma link C++ class TFCS2DFunctionInt32Int32Int32InterpolationHistogram + ;
 
+#pragma link C++ class TFCS2DFunctionInt8Int8Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int8Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int8Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int16Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int16Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int16Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int32Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int32Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt8Int32Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int8Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int8Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int8Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int16Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int16Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int16Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int32Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int32Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt16Int32Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int8Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int8Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int8Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int16Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int16Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int16Int32InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int32Int8InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int32Int16InterpolationExpHistogram + ;
+#pragma link C++ class TFCS2DFunctionInt32Int32Int32InterpolationExpHistogram + ;
+
 /// End Linkdefs needed for template based histograms
 
 #pragma link C++ class TFCS2DFunction + ;
