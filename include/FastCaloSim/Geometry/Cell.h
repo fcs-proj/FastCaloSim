@@ -8,9 +8,6 @@
 #include <iostream>
 #include <ostream>
 
-#include <fmt/core.h>
-#include <fmt/format.h>
-
 struct Position
 {
   double m_x, m_y, m_z;
@@ -210,75 +207,8 @@ public:
 
   // Overload the << operator to allow direct cell printout
   // with std::cout<<cell<<std::endl;
-  friend auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&
-  {
-    os << fmt::format(
-        "Cell details:\n"
-        "---------------------------\n"
-        "ID: {}\n"
-        "Layer: {}\n"
-        "Coordinates:\n"
-        "  x: {:10.2f}\n"
-        "  y: {:10.2f}\n"
-        "  z: {:10.2f}\n"
-        "  phi: {:10.2f}\n"
-        "  eta: {:10.2f}\n"
-        "  r: {:10.2f}\n",
-        cell.id(),
-        cell.layer(),
-        cell.x(),
-        cell.y(),
-        cell.z(),
-        cell.phi(),
-        cell.eta(),
-        cell.r());
-
-    if (cell.isXYZ()) {
-      os << fmt::format(
-          "Cell size:\n"
-          "  dx: {:10.2f}\n"
-          "  dy: {:10.2f}\n"
-          "  dz: {:10.2f}\n"
-          "---------------------------\n\n",
-          cell.dx(),
-          cell.dy(),
-          cell.dz());
-    }
-    if (cell.isEtaPhiR()) {
-      os << fmt::format(
-          "Cell size:\n"
-          "  dphi: {:10.2f}\n"
-          "  deta: {:10.2f}\n"
-          "  dr: {:10.2f}\n"
-          "---------------------------\n\n",
-          cell.dphi(),
-          cell.deta(),
-          cell.dr());
-    }
-    if (cell.isEtaPhiZ()) {
-      os << fmt::format(
-          "Cell size:\n"
-          "  dphi: {:10.2f}\n"
-          "  deta: {:10.2f}\n"
-          "  dz: {:10.2f}\n"
-          "---------------------------\n\n",
-          cell.dphi(),
-          cell.deta(),
-          cell.dz());
-    }
-    if (cell.isRPhiZ()) {
-      os << fmt::format(
-          "Cell size:\n"
-          "  dphi: {:10.2f}\n"
-          "  dz: {:10.2f}\n"
-          "  dr: {:10.2f}\n"
-          "---------------------------\n\n",
-          cell.dphi(),
-          cell.dz(),
-          cell.dr());
-    }
-    return os;
-  }
+  // Defined out of line so that fmt is not exposed to rootcling.
+  friend auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&;
 
 private:
   CellData m_data;
