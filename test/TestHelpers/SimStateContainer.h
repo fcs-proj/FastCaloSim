@@ -57,7 +57,7 @@ class SimStateContainer
   {
     std::vector<SimStateContainerData> data;
 
-    int state_id = 0;
+    unsigned int state_id = 0;
     for (const auto& state : m_container) {
       TFCSSimulationState::cellmap cellmap = state.cells();
       // First order the cellmap by cell id
