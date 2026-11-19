@@ -217,7 +217,6 @@ jobs:
 
     env:
       KEY4HEP_IMAGE: ghcr.io/key4hep/key4hep-images/alma9
-      LWTNN_ROOT: /cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc14-opt
     steps:
     - uses: actions/checkout@v6
 
@@ -243,7 +242,7 @@ jobs:
             pip install --user -r test/python/requirements.txt
 
             echo "::group::Configure"
-            cmake --preset=ci-linux-lcg -Dlwtnn_ROOT='${{ env.LWTNN_ROOT }}'
+            cmake --preset=ci-linux-lcg
 
             echo "::group::Build"
             cmake --build build --config Release -j 4
