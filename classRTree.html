@@ -65,7 +65,7 @@
             </li>
           </ul>
         </div>
-<p>In the lookup coordinates of its layer, (x, y) or (eta, phi), every cell is a rectangle. The rectangles of all cells of the layer are held in an R-tree (Boost.Geometry), which is built once, kept in memory and shared read-only by all threads.</p>
+<p>In the lookup coordinates of its layer, (x, y) or (eta, phi), every cell is a rectangle. The rectangles of all cells of the layer are held in a uniform grid, which finds the rectangles containing a position, and in an R-tree (Boost.Geometry), which finds the nearest rectangle where none contains it. Both are built once, kept in memory and shared read-only by all threads.</p>
         <section id="typeless-methods">
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
@@ -87,6 +87,10 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a2fc224c200d88fada8078c151bab654a" class="m-doc">query_point</a>(</span><span class="m-doc-wrap">const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos) const -&gt; uint64_t</span>
             </dt>
             <dd>Find the cell for a given position.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#ae58b747b39ebdfe5ae4b36ff08e395a1" class="m-doc">query_point_index</a>(</span><span class="m-doc-wrap">const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos) const -&gt; std::size_t</span>
+            </dt>
+            <dd>Find the cell for a given position, like <a href="classRTree.html#a2fc224c200d88fada8078c151bab654a" class="m-doc">query_<wbr />point()</a></dd>
           </dl>
         </section>
         <section>
@@ -136,6 +140,29 @@
               </tfoot>
             </table>
 <p>The rectangles of neighboring cells can overlap slightly. Where several contain the position, the cell with the nearest rectangle center is returned (the smaller ID on an exact tie). Where none contains it (in a gap between cells or outside the layer), the cell with the nearest rectangle is returned.</p>
+          </div></section>
+          <section class="m-doc-details" id="ae58b747b39ebdfe5ae4b36ff08e395a1"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto RTree::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae58b747b39ebdfe5ae4b36ff08e395a1" class="m-doc-self">query_point_index</a>(</span><span class="m-doc-wrap">const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos) const -&gt; std::size_t</span></span>
+            </h3>
+            <p>Find the cell for a given position, like <a href="classRTree.html#a2fc224c200d88fada8078c151bab654a" class="m-doc">query_<wbr />point()</a></p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">pos</td>
+                  <td>The position to query</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><a href="structPosition.html" class="m-doc">Position</a> of the found cell in the cells given to the constructor</td>
+                </tr>
+              </tfoot>
+            </table>
           </div></section>
         </section>
       </div>
