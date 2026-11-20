@@ -53,10 +53,15 @@ FASTCALOSIM_EXPORT auto setProvider(std::shared_ptr<const Provider> provider)
 /// setProvider replaces it concurrently.
 FASTCALOSIM_EXPORT auto getProvider() -> std::shared_ptr<const Provider>;
 
+/// The currently installed provider, like getProvider() but without the
+/// reference counting of a shared_ptr copy, for lookups during simulation
+/// (where setProvider must not be called).
+FASTCALOSIM_EXPORT auto provider() -> const Provider&;
+
 /// Convenience accessor: electric charge of the given PDG id, in units of e.
 inline auto charge(int pdgID) -> double
 {
-  return getProvider()->charge(pdgID);
+  return provider().charge(pdgID);
 }
 
 }  // namespace ParticleData

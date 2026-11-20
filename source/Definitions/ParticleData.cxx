@@ -55,4 +55,9 @@ auto getProvider() -> std::shared_ptr<const Provider>
   return activeProvider();
 }
 
+auto provider() -> const Provider&
+{
+  return *activeProvider();
+}
+
 }  // namespace ParticleData
