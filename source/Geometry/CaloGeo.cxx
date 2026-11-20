@@ -16,31 +16,37 @@
 auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
     -> const Cell&
 {
-  // Check if an alternative geometry handler is set for the layer
-  auto alt_it = m_alt_geo_handlers.find(layer);
-  if (alt_it != m_alt_geo_handlers.end()) {
-    // Delegate to alternative geometry handler
-    const Cell& cell = alt_it->second->get_cell(layer, pos);
-    // Make sure returned cell is valid
-    if (!cell.is_valid()) {
-      throw std::runtime_error(
-          "Invalid cell ID from alternative geometry handler");
+  if (layer < m_layer_lookup.size()) {
+    const LayerLookup& lookup = m_layer_lookup[layer];
+
+    // Check if an alternative geometry handler is set for the layer
+    if (lookup.alt_geo_handler != nullptr) {
+      // Delegate to alternative geometry handler
+      const Cell& cell = lookup.alt_geo_handler->get_cell(layer, pos);
+      // Make sure returned cell is valid
+      if (!cell.is_valid()) {
+        throw std::runtime_error(
+            "Invalid cell ID from alternative geometry handler");
+      }
+      return cell;
     }
-    return cell;
+
+    // Default path: R-tree lookup, which gives the cell's index in the store
+    if (lookup.rtree != nullptr) {
+      return m_cell_store.get_at_index(
+          lookup.store_index[lookup.rtree->query_point_index(pos)]);
+    }
   }
+  throw std::runtime_error("No RTree loaded for layer "
+                           + std::to_string(layer));
+}
 
-  // Default path: R-tree + cell store lookup
-  auto rtree_it = m_layer_rtrees.find(layer);
-  if (rtree_it == m_layer_rtrees.end()) {
-    throw std::runtime_error("No RTree loaded for layer "
-                             + std::to_string(layer));
+auto CaloGeo::layer_lookup(unsigned int layer) -> LayerLookup&
+{
+  if (layer >= m_layer_lookup.size()) {
+    m_layer_lookup.resize(layer + 1);
   }
-
-  // Query the RTree to get the cell ID directly
-  auto cell_id = rtree_it->second->query_point(pos);
-
-  // Look up the cell in the repository
-  return get_cell(cell_id);
+  return m_layer_lookup[layer];
 }
 
 auto CaloGeo::get_cell_id(unsigned int layer, const Position& pos) const
@@ -138,6 +144,7 @@ auto CaloGeo::max_eta(unsigned int layer, DetectorSide side) const -> double
 void CaloGeo::set_alt_geo_handler(unsigned int layer,
                                   std::shared_ptr<CaloGeo> handler)
 {
+  layer_lookup(layer).alt_geo_handler = handler.get();
   m_alt_geo_handlers[layer] = std::move(handler);
 }
 
@@ -146,6 +153,7 @@ void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
                                   std::shared_ptr<CaloGeo> handler)
 {
   for (unsigned int i = ilayer; i <= llayer; ++i) {
+    layer_lookup(i).alt_geo_handler = handler.get();
     m_alt_geo_handlers[i] = handler;
   }
 }
@@ -303,6 +311,8 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   m_layer_cell_ids.clear();
   m_n_total_cells = 0;
   std::unordered_set<unsigned int> unique_layers;
+  // Cell store index of each cell of a layer, in the order of m_layer_cell_ids
+  std::map<unsigned int, std::vector<std::uint32_t>> layer_store_index;
 
   // Iterate through all cells to rebuild the layer-to-cell mapping
   for (size_t i = 0; i < m_cell_store.size(); ++i) {
@@ -313,6 +323,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     unsigned int layer_id = cell.layer();
     unique_layers.insert(layer_id);
     m_layer_cell_ids[layer_id].push_back(cell.id());
+    layer_store_index[layer_id].push_back(static_cast<std::uint32_t>(i));
     m_n_total_cells++;
 
     // Rebuild layer flags if not already done
@@ -356,15 +367,23 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   m_n_layers = unique_layers.size();
 
   // Build the RTree of each layer from its cells
-  for (const auto& [layer_id, cell_ids] : m_layer_cell_ids) {
+  for (auto& lookup : m_layer_lookup) {
+    lookup.rtree = nullptr;
+    lookup.store_index.clear();
+  }
+  for (const auto& [layer_id, store_index] : layer_store_index) {
     std::vector<Cell> cells;
-    cells.reserve(cell_ids.size());
-    for (const auto cell_id : cell_ids) {
-      cells.push_back(m_cell_store.get(cell_id));
+    cells.reserve(store_index.size());
+    for (const auto index : store_index) {
+      cells.push_back(m_cell_store.get_at_index(index));
     }
 
     auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
     m_layer_rtrees[layer_id] = std::make_unique<RTree>(coord_sys, cells);
+
+    LayerLookup& lookup = layer_lookup(layer_id);
+    lookup.rtree = m_layer_rtrees[layer_id].get();
+    lookup.store_index = store_index;
   }
 
   auto end_time = std::chrono::high_resolution_clock::now();
