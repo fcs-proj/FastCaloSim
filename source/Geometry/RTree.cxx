@@ -72,11 +72,16 @@ public:
     const double height = median(heights);
     const auto n_bins = [](double extent, double size) -> std::size_t
     {
+      constexpr std::size_t max_n = 1U << 15U;
       if (!(extent > 0) || !(size > 0)) {
         return 1;
       }
-      return std::clamp<std::size_t>(
-          static_cast<std::size_t>(std::ceil(extent / size)), 1, 1U << 15U);
+      // Compare before converting: extent / size can exceed any integer
+      const double n = std::ceil(extent / size);
+      if (!(n < static_cast<double>(max_n))) {
+        return max_n;
+      }
+      return std::max<std::size_t>(1, static_cast<std::size_t>(n));
     };
     std::size_t nx = n_bins(m_x1 - m_x0, width);
     std::size_t ny = n_bins(m_y1 - m_y0, height);
@@ -144,24 +149,34 @@ public:
    * rectangle outside the searched bins can be nearer than the nearest found.
    * Appends all rectangles at the minimal distance (several only on an exact
    * tie) and returns true, or returns false without appending anything if the
-   * point is NaN or the search would need more than max_rings rings.
+   * point is not finite or the search would need more than max_rings rings.
    */
   template<typename Container>
   auto nearest(const Point& point, Container& candidates) const -> bool
   {
-    // Gaps between neighbouring cells are found within a ring or two. Points
+    // Gaps between neighboring cells are found within a ring or two. Points
     // in a large hole of a layer (such as between its two eta sides) are
     // found faster by the R-tree.
     constexpr std::size_t max_rings = 4;
     const double x = point.get<0>();
     const double y = point.get<1>();
-    if (m_entries.empty() || std::isnan(x) || std::isnan(y)) {
+    if (m_entries.empty() || !std::isfinite(x) || !std::isfinite(y)) {
       return false;
     }
 
-    // Bin of the point, or of the nearest point of the grid's extent
+    // Bin of the point, or of the nearest point of the grid's extent. The
+    // comparisons come first, so that a distant point never converts a value
+    // outside the range of std::size_t.
     const auto clamped_bin = [](double t, std::size_t n) -> std::size_t
-    { return t > 0 ? std::min(static_cast<std::size_t>(t), n - 1) : 0; };
+    {
+      if (!(t > 0)) {
+        return 0;
+      }
+      if (t >= static_cast<double>(n - 1)) {
+        return n - 1;
+      }
+      return static_cast<std::size_t>(t);
+    };
     const std::size_t ix = clamped_bin((x - m_x0) * m_inv_wx, m_nx);
     const std::size_t iy = clamped_bin((y - m_y0) * m_inv_wy, m_ny);
 
@@ -373,7 +388,25 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
   // In a gap between cells or outside the layer: the nearest rectangle. The
   // grid finds it unless the point is far from all rectangles.
   if (candidates.empty() && !m_impl->grid.nearest(point, candidates)) {
-    m_impl->tree.query(bgi::nearest(point, 1), std::back_inserter(candidates));
+    // The R-tree yields the rectangles in order of distance: take all at the
+    // minimal distance, so that the rule below also decides ties here
+    const Tree& tree = m_impl->tree;
+    double min_distance = 0;
+    for (auto it = tree.qbegin(bgi::nearest(point, tree.size()));
+         it != tree.qend();
+         ++it)
+    {
+      const double d = bg::comparable_distance(point, it->first);
+      if (!candidates.empty() && d != min_distance) {
+        break;
+      }
+      min_distance = d;
+      candidates.push_back(*it);
+      // A point that is not finite has no meaningful nearest rectangle
+      if (!std::isfinite(d)) {
+        break;
+      }
+    }
   }
   if (candidates.empty()) {
     throw std::invalid_argument("No cell found for query point");

@@ -16,8 +16,9 @@
 auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
     -> const Cell&
 {
-  if (layer < m_layer_lookup.size()) {
-    const LayerLookup& lookup = m_layer_lookup[layer];
+  auto found = m_layer_lookup.find(layer);
+  if (found != m_layer_lookup.end()) {
+    const LayerLookup& lookup = found->second;
 
     // Check if an alternative geometry handler is set for the layer
     if (lookup.alt_geo_handler != nullptr) {
@@ -39,14 +40,6 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
   }
   throw std::runtime_error("No RTree loaded for layer "
                            + std::to_string(layer));
-}
-
-auto CaloGeo::layer_lookup(unsigned int layer) -> LayerLookup&
-{
-  if (layer >= m_layer_lookup.size()) {
-    m_layer_lookup.resize(layer + 1);
-  }
-  return m_layer_lookup[layer];
 }
 
 auto CaloGeo::get_cell_id(unsigned int layer, const Position& pos) const
@@ -144,7 +137,7 @@ auto CaloGeo::max_eta(unsigned int layer, DetectorSide side) const -> double
 void CaloGeo::set_alt_geo_handler(unsigned int layer,
                                   std::shared_ptr<CaloGeo> handler)
 {
-  layer_lookup(layer).alt_geo_handler = handler.get();
+  m_layer_lookup[layer].alt_geo_handler = handler.get();
   m_alt_geo_handlers[layer] = std::move(handler);
 }
 
@@ -153,7 +146,7 @@ void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
                                   std::shared_ptr<CaloGeo> handler)
 {
   for (unsigned int i = ilayer; i <= llayer; ++i) {
-    layer_lookup(i).alt_geo_handler = handler.get();
+    m_layer_lookup[i].alt_geo_handler = handler.get();
     m_alt_geo_handlers[i] = handler;
   }
 }
@@ -304,6 +297,17 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
 
+  // Invalidate the layer lookups before the cell store is replaced, so that a
+  // failed load leaves none that point into the new store
+  const auto invalidate = [](LayerLookup& lookup)
+  {
+    lookup.rtree = nullptr;
+    lookup.store_index.clear();
+  };
+  for (auto& entry : m_layer_lookup) {
+    invalidate(entry.second);
+  }
+
   // Load the cell store
   m_cell_store.load(base_path + "/cellstore");
 
@@ -367,10 +371,6 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   m_n_layers = unique_layers.size();
 
   // Build the RTree of each layer from its cells
-  for (auto& lookup : m_layer_lookup) {
-    lookup.rtree = nullptr;
-    lookup.store_index.clear();
-  }
   for (const auto& [layer_id, store_index] : layer_store_index) {
     std::vector<Cell> cells;
     cells.reserve(store_index.size());
@@ -381,7 +381,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
     m_layer_rtrees[layer_id] = std::make_unique<RTree>(coord_sys, cells);
 
-    LayerLookup& lookup = layer_lookup(layer_id);
+    LayerLookup& lookup = m_layer_lookup[layer_id];
     lookup.rtree = m_layer_rtrees[layer_id].get();
     lookup.store_index = store_index;
   }

@@ -137,8 +137,8 @@ private:
   /// @brief Maps layer id -> layer properties
   std::map<unsigned int, LayerFlags> m_layer_flags;
 
-  // What get_cell(layer, pos) needs for a layer, indexed by layer so that the
-  // lookup done for every hit needs no hashing
+  // What get_cell(layer, pos) needs for a layer, in a single map, so that the
+  // lookup done for every hit needs one hash lookup for any layer ID
   struct LayerLookup
   {
     // Alternative geometry handler of the layer (owned by m_alt_geo_handlers)
@@ -148,8 +148,7 @@ private:
     // Cell store index of each cell of the layer, in R-tree order
     std::vector<std::uint32_t> store_index;
   };
-  std::vector<LayerLookup> m_layer_lookup;
-  auto layer_lookup(unsigned int layer) -> LayerLookup&;
+  std::unordered_map<unsigned int, LayerLookup> m_layer_lookup;
 
   /// @brief Record a cell in the geometry
   void record_cell(std::unique_ptr<Cell> cell);
