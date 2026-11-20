@@ -10,12 +10,15 @@
 // be checked for bit-identical output with a plain diff. The dump depends on
 // the random-number sequence, so only compare full runs with the same BENCH_N.
 
+#include <cerrno>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -35,14 +38,19 @@ auto env_int(const char* name, int fallback) -> int
   return value != nullptr ? std::atoi(value) : fallback;
 }
 
-// Single dump file shared by all configurations, opened on first use
+// Single dump file shared by all configurations, opened on first use; null if
+// BENCH_DUMP is not set
 auto dump_file() -> FILE*
 {
   static std::unique_ptr<FILE, int (*)(FILE*)> file = []()
   {
     const char* path = std::getenv("BENCH_DUMP");
-    return std::unique_ptr<FILE, int (*)(FILE*)>(
-        path != nullptr ? std::fopen(path, "w") : nullptr, &std::fclose);
+    FILE* f = path != nullptr ? std::fopen(path, "w") : nullptr;
+    if (path != nullptr && f == nullptr) {
+      throw std::runtime_error(std::string("Cannot open BENCH_DUMP file ")
+                               + path + ": " + std::strerror(errno));
+    }
+    return std::unique_ptr<FILE, int (*)(FILE*)>(f, &std::fclose);
   }();
   return file.get();
 }
@@ -118,6 +126,9 @@ TEST_P(AtlasBenchmark, Throughput)
 {
   const TestHelpers::Event evt = GetParam();
   const int n_particles = env_int("BENCH_N", 50);
+  ASSERT_GT(n_particles, 0) << "BENCH_N must be a positive integer";
+  // Open the dump before the run, so that a bad path fails without waiting
+  FILE* const out = dump_file();
 
   // Replicate the configuration's particle, rotated in phi and spread by
   // +-0.05 in eta, so that transport and cell lookups see varied positions
@@ -172,7 +183,7 @@ TEST_P(AtlasBenchmark, Throughput)
               ms,
               ms / n_particles);
 
-  if (FILE* out = dump_file()) {
+  if (out != nullptr) {
     dump(out, evt.get_print_string(), *model);
   }
 }
