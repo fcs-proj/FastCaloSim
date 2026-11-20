@@ -168,9 +168,18 @@ public:
 
   static auto norm_angle(double angle) -> double
   {
-    angle = std::fmod(angle + M_PI, 2.0 * M_PI);
+    constexpr double two_pi = 2.0 * M_PI;
+    angle += M_PI;
+    // Equivalent to angle = std::fmod(angle, two_pi), which is slow. For the
+    // differences of two azimuths it removes at most one period, and that
+    // subtraction is exact (Sterbenz lemma), so the result is identical.
+    if (angle >= two_pi && angle < 2 * two_pi) {
+      angle -= two_pi;
+    } else if (!(angle > -two_pi && angle < two_pi)) {
+      angle = std::fmod(angle, two_pi);
+    }
     if (angle < 0) {
-      angle += 2.0 * M_PI;
+      angle += two_pi;
     }
     return angle - M_PI;
   }
