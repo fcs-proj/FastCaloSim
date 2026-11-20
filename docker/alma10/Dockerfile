@@ -38,6 +38,7 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && mkdir root_build && cd root_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
           -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DCMAKE_CXX_STANDARD=23 \
           -Dmathmore=ON \
           -Dclad=OFF \
           ../root_src \

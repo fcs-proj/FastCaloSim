@@ -12,3 +12,5 @@ python3-pip
 patch
 libxerces-c-dev
 libpcre3-dev
+gcc-14
+g++-14

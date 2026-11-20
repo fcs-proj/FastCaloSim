@@ -1,6 +1,6 @@
 # Copyright (c) 2026 CERN for the benefit of the FastCaloSimParam project
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.20)
 
 project(
     FastCaloSimParam
@@ -62,8 +62,8 @@ set_target_properties(
     OUTPUT_NAME FastCaloSim_Param
 )
 
-# Set the C++17 standard to the target
-target_compile_features(FastCaloSim_Param PUBLIC cxx_std_17)
+# Set the C++23 standard to the target
+target_compile_features(FastCaloSim_Param PUBLIC cxx_std_23)
 
 # Append FastCaloSim_Param to the list of targets to install
 list(APPEND FastCaloSim_TARGETS FastCaloSim_Param)

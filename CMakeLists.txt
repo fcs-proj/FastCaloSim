@@ -1,6 +1,6 @@
 # Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.20)
 
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
@@ -167,7 +167,7 @@ target_include_directories(
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/export>"
 )
 
-target_compile_features(FastCaloSim_FastCaloSim PUBLIC cxx_std_17)
+target_compile_features(FastCaloSim_FastCaloSim PUBLIC cxx_std_23)
 
 
 # Define the list of targets to install

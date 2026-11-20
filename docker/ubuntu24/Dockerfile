@@ -4,6 +4,10 @@ FROM ubuntu:24.04
 # Build type for all dependencies
 ARG BUILD_TYPE=RelWithDebInfo
 
+# Build everything with GCC 14: the default GCC 13 lacks much of the C++23
+# standard library
+ENV CC=gcc-14 CXX=g++-14
+
 # Install extra packages and ROOT dependencies
 # Note: ROOT packages taken from https://github.com/root-project/root-ci-images/blob/main/ubuntu2404/packages.txt
 COPY extra_packages.txt extra_packages.txt
@@ -37,6 +41,7 @@ RUN git clone --branch v${ROOT_VERSION} --depth=1 https://github.com/root-projec
  && mkdir root_build && cd root_build \
  && cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
           -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          -DCMAKE_CXX_STANDARD=23 \
           -Dmathmore=ON \
           -Dclad=OFF \
           ../root_src \
@@ -61,8 +66,13 @@ RUN git clone --depth=1 --branch=v${GEANT4_VERSION} https://github.com/Geant4/ge
 
 # Build onnxruntime for inference from source
 # See https://onnxruntime.ai/docs/build/inferencing.html for build instructions
-ARG ONNXRUNTIME_VERSION=1.26.0
-RUN git clone --branch v${ONNXRUNTIME_VERSION} --recursive https://github.com/Microsoft/onnxruntime.git onnx_src \
+# FIXME: github.com/microsoft/onnxruntime returns 404 since 2026-11-18. Until it
+# is back, fetch the v1.26.0 commit by its hash from the intel/onnxruntime fork
+ARG ONNXRUNTIME_COMMIT=8c546c37b43caaca1fa25db430dab94b901cf277
+RUN git init onnx_src \
+ && git -C onnx_src fetch --depth=1 https://github.com/intel/onnxruntime.git ${ONNXRUNTIME_COMMIT} \
+ && git -C onnx_src checkout FETCH_HEAD \
+ && git -C onnx_src submodule update --init --recursive \
  && mkdir onnx_build && cd onnx_build \
  && ../onnx_src/build.sh \
     --allow_running_as_root \
