@@ -137,13 +137,143 @@ public:
     }
   }
 
+  /**
+   * @brief Find the rectangles nearest to a point
+   *
+   * Searches rings of bins of growing size around the point's bin, until no
+   * rectangle outside the searched bins can be nearer than the nearest found.
+   * Appends all rectangles at the minimal distance (several only on an exact
+   * tie) and returns true, or returns false without appending anything if the
+   * point is NaN or the search would need more than max_rings rings.
+   */
+  template<typename Container>
+  auto nearest(const Point& point, Container& candidates) const -> bool
+  {
+    constexpr std::size_t max_rings = 64;
+    const double x = point.get<0>();
+    const double y = point.get<1>();
+    if (m_entries.empty() || std::isnan(x) || std::isnan(y)) {
+      return false;
+    }
+
+    // Bin of the point, or of the nearest point of the grid's extent
+    const auto clamped_bin = [](double t, std::size_t n) -> std::size_t
+    { return t > 0 ? std::min(static_cast<std::size_t>(t), n - 1) : 0; };
+    const std::size_t ix = clamped_bin((x - m_x0) * m_inv_wx, m_nx);
+    const std::size_t iy = clamped_bin((y - m_y0) * m_inv_wy, m_ny);
+
+    double best = std::numeric_limits<double>::infinity();
+    const auto visit_bin = [&](std::size_t bx, std::size_t by)
+    {
+      const std::size_t bin = by * m_nx + bx;
+      for (std::size_t i = m_bin_begin[bin]; i < m_bin_begin[bin + 1]; ++i) {
+        const Entry& entry = m_entries[i];
+        const double d = bg::comparable_distance(point, entry.first);
+        if (d < best) {
+          best = d;
+          candidates.clear();
+          candidates.push_back(entry);
+        } else if (d == best
+                   && std::none_of(candidates.begin(),
+                                   candidates.end(),
+                                   [&](const Entry& c)
+                                   {
+                                     return c.second == entry.second
+                                         && bg::equals(c.first, entry.first);
+                                   }))
+        {
+          // A rectangle is listed in every bin it overlaps: add it only once
+          candidates.push_back(entry);
+        }
+      }
+    };
+
+    for (std::size_t r = 0; r <= max_rings; ++r) {
+      const std::size_t ix_lo = ix >= r ? ix - r : 0;
+      const std::size_t iy_lo = iy >= r ? iy - r : 0;
+      const std::size_t ix_hi = std::min(ix + r, m_nx - 1);
+      const std::size_t iy_hi = std::min(iy + r, m_ny - 1);
+
+      // Visit the bins at ring distance r (the inner ones were visited)
+      for (std::size_t by = iy_lo; by <= iy_hi; ++by) {
+        if (by + r == iy || by == iy + r) {
+          // Top or bottom row of the ring
+          for (std::size_t bx = ix_lo; bx <= ix_hi; ++bx) {
+            visit_bin(bx, by);
+          }
+        } else {
+          // Left and right column of the ring, where inside the grid
+          if (ix >= r) {
+            visit_bin(ix - r, by);
+          }
+          if (ix + r < m_nx) {
+            visit_bin(ix + r, by);
+          }
+        }
+      }
+
+      // Lower bound on the distance of the rectangles outside the visited
+      // bins: they lie in the part of the extent beyond one of the sides of
+      // the visited block. The sides are moved outwards by a margin that
+      // covers the rounding of the bin computation.
+      const bool all_visited =
+          ix_lo == 0 && iy_lo == 0 && ix_hi == m_nx - 1 && iy_hi == m_ny - 1;
+      if (all_visited) {
+        return !candidates.empty();
+      }
+      double bound = std::numeric_limits<double>::infinity();
+      const auto beyond =
+          [&](double xmin, double ymin, double xmax, double ymax)
+      {
+        bound = std::min(bound,
+                         bg::comparable_distance(
+                             point, Box(Point(xmin, ymin), Point(xmax, ymax))));
+      };
+      if (ix_lo > 0) {
+        beyond(m_x0, m_y0, edge_x(ix_lo) + m_margin_x, m_y1);
+      }
+      if (ix_hi < m_nx - 1) {
+        beyond(edge_x(ix_hi + 1) - m_margin_x, m_y0, m_x1, m_y1);
+      }
+      if (iy_lo > 0) {
+        beyond(m_x0, m_y0, m_x1, edge_y(iy_lo) + m_margin_y);
+      }
+      if (iy_hi < m_ny - 1) {
+        beyond(m_x0, edge_y(iy_hi + 1) - m_margin_y, m_x1, m_y1);
+      }
+      if (bound > best) {
+        return true;
+      }
+    }
+    candidates.clear();
+    return false;
+  }
+
 private:
+  // Lower edge of a bin
+  auto edge_x(std::size_t bx) const -> double
+  {
+    return m_x0 + static_cast<double>(bx) * m_wx;
+  }
+  auto edge_y(std::size_t by) const -> double
+  {
+    return m_y0 + static_cast<double>(by) * m_wy;
+  }
+
   void set_bins(std::size_t nx, std::size_t ny)
   {
     m_nx = nx;
     m_ny = ny;
     m_inv_wx = m_x1 > m_x0 ? static_cast<double>(nx) / (m_x1 - m_x0) : 0;
     m_inv_wy = m_y1 > m_y0 ? static_cast<double>(ny) / (m_y1 - m_y0) : 0;
+    m_wx = (m_x1 - m_x0) / static_cast<double>(nx);
+    m_wy = (m_y1 - m_y0) / static_cast<double>(ny);
+    // Far larger than the rounding of the bin computation, far smaller than
+    // a bin
+    const auto margin = [](double lo, double hi, double w)
+    { return 1e-9 * std::max({std::abs(lo), std::abs(hi), w}); };
+    m_margin_x = margin(m_x0, m_x1, m_wx);
+    m_margin_y = margin(m_y0, m_y1, m_wy);
   }
 
   // Bin of a coordinate inside the extent; non-decreasing in the coordinate
@@ -174,6 +304,8 @@ private:
 
   double m_x0 {0}, m_y0 {0}, m_x1 {-1}, m_y1 {-1};
   double m_inv_wx {0}, m_inv_wy {0};
+  double m_wx {0}, m_wy {0};
+  double m_margin_x {0}, m_margin_y {0};
   std::size_t m_nx {1}, m_ny {1};
   std::vector<std::size_t> m_bin_begin;
   std::vector<Entry> m_entries;
@@ -235,8 +367,9 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
   boost::container::small_vector<Entry, 4> candidates;
   m_impl->grid.query(point, candidates);
 
-  // In a gap between cells or outside the layer: the nearest rectangle
-  if (candidates.empty()) {
+  // In a gap between cells or outside the layer: the nearest rectangle. The
+  // grid finds it unless the point is far from all rectangles.
+  if (candidates.empty() && !m_impl->grid.nearest(point, candidates)) {
     m_impl->tree.query(bgi::nearest(point, 1), std::back_inserter(candidates));
   }
   if (candidates.empty()) {
