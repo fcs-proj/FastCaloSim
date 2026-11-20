@@ -149,7 +149,10 @@ public:
   template<typename Container>
   auto nearest(const Point& point, Container& candidates) const -> bool
   {
-    constexpr std::size_t max_rings = 64;
+    // Gaps between neighbouring cells are found within a ring or two. Points
+    // in a large hole of a layer (such as between its two eta sides) are
+    // found faster by the R-tree.
+    constexpr std::size_t max_rings = 4;
     const double x = point.get<0>();
     const double y = point.get<1>();
     if (m_entries.empty() || std::isnan(x) || std::isnan(y)) {
