@@ -97,6 +97,15 @@ target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasSimTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasGeoTests PRIVATE ATLASFCalGeoPlugin)
 
+# Throughput benchmark of the full chain (not registered with ctest)
+option(FastCaloSim_BUILD_BENCHMARK "Build the ATLAS throughput benchmark" OFF)
+if(FastCaloSim_BUILD_BENCHMARK)
+  add_executable(AtlasBenchmark benchmark/AtlasBenchmark.cxx)
+  target_link_libraries(AtlasBenchmark PRIVATE FastCaloSim::FastCaloSim GTest::gtest_main fmt::fmt ATLASFCalGeoPlugin g4app)
+  target_include_directories(AtlasBenchmark PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR})
+  deactivate_checks(AtlasBenchmark)
+endif()
+
 # Add python tests
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 file(GLOB PYTHON_TESTS "python/*tests.py")

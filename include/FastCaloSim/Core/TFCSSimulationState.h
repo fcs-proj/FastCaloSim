@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <set>
 #include <unordered_map>
+#include <utility>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
@@ -157,6 +158,15 @@ public:
   inline void setAuxInfo(std::uint32_t index, const T& val)
   {
     m_AuxInfo[index].set<T>(val);
+  }
+
+  // Auxiliary info to read and update in place with a single lookup: the
+  // stored entry, or a newly stored zero entry, and whether it was stored
+  // before
+  auto auxInfoEntry(std::uint32_t index) -> std::pair<AuxInfo_t&, bool>
+  {
+    auto [it, inserted] = m_AuxInfo.try_emplace(index);
+    return {it->second, !inserted};
   }
 
   void AddAuxInfoCleanup(const TFCSParametrizationBase* para);

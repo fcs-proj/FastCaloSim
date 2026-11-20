@@ -7,7 +7,9 @@
 #include <array>
 #include <cmath>
 #include <limits>
+#include <memory>
 #include <random>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -88,6 +90,85 @@ TEST(RTreeTests, CellAcrossPhiBoundary)
   EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, M_PI - 0.05)), 1);
   EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, -M_PI + 0.05)), 1);
   EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, 0.05)), 2);
+}
+
+TEST(RTreeTests, PositionFarOutsideAllCells)
+{
+  const RTree rtree(kEtaPhi,
+                    {eta_phi_cell(1, 0.5, 0.0, 1.0, 0.2),  // eta in [0, 1]
+                     eta_phi_cell(2, 2.5, 0.0, 1.0, 0.2)});  // eta in [2, 3]
+
+  // So far away that the distances to both cells are equal in floating
+  // point, and so are those to their centers: the smaller ID
+  EXPECT_EQ(rtree.query_point(at_eta_phi(-1e30, 0.0)), 1);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(1e30, 0.0)), 1);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(1e30, 1e30)), 1);
+}
+
+TEST(RTreeTests, TieFarFromAllCells)
+{
+  // Unit cells at eta = 0..79 and 221..300. The position at eta = 150 is far
+  // from both groups and equally near to the cells at eta = 79 and 221, whose
+  // centers are also equally far: the smaller ID is taken, whichever side
+  for (const bool left_smaller : {true, false}) {
+    std::vector<Cell> cells;
+    for (int i = 0; i <= 300; ++i) {
+      if (i >= 80 && i <= 220) {
+        continue;
+      }
+      const uint64_t id = (i < 150) == left_smaller ? 1000 + i : 2000 + i;
+      cells.push_back(eta_phi_cell(id, i, 0.0, 1.0, 0.2));
+    }
+    const RTree rtree(kEtaPhi, cells);
+    EXPECT_EQ(rtree.query_point(at_eta_phi(150, 0.0)),
+              left_smaller ? 1079 : 1221);
+  }
+}
+
+TEST(RTreeTests, CellsOfVeryDifferentWidths)
+{
+  // The median cell width is far smaller than the extent of the layer
+  const RTree rtree(kEtaPhi,
+                    {eta_phi_cell(1, 0.0, 0.0, 1e-20, 0.2),
+                     eta_phi_cell(2, 1e-19, 0.0, 1e-20, 0.2),
+                     eta_phi_cell(3, 1.0, 0.0, 0.1, 0.2)});
+
+  EXPECT_EQ(rtree.query_point(at_eta_phi(1e-19, 0.0)), 2);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(1.0, 0.0)), 3);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, 0.0)), 3);
+}
+
+TEST(RTreeTests, LargeLayerIds)
+{
+  // Layer IDs are not limited to a small, dense range
+  class FixedCellGeo : public CaloGeo
+  {
+  public:
+    explicit FixedCellGeo(uint64_t id)
+        : m_cell(eta_phi_cell(id, 0.0, 0.0, 1.0, 1.0))
+    {
+    }
+    auto get_cell(unsigned int /*layer*/, const Position& /*pos*/) const
+        -> const Cell& override
+    {
+      return m_cell;
+    }
+
+  private:
+    Cell m_cell;
+  };
+
+  CaloGeo geo;
+  const unsigned int max_layer = std::numeric_limits<unsigned int>::max();
+  geo.set_alt_geo_handler(7, std::make_shared<FixedCellGeo>(1));
+  geo.set_alt_geo_handler(100000000, std::make_shared<FixedCellGeo>(2));
+  geo.set_alt_geo_handler(max_layer, std::make_shared<FixedCellGeo>(3));
+
+  EXPECT_EQ(geo.get_cell(7, at_eta_phi(0, 0)).id(), 1);
+  EXPECT_EQ(geo.get_cell(100000000, at_eta_phi(0, 0)).id(), 2);
+  EXPECT_EQ(geo.get_cell(max_layer, at_eta_phi(0, 0)).id(), 3);
+  EXPECT_THROW(geo.get_cell(8, at_eta_phi(0, 0)), std::runtime_error);
+  EXPECT_THROW(geo.get_cell(100000001, at_eta_phi(0, 0)), std::runtime_error);
 }
 
 // ---- Comparison with a brute-force search on the ATLAS geometry

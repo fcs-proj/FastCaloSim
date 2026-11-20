@@ -381,14 +381,17 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
     return false;
   }
 
+  // Called for every hit: read and update the sum with a single lookup
+  auto [stored_sum, was_stored] =
+      simulstate.auxInfoEntry("FCSHitChainEnergySum"_FCShash);
   float sumEhit = 0;
-  if (simulstate.hasAuxInfo("FCSHitChainEnergySum"_FCShash) && hit.idx() > 1) {
-    sumEhit = simulstate.getAuxInfo<float>("FCSHitChainEnergySum"_FCShash);
+  if (was_stored && hit.idx() > 1) {
+    sumEhit = static_cast<float>(stored_sum);
   }
 
   sumEhit += hit.E();
 
-  simulstate.setAuxInfo<float>("FCSHitChainEnergySum"_FCShash, sumEhit);
+  stored_sum.set<float>(sumEhit);
 
   float Elayer = simulstate.E(calosample());
   return (std::abs(sumEhit) >= std::abs(Elayer));

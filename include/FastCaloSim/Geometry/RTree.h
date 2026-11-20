@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -14,9 +15,11 @@
  * @brief Finds the cell of a layer that a position belongs to
  *
  * In the lookup coordinates of its layer, (x, y) or (eta, phi), every cell
- * is a rectangle. The rectangles of all cells of the layer are held in an
- * R-tree (Boost.Geometry), which is built once, kept in memory and shared
- * read-only by all threads.
+ * is a rectangle. The rectangles of all cells of the layer are held in a
+ * uniform grid, which finds the rectangles containing a position, and in an
+ * R-tree (Boost.Geometry), which finds the nearest rectangle where none
+ * contains it. Both are built once, kept in memory and shared read-only by
+ * all threads.
  */
 class FASTCALOSIM_EXPORT RTree
 {
@@ -43,6 +46,13 @@ public:
    * rectangle is returned.
    */
   auto query_point(const Position& pos) const -> uint64_t;
+
+  /**
+   * @brief Find the cell for a given position, like query_point()
+   * @param pos The position to query
+   * @return Position of the found cell in the cells given to the constructor
+   */
+  auto query_point_index(const Position& pos) const -> std::size_t;
 
 private:
   // Coordinate system for this layer

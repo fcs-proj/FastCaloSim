@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <unordered_map>
@@ -135,6 +136,19 @@ private:
 
   /// @brief Maps layer id -> layer properties
   std::map<unsigned int, LayerFlags> m_layer_flags;
+
+  // What get_cell(layer, pos) needs for a layer, in a single map, so that the
+  // lookup done for every hit needs one hash lookup for any layer ID
+  struct LayerLookup
+  {
+    // Alternative geometry handler of the layer (owned by m_alt_geo_handlers)
+    const CaloGeo* alt_geo_handler {nullptr};
+    // R-tree of the layer (owned by m_layer_rtrees)
+    const RTree* rtree {nullptr};
+    // Cell store index of each cell of the layer, in R-tree order
+    std::vector<std::uint32_t> store_index;
+  };
+  std::unordered_map<unsigned int, LayerLookup> m_layer_lookup;
 
   /// @brief Record a cell in the geometry
   void record_cell(std::unique_ptr<Cell> cell);
