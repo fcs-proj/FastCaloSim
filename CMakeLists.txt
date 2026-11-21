@@ -45,8 +45,6 @@ find_package(lwtnn 2.13 REQUIRED)
 find_package(ONNXRuntime 1.15 REQUIRED)
 # LibXml2 for reading XML files
 find_package(libxml REQUIRED)
-# Fmt for formatting
-find_package(fmt REQUIRED)
 # CLHEP for random number generation
 find_package(CLHEP REQUIRED)
 # Eigen for extrapolation
@@ -87,7 +85,6 @@ target_link_libraries(
     PUBLIC
         ROOT::Core ROOT::Tree ROOT::Gpad ROOT::Hist ROOT::Physics ROOT::MathCore ROOT::MathMore ROOT::ROOTDataFrame
         HDF5::HDF5
-        fmt::fmt-header-only
         CLHEP::CLHEP
         ${Geant4_LIBRARIES}
         TBB::tbb
@@ -117,7 +114,7 @@ ROOT_GENERATE_DICTIONARY( ${_dictName} MODULE ${_libName} LINKDEF include/FastCa
 
 # Deactivate compiler warnings and static analyzers for third party libraries
 # TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim fmt::fmt)
+deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim)
 
 # ROOT >= 6.40 emits the generated dictionary as its own (object-library) target
 # and links it PRIVATE into the module. In a static build (BUILD_SHARED_LIBS=OFF)
@@ -177,6 +174,8 @@ set(FastCaloSim_TARGETS FastCaloSim_FastCaloSim)
 
 # Create FastCaloSim::Param target
 if (FastCaloSim_PARAM_MODE)
+    # fmt for the parametrization executables
+    find_package(fmt REQUIRED)
     add_subdirectory(param)
 endif()
 

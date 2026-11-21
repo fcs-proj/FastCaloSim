@@ -1,14 +1,13 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <format>
 #include <ostream>
 
 #include "FastCaloSim/Geometry/Cell.h"
 
-#include <fmt/format.h>
-
 auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&
 {
-  os << fmt::format(
+  os << std::format(
       "Cell details:\n"
       "---------------------------\n"
       "ID: {}\n"
@@ -30,7 +29,7 @@ auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&
       cell.r());
 
   if (cell.isXYZ()) {
-    os << fmt::format(
+    os << std::format(
         "Cell size:\n"
         "  dx: {:10.2f}\n"
         "  dy: {:10.2f}\n"
@@ -41,7 +40,7 @@ auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&
         cell.dz());
   }
   if (cell.isEtaPhiR()) {
-    os << fmt::format(
+    os << std::format(
         "Cell size:\n"
         "  dphi: {:10.2f}\n"
         "  deta: {:10.2f}\n"
@@ -52,7 +51,7 @@ auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&
         cell.dr());
   }
   if (cell.isEtaPhiZ()) {
-    os << fmt::format(
+    os << std::format(
         "Cell size:\n"
         "  dphi: {:10.2f}\n"
         "  deta: {:10.2f}\n"
@@ -63,7 +62,7 @@ auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&
         cell.dz());
   }
   if (cell.isRPhiZ()) {
-    os << fmt::format(
+    os << std::format(
         "Cell size:\n"
         "  dphi: {:10.2f}\n"
         "  dz: {:10.2f}\n"
