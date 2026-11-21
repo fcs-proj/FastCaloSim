@@ -36,9 +36,10 @@ class FASTCALOSIM_EXPORT LogSink
 {
 public:
   virtual ~LogSink() = default;
-  /// One message: `file` and `line` locate the call site, `text` has no
-  /// decoration and no trailing newline. Called concurrently from all threads
-  /// that simulate.
+  /// One message: `file` and `line` locate the call site, `text` is the
+  /// message as written at the call site, without decoration and without an
+  /// added newline. Called concurrently from all threads that log. An exception
+  /// thrown here does not propagate: the message then goes to the default sink.
   virtual void write(MSG::Level lvl,
                      std::string_view file,
                      int line,
@@ -107,14 +108,15 @@ using MsgStream = std::ostream;
 
 // Build one line in pieces: FCS_MSG(INFO) << "a"; ... FCS_MSG(INFO) << "b"
 // << END_FCS_MSG(INFO); Each thread has one open line. It is passed to the log
-// sink at END_FCS_MSG, or when the same thread logs at another level, from
-// another file or with an FCS_MSG_* macro.
+// sink at END_FCS_MSG of the same object, or when the same thread streams from
+// another object, at another level or from another file. FCS_MSG_* messages
+// in between are passed on by themselves and leave the line open.
 
 // Provide a stream
 #define FCS_MSG(lvl) this->stream(::FastCaloSim::MSG::lvl, __FILE__, __LINE__)
-// End the open line if the level is in use
+// End the open line of this object if the level is in use
 #define END_FCS_MSG(lvl) this->streamerEndLine(::FastCaloSim::MSG::lvl)
-// End the open line
+// End the open line of this object
 #define FCS_ENDMSG this->streamerEndLine(::FastCaloSim::MSG::INFO)
 
 class FASTCALOSIM_EXPORT MLogging
@@ -149,7 +151,7 @@ public:
     return true;
   }
 
-  /// End the open line of this thread if we print this level (END_FCS_MSG)
+  /// End the open line of this object if we print this level (END_FCS_MSG)
   auto streamerEndLine(MSG::Level lvl) const -> std::string;
 
 private:

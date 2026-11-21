@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "FastCaloSim/Core/MLogging.h"
 
@@ -21,14 +22,6 @@ namespace
 // warnings.
 const ROOT::TClassAlt* dummy =
     ROOT::AddClassAlternate("FastCaloSim::MLogging", "ISF_FCS::MLogging");
-
-// Stream for messages below the output level: it has no buffer, so everything
-// written to it is discarded. One per thread, as writing sets its state flags.
-auto null_stream() -> std::ostream&
-{
-  thread_local std::ostream stream(nullptr);
-  return stream;
-}
 
 // Writes each message as one decorated line to std::cout. The mutex keeps
 // lines from different threads apart.
@@ -50,45 +43,96 @@ private:
   std::mutex m_mutex;
 };
 
-// Never destroyed, so that messages from destructors at exit still work.
+// The default sink and the slot of the current sink are never destroyed, so
+// that messages from destructors at exit still work.
+auto default_sink() -> const std::shared_ptr<FastCaloSim::LogSink>&
+{
+  static const auto* sink =
+      new std::shared_ptr<FastCaloSim::LogSink>(std::make_shared<CoutSink>());
+  return *sink;
+}
+
 auto sink_slot() -> std::atomic<std::shared_ptr<FastCaloSim::LogSink>>&
 {
-  static auto* slot = new std::atomic<std::shared_ptr<FastCaloSim::LogSink>>(
-      std::make_shared<CoutSink>());
+  static auto* slot =
+      new std::atomic<std::shared_ptr<FastCaloSim::LogSink>>(default_sink());
   return *slot;
 }
 
+// Called from destructors, so it must not throw. A message that the installed
+// sink fails to take goes to the default sink instead.
 void send(FastCaloSim::MSG::Level lvl,
           std::string_view file,
           int line,
-          std::string_view text)
+          std::string_view text) noexcept
 {
-  sink_slot().load()->write(lvl, file, line, text);
+  try {
+    sink_slot().load()->write(lvl, file, line, text);
+    return;
+  } catch (...) {
+  }
+  try {
+    default_sink()->write(lvl, file, line, text);
+  } catch (...) {
+  }
 }
 
-// The line of this thread that FCS_MSG(lvl) << ... builds until END_FCS_MSG.
-struct OpenLine
+// Logging state of one thread: the stream that discards messages below the
+// output level (one per thread, as writing sets its state flags), and the
+// line that FCS_MSG(lvl) << ... builds until END_FCS_MSG.
+struct ThreadState
 {
+  std::ostream null_stream {nullptr};
+
   bool open = false;
+  const FastCaloSim::MLogging* owner = nullptr;
   FastCaloSim::MSG::Level lvl = FastCaloSim::MSG::NIL;
   std::string_view file;
   int line = 0;
   std::ostringstream text;
 
-  void end()
+  void end_line()
   {
     if (!open)
       return;
     open = false;
     send(lvl, file, line, text.view());
+    text.str({});
   }
-  ~OpenLine() { end(); }
 };
 
-auto open_line() -> OpenLine&
+// Plain thread_local values have no destructor and stay usable while the
+// thread exits, unlike a thread_local ThreadState: static destructors that log
+// run after the thread_local objects of the main thread are gone.
+thread_local ThreadState* t_state = nullptr;
+thread_local bool t_exiting = false;
+
+struct ThreadStateOwner
 {
-  thread_local OpenLine line;
-  return line;
+  ThreadStateOwner() = default;
+  ThreadStateOwner(const ThreadStateOwner&) = delete;
+  auto operator=(const ThreadStateOwner&) -> ThreadStateOwner& = delete;
+  ~ThreadStateOwner()
+  {
+    t_exiting = true;
+    if (ThreadState* state = std::exchange(t_state, nullptr)) {
+      state->end_line();
+      delete state;
+    }
+  }
+};
+
+auto thread_state() -> ThreadState&
+{
+  if (t_state == nullptr) {
+    t_state = new ThreadState;
+    // Deleted when the thread exits. State created while the thread exits
+    // (logging from later destructors) is not deleted.
+    if (!t_exiting) {
+      [[maybe_unused]] thread_local ThreadStateOwner owner;
+    }
+  }
+  return *t_state;
 }
 }  // namespace
 
@@ -97,9 +141,7 @@ namespace FastCaloSim
 
 void set_log_sink(std::shared_ptr<LogSink> sink)
 {
-  if (!sink)
-    sink = std::make_shared<CoutSink>();
-  sink_slot().store(std::move(sink));
+  sink_slot().store(sink ? std::move(sink) : default_sink());
 }
 
 LogMessage::LogMessage(MSG::Level lvl, const char* file, int line)
@@ -111,8 +153,6 @@ LogMessage::LogMessage(MSG::Level lvl, const char* file, int line)
 
 LogMessage::~LogMessage()
 {
-  // A message ends any line this thread was building, which comes first.
-  open_line().end();
   send(m_lvl, m_file, m_line, m_text.view());
 }
 
@@ -125,32 +165,36 @@ void MLogging::setLevel(int level)
   m_level = MSG::Level(level);
 }
 
-/// Return the open line of this thread. A different level or file ends the
-/// line and starts a new one.
+/// Return the open line of this thread. Another object, level or file ends
+/// the line and starts a new one.
 auto MLogging::stream(MSG::Level lvl, const char* file, int line) const
     -> MsgStream&
 {
+  ThreadState& state = thread_state();
   // If we shouldn't print this just return a dummy stream.
   if (!this->msgLvl(lvl))
-    return null_stream();
-  OpenLine& open = open_line();
-  if (open.open && (lvl != open.lvl || file != open.file))
-    open.end();
-  if (!open.open) {
-    open.open = true;
-    open.lvl = lvl;
-    open.file = file;
-    open.line = line;
-    open.text.str({});
+    return state.null_stream;
+  if (state.open
+      && (this != state.owner || lvl != state.lvl || file != state.file))
+    state.end_line();
+  if (!state.open) {
+    state.open = true;
+    state.owner = this;
+    state.lvl = lvl;
+    state.file = file;
+    state.line = line;
   }
-  return open.text;
+  return state.text;
 }
 
-/// End the open line if we print this level
+/// End the open line of this object if we print this level
 auto MLogging::streamerEndLine(MSG::Level lvl) const -> std::string
 {
-  if (this->msgLvl(lvl))
-    open_line().end();
+  if (this->msgLvl(lvl)) {
+    ThreadState& state = thread_state();
+    if (state.owner == this)
+      state.end_line();
+  }
   return "";
 }
 

@@ -3,7 +3,6 @@
 #include <array>
 #include <chrono>
 #include <cmath>
-#include <iostream>
 #include <limits>
 #include <optional>
 #include <unordered_set>
@@ -11,6 +10,7 @@
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
+#include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Geometry/CellStoreBuilder.h"
 
 auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
@@ -286,9 +286,9 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   std::chrono::duration<double> elapsed = end_time - start_time;
 
   // Print timing information
-  std::cout << "INFO: Done building calo geometry. Took " << elapsed.count()
-            << " s (" << m_n_total_cells << " cells in " << m_n_layers
-            << " layers)" << std::endl;
+  FCS_MSG_INFO("Done building calo geometry. Took "
+               << elapsed.count() << " s (" << m_n_total_cells << " cells in "
+               << m_n_layers << " layers)");
 }
 
 // Method to load geometry
@@ -390,7 +390,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   std::chrono::duration<double> elapsed = end_time - start_time;
 
   // Print timing information
-  std::cout << "INFO: Done loading calo geometry. Took " << elapsed.count()
-            << " s (" << m_n_total_cells << " cells in " << m_n_layers
-            << " layers)" << std::endl;
+  FCS_MSG_INFO("Done loading calo geometry. Took "
+               << elapsed.count() << " s (" << m_n_total_cells << " cells in "
+               << m_n_layers << " layers)");
 }
