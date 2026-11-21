@@ -216,19 +216,6 @@ public:
     return m_array[pos] / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
   };
 
-  /// Get the content at bin pos as fraction in the range [0,1]
-  inline auto get_binfraction(size_t pos) const -> Trandom
-  {
-    if (pos == 0)
-      return m_array[pos] / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
-    if (pos == size())
-      return 1
-          - (m_array[size() - 1]
-             / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat);
-    return (m_array[pos] - m_array[pos - 1])
-        / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
-  };
-
   /// set number of bins.
   /// The actually allocated size is one smaller than count, as the last bin is
   /// fixed with the range [get_fraction(size()-1,1]
@@ -369,30 +356,6 @@ public:
         ? (0.5 * std::sqrt(m * (m + 8 * drnd - 4) + 4) - 1) / m + 0.5
         : drnd;
     return (1 - x) * m_array[pos] + x * m_array[pos + 1];
-  };
-
-  /// return exponentially interpolated position for bin pos, such that
-  /// histograming the position gives a linear slope m, where m is in units of
-  /// the bin width for bin pos. Interpolation is done with a random value in
-  /// the range [0,1]
-  inline auto position_exp(size_t pos, Trandom beta, const Trandom& drnd) const
-      -> T
-  {
-    Trandom z = drnd;  ///(m_array[pos+1] - m_array[pos]);
-    T pos1 = GetBinLowEdge(pos);
-    T pos2 = GetBinLowEdge(pos + 1);
-    if (fabs(beta) < 1.0e-8)
-      return (1 - z) * pos1 + z * pos2;
-    else {
-      T deltax = m_array[pos + 1] - m_array[pos];
-      if (deltax == 0)
-        return m_array[pos];
-      else {
-        z = 1 / beta * log(1.0 + drnd * (exp(beta * deltax) - 1.0)) / deltax;
-      }
-    }
-
-    return (1 - z) * pos1 + z * pos2;
   };
 
 private:
@@ -539,30 +502,6 @@ public:
     T pos1 = GetBinLowEdge(pos);
     T pos2 = GetBinLowEdge(pos + 1);
     return (1 - x) * pos1 + x * pos2;
-  };
-
-  /// return exponentially interpolated position for bin pos, such that
-  /// histograming the position gives a linear slope m, where m is in units of
-  /// the bin width for bin pos. Interpolation is done with a random value in
-  /// the range [0,1]
-  inline auto position_exp(size_t pos, Trandom beta, const Trandom& drnd) const
-      -> T
-  {
-    Trandom z = drnd;  ///(m_array[pos+1] - m_array[pos]);
-    T pos1 = GetBinLowEdge(pos);
-    T pos2 = GetBinLowEdge(pos + 1);
-    if (fabs(beta) < 1.0e-8)
-      return (1 - z) * pos1 + z * pos2;
-    else {
-      T deltax = m_array[pos + 1] - m_array[pos];
-      if (deltax == 0)
-        return m_array[pos];
-      else {
-        z = 1 / beta * log(1.0 + drnd * (exp(beta * deltax) - 1.0)) / deltax;
-      }
-    }
-
-    return (1 - z) * pos1 + z * pos2;
   };
 
 private:
