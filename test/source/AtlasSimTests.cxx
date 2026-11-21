@@ -37,6 +37,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   auto* mgr = G4GlobalFastSimulationManager::GetGlobalFastSimulationManager();
   auto* model =
       dynamic_cast<FastSimModel*>(mgr->GetFastSimulationModel("model"));
+  ASSERT_NE(model, nullptr);
 
   // Reset the state of the fast simulation model
   model->Reset();

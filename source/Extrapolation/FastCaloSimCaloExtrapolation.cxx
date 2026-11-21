@@ -153,13 +153,15 @@ private:
   /// The z of the front of EME1 on the particle's side, looked up once
   auto embHalfLength() -> double
   {
-    if (!m_embHalfLength) {
-      m_embHalfLength =
-          std::abs(m_geo->zpos(5,
-                               m_positiveSide ? m_farPositive : m_farNegative,
-                               FastCaloSim::SubPos::ENT));
+    if (m_embHalfLength) {
+      return *m_embHalfLength;
     }
-    return *m_embHalfLength;
+    const double halfLength =
+        std::abs(m_geo->zpos(5,
+                             m_positiveSide ? m_farPositive : m_farNegative,
+                             FastCaloSim::SubPos::ENT));
+    m_embHalfLength = halfLength;
+    return halfLength;
   }
 
   const CaloGeo* m_geo;

@@ -16,7 +16,8 @@ public:
 
   auto is_match_Ekin_bin(std::size_t bin) const -> bool override
   {
-    return !Ekin_bin() || bin == *Ekin_bin();
+    const auto ekin_bin = Ekin_bin();
+    return !ekin_bin || bin == *ekin_bin;
   }
   auto is_match_calosample(std::size_t calosample) const -> bool override
   {

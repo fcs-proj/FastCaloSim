@@ -40,13 +40,24 @@ private:
   mutable std::size_t m_calls = 0;
 };
 
-// The chain classes are created through ROOT, as when they are read from a
-// parametrization file
+// A chain created through ROOT, as when it is read from a parametrization
+// file. Like any client of the library, the test owns it through the
+// exported base class: the chain classes themselves are not exported, so
+// their destructors must not be called directly from here.
 template<typename T>
-auto make_chain(const char* class_name) -> std::unique_ptr<T>
+struct ChainHandle
 {
-  return std::unique_ptr<T>(
-      static_cast<T*>(TClass::GetClass(class_name)->New()));
+  std::unique_ptr<TFCSParametrizationBase> owner;
+
+  auto operator->() const -> T* { return static_cast<T*>(owner.get()); }
+  auto operator*() const -> T& { return *operator->(); }
+};
+
+template<typename T>
+auto make_chain(const char* class_name) -> ChainHandle<T>
+{
+  auto* chain = static_cast<T*>(TClass::GetClass(class_name)->New());
+  return {std::unique_ptr<TFCSParametrizationBase>(chain)};
 }
 
 auto simulate(TFCSParametrizationBase& chain) -> FCSReturnCode
