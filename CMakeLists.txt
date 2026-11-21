@@ -37,6 +37,12 @@ endif()
 
 # ROOT is a required dependency for FastCaloSim
 find_package(ROOT 6.28 REQUIRED)
+# ROOT's dictionary generator and interpreter read the public headers with the
+# C++ standard that ROOT was built with, so ROOT must use C++23 as well
+if(DEFINED ROOT_CXX_STANDARD AND ROOT_CXX_STANDARD LESS 23)
+  message(FATAL_ERROR "FastCaloSim needs a ROOT built with C++23 or later, "
+                      "found ROOT built with C++${ROOT_CXX_STANDARD}")
+endif()
 # Geant4 (with gdml activated) is a required dependency for FastCaloSim
 find_package(Geant4 10.6 REQUIRED gdml)
 # lwtnn for neural network inference
@@ -174,11 +180,6 @@ set(FastCaloSim_TARGETS FastCaloSim_FastCaloSim)
 
 # Create FastCaloSim::Param target
 if (FastCaloSim_PARAM_MODE)
-    # fmt for the parametrization executables
-    find_package(fmt REQUIRED)
-    # fmt is built from source when it is not installed: third party code,
-    # no project warnings or analyzers
-    deactivate_checks(fmt::fmt)
     add_subdirectory(param)
 endif()
 

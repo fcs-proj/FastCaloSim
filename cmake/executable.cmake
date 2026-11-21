@@ -11,7 +11,6 @@ function(add_exec NAME)
 
   target_link_libraries("${NAME}" PRIVATE
     FastCaloSim::Param
-    fmt::fmt-header-only
   )
 
   target_compile_features("${NAME}" PRIVATE cxx_std_23)
