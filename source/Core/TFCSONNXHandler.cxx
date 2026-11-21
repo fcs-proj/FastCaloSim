@@ -88,7 +88,7 @@ void TFCSONNXHandler::print(std::ostream& strm) const
   strm << "\nHas input nodes (name:dimensions);\n";
   for (size_t inp_n = 0; inp_n < m_inputNodeNames.size(); inp_n++) {
     strm << "\t" << m_inputNodeNames[inp_n] << ":[";
-    for (int dim : m_inputNodeDims[inp_n]) {
+    for (const int64_t dim : m_inputNodeDims[inp_n]) {
       strm << " " << dim << ",";
     };
     strm << "]\n";
@@ -96,7 +96,7 @@ void TFCSONNXHandler::print(std::ostream& strm) const
   strm << "\nHas output nodes (name:dimensions);\n";
   for (size_t out_n = 0; out_n < m_outputNodeNames.size(); out_n++) {
     strm << "\t" << m_outputNodeNames[out_n] << ":[";
-    for (int dim : m_outputNodeDims[out_n]) {
+    for (const int64_t dim : m_outputNodeDims[out_n]) {
       strm << " " << dim << ",";
     };
     strm << "]\n";
@@ -128,9 +128,9 @@ void TFCSONNXHandler::setupNet()
 
   // iterate over all input nodes
   FCS_MSG_DEBUG("Getting input nodes.");
-  const int num_input_nodes = m_session->GetInputCount();
+  const std::size_t num_input_nodes = m_session->GetInputCount();
   Ort::AllocatorWithDefaultOptions allocator;
-  for (int i = 0; i < num_input_nodes; i++) {
+  for (std::size_t i = 0; i < num_input_nodes; i++) {
 #if ORT_API_VERSION > 11
     Ort::AllocatedStringPtr node_names =
         m_session->GetInputNameAllocated(i, allocator);
@@ -190,9 +190,9 @@ void TFCSONNXHandler::setupNet()
       ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
 
   // iterate over all output nodes
-  int num_output_nodes = m_session->GetOutputCount();
+  const std::size_t num_output_nodes = m_session->GetOutputCount();
   FCS_MSG_DEBUG("Getting " << num_output_nodes << " output nodes.");
-  for (int i = 0; i < num_output_nodes; i++) {
+  for (std::size_t i = 0; i < num_output_nodes; i++) {
 #if ORT_API_VERSION > 11
     Ort::AllocatedStringPtr node_names =
         m_session->GetOutputNameAllocated(i, allocator);
@@ -224,7 +224,7 @@ void TFCSONNXHandler::setupNet()
                                  << " dimensions.");
     // Again, check for symbolic dimensions
     std::vector<int64_t> dimension_of_node;
-    int node_size = 1;
+    int64_t node_size = 1;
     for (int64_t node_dim : recieved_dimension) {
       if (node_dim < 1) {
         FCS_MSG_WARNING("Found symbolic dimension "
@@ -363,7 +363,6 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
   std::vector<Ort::Value> node_values;
   // Non const values that will be needed at each step.
   std::string node_name;
-  int n_dimensions, elements_in_node, key_number;
   size_t first_digit;
   // Move along the list of node names gathered in the constructor
   // we need both the node name, and the dimension
@@ -375,11 +374,12 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
     node_name = m_inputNodeNames[node_n];
     FCS_MSG_DEBUG("Node name " << node_name);
     // Get the shape of this node
-    n_dimensions = m_inputNodeDims[node_n].size();
+    const std::size_t n_dimensions = m_inputNodeDims[node_n].size();
     FCS_MSG_DEBUG("Node dimensions " << n_dimensions);
-    elements_in_node = 1;
-    for (int dimension_len : m_inputNodeDims[node_n]) {
-      elements_in_node *= dimension_len;
+    // The dimensions are all at least 1, see the constructor
+    std::size_t elements_in_node = 1;
+    for (const int64_t dimension_len : m_inputNodeDims[node_n]) {
+      elements_in_node *= static_cast<std::size_t>(dimension_len);
     };
     FCS_MSG_DEBUG("Elements in node " << elements_in_node);
     for (const auto& inp : inputs) {
@@ -396,8 +396,9 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
       first_digit = element.first.find_first_of("0123456789");
       // if there is no digit, it's not an element
       if (first_digit < element.first.length()) {
-        key_number = std::stoi(element.first.substr(first_digit));
-        node_elements[key_number] = element.second;
+        const auto key_number = static_cast<std::size_t>(
+            std::stoi(element.first.substr(first_digit)));
+        node_elements[key_number] = static_cast<Tin>(element.second);
       }
     }
     input_values[node_n] = std::move(node_elements);
@@ -436,13 +437,13 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
     // get a pointer to the data
     output_node = output_tensors[node_n].GetTensorMutableData<Tout>();
     FCS_MSG_VERBOSE("output node " << output_node);
-    elements_in_node = m_outputNodeSize[node_n];
+    const int64_t elements_in_node = m_outputNodeSize[node_n];
     node_name = m_outputNodeNames[node_n];
     // Does the GetTensorMutableData really always return a
     // flat array?
     // Likely yes, see use of memcopy on line 301 of
     // onnxruntime/core/languge_interop_ops/pyop/pyop.cc
-    for (int part_n = 0; part_n < elements_in_node; part_n++) {
+    for (int64_t part_n = 0; part_n < elements_in_node; part_n++) {
       FCS_MSG_VERBOSE("Node part " << part_n << " contains "
                                    << output_node[part_n]);
       // compose the output name

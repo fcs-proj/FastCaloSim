@@ -34,17 +34,18 @@ auto coverIntersections(const Cylinder& cylinder,
   // Squared distance to the z axis, which rounding can make negative
   const double d2 = std::max(aXY.dot(aXY) - t * t * norm2, 0.0);
 
-  const float radius = cylinder.radius;
-  if (d2 > radius * radius) {
+  if (d2 > cylinder.r2()) {
     return {};
   }
-  const double k = std::sqrt((radius * radius - d2) / norm2);
+  const double k = std::sqrt((cylinder.r2() - d2) / norm2);
 
   // Keep the crossings within the z range of the cover
   Intersections result;
   for (const double s : {t + k, t - k}) {
     const Vector3D point = a + s * (b - a);
-    if (point.z() <= cylinder.halfLength && point.z() >= -cylinder.halfLength) {
+    if (point.z() <= cylinder.half_length()
+        && point.z() >= -cylinder.half_length())
+    {
       result.points[result.count++] = point;
     }
   }
@@ -65,7 +66,7 @@ auto endcapIntersection(const Cylinder& cylinder,
   }
   const Vector3D center(0, 0, endcapZ);
   const Vector3D intersection = b + ((center - b).z() / ab.z()) * ab;
-  if ((intersection - center).mag() <= cylinder.radius) {
+  if ((intersection - center).mag() <= cylinder.r()) {
     return intersection;
   }
   return std::nullopt;
@@ -80,17 +81,19 @@ auto Cylinder::locate(const Vector3D& point) const -> Location
 
   const double perp = point.perp();
   const double z = point.z();
-  const bool withinZ = z < halfLength && z > -halfLength;
+  const bool withinZ = z < half_length() && z > -half_length();
   const double distanceToEndcap =
-      z > 0 ? std::abs(z - halfLength) : std::abs(z + halfLength);
+      z > 0 ? std::abs(z - half_length()) : std::abs(z + half_length());
 
-  const bool onEndcap =
-      perp <= radius + tolerance && distanceToEndcap < tolerance;
-  const bool onCover = std::abs(perp - radius) < tolerance && withinZ;
+  // radius + tolerance is a single precision sum
+  const bool onEndcap = perp <= static_cast<double>(radius + tolerance)
+      && distanceToEndcap < static_cast<double>(tolerance);
+  const bool onCover =
+      std::abs(perp - r()) < static_cast<double>(tolerance) && withinZ;
   if (onEndcap || onCover) {
     return Location::OnSurface;
   }
-  if (withinZ && perp < radius) {
+  if (withinZ && perp < r()) {
     return Location::Inside;
   }
   return Location::Outside;
@@ -99,17 +102,17 @@ auto Cylinder::locate(const Vector3D& point) const -> Location
 auto Cylinder::project(const Vector3D& point) const -> Vector3D
 {
   const double z = point.z();
-  if (z >= halfLength || z <= -halfLength) {
+  if (z >= half_length() || z <= -half_length()) {
     // Beyond an endcap: onto the endcap disc, at the edge if outside of it
-    const Vector3D center(0, 0, z >= halfLength ? halfLength : -halfLength);
+    const Vector3D center(
+        0, 0, z >= half_length() ? half_length() : -half_length());
     const Vector3D inEndcapPlane(point.x(), point.y(), center.z());
     return center
-        + std::min(point.perp(), static_cast<double>(radius))
-        * (inEndcapPlane - center).unit();
+        + std::min(point.perp(), r()) * (inEndcapPlane - center).unit();
   }
   // Within the z range: radially onto the cover
   const Vector3D onAxis(0, 0, z);
-  return onAxis + radius * (point - onAxis).unit();
+  return onAxis + r() * (point - onAxis).unit();
 }
 
 auto Cylinder::intersections(const Vector3D& a, const Vector3D& b) const
@@ -120,8 +123,8 @@ auto Cylinder::intersections(const Vector3D& a, const Vector3D& b) const
     return result;
   }
 
-  const auto positive = endcapIntersection(*this, a, b, halfLength);
-  const auto negative = endcapIntersection(*this, a, b, -halfLength);
+  const auto positive = endcapIntersection(*this, a, b, half_length());
+  const auto negative = endcapIntersection(*this, a, b, -half_length());
   if (positive && negative) {
     if (result.count == 1) {
       // The cover intersection is on the edge to one of the endcaps, which

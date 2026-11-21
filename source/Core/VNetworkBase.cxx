@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
+#include <cstddef>
 #include <iostream>
 
 #include "FastCaloSim/Core/VNetworkBase.h"
@@ -112,14 +114,7 @@ auto VNetworkBase::isRootFile(std::string const& filename) const -> bool
     to_check = &this->m_inputFile;
     FCS_MSG_DEBUG("No file name given, so using m_inputFile, " << m_inputFile);
   };
-  const std::string ending = ".root";
-  const int ending_len = ending.length();
-  const int filename_len = to_check->length();
-  if (filename_len < ending_len) {
-    return false;
-  }
-  return (0
-          == to_check->compare(filename_len - ending_len, ending_len, ending));
+  return to_check->ends_with(".root");
 }
 
 auto VNetworkBase::isFile() const -> bool
@@ -139,17 +134,20 @@ auto VNetworkBase::isFile(std::string const& inputFile) -> bool
 
 namespace
 {
-auto GetPrefixLength(const std::vector<std::string>& strings) -> int
+auto GetPrefixLength(const std::vector<std::string>& strings) -> std::size_t
 {
-  const std::string first = strings[0];
-  int length = first.length();
+  if (strings.empty()) {
+    return 0;
+  }
+  const std::string& first = strings[0];
+  std::size_t length = first.length();
   for (const std::string& this_string : strings) {
-    for (int i = 0; i < length; i++) {
-      if (first[i] != this_string[i]) {
-        length = i;
-        break;
-      }
+    const std::size_t max_length = std::min(length, this_string.length());
+    std::size_t i = 0;
+    while (i < max_length && first[i] == this_string[i]) {
+      ++i;
     }
+    length = i;
   }
   return length;
 }
@@ -157,7 +155,7 @@ auto GetPrefixLength(const std::vector<std::string>& strings) -> int
 
 void VNetworkBase::removePrefixes(std::vector<std::string>& output_names) const
 {
-  const int length = GetPrefixLength(output_names);
+  const std::size_t length = GetPrefixLength(output_names);
   for (long unsigned int i = 0; i < output_names.size(); i++)
     output_names[i] = output_names[i].substr(length);
 }
@@ -167,7 +165,7 @@ void VNetworkBase::removePrefixes(VNetworkBase::NetworkOutputs& outputs) const
   std::vector<std::string> output_layers;
   for (auto const& output : outputs)
     output_layers.push_back(output.first);
-  const int length = GetPrefixLength(output_layers);
+  const std::size_t length = GetPrefixLength(output_layers);
   for (std::string layer_name : output_layers) {
     // remove this output
     auto nodeHandle = outputs.extract(layer_name);

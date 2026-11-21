@@ -48,9 +48,9 @@ auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track)
     const Vector3D& position = point->position;
     const bool withinPrevious = i > 0
         && std::abs(position.z())
-            < kIDCaloBoundary[i - 1].halfLength + tolerance;
+            < kIDCaloBoundary[i - 1].half_length() + tolerance;
     const bool withinNext = i + 1 < kIDCaloBoundary.size()
-        && position.perp() < kIDCaloBoundary[i + 1].radius + tolerance;
+        && position.perp() < kIDCaloBoundary[i + 1].r() + tolerance;
     if (withinPrevious || withinNext) {
       continue;
     }
@@ -128,7 +128,9 @@ public:
     return perSubPos(
         [&](Cell::SubPos subpos)
         {
-          const auto halfLength = static_cast<float>(std::abs(cell.z(subpos)));
+          // The half length is rounded to single precision first
+          const auto halfLength =
+              static_cast<double>(static_cast<float>(std::abs(cell.z(subpos))));
           const double radius = std::abs(
               halfLength
               * std::sqrt((1 / (std::cos(theta) * std::cos(theta))) - 1));
@@ -167,9 +169,9 @@ auto scaleOntoLayer(const Vector3D& position,
 {
   double scale = 1;
   if (isBarrel && position.perp() > 1e-6) {
-    scale = cylinder.radius / position.perp();
+    scale = cylinder.r() / position.perp();
   } else if (!isBarrel && std::abs(position.z()) > 1e-6) {
-    scale = cylinder.halfLength / std::abs(position.z());
+    scale = cylinder.half_length() / std::abs(position.z());
   }
   return scale * position;
 }
@@ -268,11 +270,12 @@ void FastCaloSimCaloExtrapolation::extrapolate(
       }
       const Vector3D onLayer =
           scaleOntoLayer(point->position, cylinder, isBarrel);
-      result.set_OK(layer, subpos, true);
-      result.set_eta(layer, subpos, onLayer.eta());
-      result.set_phi(layer, subpos, onLayer.phi());
-      result.set_r(layer, subpos, onLayer.perp());
-      result.set_z(layer, subpos, onLayer.z());
+      const auto ilayer = static_cast<int>(layer);
+      result.set_OK(ilayer, subpos, true);
+      result.set_eta(ilayer, subpos, onLayer.eta());
+      result.set_phi(ilayer, subpos, onLayer.phi());
+      result.set_r(ilayer, subpos, onLayer.perp());
+      result.set_z(ilayer, subpos, onLayer.z());
       FCS_MSG_DEBUG("Layer "
                     << layer << " subpos " << subpos
                     << " at eta=" << onLayer.eta() << " phi=" << onLayer.phi()

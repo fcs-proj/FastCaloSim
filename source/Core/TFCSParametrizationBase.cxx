@@ -172,10 +172,10 @@ void TFCSParametrizationBase::RemoveDuplicates()
       TFCSParametrizationBase* ref = onedup.first;
       FCS_MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
       for (unsigned int i = 0; i < onedup.second.mother.size(); ++i) {
-        int index = onedup.second.index[i];
+        const unsigned int index = onedup.second.index[i];
         TFCSParametrizationBase* mother = onedup.second.mother[i];
         TFCSParametrizationBase* delparam = mother->operator[](index);
-        unsigned int delcount = dup[delparam].mother.size();
+        const std::size_t delcount = dup[delparam].mother.size();
         if (delcount == 0) {
           FCS_MSG_DEBUG("  - Delete object "
                         << delparam << "=" << delparam->GetName() << " index "

@@ -31,7 +31,8 @@ auto TFCSHitCellMappingFCal::simulate_hit(
     return static_cast<FCSReturnCode>(FCSRetry + 5);
   }
   // Get the best matching cell
-  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
+  const auto& cell =
+      m_geo->get_cell(static_cast<unsigned int>(calosample()), lookup_pos);
   FCS_MSG_DEBUG(cell);
 
   /// Could not find a cell, retry simulation up to 5 times
@@ -56,7 +57,8 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   // FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
   if (proximity < 2.25) {
-    simulstate.deposit(cell.id(), hit.E());
+    // Cell energies are stored in single precision
+    simulstate.deposit(cell.id(), static_cast<float>(hit.E()));
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }

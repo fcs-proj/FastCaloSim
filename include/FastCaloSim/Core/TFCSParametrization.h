@@ -19,11 +19,13 @@ public:
   }
   auto is_match_Ekin(float Ekin) const -> bool override
   {
-    return (Ekin >= m_Ekin_min) && (Ekin < m_Ekin_max);
+    return (static_cast<double>(Ekin) >= m_Ekin_min)
+        && (static_cast<double>(Ekin) < m_Ekin_max);
   }
   auto is_match_eta(float eta) const -> bool override
   {
-    return (eta >= m_eta_min) && (eta < m_eta_max);
+    return (static_cast<double>(eta) >= m_eta_min)
+        && (static_cast<double>(eta) < m_eta_max);
   }
 
   auto is_match_all_Ekin() const -> bool override

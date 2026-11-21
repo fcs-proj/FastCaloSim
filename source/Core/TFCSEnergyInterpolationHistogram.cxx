@@ -25,9 +25,9 @@ auto TFCSEnergyInterpolationHistogram::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState*) const -> FCSReturnCode
 {
-  float Emean;
-  float Einit;
-  const float Ekin = truth->Ekin();
+  double Emean;
+  double Einit;
+  const double Ekin = truth->Ekin();
   if (OnlyScaleEnergy())
     Einit = simulstate.E();
   else

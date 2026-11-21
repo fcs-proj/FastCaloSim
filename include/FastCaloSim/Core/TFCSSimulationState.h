@@ -130,7 +130,8 @@ public:
   static constexpr auto fnv1a_32(char const* s, std::size_t count)
       -> std::uint32_t
   {
-    return ((count ? fnv1a_32(s, count - 1) : 2166136261u) ^ s[count])
+    return ((count ? fnv1a_32(s, count - 1) : 2166136261u)
+            ^ static_cast<std::uint32_t>(s[count]))
         * 16777619u;
   }
   // Run time call for hash function

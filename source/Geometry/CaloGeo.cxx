@@ -197,14 +197,14 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   auto isRPhiZ = df.Take<bool>("isRPhiZ");
 
   // Count total cells
-  m_n_total_cells = layer->size();
+  m_n_total_cells = static_cast<unsigned int>(layer->size());
 
   // Find unique layers efficiently
   std::unordered_set<unsigned int> unique_layers;
   for (const auto& layer_id : *layer) {
     unique_layers.insert(layer_id);
   }
-  m_n_layers = unique_layers.size();
+  m_n_layers = static_cast<unsigned int>(unique_layers.size());
 
   // Pre-allocate layer flags with proper initialization for actual layer IDs
   for (const auto& layer_id : unique_layers) {
@@ -250,12 +250,15 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
       processed_layer_flags.insert(layer_id);
     }
 
-    pos.m_x = x->at(i);
-    pos.m_y = y->at(i);
-    pos.m_z = z->at(i);
-    pos.m_eta = eta->at(i);
-    pos.m_phi = phi->at(i);
-    pos.m_r = r->at(i);
+    // The geometry is stored in single precision
+    const auto value = [i](auto& column)
+    { return static_cast<double>(column->at(i)); };
+    pos.m_x = value(x);
+    pos.m_y = value(y);
+    pos.m_z = value(z);
+    pos.m_eta = value(eta);
+    pos.m_phi = value(phi);
+    pos.m_r = value(r);
 
     Cell cell(id->at(i),
               pos,
@@ -265,12 +268,12 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
               isEtaPhiR->at(i),
               isEtaPhiZ->at(i),
               isRPhiZ->at(i),
-              dx->at(i),
-              dy->at(i),
-              dz->at(i),
-              deta->at(i),
-              dphi->at(i),
-              dr->at(i));
+              value(dx),
+              value(dy),
+              value(dz),
+              value(deta),
+              value(dphi),
+              value(dr));
 
     update_eta_extremes(layer_id, cell);
     m_layer_cell_ids[layer_id].push_back(cell.id());
@@ -370,7 +373,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     update_eta_extremes(layer_id, cell);
   }
 
-  m_n_layers = unique_layers.size();
+  m_n_layers = static_cast<unsigned int>(unique_layers.size());
 
   // Build the RTree of each layer from its cells
   for (const auto& [layer_id, store_index] : layer_store_index) {

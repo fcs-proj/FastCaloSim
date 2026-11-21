@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -45,8 +46,8 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInEkin(Int_t np,
                                                         Double_t valbeg,
                                                         Double_t valend)
 {
-  std::vector<Double_t> logEkin(np);
-  for (int i = 0; i < np; ++i)
+  std::vector<Double_t> logEkin(static_cast<std::size_t>(np));
+  for (std::size_t i = 0; i < logEkin.size(); ++i)
     logEkin[i] = std::log(Ekin[i]);
   InitFromArrayInLogEkin(np, logEkin.data(), response, opt, valbeg, valend);
 }
@@ -56,16 +57,16 @@ auto TFCSEnergyInterpolationSpline::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState*) const -> FCSReturnCode
 {
-  float Emean;
-  float Einit;
-  const float Ekin = truth->Ekin();
+  double Emean;
+  double Einit;
+  const double Ekin = truth->Ekin();
   if (OnlyScaleEnergy())
     Einit = simulstate.E();
   else
     Einit = Ekin;
   // catch very small values of Ekin (use 1 keV here) and fix the spline lookup
   // to the 1keV value
-  const float logEkin =
+  const double logEkin =
       (Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV));
   if (logEkin < m_spline.GetXmin()) {
     Emean = m_spline.Eval(m_spline.GetXmin()) * Einit;

@@ -66,16 +66,18 @@ auto closestPointOfLines(const Vector3D& posA,
 }
 
 /// The intersections of the infinite line through a and b, projected onto the
-/// xy plane, with the circle of the given radius around the z axis. For lines
-/// parallel to the endcaps: the points take the z of a (first) and b (second).
-auto circleIntersections(float radius, const Vector3D& a, const Vector3D& b)
-    -> Intersections
+/// xy plane, with the circle of the cylinder radius around the z axis. For
+/// lines parallel to the endcaps: the points take the z of a (first) and b
+/// (second).
+auto circleIntersections(const Cylinder& cylinder,
+                         const Vector3D& a,
+                         const Vector3D& b) -> Intersections
 {
   const double dx = b.x() - a.x();
   const double dy = b.y() - a.y();
   const double qa = dx * dx + dy * dy;
   const double qb = 2 * (dx * a.x() + dy * a.y());
-  const double qc = a.x() * a.x() + a.y() * a.y() - radius * radius;
+  const double qc = a.x() * a.x() + a.y() * a.y() - cylinder.r2();
   const double discriminant = qb * qb - 4 * qa * qc;
 
   const auto pointAt = [&](double t, double z)
@@ -153,8 +155,8 @@ auto closestPointToSurface(const Cylinder& cylinder,
                            const Vector3D& a,
                            const Vector3D& b) -> Vector3D
 {
-  const float radius = cylinder.radius;
-  const float halfLength = cylinder.halfLength;
+  const double radius = cylinder.r();
+  const double halfLength = cylinder.half_length();
   const Vector3D ab = b - a;
   const Vector3D projA = cylinder.project(a);
   const Vector3D projB = cylinder.project(b);
@@ -194,7 +196,7 @@ auto closestPointToSurface(const Cylinder& cylinder,
   // The segment is parallel to the endcaps and beyond them, so all its points
   // within the radius are equally close to the endcap disc: take the middle of
   // the part within the radius
-  const Intersections circle = circleIntersections(radius, a, b);
+  const Intersections circle = circleIntersections(cylinder, a, b);
   if (circle.count == 2) {
     const auto& [p, q] = circle.points;
     const bool pOnSegment = isOnSegment(p, a, b);

@@ -34,13 +34,13 @@ auto TFCSEnergyRenormalization::simulate(
   // Loop over all cells containing energy and sum up energies
   for (const auto& cell_iter : simulstate.cells()) {
     unsigned long long cell_id = cell_iter.first;
-    double cell_energy = cell_iter.second;
+    const auto cell_energy = static_cast<double>(cell_iter.second);
     // Add the energy to the layer of the cell
-    const int layer = m_geo->get_cell(cell_id).layer();
+    const auto layer = m_geo->get_cell(cell_id).layer();
     energies[layer] += cell_energy;
   }
 
-  std::vector<float> scalefactor(m_geo->n_layers(), 1);
+  std::vector<double> scalefactor(m_geo->n_layers(), 1);
 
   // Approximate noise per calorimeter layer in MeV
   static constexpr std::array<float, 24> approxLayerNoise {
@@ -49,39 +49,44 @@ auto TFCSEnergyRenormalization::simulate(
       40.0,  400.0, 300.0, 150.0, 40.0,  400.0, 400.0, 400.0};
 
   for (int layer = 0; layer < static_cast<int>(m_geo->n_layers()); ++layer) {
+    const auto ilayer = static_cast<std::size_t>(layer);
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
-    if (energies[layer] == 0 && simulstate.E(layer) != 0) {
-      if (simulstate.E(layer) > 8.0 * approxLayerNoise.at(layer) && layer != 5
-          && layer != 6 && layer != 7)
+    if (energies[ilayer] == 0 && simulstate.E(layer) != 0) {
+      if (simulstate.E(layer)
+              > 8.0 * static_cast<double>(approxLayerNoise.at(ilayer))
+          && layer != 5 && layer != 6 && layer != 7)
         FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
-            << " simulated: " << energies[layer]);
+            << " simulated: " << energies[ilayer]);
       if (simulstate.E(layer) > 1500.0
           && (layer == 5 || layer == 6 || layer == 7))
         FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
-            << " simulated: " << energies[layer]);
+            << " simulated: " << energies[ilayer]);
     }
-    if (energies[layer] != 0)
-      scalefactor[layer] = simulstate.E(layer) / energies[layer];
+    if (energies[ilayer] != 0)
+      scalefactor[ilayer] = simulstate.E(layer) / energies[ilayer];
   }
 
   // Loop over all cells and apply the scalefactor
   for (auto& cell_iter : simulstate.cells()) {
-    const int layer = m_geo->get_cell(cell_iter.first).layer();
-    cell_iter.second *= scalefactor[layer];
+    const auto layer = m_geo->get_cell(cell_iter.first).layer();
+    // Cell energies are stored in single precision
+    cell_iter.second =
+        static_cast<float>(cell_iter.second * scalefactor[layer]);
   }
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("Apply scale factors : ");
-    for (int layer = 0; layer < static_cast<int>(m_geo->n_layers()); ++layer) {
+    for (unsigned int layer = 0; layer < m_geo->n_layers(); ++layer) {
       FCS_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
-                         << energies[layer] << " -> " << simulstate.E(layer));
+                         << energies[layer] << " -> "
+                         << simulstate.E(static_cast<int>(layer)));
     }
   }
 

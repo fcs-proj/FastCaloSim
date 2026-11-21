@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <cstddef>
 
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 
@@ -42,8 +43,8 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInLogEkin(
 void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
     Int_t np, const Double_t Ekin[], const Double_t response[])
 {
-  std::vector<Double_t> logEkin(np);
-  for (int i = 0; i < np; i++)
+  std::vector<Double_t> logEkin(static_cast<std::size_t>(np));
+  for (std::size_t i = 0; i < logEkin.size(); ++i)
     logEkin[i] = std::log(Ekin[i]);
   InitFromArrayInLogEkin(np, logEkin.data(), response);
 }
@@ -53,15 +54,15 @@ auto TFCSEnergyInterpolationPiecewiseLinear::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState*) const -> FCSReturnCode
 {
-  const float Ekin = truth->Ekin();
-  const float Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
+  const double Ekin = truth->Ekin();
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
 
   // catch very small values of Ekin (use 1 keV here) and fix the interpolation
   // lookup to the 1keV value
-  const float logEkin =
+  const double logEkin =
       Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV);
 
-  float Emean;
+  double Emean;
   if (logEkin < m_MinMaxlogEkin.first) {
     Emean = m_linInterpol.Eval(m_MinMaxlogEkin.first) * Einit;
   } else if (logEkin > m_MinMaxlogEkin.second) {
@@ -96,7 +97,7 @@ auto TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double& Ekin) const
 
   // catch very small values of Ekin (use 1 keV here) and fix the interpolation
   // lookup to the 1keV value
-  const float logEkin =
+  const double logEkin =
       Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV);
 
   if (logEkin < m_MinMaxlogEkin.first)
@@ -128,8 +129,9 @@ void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer& R__b)
     // read the class buffer
     R__b.ReadClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(), this);
     // initialize interpolation from saved class members
-    InitFromArrayInLogEkin(
-        m_logEkin.size(), m_logEkin.data(), m_response.data());
+    InitFromArrayInLogEkin(static_cast<Int_t>(m_logEkin.size()),
+                           m_logEkin.data(),
+                           m_response.data());
   } else {
     R__b.WriteClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(),
                           this);

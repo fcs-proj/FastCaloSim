@@ -38,17 +38,21 @@ auto TFCSMLCalorimeterSimulator::predictVoxels(TFCSSimulationState& simulstate,
   eta = std::abs(eta) * 10;
 
   // Initialize the energy and eta input vectors
-  std::vector<float> eta_vector(m_nEvents, eta);
-  std::vector<float> energy_vector(m_nEvents, energy);
+  const auto n_events = static_cast<std::size_t>(m_nEvents);
+  std::vector<float> eta_vector(n_events, eta);
+  std::vector<float> energy_vector(n_events, energy);
 
-  // sample the z vectors according to a standard normal distribution
-  std::vector<float> z_shape_vector(m_nEvents * m_nVoxels, 0.0);
-  std::vector<float> z_energy_vector(m_nEvents * m_nLayers, 0.0);
+  // sample the z vectors according to a standard normal distribution, in the
+  // single precision of the network inputs
+  std::vector<float> z_shape_vector(n_events * m_nVoxels, 0.0);
+  std::vector<float> z_energy_vector(n_events * m_nLayers, 0.0);
   for (auto& z_shape : z_shape_vector) {
-    z_shape = CLHEP::RandGauss::shoot(simulstate.randomEngine(), 0.0, 1.0);
+    z_shape = static_cast<float>(
+        CLHEP::RandGauss::shoot(simulstate.randomEngine(), 0.0, 1.0));
   }
   for (auto& z_energy : z_energy_vector) {
-    z_energy = CLHEP::RandGauss::shoot(simulstate.randomEngine(), 0.0, 1.0);
+    z_energy = static_cast<float>(
+        CLHEP::RandGauss::shoot(simulstate.randomEngine(), 0.0, 1.0));
   }
 
   // Prepare the inputs for the network
@@ -158,14 +162,15 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
                     << "Available keys e.g.: " << outputs.begin()->first);
       return event_t {};
     }
-    float voxel_energy = it->second;
+    const auto voxel_energy = static_cast<float>(it->second);
 
     if (voxel_energy > 0) {
       if (event.event_data.size() <= layer) {
         event.event_data.resize(layer + 1);
       }
       event.event_data.at(layer).bin_index_vector.push_back(
-          voxel_index - m_layer_boundaries[layer_index]);
+          static_cast<unsigned int>(voxel_index
+                                    - m_layer_boundaries[layer_index]));
 
       // We need energy fractions, not MeV values
       event.event_data.at(layer).E_vector.push_back(voxel_energy / energy);
@@ -184,9 +189,9 @@ auto TFCSMLCalorimeterSimulator::predictVoxels() const
   // voxels spanned over the presampler, the three EMB layers and the first HCAL
   // layer. This allows for easier testing calls.
 
-  int nEvents = 1;
-  int nVoxels = 382;
-  int nLayers = 5;
+  const std::size_t nEvents = 1;
+  const std::size_t nVoxels = 382;
+  const std::size_t nLayers = 5;
 
   std::vector<float> eta_vector(nEvents, 2.0);
   std::vector<float> energy_vector(nEvents, 65536.0);

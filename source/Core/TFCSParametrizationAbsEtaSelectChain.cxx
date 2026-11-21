@@ -34,6 +34,6 @@ auto TFCSParametrizationAbsEtaSelectChain::get_bin_text(int bin) const
   }
   return std::format("bin={}, {:2.2f}<=|eta|<{:2.2f}",
                      bin,
-                     m_bin_low_edge[bin],
-                     m_bin_low_edge[bin + 1]);
+                     get_bin_low_edge(bin),
+                     get_bin_up_edge(bin));
 }

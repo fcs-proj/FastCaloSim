@@ -203,7 +203,7 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
   if (R__b.IsReading()) {
     Version_t R__v = R__b.ReadVersion(&R__s, &R__c);
     if (R__v == 1) {
-      R__b.SetBufferOffset(R__s);
+      R__b.SetBufferOffset(static_cast<Int_t>(R__s));
       R__b.ReadClassBuffer(TFCSParametrizationChain::Class(), this);
     } else {
       TFCSParametrization::Streamer(R__b);
@@ -225,7 +225,7 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
       }
       int R__i, R__n;
       R__b >> R__n;
-      R__stl.reserve(R__n);
+      R__stl.reserve(static_cast<std::size_t>(R__n));
       for (R__i = 0; R__i < R__n; R__i++) {
         std::unique_ptr<TFCSParametrizationBase> R__t;
         R__t.reset(

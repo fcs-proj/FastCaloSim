@@ -20,13 +20,9 @@ void TFCSNetworkFactory::resolveGlobs(std::string& filename)
 {
   FastCaloSim::MLogging logger;
   const std::string ending = ".*";
-  const int ending_len = ending.length();
-  const int filename_len = filename.length();
-  if (filename_len < ending_len) {
+  if (filename.length() < ending.length()) {
     FCS_MSG_NOCLASS(logger, "Filename is implausably short.");
-  } else if (0
-             == filename.compare(filename_len - ending_len, ending_len, ending))
-  {
+  } else if (filename.ends_with(ending)) {
     FCS_MSG_NOCLASS(logger, "Filename ends in glob.");
     // Remove the glob
     filename.pop_back();
@@ -43,18 +39,7 @@ void TFCSNetworkFactory::resolveGlobs(std::string& filename)
 
 auto TFCSNetworkFactory::isOnnxFile(std::string const& filename) -> bool
 {
-  FastCaloSim::MLogging logger;
-  const std::string ending = ".onnx";
-  const int ending_len = ending.length();
-  const int filename_len = filename.length();
-  bool is_onnx;
-  if (filename_len < ending_len) {
-    is_onnx = false;
-  } else {
-    is_onnx =
-        (0 == filename.compare(filename_len - ending_len, ending_len, ending));
-  };
-  return is_onnx;
+  return filename.ends_with(".onnx");
 }
 
 auto TFCSNetworkFactory::create(std::vector<char> const& input)

@@ -4,6 +4,7 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
 #include <algorithm>
+#include <cstddef>
 #include <format>
 
 #include "FastCaloSim/Core/TFCSEnergyBinParametrization.h"
@@ -36,7 +37,7 @@ void TFCSEnergyBinParametrization::resize()
 {
   for (int id : pdgid()) {
     FCS_MSG_VERBOSE("PDGid=" << id << " resize to " << n_bins() + 1);
-    m_pdgid_Ebin_probability[id].resize(n_bins() + 1);
+    m_pdgid_Ebin_probability[id].resize(static_cast<std::size_t>(n_bins()) + 1);
   }
   for (auto it = m_pdgid_Ebin_probability.begin();
        it != m_pdgid_Ebin_probability.end();
@@ -84,19 +85,20 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
         << prob.size() << " instance=" << m_pdgid_Ebin_probability[id].size());
     return;
   }
-  float ptot = 0;
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin)
-    ptot += prob[iEbin];
-  if (ptot == 0.f) {
+  const auto n_probabilities = static_cast<std::size_t>(n_bins()) + 1;
+  double ptot = 0;
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
+    ptot += static_cast<double>(prob[iEbin]);
+  if (ptot == 0.) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(): "
         "ptot is zero.");
     return;
   }
-  float p = 0;
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
-    p += prob[iEbin] / ptot;
-    m_pdgid_Ebin_probability[id][iEbin] = p;
+  double p = 0;
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
+    p += static_cast<double>(prob[iEbin]) / ptot;
+    m_pdgid_Ebin_probability[id][iEbin] = static_cast<float>(p);
   }
 }
 
@@ -136,19 +138,20 @@ auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
     }
   }
 
-  float ptot {};
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin)
-    ptot += prob[iEbin];
-  if (ptot == 0.f) {
+  const auto n_probabilities = static_cast<std::size_t>(n_bins()) + 1;
+  double ptot = 0;
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
+    ptot += static_cast<double>(prob[iEbin]);
+  if (ptot == 0.) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_"
         "file(): ptot is zero");
     return false;
   }
-  float p {};
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
-    p += prob[iEbin] / ptot;
-    m_pdgid_Ebin_probability[id][iEbin] = p;
+  double p {};
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
+    p += static_cast<double>(prob[iEbin]) / ptot;
+    m_pdgid_Ebin_probability[id][iEbin] = static_cast<float>(p);
   }
 
   return true;
@@ -164,7 +167,9 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
     {
       FCS_MSG(INFO) << optprint << "  PDGID=" << *it << " : ";
       float p = 0;
-      for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
+      for (std::size_t iEbin = 0; iEbin <= static_cast<std::size_t>(n_bins());
+           ++iEbin)
+      {
         if (iEbin > 0)
           FCS_MSG(INFO) << ", ";
         auto mapit = m_pdgid_Ebin_probability.find(*it);
@@ -201,11 +206,14 @@ auto TFCSEnergyBinParametrization::simulate(
     return FCSFatal;
   }
 
-  const float searchRand = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  // The cumulative probabilities are stored in single precision, so is the
+  // random number that selects the bin
+  const auto searchRand =
+      static_cast<float>(CLHEP::RandFlat::shoot(simulstate.randomEngine()));
   const auto& Ebin_probability = m_pdgid_Ebin_probability.at(pdgid);
   const auto first = Ebin_probability.begin();
-  int chosenBin =
-      std::upper_bound(first, first + n_bins() + 1, searchRand) - first;
+  auto chosenBin = static_cast<int>(
+      std::upper_bound(first, first + n_bins() + 1, searchRand) - first);
   if (chosenBin > n_bins()) {
     FCS_MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): "

@@ -4,6 +4,7 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 
@@ -18,7 +19,7 @@
 
 void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const
 {
-  value[0] = rnd_to_fct(rnd[0]);
+  value[0] = static_cast<float>(rnd_to_fct(static_cast<double>(rnd[0])));
 }
 
 auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
@@ -62,10 +63,10 @@ auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
   FastCaloSim::MLogging logger;
   Int_t nbins = hist->GetNbinsX();
 
-  float integral = 0;
-  integral_vec.resize(nbins);
+  double integral = 0;
+  integral_vec.resize(static_cast<std::size_t>(nbins));
   for (int ix = 1; ix <= nbins; ix++) {
-    float binval = hist->GetBinContent(ix);
+    double binval = hist->GetBinContent(ix);
     if (binval < 0) {
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
@@ -80,14 +81,14 @@ auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
       binval = 0;
     }
     integral += binval;
-    integral_vec[ix - 1] = integral;
+    integral_vec[static_cast<std::size_t>(ix - 1)] = integral;
   }
 
   for (first = 0; first < nbins; first++)
-    if (integral_vec[first] != 0)
+    if (integral_vec[static_cast<std::size_t>(first)] != 0)
       break;
   for (last = nbins - 1; last > 0; last--)
-    if (integral_vec[last] != integral)
+    if (integral_vec[static_cast<std::size_t>(last)] != integral)
       break;
   last++;
 

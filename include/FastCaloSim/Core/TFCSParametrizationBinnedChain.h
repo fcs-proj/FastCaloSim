@@ -22,7 +22,7 @@ public:
 
   virtual auto get_number_of_bins() const -> unsigned int
   {
-    return m_bin_start.size() - 1;
+    return static_cast<unsigned int>(m_bin_start.size() - 1);
   }
 
   /// this method should determine in derived classes which bin to simulate, so

@@ -104,7 +104,7 @@ auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
     return FCSSuccess;
 
   // set maximum scaling factor
-  float maxScaling = 500;
+  const double maxScaling = 500;
 
   // retrieve particle data
   const int pdgId = truth->pdgid();
@@ -115,7 +115,7 @@ auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
   const double centerPhi = hit.center_phi();
   const double centerZ = hit.center_z();
   // retrieve truth kinetic energy for interpolation
-  const float Ekin = truth->Ekin();
+  const double Ekin = truth->Ekin();
   // retrieve calo sample
   int layer = TFCSLateralShapeParametrization::calosample();
 

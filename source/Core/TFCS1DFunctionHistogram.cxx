@@ -66,7 +66,7 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
   m_HistoBorders.push_back(static_cast<float>(h_input->GetXaxis()->GetXmax()));
 
   for (int b = 1; b < h_input->GetNbinsX(); b++)
-    m_HistoContents.push_back(h_input->GetBinContent(b));
+    m_HistoContents.push_back(static_cast<float>(h_input->GetBinContent(b)));
   m_HistoContents.push_back(1);
 }
 
@@ -145,7 +145,7 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
   auto h_out2 = std::make_unique<TH1D>(
       "h_out2", "h_out2", content.size(), binborder.data());
   for (unsigned int b = 1; b <= content.size(); b++)
-    h_out2->SetBinContent(b, content[b - 1]);
+    h_out2->SetBinContent(static_cast<Int_t>(b), content[b - 1]);
 
   return h_out2;
 }
@@ -172,31 +172,38 @@ auto TFCS1DFunctionHistogram::non_linear(
 
 auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
 {
+  // The histogram is stored in single precision
+  const auto content = [this](std::size_t i)
+  { return static_cast<double>(m_HistoContents[i]); };
+  const auto border = [this](std::size_t i)
+  { return static_cast<double>(m_HistoBorders[i]); };
+
   double value = 0.;
 
-  if (rnd < m_HistoContents[0]) {
-    double x1 = m_HistoBorders[0];
-    double x2 = m_HistoBorders[1];
+  if (rnd < content(0)) {
+    double x1 = border(0);
+    double x2 = border(1);
     double y1 = 0;
-    double y2 = m_HistoContents[0];
+    double y2 = content(0);
     double x = non_linear(y1, y2, x1, x2, rnd);
     value = x;
   } else {
     // find the first HistoContent element that is larger than rnd:
     auto larger_element =
         std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), rnd);
-    size_t index = larger_element - m_HistoContents.begin();
+    auto index = static_cast<std::size_t>(
+        std::distance(m_HistoContents.begin(), larger_element));
     if (index >= m_HistoContents.size()) {
       --index;
     }
-    double y = m_HistoContents[index];
-    double x1 = m_HistoBorders[index];
-    double x2 = m_HistoBorders[index + 1];
-    double y1 = m_HistoContents[index - 1];
+    double y = content(index);
+    double x1 = border(index);
+    double x2 = border(index + 1);
+    double y1 = content(index - 1);
     double y2 = y;
     if ((index + 1) == (m_HistoContents.size() - 1)) {
-      x2 = m_HistoBorders[m_HistoBorders.size() - 1];
-      y2 = m_HistoContents[m_HistoContents.size() - 1];
+      x2 = border(m_HistoBorders.size() - 1);
+      y2 = content(m_HistoContents.size() - 1);
     }
     double x = non_linear(y1, y2, x1, x2, rnd);
     value = x;

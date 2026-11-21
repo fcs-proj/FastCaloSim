@@ -28,7 +28,10 @@ void TFCSParametrizationEtaSelectChain::recalc()
 void TFCSParametrizationEtaSelectChain::push_back_in_bin(
     TFCSParametrizationBase* param)
 {
-  push_back_in_bin(param, param->eta_min(), param->eta_max());
+  // The bin edges are stored in single precision
+  push_back_in_bin(param,
+                   static_cast<float>(param->eta_min()),
+                   static_cast<float>(param->eta_max()));
 }
 
 auto TFCSParametrizationEtaSelectChain::get_bin(
@@ -59,6 +62,6 @@ auto TFCSParametrizationEtaSelectChain::get_bin_text(int bin) const
   }
   return std::format("bin={}, {:2.2f}<=eta<{:2.2f}",
                      bin,
-                     m_bin_low_edge[bin],
-                     m_bin_low_edge[bin + 1]);
+                     get_bin_low_edge(bin),
+                     get_bin_up_edge(bin));
 }

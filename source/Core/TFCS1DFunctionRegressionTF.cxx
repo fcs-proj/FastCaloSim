@@ -20,7 +20,8 @@ TFCS1DFunctionRegressionTF::TFCS1DFunctionRegressionTF(float rangeval,
 
 auto TFCS1DFunctionRegressionTF::retransform(double value) const -> double
 {
-  return (value * m_rangeval + m_startval);
+  return (value * static_cast<double>(m_rangeval)
+          + static_cast<double>(m_startval));
 }
 
 auto TFCS1DFunctionRegressionTF::rnd_to_fct(double rnd) const -> double

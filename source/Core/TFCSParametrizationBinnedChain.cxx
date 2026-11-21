@@ -89,8 +89,9 @@ auto TFCSParametrizationBinnedChain::simulate(
         if (get_number_of_bins() > 0) {
           const int bin = get_bin(simulstate, truth, extrapol);
           if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
-            for (unsigned int ichain = m_bin_start[bin];
-                 ichain < m_bin_start[bin + 1];
+            const auto ubin = static_cast<std::size_t>(bin);
+            for (unsigned int ichain = m_bin_start[ubin];
+                 ichain < m_bin_start[ubin + 1];
                  ++ichain)
             {
               FCS_MSG_DEBUG("for "
@@ -144,7 +145,8 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
             continue;
         prefix = std::format("{:<2}", ibin);
         if (longprint)
-          FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
+          FCS_MSG_INFO(optprint << prefix << "Run for "
+                                << get_bin_text(static_cast<int>(ibin)));
       }
     }
     if (ichain == m_bin_start.back()) {

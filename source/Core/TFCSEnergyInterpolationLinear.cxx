@@ -25,7 +25,8 @@ auto TFCSEnergyInterpolationLinear::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState*) const -> FCSReturnCode
 {
-  const float Emean = m_slope * truth->Ekin() + m_offset;
+  const double Emean = static_cast<double>(m_slope) * truth->Ekin()
+      + static_cast<double>(m_offset);
 
   FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin());
   simulstate.set_E(Emean);

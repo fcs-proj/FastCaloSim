@@ -79,7 +79,7 @@ public:
       throw std::runtime_error("Failed to stat data file: " + data_path);
     }
 
-    m_file_size = st.st_size;
+    m_file_size = static_cast<size_t>(st.st_size);
     m_data = mmap(nullptr, m_file_size, PROT_READ, MAP_PRIVATE, fd, 0);
     ::close(fd);
 
@@ -104,7 +104,7 @@ public:
       throw std::runtime_error("Failed to stat index file: " + index_path);
     }
 
-    m_index_size = st.st_size;
+    m_index_size = static_cast<size_t>(st.st_size);
     m_index_data = mmap(nullptr, m_index_size, PROT_READ, MAP_PRIVATE, fd, 0);
     ::close(fd);
 
