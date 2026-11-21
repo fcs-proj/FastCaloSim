@@ -80,14 +80,6 @@
         <section id="pub-static-methods">
           <h2><a href="#pub-static-methods">Public static functions</a></h2>
           <dl class="m-doc">
-            <dt id="a04fbecf42e27474c3691d6f56c0e9fea">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a04fbecf42e27474c3691d6f56c0e9fea" class="m-doc-self">linear</a>(</span><span class="m-doc-wrap">double y1,
-              double y2,
-              double x1,
-              double x2,
-              double x) -&gt; double</span>
-            </dt>
-            <dd><span></span></dd>
             <dt id="a07087e4c99a6d2d2752afb8d69032e94">
               <span class="m-doc-wrap-bumper">static auto <a href="#a07087e4c99a6d2d2752afb8d69032e94" class="m-doc-self">non_linear</a>(</span><span class="m-doc-wrap">double y1,
               double y2,
@@ -109,15 +101,6 @@
               <span class="m-doc-wrap-bumper">static auto <a href="#a897320ddd8ab78600bfe76294ff500b7" class="m-doc-self">smart_rebin</a>(</span><span class="m-doc-wrap">TH1D*) -&gt; std::unique_ptr&lt; TH1D &gt;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae689ba1a10ec2d0121c83383968c0b0a">
-              <span class="m-doc-wrap-bumper">static auto <a href="#ae689ba1a10ec2d0121c83383968c0b0a" class="m-doc-self">histo_to_array</a>(</span><span class="m-doc-wrap">TH1*) -&gt; std::unique_ptr&lt; double[]&gt;</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a257732d85b86b2b21c1fef82d087d2b9">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a257732d85b86b2b21c1fef82d087d2b9" class="m-doc-self">sample_from_histo</a>(</span><span class="m-doc-wrap">TH1* hist,
-              double) -&gt; double</span>
-            </dt>
-            <dd><span></span></dd>
           </dl>
         </section>
         <section id="typeless-methods">
@@ -127,9 +110,9 @@
               <span class="m-doc-wrap-bumper"><a href="#a120246742cc9fcb270c612a6922b4dcd" class="m-doc-self">TFCS1DFunctionHistogram</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aff3b35b4b9bd52e91553c4d6c40ee94a">
-              <span class="m-doc-wrap-bumper"><a href="#aff3b35b4b9bd52e91553c4d6c40ee94a" class="m-doc-self">TFCS1DFunctionHistogram</a>(</span><span class="m-doc-wrap">TH1* hist,
-              double)</span>
+            <dt id="a9e7d95d32add54d37283d6291c482245">
+              <span class="m-doc-wrap-bumper"><a href="#a9e7d95d32add54d37283d6291c482245" class="m-doc-self">TFCS1DFunctionHistogram</a>(</span><span class="m-doc-wrap">TH1* hist,
+              double cut_maxdev)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -137,19 +120,15 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="a6585e58f78a225ebfa00326509538981">
-              <span class="m-doc-wrap-bumper">void <a href="#a6585e58f78a225ebfa00326509538981" class="m-doc-self">Initialize</a>(</span><span class="m-doc-wrap">TH1* hist,
-              double)</span>
+            <dt id="afd6cf3481914c991998fe55fa0c8d3ba">
+              <span class="m-doc-wrap-bumper">void <a href="#afd6cf3481914c991998fe55fa0c8d3ba" class="m-doc-self">Initialize</a>(</span><span class="m-doc-wrap">TH1* hist,
+              double cut_maxdev)</span>
             </dt>
             <dd><span></span></dd>
             <dt>
               <span class="m-doc-wrap-bumper">auto <a href="#ad0de5e2b3616cad12692d95dee63b050" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">double rnd) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
-            <dt id="a0e7c7e4d7ef49d2eaec7ca1a743c9f49">
-              <span class="m-doc-wrap-bumper">auto <a href="#a0e7c7e4d7ef49d2eaec7ca1a743c9f49" class="m-doc-self">vector_to_histo</a>(</span><span class="m-doc-wrap">) -&gt; std::unique_ptr&lt; TH1 &gt;</span>
-            </dt>
-            <dd><span></span></dd>
             <dt id="a2b8752a2dbf768e913c0774a65b58097">
               <span class="m-doc-wrap-bumper">auto <a href="#a2b8752a2dbf768e913c0774a65b58097" class="m-doc-self">get_inverse</a>(</span><span class="m-doc-wrap">double rnd) const -&gt; double</span>
             </dt>
@@ -157,10 +136,6 @@
             <dt id="a98c60db52a14ec4144f180a635ed897a">
               <span class="m-doc-wrap-bumper">void <a href="#a98c60db52a14ec4144f180a635ed897a" class="m-doc-self">smart_rebin_loop</a>(</span><span class="m-doc-wrap">TH1* hist,
               double)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a0c6c30a7c74cf205e651b1e6aac67234">
-              <span class="m-doc-wrap-bumper">auto <a href="#a0c6c30a7c74cf205e651b1e6aac67234" class="m-doc-self">sample_from_histovalues</a>(</span><span class="m-doc-wrap">double) -&gt; double</span>
             </dt>
             <dd><span></span></dd>
             <dt id="ab970a51880d722f0925a44881128508c">
