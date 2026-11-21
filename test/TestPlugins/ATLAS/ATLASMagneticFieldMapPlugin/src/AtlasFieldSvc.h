@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////
 
 #ifndef MAGFIELDSERVICES_ATLASFIELDSVC_H
-#  define MAGFIELDSERVICES_ATLASFIELDSVC_H 1
+#define MAGFIELDSERVICES_ATLASFIELDSVC_H 1
 
 // FrameWork includes
 // #include "AthenaBaseComps/AthService.h"
@@ -15,18 +15,18 @@
 // #include "GaudiKernel/IIncidentListener.h"
 
 // MagField includes
-#  include "AtlasFieldSvcTLS.h"
-#  include "BFieldCache.h"
-#  include "BFieldCacheZR.h"
-#  include "BFieldCond.h"
-#  include "BFieldMeshZR.h"
-#  include "BFieldZone.h"
-#  include "IMagFieldManipulator.h"
-#  include "IMagFieldSvc.h"
+#include "AtlasFieldSvcTLS.h"
+#include "BFieldCache.h"
+#include "BFieldCacheZR.h"
+#include "BFieldCond.h"
+#include "BFieldMeshZR.h"
+#include "BFieldZone.h"
+#include "IMagFieldManipulator.h"
+#include "IMagFieldSvc.h"
 
 // STL includes
-#  include <iostream>
-#  include <vector>
+#include <iostream>
+#include <vector>
 
 // forward declarations
 // class CondAttrListCollection;

@@ -203,9 +203,9 @@ auto TFCSGANEtaSlice::GetNetworkOutputs(
 
   int maxExp = 0, minExp = 0;
   if (m_pid == 22 || std::abs(m_pid) == 11) {
-    if (truth->P()
-        > 4096) {  // This is the momentum, not the energy, because the split is
-                   // based on the samples which are produced with the momentum
+    if (truth->P() > 4096)
+    {  // This is the momentum, not the energy, because the split is
+       // based on the samples which are produced with the momentum
       maxExp = 22;
       minExp = 12;
     } else {
@@ -247,9 +247,9 @@ auto TFCSGANEtaSlice::GetNetworkOutputs(
   if (m_param.GetGANVersion() == 1 || m_pid == 211 || m_pid == 2212) {
     outputs = GetNetAll()->compute(inputs);
   } else {
-    if (truth->P()
-        > 4096) {  // This is the momentum, not the energy, because the split is
-                   // based on the samples which are produced with the momentum
+    if (truth->P() > 4096)
+    {  // This is the momentum, not the energy, because the split is
+       // based on the samples which are produced with the momentum
       FCS_MSG_DEBUG("Computing outputs given inputs for high");
       outputs = GetNetHigh()->compute(inputs);
     } else {

@@ -1911,8 +1911,8 @@ void MagField::AtlasFieldSvc::buildZR()
   }
   // copy the rest
   for (int i = 0; i < 2; i++) {  // z, r
-    for (unsigned j = 0; j < solezone->nmesh(i);
-         j++) {  // loop over mesh points
+    for (unsigned j = 0; j < solezone->nmesh(i); j++)
+    {  // loop over mesh points
       m_meshZR->appendMesh(i, solezone->mesh(i, static_cast<int>(j)));
     }
   }
