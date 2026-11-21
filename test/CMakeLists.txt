@@ -96,6 +96,11 @@ target_link_libraries(BasicSimTests PRIVATE ATLASFCalGeoPlugin)
 target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasSimTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasGeoTests PRIVATE ATLASFCalGeoPlugin)
+# The interpreter test needs the library and its dictionary loaded, but uses no
+# symbol of the library: keep it linked when the linker flags have --as-needed.
+# Loading it at run time with gSystem->Load fails on some systems (CLHEP needs
+# static TLS).
+target_link_options(RootInterpreterTests PRIVATE LINKER:--no-as-needed)
 
 # Throughput benchmark of the full chain (not registered with ctest)
 option(FastCaloSim_BUILD_BENCHMARK "Build the ATLAS throughput benchmark" OFF)
