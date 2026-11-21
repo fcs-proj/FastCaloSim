@@ -1,14 +1,16 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma once
 
-#include <iostream>
+#include <vector>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 #include "FastCaloSim/Core/TFCS1DFunctionTemplateHelpers.h"
 #include "TH1.h"
+
+// Initialize merges bins whose stored edges or contents are exactly equal
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
 
 template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateHistogram : public TFCS1DFunction
@@ -23,30 +25,27 @@ public:
   {
     if (hist)
       Initialize(hist, doprint);
-  };
+  }
   ~TFCS1DFunctionTemplateHistogram() override = default;
 
   auto MemorySizeArray() const -> std::size_t
   {
     return m_HistoBorders.MemorySizeArray() + m_HistoContents.MemorySizeArray();
-  };
+  }
   auto MemorySize() const -> std::size_t override
   {
     return sizeof(*this) + MemorySizeArray();
-  };
+  }
 
   /// set number of bins
   void set_nbins(size_t nbins)
   {
     m_HistoBorders.set_nbins(nbins);
     m_HistoContents.set_nbins(nbins);
-  };
+  }
 
   /// return number of bins
-  inline auto get_nbins() const -> size_t
-  {
-    return m_HistoContents.get_nbins();
-  };
+  auto get_nbins() const -> size_t { return m_HistoContents.get_nbins(); }
 
   /// Initialize from root histogram. Depending on the precision of the x- and
   /// y-axis, bins are merged if numerical identical
@@ -69,40 +68,41 @@ public:
       for (Int_t ibin = first; ibin <= last; ++ibin) {
         m_HistoBorders.SetBinLowEdge(ihist,
                                      hist->GetXaxis()->GetBinLowEdge(ibin + 1));
-        if (ihist > 0)
-          if (m_HistoBorders.GetBinLowEdge(ihist - 1)
-              == m_HistoBorders.GetBinLowEdge(ihist))
-          {
-            if (doprint)
-              FCS_MSG_INFO("Skip bin="
-                           << ibin + 1
-                           << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
-            --ihist;
-            if (doprint)
-              FCS_MSG_INFO("     bin="
-                           << ibin
-                           << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin)
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
-          }
+        // Merge bins that are numerically identical at the stored precision
+        if (ihist > 0
+            && m_HistoBorders.GetBinLowEdge(ihist - 1)
+                == m_HistoBorders.GetBinLowEdge(ihist))
+        {
+          if (doprint)
+            FCS_MSG_INFO("Skip bin="
+                         << ibin + 1
+                         << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
+                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
+          --ihist;
+          if (doprint)
+            FCS_MSG_INFO("     bin="
+                         << ibin
+                         << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin)
+                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
+        }
         m_HistoContents.set_fraction(ihist,
                                      temp_HistoContents[ibin] / integral);
-        if (ihist > 0)
-          if (m_HistoContents.get_fraction(ihist - 1)
-              == m_HistoContents.get_fraction(ihist))
-          {
-            if (doprint)
-              FCS_MSG_INFO("Skip fbin="
-                           << ihist
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                           << " frac=" << m_HistoContents.get_fraction(ihist));
-            --ihist;
-            if (doprint)
-              FCS_MSG_INFO("     fbin="
-                           << ihist
-                           << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                           << " frac=" << m_HistoContents.get_fraction(ihist));
-          }
+        if (ihist > 0
+            && m_HistoContents.get_fraction(ihist - 1)
+                == m_HistoContents.get_fraction(ihist))
+        {
+          if (doprint)
+            FCS_MSG_INFO("Skip fbin="
+                         << ihist
+                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                         << " frac=" << m_HistoContents.get_fraction(ihist));
+          --ihist;
+          if (doprint)
+            FCS_MSG_INFO("     fbin="
+                         << ihist
+                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                         << " frac=" << m_HistoContents.get_fraction(ihist));
+        }
 
         if (doprint)
           FCS_MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
@@ -137,22 +137,18 @@ public:
     return m_HistoBorders.position(ibin, residual_rnd);
   }
 
-  inline auto get_HistoBordersx() const -> const Txvec&
-  {
-    return m_HistoBorders;
-  };
-  inline auto get_HistoBordersx() -> Txvec& { return m_HistoBorders; };
+  auto get_HistoBordersx() const -> const Txvec& { return m_HistoBorders; }
+  auto get_HistoBordersx() -> Txvec& { return m_HistoBorders; }
 
-  inline auto get_HistoContents() const
+  auto get_HistoContents() const
       -> const TFCS1DFunction_HistogramContent<Ty, Trandom>&
   {
     return m_HistoContents;
-  };
-  inline auto get_HistoContents()
-      -> TFCS1DFunction_HistogramContent<Ty, Trandom>&
+  }
+  auto get_HistoContents() -> TFCS1DFunction_HistogramContent<Ty, Trandom>&
   {
     return m_HistoContents;
-  };
+  }
 
 protected:
   Txvec m_HistoBorders;
@@ -166,14 +162,10 @@ private:
 class TFCS1DFunctionInt8Int8Histogram
     : public TFCS1DFunctionTemplateHistogram<
           TFCS1DFunction_HistogramInt8BinEdges,
-          uint8_t,
-          float>
+          uint8_t>
 {
 public:
-  TFCS1DFunctionInt8Int8Histogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateHistogram<TFCS1DFunction_HistogramInt8BinEdges,
-                                        uint8_t,
-                                        float>(h) {};
+  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt8Int8Histogram,
                    1)  // TFCS1DFunctionInt8Int8Histogram
@@ -182,14 +174,10 @@ public:
 class TFCS1DFunctionInt8Int16Histogram
     : public TFCS1DFunctionTemplateHistogram<
           TFCS1DFunction_HistogramInt8BinEdges,
-          uint16_t,
-          float>
+          uint16_t>
 {
 public:
-  TFCS1DFunctionInt8Int16Histogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateHistogram<TFCS1DFunction_HistogramInt8BinEdges,
-                                        uint16_t,
-                                        float>(h) {};
+  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt8Int16Histogram,
                    1)  // TFCS1DFunctionInt8Int16Histogram
@@ -198,14 +186,10 @@ public:
 class TFCS1DFunctionInt8Int32Histogram
     : public TFCS1DFunctionTemplateHistogram<
           TFCS1DFunction_HistogramInt8BinEdges,
-          uint32_t,
-          float>
+          uint32_t>
 {
 public:
-  TFCS1DFunctionInt8Int32Histogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateHistogram<TFCS1DFunction_HistogramInt8BinEdges,
-                                        uint32_t,
-                                        float>(h) {};
+  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt8Int32Histogram,
                    1)  // TFCS1DFunctionInt8Int32Histogram
@@ -214,14 +198,10 @@ public:
 class TFCS1DFunctionInt16Int16Histogram
     : public TFCS1DFunctionTemplateHistogram<
           TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t,
-          float>
+          uint16_t>
 {
 public:
-  TFCS1DFunctionInt16Int16Histogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateHistogram<TFCS1DFunction_HistogramInt16BinEdges,
-                                        uint16_t,
-                                        float>(h) {};
+  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt16Int16Histogram,
                    1)  // TFCS1DFunctionInt16Int16Histogram
@@ -230,14 +210,10 @@ public:
 class TFCS1DFunctionInt16Int32Histogram
     : public TFCS1DFunctionTemplateHistogram<
           TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t,
-          float>
+          uint32_t>
 {
 public:
-  TFCS1DFunctionInt16Int32Histogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateHistogram<TFCS1DFunction_HistogramInt16BinEdges,
-                                        uint32_t,
-                                        float>(h) {};
+  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt16Int32Histogram,
                    1)  // TFCS1DFunctionInt16Int32Histogram
@@ -246,14 +222,10 @@ public:
 class TFCS1DFunctionInt32Int32Histogram
     : public TFCS1DFunctionTemplateHistogram<
           TFCS1DFunction_HistogramInt32BinEdges,
-          uint32_t,
-          float>
+          uint32_t>
 {
 public:
-  TFCS1DFunctionInt32Int32Histogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateHistogram<TFCS1DFunction_HistogramInt32BinEdges,
-                                        uint32_t,
-                                        float>(h) {};
+  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt32Int32Histogram,
                    1)  // TFCS1DFunctionInt32Int32Histogram

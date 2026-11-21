@@ -9,8 +9,8 @@ class TFCS1DFunctionTemplateInterpolationHistogram
     : public TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>
 {
 public:
-  TFCS1DFunctionTemplateInterpolationHistogram(TH1* hist = nullptr)
-      : TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>(hist) {};
+  using TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>::
+      TFCS1DFunctionTemplateHistogram;
 
   using TFCS1DFunction::rnd_to_fct;
   using TFCS1DFunctionTemplateHistogram<Txvec, Ty, Trandom>::get_nbins;
@@ -56,21 +56,14 @@ public:
       dfracnext = dfrac;
     }
 
+    // Slope of the density inside the selected bin. The density in a bin is
+    // dfrac/l. Its change to the next and to the previous bin, divided by the
+    // distance between the bin centers (l+lnext)/2 and (l+lprev)/2, is averaged
+    // and multiplied by l to get the change across this bin. Normalized to the
+    // density in this bin, dfrac/l, it is the slope m in units of the bin width
+    // that position_lin expects.
     Trandom m;
     if (dfrac > 0) {
-      /*
-      //approximately readable version of the code below
-      //density in bin is dfracX/lX
-      Trandom mnext=dfracnext/lnext-dfrac/l; //change in density to next bin
-      mnext/=0.5*(l+lnext); //normalize change in density to distance between
-      bins Trandom mprev=dfrac/l-dfracprev/lprev; //change in density to
-      previous bin mprev/=0.5*(l+lprev); //normalize change in density to
-      distance between bins m=0.5*(mnext+mprev); //average the two m*=l; //m is
-      needed inside this bin, so multiply by size of this bin (matches
-      normalization to distance between bins above) m/=dfrac/l; //finally, m is
-      the slope in this bin, given that this bin was already selected. So
-      overall normalize to density inside this bin
-      */
       Trandom mnext = dfracnext / lnext - dfrac / l;
       mnext /= l + lnext;
       Trandom mprev = dfrac / l - dfracprev / lprev;
@@ -89,15 +82,11 @@ public:
 class TFCS1DFunctionInt8Int8InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
           TFCS1DFunction_HistogramInt8BinEdges,
-          uint8_t,
-          float>
+          uint8_t>
 {
 public:
-  TFCS1DFunctionInt8Int8InterpolationHistogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt8BinEdges,
-            uint8_t,
-            float>(h) {};
+  using TFCS1DFunctionTemplateInterpolationHistogram::
+      TFCS1DFunctionTemplateInterpolationHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt8Int8InterpolationHistogram,
                    1)  // TFCS1DFunctionInt8Int8InterpolationHistogram
@@ -106,15 +95,11 @@ public:
 class TFCS1DFunctionInt8Int16InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
           TFCS1DFunction_HistogramInt8BinEdges,
-          uint16_t,
-          float>
+          uint16_t>
 {
 public:
-  TFCS1DFunctionInt8Int16InterpolationHistogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt8BinEdges,
-            uint16_t,
-            float>(h) {};
+  using TFCS1DFunctionTemplateInterpolationHistogram::
+      TFCS1DFunctionTemplateInterpolationHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt8Int16InterpolationHistogram,
                    1)  // TFCS1DFunctionInt8Int16InterpolationHistogram
@@ -123,15 +108,11 @@ public:
 class TFCS1DFunctionInt16Int16InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
           TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t,
-          float>
+          uint16_t>
 {
 public:
-  TFCS1DFunctionInt16Int16InterpolationHistogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt16BinEdges,
-            uint16_t,
-            float>(h) {};
+  using TFCS1DFunctionTemplateInterpolationHistogram::
+      TFCS1DFunctionTemplateInterpolationHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt16Int16InterpolationHistogram,
                    1)  // TFCS1DFunctionInt16Int16InterpolationHistogram
@@ -140,15 +121,11 @@ public:
 class TFCS1DFunctionInt16Int32InterpolationHistogram
     : public TFCS1DFunctionTemplateInterpolationHistogram<
           TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t,
-          float>
+          uint32_t>
 {
 public:
-  TFCS1DFunctionInt16Int32InterpolationHistogram(TH1* h = nullptr)
-      : TFCS1DFunctionTemplateInterpolationHistogram<
-            TFCS1DFunction_HistogramInt16BinEdges,
-            uint32_t,
-            float>(h) {};
+  using TFCS1DFunctionTemplateInterpolationHistogram::
+      TFCS1DFunctionTemplateInterpolationHistogram;
 
   ClassDefOverride(TFCS1DFunctionInt16Int32InterpolationHistogram,
                    1)  // TFCS1DFunctionInt16Int32InterpolationHistogram

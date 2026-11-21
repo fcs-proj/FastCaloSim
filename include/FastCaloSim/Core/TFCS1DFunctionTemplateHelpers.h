@@ -1,14 +1,13 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma once
 
 #include <algorithm>
 #include <cmath>
+#include <concepts>
+#include <cstdint>
+#include <limits>
 #include <memory>
-#include <vector>
 
 #include "TBuffer.h"
 
@@ -23,84 +22,32 @@ public:
   static constexpr T MaxValue = 1;
   static constexpr Tfloat MaxValueFloat = MaxValue;
 
-  static inline auto MaxCeilOnlyForInt(const Tfloat value) -> T
-  {
-    return value;
-  };
-  static inline auto ExpandToMaxRange(const Tfloat value) -> T
-  {
-    return value;
-  };
-  static inline auto ToNormalizedRange(const T value) -> Tfloat
-  {
-    return value;
-  };
+  static auto MaxCeilOnlyForInt(const Tfloat value) -> T { return value; }
+  static auto ExpandToMaxRange(const Tfloat value) -> T { return value; }
+  static auto ToNormalizedRange(const T value) -> Tfloat { return value; }
 };
 
-/// Converter functions to store/retrieve float numbers in integers
-template<typename Tfloat>
-class TFCS1DFunction_Numeric<uint8_t, Tfloat>
+/// Converter functions to store/retrieve float numbers in the range [0,1] as
+/// unsigned integers
+template<std::unsigned_integral T, typename Tfloat>
+class TFCS1DFunction_Numeric<T, Tfloat>
 {
 public:
-  static constexpr uint8_t MaxValue = UINT8_MAX;
+  static constexpr T MaxValue = std::numeric_limits<T>::max();
   static constexpr Tfloat MaxValueFloat = MaxValue;
 
-  static inline auto MaxCeilOnlyForInt(const Tfloat value) -> uint8_t
+  static auto MaxCeilOnlyForInt(const Tfloat value) -> T
   {
     return std::ceil(MaxValueFloat * value);
-  };
-  static inline auto ExpandToMaxRange(const Tfloat value) -> uint8_t
+  }
+  static auto ExpandToMaxRange(const Tfloat value) -> T
   {
     return value * (1 + MaxValueFloat);
-  };
-  static inline auto ToNormalizedRange(const uint8_t value) -> Tfloat
+  }
+  static auto ToNormalizedRange(const T value) -> Tfloat
   {
     return value / (1 + MaxValueFloat);
-  };
-};
-
-/// Converter functions to store/retrieve float numbers in integers
-template<typename Tfloat>
-class TFCS1DFunction_Numeric<uint16_t, Tfloat>
-{
-public:
-  static constexpr uint16_t MaxValue = UINT16_MAX;
-  static constexpr Tfloat MaxValueFloat = MaxValue;
-
-  static inline auto MaxCeilOnlyForInt(const Tfloat value) -> uint16_t
-  {
-    return std::ceil(MaxValueFloat * value);
-  };
-  static inline auto ExpandToMaxRange(const Tfloat value) -> uint16_t
-  {
-    return value * (1 + MaxValueFloat);
-  };
-  static inline auto ToNormalizedRange(const uint16_t value) -> Tfloat
-  {
-    return value / (1 + MaxValueFloat);
-  };
-};
-
-/// Converter functions to store/retrieve float numbers in integers
-template<typename Tfloat>
-class TFCS1DFunction_Numeric<uint32_t, Tfloat>
-{
-public:
-  static constexpr uint32_t MaxValue = UINT32_MAX;
-  static constexpr Tfloat MaxValueFloat = MaxValue;
-
-  static inline auto MaxCeilOnlyForInt(const Tfloat value) -> uint32_t
-  {
-    return std::ceil(MaxValueFloat * value);
-  };
-  static inline auto ExpandToMaxRange(const Tfloat value) -> uint32_t
-  {
-    return value * (1 + MaxValueFloat);
-  };
-  static inline auto ToNormalizedRange(const uint32_t value) -> Tfloat
-  {
-    return value / (1 + MaxValueFloat);
-  };
+  }
 };
 
 template<typename T>
@@ -110,15 +57,15 @@ public:
   using size_t = TFCS1DFunction_size_t;
 
   TFCS1DFunction_Array() = default;
-  TFCS1DFunction_Array(size_t count) { resize(count); };
+  TFCS1DFunction_Array(size_t count) { resize(count); }
 
-  auto MemorySizeArray() const -> std::size_t { return size() * sizeof(T); };
+  auto MemorySizeArray() const -> std::size_t { return size() * sizeof(T); }
   auto MemorySize() const -> std::size_t
   {
     return sizeof(*this) + MemorySizeArray();
-  };
+  }
 
-  inline auto size() const -> size_t { return m_size; };
+  auto size() const -> size_t { return m_size; }
 
   /// resize to given count, copying old content
   void resize(size_t count)
@@ -130,27 +77,24 @@ public:
       std::copy_n(m_content.get(), std::min(count, size()), new_cont.get());
     m_size = count;
     m_content = std::move(new_cont);
-  };
+  }
 
   /// Direct data pointer
-  inline auto data() -> T* { return m_content.get(); };
-  inline auto data() const -> const T* { return m_content.get(); };
+  auto data() -> T* { return m_content.get(); }
+  auto data() const -> const T* { return m_content.get(); }
 
   /// Direct access operators. Values are in the range
   /// [0,TFCS1DFunction_Numeric<T>::MaxValue]
-  inline auto operator[](size_t pos) -> T& { return m_content[pos]; };
-  inline auto operator[](size_t pos) const -> const T&
-  {
-    return m_content[pos];
-  };
+  auto operator[](size_t pos) -> T& { return m_content[pos]; }
+  auto operator[](size_t pos) const -> const T& { return m_content[pos]; }
 
   /// begin() iterators
-  inline auto begin() -> T* { return m_content.get(); };
-  inline auto begin() const -> const T* { return m_content.get(); };
+  auto begin() -> T* { return m_content.get(); }
+  auto begin() const -> const T* { return m_content.get(); }
 
   /// end() iterators
-  inline auto end() -> T* { return m_content.get() + size(); };
-  inline auto end() const -> const T* { return m_content.get() + size(); };
+  auto end() -> T* { return m_content.get() + size(); }
+  auto end() const -> const T* { return m_content.get() + size(); }
 
 private:
   std::unique_ptr<T[]> m_content;  //!
@@ -188,16 +132,18 @@ public:
   using random_type = Trandom;
 
   TFCS1DFunction_HistogramContent(size_t nbins = 0)
-      : m_array(nbins >= 1 ? nbins - 1 : 0) {};
+      : m_array(nbins >= 1 ? nbins - 1 : 0)
+  {
+  }
 
   auto MemorySizeArray() const -> std::size_t
   {
     return m_array.MemorySizeArray();
-  };
+  }
   auto MemorySize() const -> std::size_t
   {
     return sizeof(*this) + MemorySizeArray();
-  };
+  }
 
   /// Set the content of bin pos to a given value, where value is in the range
   /// [0,1]
@@ -206,25 +152,25 @@ public:
     if (pos >= size())
       return;
     m_array[pos] = TFCS1DFunction_Numeric<T, Trandom>::MaxCeilOnlyForInt(value);
-  };
+  }
 
   /// Get the cumulative content at bin pos as fraction in the range [0,1]
-  inline auto get_fraction(size_t pos) const -> Trandom
+  auto get_fraction(size_t pos) const -> Trandom
   {
     if (pos >= size())
       return 1;
     return m_array[pos] / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
-  };
+  }
 
   /// set number of bins.
   /// The actually allocated size is one smaller than count, as the last bin is
   /// fixed with the range [get_fraction(size()-1,1]
-  void set_nbins(size_t nbins) { m_array.resize(nbins >= 1 ? nbins - 1 : 0); };
+  void set_nbins(size_t nbins) { m_array.resize(nbins >= 1 ? nbins - 1 : 0); }
 
   /// return number of bins.
   /// This is one larger than size, as the last bin is fixed with the range
   /// [get_fraction(size()-1,1]
-  inline auto get_nbins() const -> size_t { return size() + 1; };
+  auto get_nbins() const -> size_t { return size() + 1; }
 
   /// Get the matching bin for a given random value in the range [0,1).
   /// A residual random number to calculate a position inside this bin is
@@ -262,16 +208,33 @@ public:
     if (it == m_array.end())
       return size();
     return std::distance(m_array.begin(), it);
-  };
+  }
 
 private:
   TFCS1DFunction_Array<T> m_array;
-  inline auto size() const -> size_t { return m_array.size(); };
+  auto size() const -> size_t { return m_array.size(); }
 
   // Use ClassDef without virtual functions. Saves 8 bytes per instance
   ClassDefNV(TFCS1DFunction_HistogramContent,
              1)  // TFCS1DFunction_HistogramContent
 };
+
+/// Fraction x in [0,1] of the way through a bin for a random number drnd in
+/// [0,1], such that histogramming x gives a density with linear slope m (in
+/// units of the bin width, limited to [-2,2]). Declared inline so that it is
+/// inlined into position_lin in the shared library (per-hit code).
+template<typename Trandom>
+inline auto TFCS1DFunction_linear_slope_fraction(Trandom m, Trandom drnd)
+    -> Trandom
+{
+  if (m > 2)
+    m = 2;
+  if (m < -2)
+    m = -2;
+  return std::abs(m) > 0.001
+      ? (0.5 * std::sqrt(m * (m + 8 * drnd - 4) + 4) - 1) / m + 0.5
+      : drnd;
+}
 
 // Class to represent histogram bin edges. Trandom should be a type with a
 // floating point range [0,1]
@@ -284,83 +247,75 @@ public:
   using random_type = Trandom;
 
   TFCS1DFunction_HistogramBinEdges(size_t nbins = 0)
-      : m_array(nbins + 1) {};
+      : m_array(nbins + 1)
+  {
+  }
   ~TFCS1DFunction_HistogramBinEdges() = default;
 
   auto MemorySizeArray() const -> std::size_t
   {
     return m_array.MemorySizeArray();
-  };
+  }
   auto MemorySize() const -> std::size_t
   {
     return sizeof(*this) + MemorySizeArray();
-  };
+  }
 
   /// set number of bins
-  void set_nbins(size_t nbins) { m_array.resize(nbins + 1); };
+  void set_nbins(size_t nbins) { m_array.resize(nbins + 1); }
 
   /// return number of bins
-  inline auto get_nbins() const -> size_t { return size() - 1; };
+  auto get_nbins() const -> size_t { return size() - 1; }
 
   /// set position of lower edge of bins
-  void SetBinLowEdge(size_t pos, const T& value) { m_array[pos] = value; };
+  void SetBinLowEdge(size_t pos, const T& value) { m_array[pos] = value; }
 
   /// get position of lower edge of bins
-  inline auto GetBinLowEdge(size_t pos) const -> const T&
-  {
-    return m_array[pos];
-  };
+  auto GetBinLowEdge(size_t pos) const -> const T& { return m_array[pos]; }
 
   /// get the length of a bin
-  inline auto GetBinLength(size_t pos) const -> const T
+  auto GetBinLength(size_t pos) const -> T
   {
     return GetBinLowEdge(pos + 1) - GetBinLowEdge(pos);
-  };
+  }
 
   /// set and get minimum
-  void SetMin(const T& value) { m_array[0] = value; };
-  inline auto GetMin() const -> const T& { return m_array[0]; };
+  void SetMin(const T& value) { m_array[0] = value; }
+  auto GetMin() const -> const T& { return m_array[0]; }
 
   /// set and get maximum
-  void SetMax(const T& value) { m_array[get_nbins()] = value; };
-  inline auto GetMax() const -> const T& { return m_array[get_nbins()]; };
+  void SetMax(const T& value) { m_array[get_nbins()] = value; }
+  auto GetMax() const -> const T& { return m_array[get_nbins()]; }
 
   /// set minimum and maximum
   void SetMinMax(const T& valuemin, const T& valuemax)
   {
     SetMin(valuemin);
     SetMax(valuemax);
-  };
+  }
 
   /// Get length of interval of all bins
-  inline auto Length() const -> const T { return GetMax() - GetMin(); };
+  auto Length() const -> T { return GetMax() - GetMin(); }
 
   /// return linear interpolated position for bin pos. Interpolation is done
   /// with a random value in the range [0,1]
-  inline auto position(size_t pos, const Trandom& drnd) const -> T
+  auto position(size_t pos, const Trandom& drnd) const -> T
   {
     return (1 - drnd) * m_array[pos] + drnd * m_array[pos + 1];
-  };
+  }
 
   /// return linearly interpolated position for bin pos, such that histograming
   /// the position gives a linear slope m, where m is in units of the bin width
   /// for bin pos. Interpolation is done with a random value in the range [0,1]
-  inline auto position_lin(size_t pos, Trandom m, const Trandom& drnd) const
-      -> T
+  auto position_lin(size_t pos, Trandom m, const Trandom& drnd) const -> T
   {
-    if (m > 2)
-      m = 2;
-    if (m < -2)
-      m = -2;
-    Trandom x = fabs(m) > 0.001
-        ? (0.5 * std::sqrt(m * (m + 8 * drnd - 4) + 4) - 1) / m + 0.5
-        : drnd;
+    const Trandom x = TFCS1DFunction_linear_slope_fraction(m, drnd);
     return (1 - x) * m_array[pos] + x * m_array[pos + 1];
-  };
+  }
 
 private:
   TFCS1DFunction_Array<T> m_array;
-  inline auto size() const -> size_t { return m_array.size(); };
+  auto size() const -> size_t { return m_array.size(); }
 
   // Use ClassDef without virtual functions. Saves 8 bytes per instance
   ClassDefNV(TFCS1DFunction_HistogramBinEdges,
@@ -371,8 +326,8 @@ class TFCS1DFunction_HistogramFloatBinEdges
     : public TFCS1DFunction_HistogramBinEdges<float, float>
 {
 public:
-  TFCS1DFunction_HistogramFloatBinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramBinEdges<float, float>(nbins) {};
+  using TFCS1DFunction_HistogramBinEdges<float, float>::
+      TFCS1DFunction_HistogramBinEdges;
 
   ClassDefNV(TFCS1DFunction_HistogramFloatBinEdges,
              1)  // TFCS1DFunction_HistogramFloatBinEdges
@@ -382,8 +337,8 @@ class TFCS1DFunction_HistogramDoubleBinEdges
     : public TFCS1DFunction_HistogramBinEdges<double, double>
 {
 public:
-  TFCS1DFunction_HistogramDoubleBinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramBinEdges<double, double>(nbins) {};
+  using TFCS1DFunction_HistogramBinEdges<double, double>::
+      TFCS1DFunction_HistogramBinEdges;
 
   ClassDefNV(TFCS1DFunction_HistogramDoubleBinEdges,
              1)  // TFCS1DFunction_HistogramDoubleBinEdges
@@ -402,23 +357,25 @@ public:
   using internal_storage_type = Tint;
 
   TFCS1DFunction_HistogramCompactBinEdges(size_t nbins = 0)
-      : m_array(nbins >= 1 ? nbins - 1 : 0) {};
+      : m_array(nbins >= 1 ? nbins - 1 : 0)
+  {
+  }
   ~TFCS1DFunction_HistogramCompactBinEdges() = default;
 
   auto MemorySizeArray() const -> std::size_t
   {
     return m_array.MemorySizeArray();
-  };
+  }
   auto MemorySize() const -> std::size_t
   {
     return sizeof(*this) + MemorySizeArray();
-  };
+  }
 
   /// set number of bins
-  void set_nbins(size_t nbins) { m_array.resize(nbins >= 1 ? nbins - 1 : 0); };
+  void set_nbins(size_t nbins) { m_array.resize(nbins >= 1 ? nbins - 1 : 0); }
 
   /// return number of bins
-  inline auto get_nbins() const -> size_t { return size() + 1; };
+  auto get_nbins() const -> size_t { return size() + 1; }
 
   /// set position of lower edge of bins. Requires GetMin() and GetMax() to be
   /// set and may not be changed!
@@ -434,11 +391,11 @@ public:
     }
     m_array[pos - 1] = TFCS1DFunction_Numeric<Tint, T>::ExpandToMaxRange(
         (value - GetMin()) / Length());
-  };
+  }
 
   /// get position of lower edge of bins. Requires GetMin() and GetMax() to be
   /// set and may not be changed!
-  inline auto GetBinLowEdge(size_t pos) const -> const T
+  auto GetBinLowEdge(size_t pos) const -> T
   {
     if (pos == 0)
       return GetMin();
@@ -447,66 +404,55 @@ public:
     return GetMin()
         + Length()
         * TFCS1DFunction_Numeric<Tint, T>::ToNormalizedRange(m_array[pos - 1]);
-  };
+  }
 
   /// get the length of a bin
-  inline auto GetBinLength(size_t pos) const -> const T
+  auto GetBinLength(size_t pos) const -> T
   {
     return GetBinLowEdge(pos + 1) - GetBinLowEdge(pos);
-  };
+  }
 
   /// set and get minimum
-  void SetMin(const T& value) { m_Min = value; };
-  inline auto GetMin() const -> const T& { return m_Min; };
+  void SetMin(const T& value) { m_Min = value; }
+  auto GetMin() const -> const T& { return m_Min; }
 
   /// set and get maximum
-  void SetMax(const T& value) { m_Max = value; };
-  inline auto GetMax() const -> const T& { return m_Max; };
+  void SetMax(const T& value) { m_Max = value; }
+  auto GetMax() const -> const T& { return m_Max; }
 
   /// set minimum and maximum
   void SetMinMax(const T& valuemin, const T& valuemax)
   {
     SetMin(valuemin);
     SetMax(valuemax);
-  };
+  }
 
   /// Get length of interval of all bins
-  inline auto Length() const -> const T { return GetMax() - GetMin(); };
+  auto Length() const -> T { return GetMax() - GetMin(); }
 
   /// return linear interpolated position for bin pos. Interpolation is done
   /// with a random value in the range [0,1]
-  inline auto position(size_t pos, const Trandom& drnd) const -> T
+  auto position(size_t pos, const Trandom& drnd) const -> T
   {
     T pos1 = GetBinLowEdge(pos);
     T pos2 = GetBinLowEdge(pos + 1);
     return (1 - drnd) * pos1 + drnd * pos2;
-  };
-
-  /// return interpolated position for bin pos, such that histograming the
-  /// position gives a linear slope m, where m is in units of the bin width for
-  /// bin pos. Interpolation is done with a random value in the range [0,1]
+  }
 
   /// return linearly interpolated position for bin pos, such that histograming
   /// the position gives a linear slope m, where m is in units of the bin width
   /// for bin pos. Interpolation is done with a random value in the range [0,1]
-  inline auto position_lin(size_t pos, Trandom m, const Trandom& drnd) const
-      -> T
+  auto position_lin(size_t pos, Trandom m, const Trandom& drnd) const -> T
   {
-    if (m > 2)
-      m = 2;
-    if (m < -2)
-      m = -2;
-    Trandom x = fabs(m) > 0.001
-        ? (0.5 * std::sqrt(m * (m + 8 * drnd - 4) + 4) - 1) / m + 0.5
-        : drnd;
+    const Trandom x = TFCS1DFunction_linear_slope_fraction(m, drnd);
     T pos1 = GetBinLowEdge(pos);
     T pos2 = GetBinLowEdge(pos + 1);
     return (1 - x) * pos1 + x * pos2;
-  };
+  }
 
 private:
   TFCS1DFunction_Array<Tint> m_array;
-  inline auto size() const -> size_t { return m_array.size(); };
+  auto size() const -> size_t { return m_array.size(); }
   T m_Min {0};
   T m_Max {0};
 
@@ -518,9 +464,8 @@ class TFCS1DFunction_HistogramInt8BinEdges
     : public TFCS1DFunction_HistogramCompactBinEdges<float, uint8_t, float>
 {
 public:
-  TFCS1DFunction_HistogramInt8BinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramCompactBinEdges<float, uint8_t, float>(nbins) {
-      };
+  using TFCS1DFunction_HistogramCompactBinEdges::
+      TFCS1DFunction_HistogramCompactBinEdges;
 
   ClassDefNV(TFCS1DFunction_HistogramInt8BinEdges,
              1)  // TFCS1DFunction_HistogramInt8BinEdges
@@ -530,9 +475,8 @@ class TFCS1DFunction_HistogramInt16BinEdges
     : public TFCS1DFunction_HistogramCompactBinEdges<float, uint16_t, float>
 {
 public:
-  TFCS1DFunction_HistogramInt16BinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramCompactBinEdges<float, uint16_t, float>(nbins) {
-      };
+  using TFCS1DFunction_HistogramCompactBinEdges::
+      TFCS1DFunction_HistogramCompactBinEdges;
 
   ClassDefNV(TFCS1DFunction_HistogramInt16BinEdges,
              1)  // TFCS1DFunction_HistogramInt16BinEdges
@@ -542,12 +486,9 @@ class TFCS1DFunction_HistogramInt32BinEdges
     : public TFCS1DFunction_HistogramCompactBinEdges<float, uint32_t, float>
 {
 public:
-  TFCS1DFunction_HistogramInt32BinEdges(size_t nbins = 0)
-      : TFCS1DFunction_HistogramCompactBinEdges<float, uint32_t, float>(nbins) {
-      };
+  using TFCS1DFunction_HistogramCompactBinEdges::
+      TFCS1DFunction_HistogramCompactBinEdges;
 
   ClassDefNV(TFCS1DFunction_HistogramInt32BinEdges,
              1)  // TFCS1DFunction_HistogramInt32BinEdges
 };
-
-#pragma GCC diagnostic pop
