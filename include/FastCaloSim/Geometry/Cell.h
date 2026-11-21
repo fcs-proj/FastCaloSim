@@ -216,7 +216,7 @@ public:
 
   // Overload the << operator to allow direct cell printout
   // with std::cout<<cell<<std::endl;
-  // Defined out of line so that fmt is not exposed to rootcling.
+  // Defined out of line so that the formatting code is not parsed by rootcling.
   friend auto operator<<(std::ostream& os, const Cell& cell) -> std::ostream&;
 
 private:

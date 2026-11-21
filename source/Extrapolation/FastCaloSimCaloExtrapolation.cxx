@@ -2,12 +2,11 @@
 
 #include <array>
 #include <cmath>
+#include <format>
 #include <optional>
 #include <string>
 
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
-
-#include <fmt/format.h>
 
 #include "CylinderExtrapolation.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
@@ -177,7 +176,7 @@ auto scaleOntoLayer(const Vector3D& position,
 
 auto describe(const TFCSTruthState& truth) -> std::string
 {
-  return fmt::format(
+  return std::format(
       "particle with PDG ID {}, pT={}, eta={}, phi={}, E={}, Ekin_off={} and "
       "vertex ({}, {}, {})",
       truth.pdgid(),
@@ -246,7 +245,7 @@ void FastCaloSimCaloExtrapolation::extrapolate(
 
   const bool reachesCalorimeter = std::abs(position.eta()) < 6;
   if (!reachesCalorimeter) {
-    reportFailure(fmt::format(
+    reportFailure(std::format(
         "ID-calo boundary at eta={} outside the calorimeter", position.eta()));
     return;
   }
@@ -262,7 +261,7 @@ void FastCaloSimCaloExtrapolation::extrapolate(
       const Cylinder& cylinder = cylinders[subpos];
       const auto point = extrapolateToCylinder(track, cylinder);
       if (!point) {
-        reportFailure(fmt::format("Failed extrapolation to layer {} subpos {}",
+        reportFailure(std::format("Failed extrapolation to layer {} subpos {}",
                                   layer,
                                   static_cast<int>(subpos)));
         continue;
