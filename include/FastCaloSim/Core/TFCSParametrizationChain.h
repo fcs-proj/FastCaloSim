@@ -103,9 +103,6 @@ protected:
 private:
   Chain_t m_chain;
 
-  // Ensure all objects to be written by the streamer live long enough.
-  std::vector<std::unique_ptr<TFCSParametrizationBase>> m_writtenBases;
-
   ClassDefOverride(TFCSParametrizationChain, 2)  // TFCSParametrizationChain
 };
 
