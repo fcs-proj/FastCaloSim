@@ -6,6 +6,7 @@
 
 #include "FastCaloSim/Core/TFCS2DFunctionHistogram.h"
 
+#include "FastCaloSim/Definitions/Index.h"
 #include "TH2.h"
 
 //=============================================
@@ -92,8 +93,7 @@ void TFCS2DFunctionHistogram::rnd_to_fct(double& valuex,
                                    rnd0,
                                    [](double r, float c)
                                    { return r < static_cast<double>(c); });
-  std::size_t ibin =
-      static_cast<std::size_t>(std::distance(m_HistoContents.begin(), it));
+  std::size_t ibin = FastCaloSim::index_of(m_HistoContents, it);
   if (ibin >= m_HistoContents.size())
     ibin = m_HistoContents.size() - 1;
   const std::size_t nbinsx = m_HistoBorders.size() - 1;

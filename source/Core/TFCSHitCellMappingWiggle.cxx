@@ -12,6 +12,7 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "TH1.h"
 #include "TVector2.h"
 
@@ -97,7 +98,7 @@ void TFCSHitCellMappingWiggle::initialize(
     return;
   }
   std::vector<const TFCS1DFunction*> functions(histograms.size());
-  for (unsigned int i = 0; i < histograms.size(); ++i) {
+  for (std::size_t i = 0; i < histograms.size(); ++i) {
     if (histograms[i]) {
       TFCS1DFunctionInt32Histogram* func =
           new TFCS1DFunctionInt32Histogram(histograms[i]);
@@ -138,8 +139,7 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
                        eta,
                        [](double value, float edge)
                        { return value < static_cast<double>(edge); });
-  const auto bin =
-      static_cast<unsigned int>(std::distance(m_bin_low_edge.begin(), it) - 1);
+  const std::size_t bin = FastCaloSim::index_of(m_bin_low_edge, it) - 1;
 
   const TFCS1DFunction* func = get_function(bin);
   if (func) {
@@ -183,7 +183,7 @@ void TFCSHitCellMappingWiggle::Print(Option_t* option) const
   if (longprint) {
     FCS_MSG(INFO) << optprint << "  " << get_number_of_bins()
                   << " functions : ";
-    for (unsigned int i = 0; i < get_number_of_bins(); ++i)
+    for (std::size_t i = 0; i < get_number_of_bins(); ++i)
       FCS_MSG(INFO) << get_bin_low_edge(i) << " < (" << get_function(i)
                     << ") < ";
     FCS_MSG(INFO) << get_bin_up_edge(get_number_of_bins() - 1)
@@ -207,7 +207,7 @@ auto TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
     return false;
   }
 
-  for (unsigned int i = 0; i < get_number_of_bins(); ++i) {
+  for (std::size_t i = 0; i < get_number_of_bins(); ++i) {
     const TFCS1DFunction* f1 = get_function(i);
     const TFCS1DFunction* f2 = ref_typed.get_function(i);
     if (!f1 && !f2)

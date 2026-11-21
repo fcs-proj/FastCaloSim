@@ -35,7 +35,7 @@ auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
     integral_approx +=
         h_approx->GetBinContent(h_approx->FindBin(h_input->GetBinCenter(b)));
   }
-  if (integral_approx == 0.0) {
+  if (FastCaloSim::exactly_equal(integral_approx, 0.0)) {
     return 0.;
   }
   h_approx->Scale(integral_input / integral_approx);

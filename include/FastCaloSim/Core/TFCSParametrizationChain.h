@@ -44,20 +44,17 @@ public:
   void reset_RetryChainFromStart() { ResetBit(kRetryChainFromStart); }
 
   using Chain_t = std::vector<TFCSParametrizationBase*>;
-  auto size() const -> unsigned int override
-  {
-    return static_cast<unsigned int>(m_chain.size());
-  }
-  auto operator[](unsigned int ind) const
+  auto size() const -> std::size_t override { return m_chain.size(); }
+  auto operator[](std::size_t ind) const
       -> const TFCSParametrizationBase* override
   {
     return m_chain[ind];
   }
-  auto operator[](unsigned int ind) -> TFCSParametrizationBase* override
+  auto operator[](std::size_t ind) -> TFCSParametrizationBase* override
   {
     return m_chain[ind];
   }
-  void set_daughter(unsigned int ind, TFCSParametrizationBase* param) override
+  void set_daughter(std::size_t ind, TFCSParametrizationBase* param) override
   {
     m_chain.at(ind) = param;
   }

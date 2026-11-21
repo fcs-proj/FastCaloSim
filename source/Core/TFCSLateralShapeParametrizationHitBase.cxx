@@ -38,11 +38,9 @@ auto TFCSLateralShapeParametrizationHitBase::get_E_hit(
     const TFCSExtrapolationState* extrapol) const -> double
 {
   const int nhits = get_number_of_hits(simulstate, truth, extrapol);
-  const std::size_t sample = calosample();
-  if (nhits <= 0 || sample < 0)
+  if (nhits <= 0 || !has_calosample())
     return -1.;
-  else
-    return simulstate.E(sample) / nhits;
+  return simulstate.E(calosample()) / nhits;
 }
 
 auto TFCSLateralShapeParametrizationHitBase::getMinWeight() const -> double

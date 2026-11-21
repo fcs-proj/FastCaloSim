@@ -110,12 +110,12 @@ public:
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual auto size() const -> unsigned int { return 0; }
+  virtual auto size() const -> std::size_t { return 0; }
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual auto operator[](unsigned int /*ind*/) const
+  virtual auto operator[](std::size_t /*ind*/) const
       -> const TFCSParametrizationBase*
   {
     return nullptr;
@@ -124,7 +124,7 @@ public:
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual auto operator[](unsigned int /*ind*/) -> TFCSParametrizationBase*
+  virtual auto operator[](std::size_t /*ind*/) -> TFCSParametrizationBase*
   {
     return nullptr;
   }
@@ -132,7 +132,7 @@ public:
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The set_daughter method allows to change these daughters - expert
   /// use only! The original element at this position is not deleted
-  virtual void set_daughter(unsigned int /*ind*/,
+  virtual void set_daughter(std::size_t /*ind*/,
                             TFCSParametrizationBase* /*param*/)
   {
   }
@@ -166,7 +166,7 @@ public:
   {
     TFCSParametrizationBase* replace = nullptr;
     std::vector<TFCSParametrizationBase*> mother;
-    std::vector<unsigned int> index;
+    std::vector<std::size_t> index;
   };
   using FindDuplicates_t = std::map<TFCSParametrizationBase*, Duplicate_t>;
   using FindDuplicateClasses_t = std::map<std::string, FindDuplicates_t>;
@@ -202,7 +202,7 @@ public:
   {
     this->setLevel(level);
     if (recursive)
-      for (unsigned int i = 0; i < size(); ++i)
+      for (std::size_t i = 0; i < size(); ++i)
         if (TFCSParametrizationBase* param = (*this)[i])
           param->setLevel(level, recursive);
   }

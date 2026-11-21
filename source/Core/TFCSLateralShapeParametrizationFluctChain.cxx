@@ -35,9 +35,9 @@ auto TFCSLateralShapeParametrizationFluctChain::get_E_hit(
     const TFCSExtrapolationState* extrapol) const -> double
 {
   const double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
-  const std::size_t sample = calosample();
-  if (sigma2 <= 0 || sample < 0)
+  if (sigma2 <= 0 || !has_calosample())
     return -1.;
+  const std::size_t sample = calosample();
   const double maxWeight = getMaxWeight();
 
   if (maxWeight > 0)

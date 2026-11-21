@@ -62,7 +62,7 @@ void TFCSPCAEnergyParametrization::Print(Option_t* option) const
   if (longprint) {
     FCS_MSG(INFO) << optprint << "  #bins=" << m_numberpcabins
                   << ", Enorm=" << m_total_energy_normalization << ", layers=";
-    for (unsigned int i = 0; i < m_RelevantLayers.size(); i++) {
+    for (std::size_t i = 0; i < m_RelevantLayers.size(); ++i) {
       if (i > 0)
         FCS_MSG(INFO) << ", ";
       FCS_MSG(INFO) << m_RelevantLayers[i];
@@ -163,7 +163,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     std::vector<double> output_data(layerNr.size() + 1);
     std::vector<double> input_data(layerNr.size() + 1);
 
-    for (unsigned int l = 0; l <= layerNr.size(); l++) {
+    for (std::size_t l = 0; l <= layerNr.size(); l++) {
       double mean = vals_gauss_means[l];
       double rms = vals_gauss_rms[l];
       double gauszz =
@@ -183,7 +183,7 @@ auto TFCSPCAEnergyParametrization::simulate(
 
     std::vector<double> simdata(layerNr.size() + 1);
     double sum_fraction = 0.0;
-    for (unsigned int l = 0; l <= layerNr.size(); l++) {
+    for (std::size_t l = 0; l <= layerNr.size(); l++) {
       double simdata_uniform =
           (std::erf(output_data[l] / std::numbers::sqrt2) + 1) / 2.0;
 
@@ -226,7 +226,7 @@ auto TFCSPCAEnergyParametrization::simulate(
 
     for (std::size_t s = 0; s < m_geo->n_layers(); ++s) {
       double energyfrac = 0.0;
-      for (unsigned int l = 0; l < layerNr.size(); l++) {
+      for (std::size_t l = 0; l < layerNr.size(); ++l) {
         if (std::cmp_equal(layerNr[l], s))
           energyfrac = simdata[l];
       }
@@ -346,7 +346,7 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     std::vector<std::string> layer;
     const std::vector<int>& layerNr = m_RelevantLayers;
 
-    for (unsigned int i = 0; i < layerNr.size(); i++) {
+    for (std::size_t i = 0; i < layerNr.size(); ++i) {
       layer.emplace_back(std::format("layer{}", layerNr[i]));
     }
     layer.emplace_back("totalE");
@@ -354,7 +354,7 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     std::vector<TFCS1DFunction*> cumulative;
     cumulative.reserve(layer.size());
 
-    for (unsigned int l = 0; l < layer.size(); l++) {
+    for (std::size_t l = 0; l < layer.size(); ++l) {
       file->cd(std::format("{}/bin{}/{}", folder, bin, layer[l]).c_str());
 
       TFCS1DFunction* fct;
@@ -379,7 +379,7 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 
 void TFCSPCAEnergyParametrization::clean()
 {
-  for (unsigned int i = 0; i < m_EV.size(); i++)
+  for (std::size_t i = 0; i < m_EV.size(); ++i)
     delete m_EV[i];
 }
 

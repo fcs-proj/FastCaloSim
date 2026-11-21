@@ -94,7 +94,7 @@ auto TFCSParametrizationBinnedChain::simulate(
       [&]
       {
         // Parametrizations before the bins, run for all bins
-        for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
+        for (std::size_t ichain = 0; ichain < m_bin_start[0]; ++ichain) {
           FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
           const FCSReturnCode status =
               simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
@@ -129,7 +129,7 @@ auto TFCSParametrizationBinnedChain::simulate(
         }
 
         // Parametrizations after the bins, run for all bins
-        for (unsigned int ichain = m_bin_start.back(); ichain < size();
+        for (std::size_t ichain = m_bin_start.back(); ichain < size();
              ++ichain) {
           FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
           const FCSReturnCode status =
@@ -148,7 +148,7 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
 
   std::string prefix = "- ";
-  for (unsigned int ichain = 0; ichain < size(); ++ichain) {
+  for (std::size_t ichain = 0; ichain < size(); ++ichain) {
     if (ichain == 0 && ichain != m_bin_start.front()) {
       prefix = "> ";
       if (longprint)

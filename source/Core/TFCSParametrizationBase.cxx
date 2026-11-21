@@ -17,7 +17,7 @@ TFCSParametrizationBase::TFCSParametrizationBase(const char* name,
 
 void TFCSParametrizationBase::set_geometry(CaloGeo* geo)
 {
-  for (unsigned int i = 0; i < size(); ++i)
+  for (std::size_t i = 0; i < size(); ++i)
     if (TFCSParametrizationBase* param = (*this)[i])
       param->set_geometry(geo);
 }
@@ -102,7 +102,7 @@ void TFCSParametrizationBase::Print(Option_t* option) const
 
 void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
 {
-  for (unsigned int i = 0; i < size(); ++i)
+  for (std::size_t i = 0; i < size(); ++i)
     if (TFCSParametrizationBase* param = (*this)[i]) {
       FindDuplicates_t& dup = dupclasses[param->GetName()];
       // If param is already in the duplication list, skip over
@@ -171,8 +171,8 @@ void TFCSParametrizationBase::RemoveDuplicates()
         continue;
       TFCSParametrizationBase* ref = onedup.first;
       FCS_MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
-      for (unsigned int i = 0; i < onedup.second.mother.size(); ++i) {
-        const unsigned int index = onedup.second.index[i];
+      for (std::size_t i = 0; i < onedup.second.mother.size(); ++i) {
+        const std::size_t index = onedup.second.index[i];
         TFCSParametrizationBase* mother = onedup.second.mother[i];
         TFCSParametrizationBase* delparam = mother->operator[](index);
         const std::size_t delcount = dup[delparam].mother.size();
@@ -219,7 +219,7 @@ void TFCSParametrizationBase::RemoveDuplicates()
 
 void TFCSParametrizationBase::RemoveNameTitle()
 {
-  for (unsigned int i = 0; i < size(); ++i)
+  for (std::size_t i = 0; i < size(); ++i)
     if (TFCSParametrizationBase* param = (*this)[i]) {
       param->SetName("");
       param->SetTitle("");

@@ -9,6 +9,8 @@
 #include "CLHEP/Random/RandFlat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "TFile.h"
 #include "TVectorF.h"
 
@@ -87,7 +89,7 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
   double ptot = 0;
   for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
     ptot += static_cast<double>(prob[iEbin]);
-  if (ptot == 0.) {
+  if (FastCaloSim::exactly_equal(ptot, 0.)) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(): "
         "ptot is zero.");
@@ -140,7 +142,7 @@ auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
   double ptot = 0;
   for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
     ptot += static_cast<double>(prob[iEbin]);
-  if (ptot == 0.) {
+  if (FastCaloSim::exactly_equal(ptot, 0.)) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_"
         "file(): ptot is zero");
@@ -209,8 +211,8 @@ auto TFCSEnergyBinParametrization::simulate(
   const auto& Ebin_probability = m_pdgid_Ebin_probability.at(pdgid);
   const auto first = Ebin_probability.begin();
   const auto last = first + static_cast<std::ptrdiff_t>(n_bins()) + 1;
-  auto chosenBin = static_cast<std::size_t>(
-      std::distance(first, std::upper_bound(first, last, searchRand)));
+  auto chosenBin = FastCaloSim::index_of(
+      Ebin_probability, std::upper_bound(first, last, searchRand));
   if (chosenBin > n_bins()) {
     FCS_MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): "

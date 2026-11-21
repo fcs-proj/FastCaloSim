@@ -156,7 +156,7 @@ auto GetPrefixLength(const std::vector<std::string>& strings) -> std::size_t
 void VNetworkBase::removePrefixes(std::vector<std::string>& output_names) const
 {
   const std::size_t length = GetPrefixLength(output_names);
-  for (long unsigned int i = 0; i < output_names.size(); i++)
+  for (std::size_t i = 0; i < output_names.size(); ++i)
     output_names[i] = output_names[i].substr(length);
 }
 

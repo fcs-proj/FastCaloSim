@@ -33,12 +33,12 @@ TFCSLateralShapeParametrizationHitChain::
   m_chain.push_back(hitsim);
 }
 
-auto TFCSLateralShapeParametrizationHitChain::size() const -> unsigned int
+auto TFCSLateralShapeParametrizationHitChain::size() const -> std::size_t
 {
   if (m_number_of_hits_simul)
-    return static_cast<unsigned int>(m_chain.size() + 1);
+    return m_chain.size() + 1;
   else
-    return static_cast<unsigned int>(m_chain.size());
+    return m_chain.size();
 }
 
 void TFCSLateralShapeParametrizationHitChain::push_back_init(
@@ -53,7 +53,7 @@ void TFCSLateralShapeParametrizationHitChain::push_back_init(
   ++m_ninit;
 }
 
-auto TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind) const
+auto TFCSLateralShapeParametrizationHitChain::operator[](std::size_t ind) const
     -> const TFCSParametrizationBase*
 {
   if (m_number_of_hits_simul) {
@@ -65,7 +65,7 @@ auto TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind) const
   }
 }
 
-auto TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind)
+auto TFCSLateralShapeParametrizationHitChain::operator[](std::size_t ind)
     -> TFCSParametrizationBase*
 {
   if (m_number_of_hits_simul) {
@@ -78,7 +78,7 @@ auto TFCSLateralShapeParametrizationHitChain::operator[](unsigned int ind)
 }
 
 void TFCSLateralShapeParametrizationHitChain::set_daughter(
-    unsigned int ind, TFCSParametrizationBase* param)
+    std::size_t ind, TFCSParametrizationBase* param)
 {
   TFCSLateralShapeParametrizationHitBase* param_typed = nullptr;
   if (param != nullptr) {
@@ -150,9 +150,9 @@ auto TFCSLateralShapeParametrizationHitChain::get_E_hit(
   // called once per event
   simulstate.setAuxInfo<int>("FCSHitChainNHits"_FCShash, nhits);
 
-  const std::size_t sample = calosample();
-  if (sample < 0)
+  if (!has_calosample())
     return 0;
+  const std::size_t sample = calosample();
   if (nhits <= 0)
     return simulstate.E(sample);
   const double maxWeight =

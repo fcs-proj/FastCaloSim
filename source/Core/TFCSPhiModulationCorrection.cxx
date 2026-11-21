@@ -6,6 +6,7 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 // External includes
@@ -73,8 +74,7 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
   auto eta_it = std::upper_bound(m_min_eta.at(layer_index).begin(),
                                  m_min_eta.at(layer_index).end(),
                                  eta_min);
-  auto eta_index = static_cast<std::size_t>(
-      std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1);
+  auto eta_index = FastCaloSim::index_of(m_min_eta.at(layer_index), eta_it) - 1;
   // Iterator to the element after eta_index
   const auto after_eta_index = [&eta_index](auto& vec)
   { return vec.begin() + static_cast<std::ptrdiff_t>(eta_index) + 1; };
@@ -165,8 +165,8 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
                                  m_min_eta.at(layer_index).end(),
                                  eta_abs,
                                  less);
-  const auto eta_index = static_cast<std::size_t>(
-      std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1);
+  const auto eta_index =
+      FastCaloSim::index_of(m_min_eta.at(layer_index), eta_it) - 1;
 
   if (eta_index >= m_min_eta.at(layer_index).size() - 1) {
     FCS_MSG_ERROR("Found invalid eta index for phi modulation");
@@ -226,8 +226,7 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
   // Find the phi bin of the hit
   auto phi_it =
       std::upper_bound(phi_mins.begin(), phi_mins.end(), phi_within_cell, less);
-  const auto phi_index =
-      static_cast<std::size_t>(std::distance(phi_mins.begin(), phi_it) - 1);
+  const auto phi_index = FastCaloSim::index_of(phi_mins, phi_it) - 1;
 
   if (phi_index >= modulation.size()) {
     FCS_MSG_ERROR("Found bin "

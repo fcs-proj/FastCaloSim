@@ -207,7 +207,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     }
   }
 
-  for (unsigned int ichain = m_bin_start.back(); ichain < size(); ++ichain) {
+  for (std::size_t ichain = m_bin_start.back(); ichain < size(); ++ichain) {
     FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
     if (simulate_and_retry(chain()[ichain], simulstate, truth, extrapol)
         != FCSSuccess)
@@ -536,7 +536,7 @@ auto TFCSEnergyAndHitGANV2::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
+  for (std::size_t ichain = 0; ichain < m_bin_start[0]; ++ichain) {
     FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
     if (simulate_and_retry(chain()[ichain], simulstate, truth, extrapol)
         != FCSSuccess)

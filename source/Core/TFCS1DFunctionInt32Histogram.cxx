@@ -7,6 +7,7 @@
 
 #include "FastCaloSim/Core/TFCS1DFunctionInt32Histogram.h"
 
+#include "FastCaloSim/Definitions/Index.h"
 #include "TH1.h"
 
 //=============================================
@@ -72,8 +73,7 @@ auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
   const auto int_rnd = static_cast<HistoContent_t>(s_MaxValue * rnd);
   auto it =
       std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), int_rnd);
-  auto ibin =
-      static_cast<std::size_t>(std::distance(m_HistoContents.begin(), it));
+  auto ibin = FastCaloSim::index_of(m_HistoContents, it);
   if (ibin >= m_HistoContents.size())
     ibin = m_HistoContents.size() - 1;
 

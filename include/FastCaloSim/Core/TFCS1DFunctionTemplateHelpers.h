@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 
+#include "FastCaloSim/Definitions/Index.h"
 #include "TBuffer.h"
 
 // For the purpose of FastCaloSim, 32bit are sufficient for bin counting
@@ -204,7 +205,8 @@ public:
 
     if (it == m_array.end())
       return size();
-    return static_cast<size_t>(std::distance(m_array.begin(), it));
+    // The bin numbers of this class are 32 bit (size_t is its own alias)
+    return static_cast<size_t>(FastCaloSim::index_of(m_array, it));
   }
 
 private:

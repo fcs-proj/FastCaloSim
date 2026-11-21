@@ -24,6 +24,7 @@
 #include "FastCaloSim/Core/TFCSMLCalorimeterSimulator.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TBuffer.h"
@@ -315,8 +316,7 @@ auto TFCSBinnedShowerONNX::get_energy_index(TFCSSimulationState& simulstate,
   // Find the hit index in the hit vector for the given layer
   const std::vector<std::size_t>& hits = hits_per_layer_ptr->at(layer_index);
   auto it = std::upper_bound(hits.begin(), hits.end(), hit_index);
-  const auto energy_index =
-      static_cast<std::size_t>(std::distance(hits.begin(), it));
+  const auto energy_index = FastCaloSim::index_of(hits, it);
 
   if (energy_index >= hits.size()) {
     FCS_MSG_ERROR("Energy index out of bounds: " << energy_index
@@ -398,8 +398,7 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
                          [](double value, float element)
                          { return value < static_cast<double>(element); });
     if (it != available_energies.end()) {
-      e_index = static_cast<std::size_t>(
-          std::distance(available_energies.begin(), it));
+      e_index = FastCaloSim::index_of(available_energies, it);
     } else {
       e_index = available_energies.size() - 1;
     }

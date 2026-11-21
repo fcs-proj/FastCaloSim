@@ -8,6 +8,7 @@
 #include "FastCaloSim/Core/TFCSParametrizationFloatSelectChain.h"
 
 #include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Index.h"
 
 //=============================================
 //======= TFCSParametrizationFloatSelectChain =========
@@ -113,8 +114,7 @@ auto TFCSParametrizationFloatSelectChain::val_to_bin(float val) const
 
   // val is within the edges, so the edge above it is not the first one
   const auto it = std::ranges::upper_bound(m_bin_low_edge, val);
-  const auto bin =
-      static_cast<std::size_t>(std::distance(m_bin_low_edge.begin(), it)) - 1;
+  const auto bin = FastCaloSim::index_of(m_bin_low_edge, it) - 1;
   FCS_MSG_VERBOSE("val_to_bin(" << val << ")=" << bin);
   return bin;
 }

@@ -6,6 +6,8 @@
 
 #include "FastCaloSim/Core/TFCS1DFunctionHistogram.h"
 
+#include "FastCaloSim/Definitions/Index.h"
+
 TFCS1DFunctionHistogram::TFCS1DFunctionHistogram(TH1* hist, double cut_maxdev)
 {
   Initialize(hist, cut_maxdev);
@@ -191,8 +193,7 @@ auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
     // find the first HistoContent element that is larger than rnd:
     auto larger_element =
         std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), rnd);
-    auto index = static_cast<std::size_t>(
-        std::distance(m_HistoContents.begin(), larger_element));
+    auto index = FastCaloSim::index_of(m_HistoContents, larger_element);
     if (index >= m_HistoContents.size()) {
       --index;
     }

@@ -29,11 +29,11 @@ public:
       -> FCSReturnCode override;
 
   using Chain_t = std::vector<TFCSLateralShapeParametrizationHitBase*>;
-  auto size() const -> unsigned int override;
-  auto operator[](unsigned int ind) const
+  auto size() const -> std::size_t override;
+  auto operator[](std::size_t ind) const
       -> const TFCSParametrizationBase* override;
-  auto operator[](unsigned int ind) -> TFCSParametrizationBase* override;
-  void set_daughter(unsigned int ind, TFCSParametrizationBase* param) override;
+  auto operator[](std::size_t ind) -> TFCSParametrizationBase* override;
+  void set_daughter(std::size_t ind, TFCSParametrizationBase* param) override;
   auto chain() const -> const Chain_t& { return m_chain; }
   auto chain() -> Chain_t& { return m_chain; }
   void push_back(const Chain_t::value_type& value) { m_chain.push_back(value); }

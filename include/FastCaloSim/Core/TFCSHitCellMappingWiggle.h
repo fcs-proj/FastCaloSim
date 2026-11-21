@@ -26,21 +26,21 @@ public:
 
   void clear();
 
-  inline auto get_number_of_bins() const -> unsigned int
+  inline auto get_number_of_bins() const -> std::size_t
   {
-    return static_cast<unsigned int>(m_functions.size());
+    return m_functions.size();
   }
 
-  inline auto get_bin_low_edge(unsigned int bin) const -> double
+  inline auto get_bin_low_edge(std::size_t bin) const -> double
   {
     return static_cast<double>(m_bin_low_edge[bin]);
   }
-  inline auto get_bin_up_edge(unsigned int bin) const -> double
+  inline auto get_bin_up_edge(std::size_t bin) const -> double
   {
     return static_cast<double>(m_bin_low_edge[bin + 1]);
   }
 
-  inline auto get_function(unsigned int bin) const -> const TFCS1DFunction*
+  inline auto get_function(std::size_t bin) const -> const TFCS1DFunction*
   {
     return m_functions[bin];
   }

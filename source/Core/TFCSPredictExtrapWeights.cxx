@@ -12,6 +12,7 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TBuffer.h"
 #include "TClass.h"
@@ -165,8 +166,7 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
       auto itr =
           std::find(m_normLayers->cbegin(), m_normLayers->cend(), ilayer);
       if (itr != m_normLayers->cend()) {
-        const auto index = static_cast<std::size_t>(
-            std::distance(m_normLayers->cbegin(), itr));
+        const auto index = FastCaloSim::index_of(*m_normLayers, itr);
         inputVariables["ef_" + layer] =
             normalize(simulstate.Efrac(ilayer), index);
       } else {
@@ -177,8 +177,7 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
   }
   // Find index for truth energy
   auto itr = std::find(m_normLayers->cbegin(), m_normLayers->cend(), -1);
-  const auto index =
-      static_cast<std::size_t>(std::distance(m_normLayers->cbegin(), itr));
+  const auto index = FastCaloSim::index_of(*m_normLayers, itr);
   inputVariables["etrue"] = normalize(truthE, index);
   if (is_match_pdgid(22)) {
     inputVariables["pdgId"] = 1;  // one hot encoding
