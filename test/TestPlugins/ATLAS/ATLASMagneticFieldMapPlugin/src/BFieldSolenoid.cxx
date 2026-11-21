@@ -94,12 +94,12 @@ int BFieldSolenoid::readMap(istream& input)
   for (int i = 0; i < nz; i++) {
     for (int j = 0; j < nr; j++) {
       for (int k = 0; k < nphi; k++) {
-        int index = i + nz * (j + nr * k);
+        const auto index = static_cast<std::size_t>(i + nz * (j + nr * k));
         BFieldVector<double> field(Bz[index], Br[index], Bphi[index]);
         m_orig->appendField(field);
       }
       // close phi at 2pi
-      int index = i + nz * j;
+      const auto index = static_cast<std::size_t>(i + nz * j);
       BFieldVector<double> field(Bz[index], Br[index], Bphi[index]);
       m_orig->appendField(field);
     }
@@ -306,19 +306,21 @@ void BFieldSolenoid::moveMap(
   // z
   m_tilt->appendMesh(0, -zlim);
   for (unsigned i = 0; i < m_orig->nmesh(0); i++) {
-    if (abs(m_orig->mesh(0, i)) < zlim)
-      m_tilt->appendMesh(0, m_orig->mesh(0, i));
+    const double zi = m_orig->mesh(0, static_cast<int>(i));
+    if (abs(zi) < zlim)
+      m_tilt->appendMesh(0, zi);
   }
   m_tilt->appendMesh(0, zlim);
   // r
   for (unsigned i = 0; i < m_orig->nmesh(1); i++) {
-    if (m_orig->mesh(1, i) < rlim)
-      m_tilt->appendMesh(1, m_orig->mesh(1, i));
+    const double ri = m_orig->mesh(1, static_cast<int>(i));
+    if (ri < rlim)
+      m_tilt->appendMesh(1, ri);
   }
   m_tilt->appendMesh(1, rlim);
   // phi (no change)
   for (unsigned i = 0; i < m_orig->nmesh(2); i++) {
-    m_tilt->appendMesh(2, m_orig->mesh(2, i));
+    m_tilt->appendMesh(2, m_orig->mesh(2, static_cast<int>(i)));
   }
   //
   // loop over the new mesh, and compute the field at the
@@ -329,11 +331,11 @@ void BFieldSolenoid::moveMap(
   double sinay(sin(ay));
   double cosay(cos(ay));
   for (unsigned i = 0; i < m_tilt->nmesh(0); i++) {
-    double z0(m_tilt->mesh(0, i));
+    double z0(m_tilt->mesh(0, static_cast<int>(i)));
     for (unsigned j = 0; j < m_tilt->nmesh(1); j++) {
-      double r0(m_tilt->mesh(1, j));
+      double r0(m_tilt->mesh(1, static_cast<int>(j)));
       for (unsigned k = 0; k < m_tilt->nmesh(2); k++) {
-        double phi0(m_tilt->mesh(2, k));
+        double phi0(m_tilt->mesh(2, static_cast<int>(k)));
         double x0(r0 * cos(phi0));
         double y0(r0 * sin(phi0));
         // shift

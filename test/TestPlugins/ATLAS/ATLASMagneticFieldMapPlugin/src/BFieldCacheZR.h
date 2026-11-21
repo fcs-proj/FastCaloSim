@@ -44,8 +44,8 @@ public:
     m_zmax = zmax;
     m_rmin = rmin;
     m_rmax = rmax;
-    m_invz = 1.0 / (zmax - zmin);
-    m_invr = 1.0 / (rmax - rmin);
+    m_invz = static_cast<float>(1.0 / (zmax - zmin));
+    m_invr = static_cast<float>(1.0 / (rmax - rmin));
   }
   // set the field values at each corner
   void setField(int i, const BFieldVectorZR& field)
@@ -84,10 +84,12 @@ void BFieldCacheZR::getB(const double* xyz,
   const double& y(xyz[1]);
   const double& z(xyz[2]);
   // fractional position inside this bin
-  float fz = (z - m_zmin) * m_invz;
-  float gz = 1.0 - fz;
-  float fr = (r - m_rmin) * m_invr;
-  float gr = 1.0 - fr;
+  // computed in double and rounded to float; 1.0F - f is identical to
+  // float(1.0 - double(f)) (double has more than 2*24+2 mantissa bits)
+  float fz = static_cast<float>((z - m_zmin) * static_cast<double>(m_invz));
+  float gz = 1.0F - fz;
+  float fr = static_cast<float>((r - m_rmin) * static_cast<double>(m_invr));
+  float gr = 1.0F - fr;
   // interpolate field values in z, r
   float Bzr[2];
   for (int i = 0; i < 2; i++) {  // z, r components
@@ -98,15 +100,15 @@ void BFieldCacheZR::getB(const double* xyz,
   // convert (Bz,Br) to (Bx,By,Bz)
   float invr;
   if (r > 0.0) {
-    invr = 1.0 / r;
+    invr = static_cast<float>(1.0 / r);
   } else {
     invr = 0.0;
   }
-  float c(x * invr);
-  float es(y * invr);
-  B[0] = Bzr[1] * c;
-  B[1] = Bzr[1] * es;
-  B[2] = Bzr[0];
+  float c = static_cast<float>(x * static_cast<double>(invr));
+  float es = static_cast<float>(y * static_cast<double>(invr));
+  B[0] = static_cast<double>(Bzr[1] * c);
+  B[1] = static_cast<double>(Bzr[1] * es);
+  B[2] = static_cast<double>(Bzr[0]);
 
   // compute field derivatives if requested
   if (deriv) {
@@ -124,15 +126,19 @@ void BFieldCacheZR::getB(const double* xyz,
     float ss = es * es;
     float sinvr = es * invr;
     float cinvr = c * invr;
-    deriv[0] = cc * dBdr[1] + sinvr * B[1];
-    deriv[1] = cs * dBdr[1] - cinvr * B[1];
-    deriv[2] = c * dBdz[1];
-    deriv[3] = cs * dBdr[1] - sinvr * B[0];
-    deriv[4] = ss * dBdr[1] + cinvr * B[0];
-    deriv[5] = es * dBdz[1];
-    deriv[6] = c * dBdr[0];
-    deriv[7] = es * dBdr[0];
-    deriv[8] = dBdz[0];
+    deriv[0] =
+        static_cast<double>(cc * dBdr[1]) + static_cast<double>(sinvr) * B[1];
+    deriv[1] =
+        static_cast<double>(cs * dBdr[1]) - static_cast<double>(cinvr) * B[1];
+    deriv[2] = static_cast<double>(c * dBdz[1]);
+    deriv[3] =
+        static_cast<double>(cs * dBdr[1]) - static_cast<double>(sinvr) * B[0];
+    deriv[4] =
+        static_cast<double>(ss * dBdr[1]) + static_cast<double>(cinvr) * B[0];
+    deriv[5] = static_cast<double>(es * dBdz[1]);
+    deriv[6] = static_cast<double>(c * dBdr[0]);
+    deriv[7] = static_cast<double>(es * dBdr[0]);
+    deriv[8] = static_cast<double>(dBdz[0]);
   }
 }
 

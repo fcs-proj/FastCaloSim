@@ -50,13 +50,17 @@ public:
   }
   // accessors
   int id() const { return m_id; }
-  unsigned ncond() const { return m_cond.size(); }
-  const BFieldCond& cond(int i) const { return m_cond[i]; }
+  unsigned ncond() const { return static_cast<unsigned>(m_cond.size()); }
+  const BFieldCond& cond(int i) const
+  {
+    return m_cond[static_cast<std::size_t>(i)];
+  }
   const std::vector<BFieldCond>* condVector() const { return &m_cond; }
   int memSize() const
   {
-    return BFieldMesh<short>::memSize() + sizeof(int)
-        + sizeof(BFieldCond) * m_cond.capacity();
+    return static_cast<int>(
+        static_cast<std::size_t>(BFieldMesh<short>::memSize()) + sizeof(int)
+        + sizeof(BFieldCond) * m_cond.capacity());
   }
   // adjust the min/max edges to a new value
   void adjustMin(int i, double x)

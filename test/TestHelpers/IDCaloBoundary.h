@@ -48,22 +48,23 @@ private:
 
   void recalculate()
   {
+    // The cylinder dimensions are stored in double precision
+    const auto thickness = static_cast<double>(cylinderThickness);
     m_cylinders["barrel"] = {1148 * CLHEP::mm,
-                             1148 * CLHEP::mm + cylinderThickness,
+                             1148 * CLHEP::mm + thickness,
                              0.0 * CLHEP::mm,
                              3550.0 * CLHEP::mm,
                              true};
 
-    m_cylinders["barrelEndcap"] = {
-        120 * CLHEP::mm,
-        m_cylinders["barrel"].rmax,
-        m_cylinders["barrel"].zmax,
-        m_cylinders["barrel"].zmax + cylinderThickness,
-        false};
+    m_cylinders["barrelEndcap"] = {120 * CLHEP::mm,
+                                   m_cylinders["barrel"].rmax,
+                                   m_cylinders["barrel"].zmax,
+                                   m_cylinders["barrel"].zmax + thickness,
+                                   false};
 
     m_cylinders["innerBeamPipe"] = {
         m_cylinders["barrelEndcap"].rmin,
-        m_cylinders["barrelEndcap"].rmin + cylinderThickness,
+        m_cylinders["barrelEndcap"].rmin + thickness,
         m_cylinders["barrelEndcap"].zmax,
         4587.0 * CLHEP::mm,
         true};
@@ -72,12 +73,12 @@ private:
         41 * CLHEP::mm,
         m_cylinders["innerBeamPipe"].rmin,
         m_cylinders["innerBeamPipe"].zmax,
-        m_cylinders["innerBeamPipe"].zmax + cylinderThickness,
+        m_cylinders["innerBeamPipe"].zmax + thickness,
         false};
 
     m_cylinders["outerBeamPipe"] = {
         m_cylinders["innerBeamPipeEndcap"].rmin,
-        m_cylinders["innerBeamPipeEndcap"].rmin + cylinderThickness,
+        m_cylinders["innerBeamPipeEndcap"].rmin + thickness,
         m_cylinders["innerBeamPipeEndcap"].zmax,
         6783 * CLHEP::mm,
         true};

@@ -39,7 +39,7 @@ public:
     // For each event we sample particles of the same type uniformly in eta
     const float min_eta = -5;  //-5
     const float max_eta = 5;  // 5
-    const float step_size = 0.05;  // 0.5
+    const float step_size = 0.05F;  // 0.5
     const float energy = 50 * CLHEP::MeV;
     std::vector<TestHelpers::ParticleType> ptype = {
         TestHelpers::ParticleTypes::Photon,

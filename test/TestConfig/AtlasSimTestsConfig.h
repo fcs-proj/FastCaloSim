@@ -72,7 +72,9 @@ public:
     for (const auto& ptcl : params) {
       // Create photon with speficfic PID, EKIN, and ETA
       TestHelpers::Particle particle =
-          sampler.generate(ptcl.pid, ptcl.ekin, ptcl.eta);
+          sampler.generate(ptcl.pid,
+                           static_cast<float>(ptcl.ekin),
+                           static_cast<float>(ptcl.eta));
 
       // Create a particle container and add the particle
       TestHelpers::ParticleContainer particles;

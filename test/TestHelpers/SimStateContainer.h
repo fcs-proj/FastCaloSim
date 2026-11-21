@@ -65,7 +65,8 @@ class SimStateContainer
                                                           cellmap.end());
       for (const auto& cell_map_iter : ordered_cellmap) {
         unsigned long long cell_id = cell_map_iter.first;
-        const float cell_energy = cell_map_iter.second;
+        // The stored float energy is widened exactly to double
+        const auto cell_energy = static_cast<double>(cell_map_iter.second);
 
         // Get the cell
         const Cell cell = m_geo->get_cell(cell_id);

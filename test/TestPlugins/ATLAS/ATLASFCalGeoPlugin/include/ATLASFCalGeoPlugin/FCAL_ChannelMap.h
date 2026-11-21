@@ -115,7 +115,7 @@ public:
   {
   public:
     TilePosition();
-    TilePosition(float x, float y, int ntubes);
+    TilePosition(float x, float y, unsigned int ntubes);
     float x() const;
     float y() const;
     unsigned int ntubes() const;
@@ -212,7 +212,9 @@ inline FCAL_ChannelMap::TilePosition::TilePosition()
 {
 }
 
-inline FCAL_ChannelMap::TilePosition::TilePosition(float x, float y, int ntubes)
+inline FCAL_ChannelMap::TilePosition::TilePosition(float x,
+                                                   float y,
+                                                   unsigned int ntubes)
     : m_x(x)
     , m_y(y)
     , m_ntubes(ntubes)

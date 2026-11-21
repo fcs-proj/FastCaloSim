@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <G4ThreeVector.hh>
 
 #include "FastCaloSim/Definitions/FloatCompare.h"
@@ -51,7 +53,7 @@ public:
     // Detector assumed to be phi-symmetric, so pick random phi
     float phi = 0;
     G4ThreeVector direction;
-    direction.setREtaPhi(1, eta, phi);
+    direction.setREtaPhi(1, static_cast<double>(eta), static_cast<double>(phi));
     direction = direction.unit();
 
     // Check for intersection of particle with ID-Calo boundary
@@ -117,10 +119,10 @@ public:
     }
 
     std::vector<float> etas;
-    etas.reserve(n_steps);
+    etas.reserve(static_cast<std::size_t>(n_steps));
 
     for (int i = 0; i < n_steps; ++i) {
-      etas.emplace_back(min_eta + i * step_size);
+      etas.emplace_back(min_eta + static_cast<float>(i) * step_size);
     }
     return discreteEtaSample(pid, ekin, etas);
   }
@@ -178,21 +180,24 @@ private:
     return result;
   }
 
-  static inline auto small_move_to_ID(Particle& particle,
-                                      Cylinder& cylinder,
-                                      float epsilon = 0.01 * CLHEP::mm) -> void
+  static inline auto small_move_to_ID(
+      Particle& particle,
+      Cylinder& cylinder,
+      float epsilon = static_cast<float>(0.01 * CLHEP::mm)) -> void
   {
+    // The shifted coordinate is computed in double and rounded to float
+    const auto eps = static_cast<double>(epsilon);
     if (cylinder.barrel) {
-      float new_r = particle.pos.perp() - epsilon;
-      particle.pos.setPerp(new_r);
+      float new_r = static_cast<float>(particle.pos.perp() - eps);
+      particle.pos.setPerp(static_cast<double>(new_r));
 
     } else {
       if (particle.pos.eta() > 0) {
-        float new_z = particle.pos.z() - epsilon;
-        particle.pos.setZ(new_z);
+        float new_z = static_cast<float>(particle.pos.z() - eps);
+        particle.pos.setZ(static_cast<double>(new_z));
       } else {
-        float new_z = particle.pos.z() + epsilon;
-        particle.pos.setZ(new_z);
+        float new_z = static_cast<float>(particle.pos.z() + eps);
+        particle.pos.setZ(static_cast<double>(new_z));
       }
     }
   }

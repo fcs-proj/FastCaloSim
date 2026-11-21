@@ -15,6 +15,7 @@
 #define BFIELDMESH_H
 
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -96,12 +97,29 @@ public:
   double rmax() const { return m_max[1]; }
   double phimin() const { return m_min[2]; }
   double phimax() const { return m_max[2]; }
-  unsigned nmesh(int i) const { return m_mesh[i].size(); }
-  double mesh(int i, int j) const { return m_mesh[i][j]; }
-  unsigned nfield() const { return m_field.size(); }
-  const BFieldVector<T>& field(int i) const { return m_field[i]; }
+  unsigned nmesh(int i) const
+  {
+    return static_cast<unsigned>(m_mesh[i].size());
+  }
+  double mesh(int i, int j) const
+  {
+    return m_mesh[i][static_cast<std::size_t>(j)];
+  }
+  unsigned nfield() const { return static_cast<unsigned>(m_field.size()); }
+  const BFieldVector<T>& field(int i) const
+  {
+    return m_field[static_cast<std::size_t>(i)];
+  }
   double bscale() const { return m_scale; }
   int memSize() const;
+
+private:
+  // tentative mesh index in dimension j from the LUT, x = coordinate - min(j)
+  std::size_t lutLookup(int j, double x) const
+  {
+    const auto ilut = static_cast<int>(x * m_invUnit[j]);  // index to LUT
+    return static_cast<std::size_t>(m_LUT[j][static_cast<std::size_t>(ilut)]);
+  }
 
 protected:
   double m_min[3] {}, m_max[3] {};
@@ -127,10 +145,10 @@ private:
 template<class T>
 void BFieldMesh<T>::reserve(int nz, int nr, int nphi, int nfield)
 {
-  m_mesh[0].reserve(nz);
-  m_mesh[1].reserve(nr);
-  m_mesh[2].reserve(nphi);
-  m_field.reserve(nfield);
+  m_mesh[0].reserve(static_cast<std::size_t>(nz));
+  m_mesh[1].reserve(static_cast<std::size_t>(nr));
+  m_mesh[2].reserve(static_cast<std::size_t>(nphi));
+  m_field.reserve(static_cast<std::size_t>(nfield));
 }
 
 //
@@ -163,35 +181,35 @@ void BFieldMesh<T>::getCache(double z,
   // find the mesh, and relative location in the mesh
   // z
   const std::vector<double>& mz(m_mesh[0]);
-  int iz = int((z - zmin()) * m_invUnit[0]);  // index to LUT
-  iz = m_LUT[0][iz];  // tentative mesh index from LUT
+  std::size_t iz = lutLookup(0, z - zmin());  // tentative mesh index from LUT
   if (z > mz[iz + 1])
     iz++;
   // r
   const std::vector<double>& mr(m_mesh[1]);
-  int ir = int((r - rmin()) * m_invUnit[1]);  // index to LUT
-  ir = m_LUT[1][ir];  // tentative mesh index from LUT
+  std::size_t ir = lutLookup(1, r - rmin());  // tentative mesh index from LUT
   if (r > mr[ir + 1])
     ir++;
   // phi
   const std::vector<double>& mphi(m_mesh[2]);
-  int iphi = int((phi - phimin()) * m_invUnit[2]);  // index to LUT
-  iphi = m_LUT[2][iphi];  // tentative mesh index from LUT
+  std::size_t iphi =
+      lutLookup(2, phi - phimin());  // tentative mesh index from LUT
   if (phi > mphi[iphi + 1])
     iphi++;
   // store the bin edges
   cache.setRange(
       mz[iz], mz[iz + 1], mr[ir], mr[ir + 1], mphi[iphi], mphi[iphi + 1]);
   // store the B field at the 8 corners
-  int im0 = iz * m_zoff + ir * m_roff + iphi;  // index of the first corner
+  const auto roff = static_cast<std::size_t>(m_roff);
+  const auto zoff = static_cast<std::size_t>(m_zoff);
+  std::size_t im0 = iz * zoff + ir * roff + iphi;  // index of the first corner
   cache.setField(0, m_field[im0]);
   cache.setField(1, m_field[im0 + 1]);
-  cache.setField(2, m_field[im0 + m_roff]);
-  cache.setField(3, m_field[im0 + m_roff + 1]);
-  cache.setField(4, m_field[im0 + m_zoff]);
-  cache.setField(5, m_field[im0 + m_zoff + 1]);
-  cache.setField(6, m_field[im0 + m_zoff + m_roff]);
-  cache.setField(7, m_field[im0 + m_zoff + m_roff + 1]);
+  cache.setField(2, m_field[im0 + roff]);
+  cache.setField(3, m_field[im0 + roff + 1]);
+  cache.setField(4, m_field[im0 + zoff]);
+  cache.setField(5, m_field[im0 + zoff + 1]);
+  cache.setField(6, m_field[im0 + zoff + roff]);
+  cache.setField(7, m_field[im0 + zoff + roff + 1]);
   // store the B scale
   cache.setBscale(m_scale);
   return;
@@ -222,33 +240,33 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
   // find the bin
   // z
   const std::vector<double>& mz(m_mesh[0]);
-  int iz = int((z - zmin()) * m_invUnit[0]);  // index to LUT
-  iz = m_LUT[0][iz];  // tentative mesh index from LUT
+  std::size_t iz = lutLookup(0, z - zmin());  // tentative mesh index from LUT
   if (z > mz[iz + 1])
     iz++;
   // r
   const std::vector<double>& mr(m_mesh[1]);
-  int ir = int((r - rmin()) * m_invUnit[1]);  // index to LUT
-  ir = m_LUT[1][ir];  // tentative mesh index from LUT
+  std::size_t ir = lutLookup(1, r - rmin());  // tentative mesh index from LUT
   if (r > mr[ir + 1])
     ir++;
   // phi
   const std::vector<double>& mphi(m_mesh[2]);
-  int iphi = int((phi - phimin()) * m_invUnit[2]);  // index to LUT
-  iphi = m_LUT[2][iphi];  // tentative mesh index from LUT
+  std::size_t iphi =
+      lutLookup(2, phi - phimin());  // tentative mesh index from LUT
   if (phi > mphi[iphi + 1])
     iphi++;
   // get the B field at the 8 corners
-  int im0 = iz * m_zoff + ir * m_roff + iphi;  // index of the first corner
+  const auto roff = static_cast<std::size_t>(m_roff);
+  const auto zoff = static_cast<std::size_t>(m_zoff);
+  std::size_t im0 = iz * zoff + ir * roff + iphi;  // index of the first corner
   BFieldVector<T> field[8];
   field[0] = m_field[im0];
   field[1] = m_field[im0 + 1];
-  field[2] = m_field[im0 + m_roff];
-  field[3] = m_field[im0 + m_roff + 1];
-  field[4] = m_field[im0 + m_zoff];
-  field[5] = m_field[im0 + m_zoff + 1];
-  field[6] = m_field[im0 + m_zoff + m_roff];
-  field[7] = m_field[im0 + m_zoff + m_roff + 1];
+  field[2] = m_field[im0 + roff];
+  field[3] = m_field[im0 + roff + 1];
+  field[4] = m_field[im0 + zoff];
+  field[5] = m_field[im0 + zoff + 1];
+  field[6] = m_field[im0 + zoff + roff];
+  field[7] = m_field[im0 + zoff + roff + 1];
   // fractional position inside this mesh
   double fz = (z - mz[iz]) / (mz[iz + 1] - mz[iz]);
   double gz = 1.0 - fz;
@@ -345,19 +363,25 @@ void BFieldMesh<T>::buildLUT()
     n++;
     int m_number = 0;  // mesh number
     for (int i = 0; i < n; i++) {  // LUT index
-      if (i * q + m_mesh[j].front() > m_mesh[j][m_number + 1])
+      if (i * q + m_mesh[j].front()
+          > m_mesh[j][static_cast<std::size_t>(m_number + 1)])
         m_number++;
       m_LUT[j].push_back(m_number);
     }
   }
-  m_roff = m_mesh[2].size();  // index offset for incrementing r by 1
-  m_zoff = m_roff * m_mesh[1].size();  // index offset for incrementing z by 1
+  // index offset for incrementing r by 1
+  m_roff = static_cast<int>(m_mesh[2].size());
+  // index offset for incrementing z by 1
+  m_zoff =
+      static_cast<int>(static_cast<std::size_t>(m_roff) * m_mesh[1].size());
 }
 
 template<class T>
 int BFieldMesh<T>::memSize() const
 {
-  int size = 0;
+  // accumulate in size_t; the final conversion to int gives the same value
+  // as converting after every addition (modular arithmetic)
+  std::size_t size = 0;
   size += sizeof(double) * 10;
   size += sizeof(int) * 2;
   for (int i = 0; i < 3; i++) {
@@ -365,7 +389,7 @@ int BFieldMesh<T>::memSize() const
     size += sizeof(int) * m_LUT[i].capacity();
   }
   size += sizeof(BFieldVector<T>) * m_field.capacity();
-  return size;
+  return static_cast<int>(size);
 }
 
 #endif

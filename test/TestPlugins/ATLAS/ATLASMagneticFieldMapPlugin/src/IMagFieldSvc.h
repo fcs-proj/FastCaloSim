@@ -72,8 +72,8 @@ public:
                           double* deriv = nullptr) const = 0;
 
   /** status of the magnets */
-  bool solenoidOn() const { return getSolenoidCurrent() > 0.0; }
-  bool toroidsOn() const { return getToroidsCurrent() > 0.0; }
+  bool solenoidOn() const { return getSolenoidCurrent() > 0.0F; }
+  bool toroidsOn() const { return getToroidsCurrent() > 0.0F; }
   float getSolenoidCurrent() const { return m_solenoidCurrent; }
   float getToroidsCurrent() const { return m_toroidsCurrent; }
 

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////
 
 #ifndef MAGFIELDSERVICES_ATLASFIELDSVC_H
-#define MAGFIELDSERVICES_ATLASFIELDSVC_H 1
+#  define MAGFIELDSERVICES_ATLASFIELDSVC_H 1
 
 // FrameWork includes
 // #include "AthenaBaseComps/AthService.h"
@@ -15,18 +15,18 @@
 // #include "GaudiKernel/IIncidentListener.h"
 
 // MagField includes
-#include "AtlasFieldSvcTLS.h"
-#include "BFieldCache.h"
-#include "BFieldCacheZR.h"
-#include "BFieldCond.h"
-#include "BFieldMeshZR.h"
-#include "BFieldZone.h"
-#include "IMagFieldManipulator.h"
-#include "IMagFieldSvc.h"
+#  include "AtlasFieldSvcTLS.h"
+#  include "BFieldCache.h"
+#  include "BFieldCacheZR.h"
+#  include "BFieldCond.h"
+#  include "BFieldMeshZR.h"
+#  include "BFieldZone.h"
+#  include "IMagFieldManipulator.h"
+#  include "IMagFieldSvc.h"
 
 // STL includes
-#include <iostream>
-#include <vector>
+#  include <iostream>
+#  include <vector>
 
 // forward declarations
 // class CondAttrListCollection;
@@ -236,26 +236,34 @@ const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
     // find the edges of the zone
     // z
     const std::vector<double>& edgez(m_edge[0]);
-    int iz = static_cast<int>(m_invq[0] * (z - m_zmin));  // index to LUT
-    iz = m_edgeLUT[0][iz];  // tentative index from LUT
+    const auto lz = static_cast<int>(m_invq[0] * (z - m_zmin));  // index to LUT
+    // tentative index from LUT
+    auto iz =
+        static_cast<std::size_t>(m_edgeLUT[0][static_cast<std::size_t>(lz)]);
     if (z > edgez[iz + 1])
       iz++;
     // r
     const std::vector<double>& edger(m_edge[1]);
-    int ir = static_cast<int>(
-        m_invq[1] * r);  // index to LUT - note minimum r is always 0
-    ir = m_edgeLUT[1][ir];  // tentative index from LUT
+    // index to LUT - note minimum r is always 0
+    const auto lr = static_cast<int>(m_invq[1] * r);
+    // tentative index from LUT
+    auto ir =
+        static_cast<std::size_t>(m_edgeLUT[1][static_cast<std::size_t>(lr)]);
     if (r > edger[ir + 1])
       ir++;
     // phi
     const std::vector<double>& edgephi(m_edge[2]);
-    int iphi = static_cast<int>(
-        m_invq[2] * (phi + M_PI));  // index to LUT - minimum phi is -pi
-    iphi = m_edgeLUT[2][iphi];  // tentative index from LUT
+    // index to LUT - minimum phi is -pi
+    const auto lphi = static_cast<int>(m_invq[2] * (phi + M_PI));
+    // tentative index from LUT
+    auto iphi =
+        static_cast<std::size_t>(m_edgeLUT[2][static_cast<std::size_t>(lphi)]);
     if (phi > edgephi[iphi + 1])
       iphi++;
     // use LUT to get the zone
-    return m_zoneLUT[(iz * m_nr + ir) * m_nphi + iphi];
+    return m_zoneLUT[(iz * static_cast<std::size_t>(m_nr) + ir)
+                         * static_cast<std::size_t>(m_nphi)
+                     + iphi];
   } else {
     // std::cout<<"z is :"<<z<<" and should be >= "<<m_zmin<<"  && z <=
     // "<<m_zmax<< "  && r is "<<r <<" and should be <= "<<m_rmax<<std::endl;

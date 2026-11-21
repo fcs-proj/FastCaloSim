@@ -20,7 +20,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 void PrimaryGeneratorAction::configure_gun(const TestHelpers::Particle* particle)
 {
     fParticleGun->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle(particle->pid));
-    fParticleGun->SetParticleEnergy(particle->ekin);
+    fParticleGun->SetParticleEnergy(static_cast<double>(particle->ekin));
     fParticleGun->SetParticlePosition(particle->pos);
     fParticleGun->SetParticleMomentumDirection(particle->dir);
 }

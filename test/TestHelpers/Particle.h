@@ -10,7 +10,12 @@ namespace TestHelpers
 class RPhiEta
 {
 public:
-  RPhiEta(float r, float phi, float eta) { m_dir.setRhoPhiEta(r, phi, eta); }
+  RPhiEta(float r, float phi, float eta)
+  {
+    m_dir.setRhoPhiEta(static_cast<double>(r),
+                       static_cast<double>(phi),
+                       static_cast<double>(eta));
+  }
   inline auto get() const -> const G4ThreeVector& { return m_dir; }
 
 private:
@@ -20,7 +25,12 @@ private:
 class RZPhi
 {
 public:
-  RZPhi(float r, float z, float phi) { m_dir.setRhoPhiZ(r, phi, z); }
+  RZPhi(float r, float z, float phi)
+  {
+    m_dir.setRhoPhiZ(static_cast<double>(r),
+                     static_cast<double>(phi),
+                     static_cast<double>(z));
+  }
   inline auto get() const -> const G4ThreeVector& { return m_dir; }
 
 private:

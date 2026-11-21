@@ -7,6 +7,8 @@
 //
 // Masahiro Morii, Harvard University
 //
+#include <cstddef>
+
 #include "BFieldH8Grid.h"
 
 BFieldH8Grid::BFieldH8Grid()
@@ -46,7 +48,7 @@ void BFieldH8Grid::readMap(std::istream& input)
   // prepare space for the field data
   int nxyz = m_n[0] * m_n[1] * m_n[2];
   for (int i = 0; i < 3; i++)
-    m_B[i].resize(nxyz);
+    m_B[i].resize(static_cast<std::size_t>(nxyz));
   // read the field data
   double xyz[3];
   double B[3];
@@ -66,7 +68,8 @@ void BFieldH8Grid::readMap(std::istream& input)
           int((xyz[i] - m_min[i]) / (m_max[i] - m_min[i]) * (m_n[i] - 1) + 0.5);
     }
     // store
-    int ixyz = j[0] + m_n[0] * (j[1] + m_n[1] * j[2]);
+    const auto ixyz =
+        static_cast<std::size_t>(j[0] + m_n[0] * (j[1] + m_n[1] * j[2]));
     for (int i = 0; i < 3; i++) {
       m_B[i][ixyz] = B[i];
     }
@@ -100,14 +103,17 @@ void BFieldH8Grid::getB(const double* xyz, double* B, double* deriv) const
     f[i] = a - j[i];
     g[i] = 1.0 - f[i];
   }
-  int ixyz[8];
-  ixyz[0] = j[0] + m_n[0] * (j[1] + m_n[1] * j[2]);
+  // indices of the 8 corners
+  const auto nx = static_cast<std::size_t>(m_n[0]);
+  const auto nxy = static_cast<std::size_t>(m_n[0] * m_n[1]);
+  std::size_t ixyz[8];
+  ixyz[0] = static_cast<std::size_t>(j[0] + m_n[0] * (j[1] + m_n[1] * j[2]));
   ixyz[1] = ixyz[0] + 1;
-  ixyz[2] = ixyz[0] + m_n[0];
+  ixyz[2] = ixyz[0] + nx;
   ixyz[3] = ixyz[2] + 1;
-  ixyz[4] = ixyz[0] + m_n[0] * m_n[1];
+  ixyz[4] = ixyz[0] + nxy;
   ixyz[5] = ixyz[4] + 1;
-  ixyz[6] = ixyz[4] + m_n[0];
+  ixyz[6] = ixyz[4] + nx;
   ixyz[7] = ixyz[6] + 1;
   // interpolate field values
   for (int i = 0; i < 3; i++) {  // Bx, By, Bz

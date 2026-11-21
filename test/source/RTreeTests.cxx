@@ -117,7 +117,8 @@ TEST(RTreeTests, TieFarFromAllCells)
       if (i >= 80 && i <= 220) {
         continue;
       }
-      const uint64_t id = (i < 150) == left_smaller ? 1000 + i : 2000 + i;
+      const auto id = static_cast<uint64_t>(
+          (i < 150) == left_smaller ? 1000 + i : 2000 + i);
       cells.push_back(eta_phi_cell(id, i, 0.0, 1.0, 0.2));
     }
     const RTree rtree(kEtaPhi, cells);

@@ -109,8 +109,9 @@ void DetectorConstruction::add_cylinder(G4LogicalVolume* world_log,
                                         TestHelpers::Cylinder cyl,
                                         const std::string& name)
 {
-  // Compute the cylinder half-length
-  const float halfLength = std::abs(cyl.zmax - cyl.zmin) / 2;
+  // Compute the cylinder half-length (rounded to float precision)
+  const auto halfLengthF = static_cast<float>(std::abs(cyl.zmax - cyl.zmin) / 2);
+  const auto halfLength = static_cast<double>(halfLengthF);
 
   // Create the solid volume
   G4Tubs* solid =

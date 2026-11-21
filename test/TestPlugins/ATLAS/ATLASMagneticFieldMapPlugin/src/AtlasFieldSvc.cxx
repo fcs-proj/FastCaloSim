@@ -6,6 +6,7 @@
 // AtlasFieldSvc.cxx, (c) ATLAS Detector software
 ///////////////////////////////////////////////////////////////////
 
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -263,8 +264,8 @@ bool MagField::AtlasFieldSvc::importCurrents(AtlasFieldSvcTLS& tls)
     torcur = 0.0;
     std::cout << "Toroids are off." << std::endl;
   }
-  setSolenoidCurrent(solcur);
-  setToroidsCurrent(torcur);
+  setSolenoidCurrent(static_cast<float>(solcur));
+  setToroidsCurrent(static_cast<float>(torcur));
   // read the map file
   if (!initializeMap(tls)) {
     // ATH_MSG_FATAL( "Failed to initialize field map" );
@@ -554,10 +555,13 @@ void MagField::AtlasFieldSvc::scaleField()
   if (solenoidOn()) {
     solezone = findZoneSlow(0.0, 0.0, 0.0);
     if (m_mapSoleCurrent > 0.0
-        && std::abs(getSolenoidCurrent() / m_mapSoleCurrent - 1.0) > 0.001)
+        && std::abs(static_cast<double>(getSolenoidCurrent()) / m_mapSoleCurrent
+                    - 1.0)
+            > 0.001)
     {
       // scale the field in the solenoid zone
-      double factor = getSolenoidCurrent() / m_mapSoleCurrent;
+      double factor =
+          static_cast<double>(getSolenoidCurrent()) / m_mapSoleCurrent;
       solezone->scaleField(factor);
       // remake the fast map
       buildZR();
@@ -568,10 +572,13 @@ void MagField::AtlasFieldSvc::scaleField()
   //
   if (toroidsOn()) {
     if (m_mapToroCurrent > 0.0
-        && std::abs(getToroidsCurrent() / m_mapToroCurrent - 1.0) > 0.001)
+        && std::abs(static_cast<double>(getToroidsCurrent()) / m_mapToroCurrent
+                    - 1.0)
+            > 0.001)
     {
       // scale the field in all zones except for the solenoid zone
-      double factor = getToroidsCurrent() / m_mapToroCurrent;
+      double factor =
+          static_cast<double>(getToroidsCurrent()) / m_mapToroCurrent;
       for (unsigned i = 0; i < m_zone.size(); i++) {
         if (&(m_zone[i]) != solezone) {
           m_zone[i].scaleField(factor);
@@ -827,15 +834,16 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
               << "' instead of 'ZONES'" << std::endl;
     return false;
   }
-  std::vector<int> jz(nzone), nz(nzone);
-  std::vector<int> jr(nzone), nr(nzone);
-  std::vector<int> jphi(nzone), nphi(nzone);
-  std::vector<int> jbs(nzone), nbs(nzone);
-  std::vector<int> jcoil(nzone), ncoil(nzone);
-  std::vector<int> jfield(nzone), nfield(nzone);
-  std::vector<int> jaux(nzone), naux(nzone);
+  const auto nzones = static_cast<std::size_t>(nzone);
+  std::vector<int> jz(nzones), nz(nzones);
+  std::vector<int> jr(nzones), nr(nzones);
+  std::vector<int> jphi(nzones), nphi(nzones);
+  std::vector<int> jbs(nzones), nbs(nzones);
+  std::vector<int> jcoil(nzones), ncoil(nzones);
+  std::vector<int> jfield(nzones), nfield(nzones);
+  std::vector<int> jaux(nzones), naux(nzones);
 
-  for (int i = 0; i < nzone; i++) {
+  for (std::size_t i = 0; i < nzones; i++) {
     int id;
     int nrep, map;  // unused
     double z1, z2, r1, r2, phi1, phi2;
@@ -897,7 +905,7 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
     // copy the range that belongs to this zone
     for (int j = 0; j < nbs[i]; j++) {
       // Fortran -> C conversion requires "-1"
-      m_zone[i].appendCond(bslist[jbs[i] + j - 1]);
+      m_zone[i].appendCond(bslist[static_cast<std::size_t>(jbs[i] + j - 1)]);
     }
   }
 
@@ -948,13 +956,16 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
   for (unsigned i = 0; i < m_zone.size(); i++) {
     m_zone[i].reserve(nz[i], nr[i], nphi[i]);
     for (int j = 0; j < nz[i]; j++) {
-      m_zone[i].appendMesh(0, meshlist[jz[i] + j - 1] * CLHEP::meter);
+      m_zone[i].appendMesh(
+          0, meshlist[static_cast<std::size_t>(jz[i] + j - 1)] * CLHEP::meter);
     }
     for (int j = 0; j < nr[i]; j++) {
-      m_zone[i].appendMesh(1, meshlist[jr[i] + j - 1] * CLHEP::meter);
+      m_zone[i].appendMesh(
+          1, meshlist[static_cast<std::size_t>(jr[i] + j - 1)] * CLHEP::meter);
     }
     for (int j = 0; j < nphi[i]; j++) {
-      m_zone[i].appendMesh(2, meshlist[jphi[i] + j - 1]);
+      m_zone[i].appendMesh(2,
+                           meshlist[static_cast<std::size_t>(jphi[i] + j - 1)]);
     }
   }
 
@@ -982,9 +993,10 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
     int izone, idzone, nfzone;
     input >> izone >> idzone >> nfzone;
     izone--;  // fortran -> C++
-    if (idzone != m_zone[izone].id()) {
+    BFieldZone& zone = m_zone[static_cast<std::size_t>(izone)];
+    if (idzone != zone.id()) {
       std::cout << "ERROR: " << myname << ": zone id " << idzone
-                << " != " << m_zone[izone].id() << std::endl;
+                << " != " << zone.id() << std::endl;
       // return StatusCode(2);
       return true;  // TO DO - it should be recoverable - handle ! enum class
                     // ErrorCode : code_t { FAILURE = 0, SUCCESS = 1,
@@ -992,6 +1004,8 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
     }
 
     std::vector<int> data[3];
+    // number of field values in this zone (no values if nfzone <= 0)
+    const std::size_t nfz = nfzone > 0 ? static_cast<std::size_t>(nfzone) : 0;
 
     // for field data in 2 bytes
     for (int j = 0; j < 3; j++) {  // repeat z, r, phi
@@ -1000,7 +1014,7 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
       if (ierr != 0)
         return true;  // TODO it could be 2 .. to handle!   enum class ErrorCode
                       // : code_t { FAILURE = 0, SUCCESS = 1, RECOVERABLE = 2 };
-      for (int k = 0; k < nfzone; k++) {
+      for (std::size_t k = 0; k < nfz; k++) {
         // recover sign
         data[j][k] =
             (data[j][k] % 2 == 0) ? data[j][k] / 2 : -(data[j][k] + 1) / 2;
@@ -1010,9 +1024,11 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
       }
     }
     // store
-    for (int k = 0; k < nfzone; k++) {
-      BFieldVector<short> B(data[0][k], data[1][k], data[2][k]);
-      m_zone[izone].appendField(B);
+    for (std::size_t k = 0; k < nfz; k++) {
+      BFieldVector<short> B(static_cast<short>(data[0][k]),
+                            static_cast<short>(data[1][k]),
+                            static_cast<short>(data[2][k]));
+      zone.appendField(B);
     }
 
     // skip fbyte
@@ -1402,20 +1418,22 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
               << "\tmaxmeshr: " << maxmeshr << "\tmaxmeshphi: " << maxmeshphi
               << "\tmaxfield: " << maxfield << std::endl;
   }
-  std::vector<int> finite(maxcond);
-  std::vector<double> p1x(maxcond);
-  std::vector<double> p1y(maxcond);
-  std::vector<double> p1z(maxcond);
-  std::vector<double> p2x(maxcond);
-  std::vector<double> p2y(maxcond);
-  std::vector<double> p2z(maxcond);
-  std::vector<double> curr(maxcond);
-  std::vector<double> meshz(maxmeshz);
-  std::vector<double> meshr(maxmeshr);
-  std::vector<double> meshphi(maxmeshphi);
-  std::vector<double> fieldz(maxfield);
-  std::vector<double> fieldr(maxfield);
-  std::vector<double> fieldphi(maxfield);
+  const auto ncondmax = static_cast<std::size_t>(maxcond);
+  const auto nfieldmax = static_cast<std::size_t>(maxfield);
+  std::vector<int> finite(ncondmax);
+  std::vector<double> p1x(ncondmax);
+  std::vector<double> p1y(ncondmax);
+  std::vector<double> p1z(ncondmax);
+  std::vector<double> p2x(ncondmax);
+  std::vector<double> p2y(ncondmax);
+  std::vector<double> p2z(ncondmax);
+  std::vector<double> curr(ncondmax);
+  std::vector<double> meshz(static_cast<std::size_t>(maxmeshz));
+  std::vector<double> meshr(static_cast<std::size_t>(maxmeshr));
+  std::vector<double> meshphi(static_cast<std::size_t>(maxmeshphi));
+  std::vector<double> fieldz(nfieldmax);
+  std::vector<double> fieldr(nfieldmax);
+  std::vector<double> fieldphi(nfieldmax);
 
   analysisReader->SetNtupleIColumn(ntupleId, "finite", finite);
   analysisReader->SetNtupleDColumn(ntupleId, "p1x", p1x);
@@ -1448,28 +1466,33 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
     m_zone.push_back(z);
     m_zone.back().reserve(nmeshz, nmeshr, nmeshphi);
     for (int j = 0; j < ncond; j++) {
+      const auto k = static_cast<std::size_t>(j);
       double p1[3], p2[3];
-      p1[0] = p1x[j];
-      p1[1] = p1y[j];
-      p1[2] = p1z[j];
-      p2[0] = p2x[j];
-      p2[1] = p2y[j];
-      p2[2] = p2z[j];
-      bool fini = static_cast<bool>(finite[j]);
-      BFieldCond cond(fini, p1, p2, curr[j]);
+      p1[0] = p1x[k];
+      p1[1] = p1y[k];
+      p1[2] = p1z[k];
+      p2[0] = p2x[k];
+      p2[1] = p2y[k];
+      p2[2] = p2z[k];
+      bool fini = static_cast<bool>(finite[k]);
+      BFieldCond cond(fini, p1, p2, curr[k]);
       m_zone.back().appendCond(cond);
     }
     for (int j = 0; j < nmeshz; j++) {
-      m_zone.back().appendMesh(0, meshz[j]);
+      m_zone.back().appendMesh(0, meshz[static_cast<std::size_t>(j)]);
     }
     for (int j = 0; j < nmeshr; j++) {
-      m_zone.back().appendMesh(1, meshr[j]);
+      m_zone.back().appendMesh(1, meshr[static_cast<std::size_t>(j)]);
     }
     for (int j = 0; j < nmeshphi; j++) {
-      m_zone.back().appendMesh(2, meshphi[j]);
+      m_zone.back().appendMesh(2, meshphi[static_cast<std::size_t>(j)]);
     }
     for (int j = 0; j < nfield; j++) {
-      BFieldVector<short> field(fieldz[j], fieldr[j], fieldphi[j]);
+      const auto k = static_cast<std::size_t>(j);
+      // the field values are stored as double in the ntuple, truncate to short
+      BFieldVector<short> field(static_cast<short>(fieldz[k]),
+                                static_cast<short>(fieldr[k]),
+                                static_cast<short>(fieldphi[k]));
       m_zone.back().appendField(field);
     }
   }
@@ -1739,7 +1762,7 @@ BFieldZone* MagField::AtlasFieldSvc::findZoneSlow(double z,
                                                   double r,
                                                   double phi)
 {
-  for (int j = m_zone.size() - 1; j >= 0; --j) {
+  for (std::size_t j = m_zone.size(); j-- > 0;) {  // last to first
     if (m_zone[j].inside(z, r, phi))
       return &m_zone[j];
   }
@@ -1773,7 +1796,7 @@ void MagField::AtlasFieldSvc::buildLUT()
     sort(m_edge[j].begin(), m_edge[j].end());
     // remove duplicates
     // must do this by hand to allow small differences due to rounding in phi
-    int index = 0;
+    std::size_t index = 0;
     for (unsigned k = 1; k < m_edge[j].size(); k++) {
       if (fabs(m_edge[j][index] - m_edge[j][k]) < 1.0e-6)
         continue;
@@ -1811,7 +1834,8 @@ void MagField::AtlasFieldSvc::buildLUT()
     // fill the LUT
     int m = 0;
     for (int i = 0; i < n; i++) {  // index of LUT
-      if (q * i + m_edge[j].front() > m_edge[j][m + 1])
+      if (q * i + m_edge[j].front()
+          > m_edge[j][static_cast<std::size_t>(m + 1)])
         m++;
       m_edgeLUT[j].push_back(m);
     }
@@ -1826,16 +1850,19 @@ void MagField::AtlasFieldSvc::buildLUT()
   //    std::cout<<" m_rmax: "<<m_rmax<<std::endl;
 
   // build LUT for zone finding
-  m_nz = m_edge[0].size() - 1;
-  m_nr = m_edge[1].size() - 1;
-  m_nphi = m_edge[2].size() - 1;
-  m_zoneLUT.reserve(m_nz * m_nr * m_nphi);
+  m_nz = static_cast<int>(m_edge[0].size() - 1);
+  m_nr = static_cast<int>(m_edge[1].size() - 1);
+  m_nphi = static_cast<int>(m_edge[2].size() - 1);
+  m_zoneLUT.reserve(static_cast<std::size_t>(m_nz * m_nr * m_nphi));
   for (int iz = 0; iz < m_nz; iz++) {
-    double z = 0.5 * (m_edge[0][iz] + m_edge[0][iz + 1]);
+    const auto uz = static_cast<std::size_t>(iz);
+    double z = 0.5 * (m_edge[0][uz] + m_edge[0][uz + 1]);
     for (int ir = 0; ir < m_nr; ir++) {
-      double r = 0.5 * (m_edge[1][ir] + m_edge[1][ir + 1]);
+      const auto ur = static_cast<std::size_t>(ir);
+      double r = 0.5 * (m_edge[1][ur] + m_edge[1][ur + 1]);
       for (int iphi = 0; iphi < m_nphi; iphi++) {
-        double phi = 0.5 * (m_edge[2][iphi] + m_edge[2][iphi + 1]);
+        const auto uphi = static_cast<std::size_t>(iphi);
+        double phi = 0.5 * (m_edge[2][uphi] + m_edge[2][uphi + 1]);
         const BFieldZone* zone = findZoneSlow(z, r, phi);
         m_zoneLUT.push_back(zone);
       }
@@ -1875,7 +1902,7 @@ void MagField::AtlasFieldSvc::buildZR()
   unsigned nmeshr = solezone->nmesh(1);
   if (solezone->rmin() > 0.0)
     nmeshr++;
-  m_meshZR->reserve(nmeshz, nmeshr);
+  m_meshZR->reserve(static_cast<int>(nmeshz), static_cast<int>(nmeshr));
 
   // copy the mesh structure in z/r
   // take care of R = 0 first
@@ -1884,17 +1911,17 @@ void MagField::AtlasFieldSvc::buildZR()
   }
   // copy the rest
   for (int i = 0; i < 2; i++) {  // z, r
-    for (unsigned j = 0; j < solezone->nmesh(i); j++)
-    {  // loop over mesh points
-      m_meshZR->appendMesh(i, solezone->mesh(i, j));
+    for (unsigned j = 0; j < solezone->nmesh(i);
+         j++) {  // loop over mesh points
+      m_meshZR->appendMesh(i, solezone->mesh(i, static_cast<int>(j)));
     }
   }
 
   // loop through the mesh and compute the phi-averaged field
   for (unsigned iz = 0; iz < m_meshZR->nmesh(0); iz++) {  // loop over z
-    double z = m_meshZR->mesh(0, iz);
+    double z = m_meshZR->mesh(0, static_cast<int>(iz));
     for (unsigned ir = 0; ir < m_meshZR->nmesh(1); ir++) {  // loop over r
-      double r = m_meshZR->mesh(1, ir);
+      double r = m_meshZR->mesh(1, static_cast<int>(ir));
       const int nphi(200);  // number of phi slices to average
       double Br = 0.0;
       double Bz = 0.0;
@@ -1912,7 +1939,8 @@ void MagField::AtlasFieldSvc::buildZR()
       }
       Br *= 1.0 / static_cast<double>(nphi);
       Bz *= 1.0 / static_cast<double>(nphi);
-      m_meshZR->appendField(BFieldVectorZR(Bz, Br));
+      m_meshZR->appendField(
+          BFieldVectorZR(static_cast<float>(Bz), static_cast<float>(Br)));
     }
   }
 
@@ -1925,11 +1953,13 @@ void MagField::AtlasFieldSvc::buildZR()
 //
 int MagField::AtlasFieldSvc::memSize() const
 {
-  int size = 0;
+  // accumulate in size_t; the final conversion to int gives the same value
+  // as converting after every addition (modular arithmetic)
+  std::size_t size = 0;
   size += sizeof(BFieldCache);
   size += sizeof(BFieldCacheZR);
   for (unsigned i = 0; i < m_zone.size(); i++) {
-    size += m_zone[i].memSize();
+    size += static_cast<std::size_t>(m_zone[i].memSize());
   }
   for (int i = 0; i < 3; i++) {
     size += sizeof(double) * m_edge[i].capacity();
@@ -1937,7 +1967,7 @@ int MagField::AtlasFieldSvc::memSize() const
   }
   size += sizeof(BFieldZone*) * m_zoneLUT.capacity();
   if (m_meshZR) {
-    size += m_meshZR->memSize();
+    size += static_cast<std::size_t>(m_meshZR->memSize());
   }
-  return size;
+  return static_cast<int>(size);
 }

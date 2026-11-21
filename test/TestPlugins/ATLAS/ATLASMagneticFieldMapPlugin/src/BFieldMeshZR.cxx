@@ -29,19 +29,23 @@ void BFieldMeshZR::buildLUT()
     m_invUnit[j] = 1.0 / q;  // new unit size
     n++;
     int m = 0;  // mesh number
-    m_LUT[j].reserve(n);
+    m_LUT[j].reserve(static_cast<std::size_t>(n));
     for (int i = 0; i < n; i++) {  // LUT index
-      if (i * q + m_mesh[j].front() > m_mesh[j][m + 1])
+      if (i * q + m_mesh[j].front()
+          > m_mesh[j][static_cast<std::size_t>(m + 1)])
         m++;
       m_LUT[j].push_back(m);
     }
   }
-  m_zoff = m_mesh[1].size();  // index offset for incrementing z by 1
+  // index offset for incrementing z by 1
+  m_zoff = static_cast<int>(m_mesh[1].size());
 }
 
 int BFieldMeshZR::memSize() const
 {
-  int size = 0;
+  // accumulate in size_t; the final conversion to int gives the same value
+  // as converting after every addition (modular arithmetic)
+  std::size_t size = 0;
   size += sizeof(double) * 6;
   size += sizeof(int) * 1;
   for (int i = 0; i < 2; i++) {
@@ -49,5 +53,5 @@ int BFieldMeshZR::memSize() const
     size += sizeof(int) * m_LUT[i].capacity();
   }
   size += sizeof(BFieldVectorZR) * m_field.capacity();
-  return size;
+  return static_cast<int>(size);
 }
