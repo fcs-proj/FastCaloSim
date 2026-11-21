@@ -56,6 +56,8 @@
 #   Boost.Multiprecision headers that Boost.Geometry includes
 # clang-analyzer-optin.core.EnumCastOutOfRange: FCSReturnCode encodes retry
 #   counts as FCSRetry + n, valid values of its fixed underlying type
+# portability-template-virtual-member-function: fires in ROOT's own class
+#   templates (TVectorT, TMatrixT, TParameter) when the code instantiates them
 Checks: "*,\
   -altera-*,\
   -fuchsia-*,\
@@ -101,7 +103,8 @@ Checks: "*,\
   -boost-use-ranges,\
   -llvm-use-ranges,\
   -modernize-use-constraints,\
-  -clang-analyzer-optin.core.EnumCastOutOfRange"
+  -clang-analyzer-optin.core.EnumCastOutOfRange,\
+  -portability-template-virtual-member-function"
 WarningsAsErrors: ''
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'

@@ -76,6 +76,8 @@ void VNetworkLWTNN::fillJson(std::string const& tree_name)
 auto VNetworkLWTNN::readStringFromTTree(TTree& tree) -> std::string
 {
   std::string found = std::string();
+  // ROOT fills the string through this pointer
+  // NOLINTNEXTLINE(misc-const-correctness)
   std::string* to_found = &found;
   tree.SetBranchAddress("lwtnn_json", &to_found);
   tree.GetEntry(0);

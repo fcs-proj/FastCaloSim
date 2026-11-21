@@ -34,8 +34,6 @@ auto DetectorConstruction::Construct() -> G4VPhysicalVolume*
       new G4Box("World", world_size / 2, world_size / 2, world_size / 2);
   auto* world_log =
       new G4LogicalVolume(solidWorld, worldMat, "World");
-  G4VPhysicalVolume* world_phys = new G4PVPlacement(
-      nullptr, G4ThreeVector(), world_log, "World", nullptr, false, 999, true);
 
   // Define the fast simulation trigger region
   // Particles that reach this region will be processed by the fast simulation
@@ -57,7 +55,9 @@ auto DetectorConstruction::Construct() -> G4VPhysicalVolume*
   // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
   fTransportWorld = G4CaloTransportTool::createSimplifiedWorld("WorldLog");
 
-  return world_phys;
+  // Place the world volume
+  return new G4PVPlacement(
+      nullptr, G4ThreeVector(), world_log, "World", nullptr, false, 999, true);
 }
 
 void DetectorConstruction::ConstructSDandField()
