@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <format>
 #include <memory>
 #include <numbers>
 #include <vector>
@@ -52,12 +53,7 @@ auto TFCSPCAEnergyParametrization::is_match_calosample(int calosample) const
 
 void TFCSPCAEnergyParametrization::Print(Option_t* option) const
 {
-  TString opt(option);
-  bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
+  const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSEnergyParametrization::Print(option);
 
   if (longprint) {
@@ -268,19 +264,15 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 {
   bool load_ok = true;
 
-  TString x;
-  if (folder.empty())
-    x = "bin";
-  else
-    x = folder + "/bin";
-  while (std::unique_ptr<TObject>(
-      file->Get(x + Form("%i/pca/RelevantLayers", m_numberpcabins))))
+  const std::string x = folder.empty() ? "bin" : folder + "/bin";
+  while (std::unique_ptr<TObject>(file->Get(
+      std::format("{}{}/pca/RelevantLayers", x, m_numberpcabins).c_str())))
   {
     m_numberpcabins++;
   }
   m_numberpcabins -= 1;
 
-  file->cd(x + "1/pca");
+  file->cd((x + "1/pca").c_str());
   IntArray* RelevantLayers = (IntArray*)gDirectory->Get("RelevantLayers");
   if (RelevantLayers == nullptr) {
     FCS_MSG_ERROR(
@@ -297,7 +289,7 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     m_RelevantLayers.push_back(RelevantLayers->GetAt(i));
 
   for (int bin = 1; bin <= m_numberpcabins; bin++) {
-    file->cd(x + Form("%i/pca", bin));
+    file->cd(std::format("{}{}/pca", x, bin).c_str());
 
     TMatrixDSym* symCov = (TMatrixDSym*)gDirectory->Get("symCov");
     TVectorD* MeanValues = (TVectorD*)gDirectory->Get("MeanValues");
@@ -346,7 +338,7 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     const std::vector<int>& layerNr = m_RelevantLayers;
 
     for (unsigned int i = 0; i < layerNr.size(); i++) {
-      layer.emplace_back(Form("layer%i", layerNr[i]));
+      layer.emplace_back(std::format("layer{}", layerNr[i]));
     }
     layer.emplace_back("totalE");
 
@@ -354,7 +346,7 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     cumulative.reserve(layer.size());
 
     for (unsigned int l = 0; l < layer.size(); l++) {
-      file->cd(Form("%s/bin%i/%s", folder.c_str(), bin, layer[l].c_str()));
+      file->cd(std::format("{}/bin{}/{}", folder, bin, layer[l]).c_str());
 
       TFCS1DFunction* fct;
       fct = (TFCS1DFunction*)gDirectory->Get("TFCS1DFunctionRegression");

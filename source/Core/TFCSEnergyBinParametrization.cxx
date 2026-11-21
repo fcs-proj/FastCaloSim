@@ -4,6 +4,7 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
 #include <algorithm>
+#include <format>
 
 #include "FastCaloSim/Core/TFCSEnergyBinParametrization.h"
 
@@ -155,12 +156,7 @@ auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
 
 void TFCSEnergyBinParametrization::Print(Option_t* option) const
 {
-  TString opt(option);
-  bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
+  const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSEnergyParametrization::Print(option);
   if (longprint) {
     for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
@@ -216,8 +212,7 @@ auto TFCSEnergyBinParametrization::simulate(
         "chosenBin>n_bins() (will use chosenBin=n_bins())");
     std::string array = "";
     for (const auto& prob : Ebin_probability) {
-      array += prob;
-      array += " ";
+      array += std::format("{} ", prob);
     }
     FCS_MSG_WARNING(" E=" << simulstate.E() << " Ebin=" << chosenBin
                           << " rnd=" << searchRand << " array=" << array);

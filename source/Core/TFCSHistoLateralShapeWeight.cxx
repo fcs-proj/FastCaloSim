@@ -89,8 +89,8 @@ auto TFCSHistoLateralShapeWeight::Initialize(TH1* hist) -> bool
     return false;
   if (m_hist)
     delete m_hist;
-  m_hist = (TH1*)hist->Clone(TString("TFCSHistoLateralShapeWeight_")
-                             + hist->GetName());
+  m_hist = (TH1*)hist->Clone(
+      (std::string("TFCSHistoLateralShapeWeight_") + hist->GetName()).c_str());
   m_hist->SetDirectory(nullptr);
 
   return true;
@@ -98,12 +98,7 @@ auto TFCSHistoLateralShapeWeight::Initialize(TH1* hist) -> bool
 
 void TFCSHistoLateralShapeWeight::Print(Option_t* option) const
 {
-  TString opt(option);
-  bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
+  const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {

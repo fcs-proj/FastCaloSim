@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <format>
 #include <numbers>
 
 #include "FastCaloSim/Core/TFCSVoxelHistoLateralCovarianceFluctuations.h"
@@ -55,8 +56,8 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   int cs = calosample();
   int bin = 1;
 
-  TH2* temp = dynamic_cast<TH2*>(
-      inputfile->Get(Form("voxel_template_cs%d_pca%d", cs, bin)));
+  TH2* temp = dynamic_cast<TH2*>(inputfile->Get(
+      std::format("voxel_template_cs{}_pca{}", cs, bin).c_str()));
   if (!temp) {
     FCS_MSG_ERROR("Template hist not found for cs " + std::to_string(cs));
     return false;
@@ -65,13 +66,13 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   m_nDim_x = m_voxel_template[0]->GetNbinsX();
   m_nDim_y = m_voxel_template[0]->GetNbinsY();
 
-  while (inputfile->Get(Form("parMeans_cs%d_pca%d", cs, bin))) {
+  while (inputfile->Get(std::format("parMeans_cs{}_pca{}", cs, bin).c_str())) {
     TVectorD parMeans;
     TMatrixD EigenVectors;
     TVectorD EigenValues;
     std::vector<std::vector<TFCS1DFunction*>> transform;
 
-    std::string label = Form("_cs%d_pca%d", cs, bin);
+    std::string label = std::format("_cs{}_pca{}", cs, bin);
 
     TObject* obj = inputfile->Get(("parMeans" + label).c_str());
     if (!obj) {
@@ -118,7 +119,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       transform[x].resize(m_nDim_y);
       for (int y = 0; y < m_nDim_y; ++y) {
         // Naming of hists is hist_xy where x, y are indices of cells
-        std::string histname = Form("hist_%d_%d%s", x, y, label.c_str());
+        std::string histname = std::format("hist_{}_{}{}", x, y, label);
         TH1* hist = (TH1*)inputfile->Get(histname.c_str());
         if (!hist) {
           FCS_MSG_ERROR("Histogram " << histname << " not found");

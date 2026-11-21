@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <format>
 #include <iostream>
 #include <limits>
 #include <numbers>
@@ -107,8 +108,8 @@ auto TFCSEnergyAndHitGANV2::get_variable_text(
     const TFCSTruthState*,
     const TFCSExtrapolationState*) const -> const std::string
 {
-  return std::string(
-      Form("layer=%d", simulstate.getAuxInfo<int>("GANlayer"_FCShash)));
+  return std::format("layer={}",
+                     simulstate.getAuxInfo<int>("GANlayer"_FCShash));
 }
 
 auto TFCSEnergyAndHitGANV2::fillEnergy(
@@ -544,42 +545,6 @@ auto TFCSEnergyAndHitGANV2::simulate(
   }
 
   return FCSSuccess;
-}
-
-void TFCSEnergyAndHitGANV2::Print(Option_t* option) const
-{
-  TFCSParametrization::Print(option);
-  TString opt(option);
-  const bool shortprint = opt.Index("short") >= 0;
-  const bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
-
-  TString prefix = "- ";
-  for (unsigned int ichain = 0; ichain < size(); ++ichain) {
-    if (ichain == 0 && ichain != m_bin_start.front()) {
-      prefix = "> ";
-      if (longprint)
-        FCS_MSG_INFO(optprint << prefix << "Run for all bins");
-    }
-    for (unsigned int ibin = 0; ibin < get_number_of_bins(); ++ibin) {
-      if (ichain == m_bin_start[ibin]) {
-        if (ibin < get_number_of_bins() - 1)
-          if (ichain == m_bin_start[ibin + 1])
-            continue;
-        prefix = Form("%-2d", ibin);
-        if (longprint)
-          FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
-      }
-    }
-    if (ichain == m_bin_start.back()) {
-      prefix = "< ";
-      if (longprint)
-        FCS_MSG_INFO(optprint << prefix << "Run for all bins");
-    }
-    chain()[ichain]->Print(opt + prefix);
-  }
 }
 
 auto TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins) -> int

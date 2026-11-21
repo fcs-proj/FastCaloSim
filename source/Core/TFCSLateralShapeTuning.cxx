@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <format>
+
 #include "FastCaloSim/Core/TFCSLateralShapeTuning.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
@@ -51,13 +53,14 @@ auto TFCSLateralShapeTuning::initFromModelFile(
         new TFCSEnergyInterpolationPiecewiseLinear("", "");
 
     TGraph* modelParameterGraph =
-        (TGraph*)gDirectory->Get(Form("photons/layer%d/m%d_m%d_%d_%d/%s",
-                                      layer,
-                                      intMaxEta,
-                                      intMinEta,
-                                      intMinEta,
-                                      intMaxEta,
-                                      parameterName.c_str()));
+        (TGraph*)gDirectory->Get(std::format("photons/layer{}/m{}_m{}_{}_{}/{}",
+                                             layer,
+                                             intMaxEta,
+                                             intMinEta,
+                                             intMinEta,
+                                             intMaxEta,
+                                             parameterName)
+                                     .c_str());
     if (modelParameterGraph) {
       // initialize the model interpolation and save in interpolation map
       linModelInterpol->InitFromArrayInEkin(modelParameterGraph->GetN(),

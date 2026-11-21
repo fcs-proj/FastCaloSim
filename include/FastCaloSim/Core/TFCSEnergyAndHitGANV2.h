@@ -102,8 +102,6 @@ public:
                 const TFCSExtrapolationState* extrapol) const
       -> FCSReturnCode override;
 
-  void Print(Option_t* option = "") const override;
-
   /// Called immediately after being read from file to fix histograms that
   /// erroneously have kIsOnHeap set. See ATLASSIM-7031.
   void fixHists() override;

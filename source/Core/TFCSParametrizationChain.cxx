@@ -201,11 +201,11 @@ auto TFCSParametrizationChain::simulate(
 void TFCSParametrizationChain::Print(Option_t* option) const
 {
   TFCSParametrization::Print(option);
-  TString opt(option);
+  const std::string opt = option != nullptr ? option : "";
 
   char count = 'A';
   for (const auto& param : m_chain) {
-    param->Print(opt + count + ' ');
+    param->Print((opt + count + ' ').c_str());
     count++;
   }
 }

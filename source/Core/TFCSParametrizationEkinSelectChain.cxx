@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <format>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCSParametrizationEkinSelectChain.h"
@@ -126,26 +127,26 @@ auto TFCSParametrizationEkinSelectChain::get_variable_text(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState*) const -> const std::string
 {
-  return std::string(Form("Ekin=%1.1f", truth->Ekin()));
+  return std::format("Ekin={:1.1f}", truth->Ekin());
 }
 
 auto TFCSParametrizationEkinSelectChain::get_bin_text(int bin) const
     -> const std::string
 {
   if (bin == -1 || bin >= (int)get_number_of_bins()) {
-    return std::string(Form("bin=%d not in [%1.1f<=Ekin<%1.1f)",
-                            bin,
-                            m_bin_low_edge[0],
-                            m_bin_low_edge[get_number_of_bins()]));
+    return std::format("bin={} not in [{:1.1f}<=Ekin<{:1.1f})",
+                       bin,
+                       m_bin_low_edge[0],
+                       m_bin_low_edge[get_number_of_bins()]);
   }
   if (DoRandomInterpolation()) {
-    return std::string(Form("bin=%d, %1.1f<=Ekin(+random)<%1.1f",
-                            bin,
-                            m_bin_low_edge[bin],
-                            m_bin_low_edge[bin + 1]));
+    return std::format("bin={}, {:1.1f}<=Ekin(+random)<{:1.1f}",
+                       bin,
+                       m_bin_low_edge[bin],
+                       m_bin_low_edge[bin + 1]);
   }
-  return std::string(Form("bin=%d, %1.1f<=Ekin<%1.1f",
-                          bin,
-                          m_bin_low_edge[bin],
-                          m_bin_low_edge[bin + 1]));
+  return std::format("bin={}, {:1.1f}<=Ekin<{:1.1f}",
+                     bin,
+                     m_bin_low_edge[bin],
+                     m_bin_low_edge[bin + 1]);
 }

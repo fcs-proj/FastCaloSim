@@ -26,8 +26,8 @@ TFCSLateralShapeParametrizationHitChain::
     TFCSLateralShapeParametrizationHitChain(
         TFCSLateralShapeParametrizationHitBase* hitsim)
     : TFCSLateralShapeParametrization(
-          TString("hit_chain_") + hitsim->GetName(),
-          TString("hit chain for ") + hitsim->GetTitle())
+          (std::string("hit_chain_") + hitsim->GetName()).c_str(),
+          (std::string("hit chain for ") + hitsim->GetTitle()).c_str())
     , m_number_of_hits_simul(nullptr)
 {
   set_pdgid_Ekin_eta_Ekin_bin_calosample(*hitsim);
@@ -401,31 +401,27 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
 void TFCSLateralShapeParametrizationHitChain::Print(Option_t* option) const
 {
   TFCSLateralShapeParametrization::Print(option);
-  TString opt(option);
-  bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
+  const std::string opt = option != nullptr ? option : "";
+  const auto [shortprint, longprint, optprint] = print_options(option);
 
   if (m_number_of_hits_simul) {
     if (longprint)
       FCS_MSG_INFO(optprint << "#:Number of hits simulation:");
-    m_number_of_hits_simul->Print(opt + "#:");
+    m_number_of_hits_simul->Print((opt + "#:").c_str());
   }
   if (longprint && get_nr_of_init() > 0)
     FCS_MSG_INFO(optprint << "> Simulation init chain:");
   auto hitloopstart = m_chain.begin() + get_nr_of_init();
   for (auto hititr = m_chain.begin(); hititr != hitloopstart; ++hititr) {
     TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
-    hitsim->Print(opt + "> ");
+    hitsim->Print((opt + "> ").c_str());
   }
   if (longprint)
     FCS_MSG_INFO(optprint << "- Simulation chain:");
   char count = 'A';
   for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
     TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
-    hitsim->Print(opt + count + " ");
+    hitsim->Print((opt + count + " ").c_str());
     count++;
   }
 }
