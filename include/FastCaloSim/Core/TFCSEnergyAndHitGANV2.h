@@ -33,7 +33,7 @@ public:
 
   ~TFCSEnergyAndHitGANV2() override;
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
   }
@@ -68,17 +68,20 @@ public:
   /// use the layer to be done as binning of the GAN chain
   auto get_bin(TFCSSimulationState& simulstate,
                const TFCSTruthState*,
-               const TFCSExtrapolationState*) const -> int override
+               const TFCSExtrapolationState*) const
+      -> std::optional<std::size_t> override
   {
-    return simulstate.getAuxInfo<int>("GANlayer"_FCShash);
+    // The layer is stored as int, it is a key of the (persistent) binning
+    return static_cast<std::size_t>(
+        simulstate.getAuxInfo<int>("GANlayer"_FCShash));
   }
   auto get_variable_text(TFCSSimulationState& simulstate,
                          const TFCSTruthState*,
                          const TFCSExtrapolationState*) const
       -> const std::string override;
 
-  auto get_nr_of_init(unsigned int bin) const -> unsigned int;
-  void set_nr_of_init(unsigned int bin, unsigned int ninit);
+  auto get_nr_of_init(std::size_t bin) const -> unsigned int;
+  void set_nr_of_init(std::size_t bin, unsigned int ninit);
 
   auto get_Binning() const -> const TFCSGANXMLParameters::Binning&
   {

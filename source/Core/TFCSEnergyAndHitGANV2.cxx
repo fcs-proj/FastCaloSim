@@ -50,7 +50,7 @@ auto TFCSEnergyAndHitGANV2::is_match_calosample(std::size_t calosample) const
   return it != get_Binning().cend() && it->second.GetNbinsX() != 1;
 }
 
-auto TFCSEnergyAndHitGANV2::get_nr_of_init(unsigned int bin) const
+auto TFCSEnergyAndHitGANV2::get_nr_of_init(std::size_t bin) const
     -> unsigned int
 {
   if (bin >= m_bin_ninit.size())
@@ -58,7 +58,7 @@ auto TFCSEnergyAndHitGANV2::get_nr_of_init(unsigned int bin) const
   return static_cast<unsigned int>(m_bin_ninit[bin]);
 }
 
-void TFCSEnergyAndHitGANV2::set_nr_of_init(unsigned int bin, unsigned int ninit)
+void TFCSEnergyAndHitGANV2::set_nr_of_init(std::size_t bin, unsigned int ninit)
 {
   if (bin >= m_bin_ninit.size()) {
     m_bin_ninit.resize(bin + 1, 0);
@@ -237,9 +237,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     }
 
     if (get_number_of_bins() > 0) {
-      const int bin = get_bin(simulstate, truth, extrapol);
-      if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
-        const auto ubin = static_cast<unsigned int>(bin);
+      const auto bin = find_bin(simulstate, truth, extrapol);
+      if (bin) {
+        const std::size_t ubin = *bin;
         for (unsigned int ichain = m_bin_start[ubin];
              ichain < std::min(m_bin_start[ubin] + get_nr_of_init(ubin),
                                m_bin_start[ubin + 1]);
@@ -276,7 +276,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
       } else {
         FCS_MSG_WARNING("nothing to init for "
                         << get_variable_text(simulstate, truth, extrapol)
-                        << ": " << get_bin_text(bin));
+                        << ": "
+                        << get_bin_text(get_bin(simulstate, truth, extrapol)));
       }
     }
 
@@ -463,9 +464,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             }
 
             if (get_number_of_bins() > 0) {
-              const int bin = get_bin(simulstate, truth, extrapol);
-              if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
-                const auto ubin = static_cast<unsigned int>(bin);
+              const auto bin = find_bin(simulstate, truth, extrapol);
+              if (bin) {
+                const std::size_t ubin = *bin;
                 for (unsigned int ichain =
                          m_bin_start[ubin] + get_nr_of_init(ubin);
                      ichain < m_bin_start[ubin + 1];
@@ -505,7 +506,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                 FCS_MSG_WARNING(
                     "nothing to do for "
                     << get_variable_text(simulstate, truth, extrapol) << ": "
-                    << get_bin_text(bin));
+                    << get_bin_text(get_bin(simulstate, truth, extrapol)));
               }
             } else {
               FCS_MSG_WARNING("no bins defined, is this intended?");

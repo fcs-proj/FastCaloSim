@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include <optional>
+
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
 class TFCSLateralShapeParametrization : public TFCSParametrization
@@ -10,11 +13,9 @@ public:
   TFCSLateralShapeParametrization(const char* name = nullptr,
                                   const char* title = nullptr);
 
-  auto is_match_Ekin_bin(int bin) const -> bool override
+  auto is_match_Ekin_bin(std::size_t bin) const -> bool override
   {
-    if (Ekin_bin() == -1)
-      return true;
-    return bin == Ekin_bin();
+    return !Ekin_bin() || bin == *Ekin_bin();
   }
   auto is_match_calosample(std::size_t calosample) const -> bool override
   {
@@ -22,16 +23,17 @@ public:
         && static_cast<std::size_t>(m_calosample) == calosample;
   }
 
-  auto is_match_all_Ekin_bin() const -> bool override
-  {
-    if (Ekin_bin() == -1)
-      return true;
-    return false;
-  }
+  auto is_match_all_Ekin_bin() const -> bool override { return !Ekin_bin(); }
   auto is_match_all_calosample() const -> bool override { return false; }
 
-  auto Ekin_bin() const -> int { return m_Ekin_bin; }
-  void set_Ekin_bin(int bin);
+  /// The Ekin bin; no value for all bins
+  auto Ekin_bin() const -> std::optional<std::size_t>
+  {
+    if (m_Ekin_bin < 0)
+      return std::nullopt;
+    return static_cast<std::size_t>(m_Ekin_bin);
+  }
+  void set_Ekin_bin(std::size_t bin);
 
   /// The calorimeter layer; only valid if has_calosample()
   auto calosample() const -> std::size_t
@@ -50,6 +52,7 @@ protected:
   auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:
+  // Persistent as int, with -1 for all bins
   int m_Ekin_bin;
   // Persistent as int, with -1 for no layer
   int m_calosample;

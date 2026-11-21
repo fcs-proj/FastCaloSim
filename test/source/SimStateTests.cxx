@@ -13,14 +13,14 @@ TEST_F(TFCSSimulationStateTest, Initialization)
   TFCSSimulationState sim_state;
   EXPECT_EQ(sim_state.randomEngine(), nullptr);
   EXPECT_EQ(sim_state.E(), 0);
-  EXPECT_EQ(sim_state.Ebin(), -1);
+  EXPECT_FALSE(sim_state.Ebin().has_value());
 }
 
 TEST_F(TFCSSimulationStateTest, EnergyManipulations)
 {
   TFCSSimulationState sim_state;
   sim_state.set_Ebin(3);
-  EXPECT_EQ(sim_state.Ebin(), 3);
+  EXPECT_EQ(sim_state.Ebin(), 3U);
   sim_state.set_E(1, 100.0);
   EXPECT_DOUBLE_EQ(sim_state.E(1), 100.0);
   sim_state.add_E(1, 50.0);

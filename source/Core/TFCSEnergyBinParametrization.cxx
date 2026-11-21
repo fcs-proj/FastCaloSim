@@ -23,7 +23,8 @@ TFCSEnergyBinParametrization::TFCSEnergyBinParametrization(const char* name,
   m_number_of_Ekin_bins = 1;
 }
 
-auto TFCSEnergyBinParametrization::is_match_Ekin_bin(int Ekin_bin) const -> bool
+auto TFCSEnergyBinParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
+    -> bool
 {
   if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
     return true;
@@ -34,7 +35,7 @@ void TFCSEnergyBinParametrization::resize()
 {
   for (int id : pdgid()) {
     FCS_MSG_VERBOSE("PDGid=" << id << " resize to " << n_bins() + 1);
-    m_pdgid_Ebin_probability[id].resize(static_cast<std::size_t>(n_bins()) + 1);
+    m_pdgid_Ebin_probability[id].resize(n_bins() + 1);
   }
   for (auto it = m_pdgid_Ebin_probability.begin();
        it != m_pdgid_Ebin_probability.end();
@@ -82,7 +83,7 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
         << prob.size() << " instance=" << m_pdgid_Ebin_probability[id].size());
     return;
   }
-  const auto n_probabilities = static_cast<std::size_t>(n_bins()) + 1;
+  const auto n_probabilities = n_bins() + 1;
   double ptot = 0;
   for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
     ptot += static_cast<double>(prob[iEbin]);
@@ -135,7 +136,7 @@ auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
     }
   }
 
-  const auto n_probabilities = static_cast<std::size_t>(n_bins()) + 1;
+  const auto n_probabilities = n_bins() + 1;
   double ptot = 0;
   for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
     ptot += static_cast<double>(prob[iEbin]);
@@ -164,9 +165,7 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
     {
       FCS_MSG(INFO) << optprint << "  PDGID=" << *it << " : ";
       float p = 0;
-      for (std::size_t iEbin = 0; iEbin <= static_cast<std::size_t>(n_bins());
-           ++iEbin)
-      {
+      for (std::size_t iEbin = 0; iEbin <= n_bins(); ++iEbin) {
         if (iEbin > 0)
           FCS_MSG(INFO) << ", ";
         auto mapit = m_pdgid_Ebin_probability.find(*it);
@@ -209,8 +208,9 @@ auto TFCSEnergyBinParametrization::simulate(
       static_cast<float>(CLHEP::RandFlat::shoot(simulstate.randomEngine()));
   const auto& Ebin_probability = m_pdgid_Ebin_probability.at(pdgid);
   const auto first = Ebin_probability.begin();
-  auto chosenBin = static_cast<int>(
-      std::upper_bound(first, first + n_bins() + 1, searchRand) - first);
+  const auto last = first + static_cast<std::ptrdiff_t>(n_bins()) + 1;
+  auto chosenBin = static_cast<std::size_t>(
+      std::distance(first, std::upper_bound(first, last, searchRand)));
   if (chosenBin > n_bins()) {
     FCS_MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): "

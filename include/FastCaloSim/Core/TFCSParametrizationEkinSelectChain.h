@@ -40,15 +40,17 @@ public:
   using TFCSParametrizationFloatSelectChain::push_back_in_bin;
   virtual void push_back_in_bin(TFCSParametrizationBase* param);
   // selects on truth->Ekin()
-  // return -1 if outside range
+  // returns no value if outside range
   auto get_bin(TFCSSimulationState&,
                const TFCSTruthState* truth,
-               const TFCSExtrapolationState*) const -> int override;
+               const TFCSExtrapolationState*) const
+      -> std::optional<std::size_t> override;
   auto get_variable_text(TFCSSimulationState& simulstate,
                          const TFCSTruthState*,
                          const TFCSExtrapolationState*) const
       -> const std::string override;
-  auto get_bin_text(int bin) const -> const std::string override;
+  auto get_bin_text(std::optional<std::size_t> bin) const
+      -> const std::string override;
 
 protected:
   void recalc() override;

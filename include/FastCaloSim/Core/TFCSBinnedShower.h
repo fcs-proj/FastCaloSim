@@ -50,7 +50,7 @@ public:
 
   ~TFCSBinnedShower() override;
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
   }

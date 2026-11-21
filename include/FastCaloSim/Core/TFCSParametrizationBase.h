@@ -70,7 +70,7 @@ public:
   virtual auto is_match_Ekin(float /*Ekin*/) const -> bool { return false; }
   virtual auto is_match_eta(float /*eta*/) const -> bool { return false; }
 
-  virtual auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool
+  virtual auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool
   {
     return false;
   }

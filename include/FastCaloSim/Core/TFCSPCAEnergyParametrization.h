@@ -37,14 +37,17 @@ public:
                 const TFCSExtrapolationState* extrapol) const
       -> FCSReturnCode override;
 
-  auto n_pcabins() const -> int { return m_numberpcabins; }
-  auto n_bins() const -> int override { return m_numberpcabins; }
+  auto n_pcabins() const -> std::size_t
+  {
+    return static_cast<std::size_t>(m_numberpcabins);
+  }
+  auto n_bins() const -> std::size_t override { return n_pcabins(); }
   auto get_layers() const -> const std::vector<int>&
   {
     return m_RelevantLayers;
   }
 
-  auto is_match_Ekin_bin(int Ekin_bin) const -> bool override;
+  auto is_match_Ekin_bin(std::size_t Ekin_bin) const -> bool override;
   auto is_match_calosample(std::size_t calosample) const -> bool override;
   auto is_match_all_Ekin_bin() const -> bool override { return true; }
   auto is_match_all_calosample() const -> bool override { return false; }
@@ -67,8 +70,8 @@ public:
     m_total_energy_normalization = norm;
   }
 
-  void set_totalE_probability_ratio(int Ekin_bin, TH1* hist);
-  auto get_totalE_probability_ratio(int Ekin_bin) const -> TH1*;
+  void set_totalE_probability_ratio(std::size_t Ekin_bin, TH1* hist);
+  auto get_totalE_probability_ratio(std::size_t Ekin_bin) const -> TH1*;
 
   int do_rescale;
 

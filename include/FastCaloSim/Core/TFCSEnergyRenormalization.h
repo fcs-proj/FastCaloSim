@@ -20,7 +20,7 @@ public:
   void set_geometry(CaloGeo* geo) override { m_geo = geo; }
   ~TFCSEnergyRenormalization() override;
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override;
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override;
   auto is_match_calosample(std::size_t /*calosample*/) const -> bool override;
 
   auto simulate(TFCSSimulationState& simulstate,
@@ -35,8 +35,8 @@ private:
   ClassDefOverride(TFCSEnergyRenormalization, 1)  // TFCSEnergyRenormalization
 };
 
-inline auto TFCSEnergyRenormalization::is_match_Ekin_bin(int /*Ekin_bin*/) const
-    -> bool
+inline auto TFCSEnergyRenormalization::is_match_Ekin_bin(
+    std::size_t /*Ekin_bin*/) const -> bool
 {
   return true;
 }

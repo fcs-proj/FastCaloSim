@@ -16,9 +16,9 @@ TFCSLateralShapeParametrization::TFCSLateralShapeParametrization(
 {
 }
 
-void TFCSLateralShapeParametrization::set_Ekin_bin(int bin)
+void TFCSLateralShapeParametrization::set_Ekin_bin(std::size_t bin)
 {
-  m_Ekin_bin = bin;
+  m_Ekin_bin = static_cast<int>(bin);
 }
 
 void TFCSLateralShapeParametrization::set_calosample(std::size_t cs)
@@ -30,7 +30,7 @@ void TFCSLateralShapeParametrization::set_pdgid_Ekin_eta_Ekin_bin_calosample(
     const TFCSLateralShapeParametrization& ref)
 {
   m_calosample = ref.m_calosample;
-  set_Ekin_bin(ref.Ekin_bin());
+  m_Ekin_bin = ref.m_Ekin_bin;
   set_pdgid_Ekin_eta(ref);
 }
 
@@ -44,7 +44,7 @@ auto TFCSLateralShapeParametrization::compare(
   }
   const TFCSLateralShapeParametrization& ref_typed =
       static_cast<const TFCSLateralShapeParametrization&>(ref);
-  if (Ekin_bin() != ref_typed.Ekin_bin()) {
+  if (m_Ekin_bin != ref_typed.m_Ekin_bin) {
     FCS_MSG_DEBUG("compare(): different Ekin bin");
     return false;
   }
@@ -61,10 +61,10 @@ void TFCSLateralShapeParametrization::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
   if (longprint) {
-    if (Ekin_bin() == -1)
+    if (!Ekin_bin())
       FCS_MSG_INFO(optprint << "  Ekin_bin=all ; calosample=" << m_calosample);
     else
-      FCS_MSG_INFO(optprint << "  Ekin_bin=" << Ekin_bin()
+      FCS_MSG_INFO(optprint << "  Ekin_bin=" << m_Ekin_bin
                             << " ; calosample=" << m_calosample);
   }
 }

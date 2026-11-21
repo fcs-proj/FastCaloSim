@@ -2,7 +2,9 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <set>
 #include <unordered_map>
 #include <utility>
@@ -34,7 +36,7 @@ public:
     m_randomEngine = engine;
   }
 
-  auto is_valid() const -> bool { return m_Ebin >= 0; }
+  auto is_valid() const -> bool { return m_Ebin.has_value(); }
   auto E() const -> double { return m_Etot; }
   // NOTE: layers without energy are not stored in the maps; as for the
   // original array-based implementation, such layers read as 0 energy.
@@ -48,9 +50,11 @@ public:
     auto it = m_Efrac.find(sample);
     return it != m_Efrac.end() ? it->second : 0.;
   }
-  auto Ebin() const -> int { return m_Ebin; }
+  /// The energy bin of the PCA energy parametrization, starting at 1; no value
+  /// before it is chosen
+  auto Ebin() const -> std::optional<std::size_t> { return m_Ebin; }
 
-  void set_Ebin(int bin) { m_Ebin = bin; }
+  void set_Ebin(std::size_t bin) { m_Ebin = bin; }
   void set_E(std::size_t sample, double Esample) { m_E[sample] = Esample; }
   void set_Efrac(std::size_t sample, double Efracsample)
   {
@@ -84,7 +88,7 @@ public:
 private:
   CLHEP::HepRandomEngine* m_randomEngine;
 
-  int m_Ebin;
+  std::optional<std::size_t> m_Ebin;  //!
   double m_Etot;
   // TO BE CLEANED UP! SHOULD ONLY STORE EITHER E OR EFRAC!!!
   std::unordered_map<std::size_t, double> m_E;

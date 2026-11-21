@@ -149,7 +149,8 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
 void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
     TFCSSimulationState& simulstate, TVectorD& genPars) const
 {
-  const auto ibin = static_cast<std::size_t>(simulstate.Ebin() - 1);
+  // Only called for a valid Ebin, see simulate()
+  const std::size_t ibin = simulstate.Ebin().value() - 1;
 
   int nPars = m_parMeans[ibin].GetNrows();
   genPars.ResizeTo(nPars);
@@ -189,7 +190,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   weight_t* weightvec;
   TH2* voxel_temp;
 
-  int Ebin = simulstate.Ebin();
+  const auto Ebin = simulstate.Ebin();
 
   for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
     if (simulstate.hasAuxInfo(layer_hash(ilayer))) {
@@ -214,14 +215,14 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     FCS_MSG_DEBUG("simulstate after clearing AuxInfo");
     simulstate.Print();
   }
-  if (m_parMeans.empty() || Ebin <= 0) {
+  if (m_parMeans.empty() || !Ebin || *Ebin == 0) {
     // not initialized, do nothing in case this instance is just used to clean
     // up memory
     return FCSSuccess;
   }
 
-  if (static_cast<size_t>(Ebin) > m_parMeans.size()) {
-    FCS_MSG_ERROR("Ebin " << Ebin << " exceeds loaded PCA tables (size "
+  if (*Ebin > m_parMeans.size()) {
+    FCS_MSG_ERROR("Ebin " << *Ebin << " exceeds loaded PCA tables (size "
                           << m_parMeans.size() << ")");
     return FCSFatal;
   }
@@ -229,7 +230,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   // TODO: the following code should be executed for all relevant calo layers,
   // possibly simulating correlated fluctuations between layers depending on the
   // PCA bin
-  const auto ibin = static_cast<std::size_t>(Ebin - 1);
+  const std::size_t ibin = *Ebin - 1;
   const auto n_x = static_cast<std::size_t>(m_nDim_x);
   const auto n_y = static_cast<std::size_t>(m_nDim_y);
   weightvec = new weight_t(n_x);

@@ -28,7 +28,7 @@ void TFCSParametrizationBinnedChain::push_before_first_bin(
 }
 
 void TFCSParametrizationBinnedChain::push_back_in_bin(
-    TFCSParametrizationBase* param, unsigned int bin)
+    TFCSParametrizationBase* param, std::size_t bin)
 {
   if (m_bin_start.size() <= bin + 1) {
     m_bin_start.resize(bin + 2, m_bin_start.back());
@@ -40,7 +40,7 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
     Chain_t::iterator it(&chain()[m_bin_start[bin + 1]]);
     chain().insert(it, param);
   }
-  for (unsigned int ibin = bin + 1; ibin < m_bin_start.size(); ++ibin)
+  for (std::size_t ibin = bin + 1; ibin < m_bin_start.size(); ++ibin)
     m_bin_start[ibin]++;
   recalc();
 }
@@ -48,9 +48,26 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
 auto TFCSParametrizationBinnedChain::get_bin(
     TFCSSimulationState&,
     const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> int
+    const TFCSExtrapolationState*) const -> std::optional<std::size_t>
 {
   return 0;
+}
+
+auto TFCSParametrizationBinnedChain::find_bin(
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* extrapol) const -> std::optional<std::size_t>
+{
+  const auto bin = get_bin(simulstate, truth, extrapol);
+  if (bin && *bin < get_number_of_bins())
+    return bin;
+  return std::nullopt;
+}
+
+auto TFCSParametrizationBinnedChain::bin_label(std::optional<std::size_t> bin)
+    -> std::string
+{
+  return bin ? std::to_string(*bin) : std::string("none");
 }
 
 auto TFCSParametrizationBinnedChain::get_variable_text(
@@ -61,10 +78,10 @@ auto TFCSParametrizationBinnedChain::get_variable_text(
   return std::string("NO VARIABLE DEFINED");
 }
 
-auto TFCSParametrizationBinnedChain::get_bin_text(int bin) const
-    -> const std::string
+auto TFCSParametrizationBinnedChain::get_bin_text(
+    std::optional<std::size_t> bin) const -> const std::string
 {
-  return std::format("bin {}", bin);
+  return std::format("bin {}", bin_label(bin));
 }
 
 auto TFCSParametrizationBinnedChain::simulate(
@@ -87,11 +104,10 @@ auto TFCSParametrizationBinnedChain::simulate(
 
         // Parametrizations of the bin of this particle
         if (get_number_of_bins() > 0) {
-          const int bin = get_bin(simulstate, truth, extrapol);
-          if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
-            const auto ubin = static_cast<std::size_t>(bin);
-            for (unsigned int ichain = m_bin_start[ubin];
-                 ichain < m_bin_start[ubin + 1];
+          const auto bin = find_bin(simulstate, truth, extrapol);
+          if (bin) {
+            for (unsigned int ichain = m_bin_start[*bin];
+                 ichain < m_bin_start[*bin + 1];
                  ++ichain)
             {
               FCS_MSG_DEBUG("for "
@@ -104,9 +120,9 @@ auto TFCSParametrizationBinnedChain::simulate(
                 return status;
             }
           } else {
-            FCS_MSG_WARNING("for "
-                            << get_variable_text(simulstate, truth, extrapol)
-                            << ": " << get_bin_text(bin));
+            FCS_MSG_WARNING(
+                "for " << get_variable_text(simulstate, truth, extrapol) << ": "
+                       << get_bin_text(get_bin(simulstate, truth, extrapol)));
           }
         } else {
           FCS_MSG_WARNING("no bins defined, is this intended?");
@@ -138,15 +154,14 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
       if (longprint)
         FCS_MSG_INFO(optprint << prefix << "Run for all bins");
     }
-    for (unsigned int ibin = 0; ibin < get_number_of_bins(); ++ibin) {
+    for (std::size_t ibin = 0; ibin < get_number_of_bins(); ++ibin) {
       if (ichain == m_bin_start[ibin]) {
         if (ibin < get_number_of_bins() - 1)
           if (ichain == m_bin_start[ibin + 1])
             continue;
         prefix = std::format("{:<2}", ibin);
         if (longprint)
-          FCS_MSG_INFO(optprint << prefix << "Run for "
-                                << get_bin_text(static_cast<int>(ibin)));
+          FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
       }
     }
     if (ichain == m_bin_start.back()) {

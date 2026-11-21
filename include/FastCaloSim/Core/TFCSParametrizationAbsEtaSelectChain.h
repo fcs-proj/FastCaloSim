@@ -17,11 +17,13 @@ public:
       const TFCSParametrizationAbsEtaSelectChain& ref) = default;
 
   // selects on |extrapol->IDCaloBoundary_eta()|
-  // return -1 if outside range
+  // returns no value if outside range
   auto get_bin(TFCSSimulationState&,
                const TFCSTruthState* truth,
-               const TFCSExtrapolationState* extrapol) const -> int override;
-  auto get_bin_text(int bin) const -> const std::string override;
+               const TFCSExtrapolationState* extrapol) const
+      -> std::optional<std::size_t> override;
+  auto get_bin_text(std::optional<std::size_t> bin) const
+      -> const std::string override;
 
 private:
   ClassDefOverride(TFCSParametrizationAbsEtaSelectChain,

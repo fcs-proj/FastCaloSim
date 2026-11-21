@@ -146,7 +146,8 @@ void TFCSParametrizationChain::recalc()
   m_chain.shrink_to_fit();
 }
 
-auto TFCSParametrizationChain::is_match_Ekin_bin(int Ekin_bin) const -> bool
+auto TFCSParametrizationChain::is_match_Ekin_bin(std::size_t Ekin_bin) const
+    -> bool
 {
   for (const auto& param : m_chain)
     if (!param->is_match_Ekin_bin(Ekin_bin))

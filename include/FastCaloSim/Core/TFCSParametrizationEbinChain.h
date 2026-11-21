@@ -20,7 +20,8 @@ public:
   /// counting with 0
   auto get_bin(TFCSSimulationState& simulstate,
                const TFCSTruthState*,
-               const TFCSExtrapolationState*) const -> int override
+               const TFCSExtrapolationState*) const
+      -> std::optional<std::size_t> override
   {
     return simulstate.Ebin();
   }

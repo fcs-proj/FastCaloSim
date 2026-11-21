@@ -14,13 +14,14 @@
 //=============================================
 
 auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
-    TFCSParametrizationBase* param, float low, float up) -> int
+    TFCSParametrizationBase* param, float low, float up)
+    -> std::optional<std::size_t>
 {
   if (up < low) {
     // can't handle wrong order of bounds
     FCS_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
                                 << up << ") not well defined");
-    return -1;
+    return std::nullopt;
   }
   if (get_number_of_bins() == 0) {
     // special case of adding the first bin
@@ -29,42 +30,38 @@ auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
     m_bin_low_edge[1] = up;
     return 0;
   }
-  // Bin edge for a bin index that is known to be valid
-  const auto edge = [this](int bin) -> float&
-  { return m_bin_low_edge[static_cast<std::size_t>(bin)]; };
-
-  int ilow = val_to_bin(low);
-  int iup = val_to_bin(up);
-  if (ilow < 0 && iup < 0
+  const auto ilow = val_to_bin(low);
+  const auto iup = val_to_bin(up);
+  if (!ilow && !iup
       && FastCaloSim::exactly_equal(m_bin_low_edge[get_number_of_bins()], low))
   {
     // special case of adding bin at the end of existing bins
-    const unsigned int endbin = get_number_of_bins();
+    const std::size_t endbin = get_number_of_bins();
     push_back_in_bin(param, endbin);
     m_bin_low_edge[endbin] = low;
     m_bin_low_edge[endbin + 1] = up;
-    return static_cast<int>(endbin);
+    return endbin;
   }
 
-  if (ilow < 0 && iup < 0) {
+  if (!ilow && !iup) {
     // can't handle disjunct ranges
     FCS_MSG_ERROR("Cannot add " << param->GetName() << ": range [" << low << ","
                                 << up << ") which is outside existing range ["
                                 << m_bin_low_edge[0] << ","
                                 << m_bin_low_edge[get_number_of_bins()] << ")");
-    return -1;
+    return std::nullopt;
   }
 
-  if (iup >= 0 && ilow >= 0 && iup - ilow == 1
-      && FastCaloSim::exactly_equal(edge(ilow), low)
-      && FastCaloSim::exactly_equal(edge(iup), up))
+  if (ilow && iup && *iup == *ilow + 1
+      && FastCaloSim::exactly_equal(m_bin_low_edge[*ilow], low)
+      && FastCaloSim::exactly_equal(m_bin_low_edge[*iup], up))
   {
     // Case of adding to an existing bin
-    push_back_in_bin(param, static_cast<unsigned int>(ilow));
+    push_back_in_bin(param, *ilow);
     return ilow;
   }
 
-  if (ilow < 0 && iup == 0 && FastCaloSim::exactly_equal(edge(iup), up)) {
+  if (!ilow && iup == 0 && FastCaloSim::exactly_equal(m_bin_low_edge[0], up)) {
     // Case of adding a new first bin before existing bins
     const std::size_t oldsize = m_bin_start.size();
     m_bin_start.resize(oldsize + 1, m_bin_start.back());
@@ -87,11 +84,11 @@ auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
                 << m_bin_low_edge[0] << ","
                 << m_bin_low_edge[get_number_of_bins()]
                 << ") or splits an existing bin");
-  return -1;
+  return std::nullopt;
 }
 
 void TFCSParametrizationFloatSelectChain::push_back_in_bin(
-    TFCSParametrizationBase* param, unsigned int bin)
+    TFCSParametrizationBase* param, std::size_t bin)
 {
   TFCSParametrizationBinnedChain::push_back_in_bin(param, bin);
   if (m_bin_low_edge.size() < m_bin_start.size()) {
@@ -100,22 +97,24 @@ void TFCSParametrizationFloatSelectChain::push_back_in_bin(
   }
 }
 
-auto TFCSParametrizationFloatSelectChain::val_to_bin(float val) const -> int
+auto TFCSParametrizationFloatSelectChain::val_to_bin(float val) const
+    -> std::optional<std::size_t>
 {
   if (val < m_bin_low_edge[0]) {
-    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " < "
+    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=none: " << val << " < "
                                   << m_bin_low_edge[0]);
-    return -1;
+    return std::nullopt;
   }
   if (val >= m_bin_low_edge[get_number_of_bins()]) {
-    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=-1: " << val << " >= "
+    FCS_MSG_VERBOSE("val_to_bin(" << val << ")=none: " << val << " >= "
                                   << m_bin_low_edge[get_number_of_bins()]);
-    return -1;
+    return std::nullopt;
   }
 
-  auto it = std::upper_bound(m_bin_low_edge.begin(), m_bin_low_edge.end(), val);
-  const auto dist =
-      static_cast<int>(std::distance(m_bin_low_edge.begin(), it) - 1);
-  FCS_MSG_VERBOSE("val_to_bin(" << val << ")=" << dist);
-  return dist;
+  // val is within the edges, so the edge above it is not the first one
+  const auto it = std::ranges::upper_bound(m_bin_low_edge, val);
+  const auto bin =
+      static_cast<std::size_t>(std::distance(m_bin_low_edge.begin(), it)) - 1;
+  FCS_MSG_VERBOSE("val_to_bin(" << val << ")=" << bin);
+  return bin;
 }

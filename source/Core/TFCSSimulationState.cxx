@@ -22,7 +22,7 @@ TFCSSimulationState::TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine)
 void TFCSSimulationState::clear()
 {
   set_SF(1);
-  m_Ebin = -1;
+  m_Ebin.reset();
   m_Etot = 0;
   m_E.clear();
   m_Efrac.clear();
@@ -35,8 +35,8 @@ void TFCSSimulationState::deposit(const unsigned long long cell_id, float E)
 
 void TFCSSimulationState::Print(Option_t*) const
 {
-  FCS_MSG_INFO("Ebin=" << m_Ebin << " E=" << E()
-                       << " #cells=" << m_cells.size());
+  FCS_MSG_INFO("Ebin=" << (m_Ebin ? std::to_string(*m_Ebin) : "none")
+                       << " E=" << E() << " #cells=" << m_cells.size());
   for (std::size_t i = 0; i < m_E.size(); ++i)
     if (!FastCaloSim::exactly_equal(E(i), 0.0)) {
       FCS_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));

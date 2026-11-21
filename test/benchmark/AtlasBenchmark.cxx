@@ -106,7 +106,11 @@ void dump(FILE* out, const std::string& label, FastSimModel& model)
 
   int istate = 0;
   for (const auto& state : states.get()) {
-    std::fprintf(out, "STATE %d %d %a\n", istate++, state.Ebin(), state.E());
+    // -1 for no energy bin, as in the reference dumps
+    if (const auto ebin = state.Ebin())
+      std::fprintf(out, "STATE %d %zu %a\n", istate++, *ebin, state.E());
+    else
+      std::fprintf(out, "STATE %d -1 %a\n", istate++, state.E());
     for (std::size_t sample = 0; sample <= 23; ++sample) {
       std::fprintf(
           out, "E %zu %a %a\n", sample, state.E(sample), state.Efrac(sample));

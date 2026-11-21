@@ -38,7 +38,8 @@ TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char* name,
   do_rescale = 1;
 }
 
-auto TFCSPCAEnergyParametrization::is_match_Ekin_bin(int Ekin_bin) const -> bool
+auto TFCSPCAEnergyParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
+    -> bool
 {
   if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
     return true;
@@ -105,24 +106,22 @@ auto interpolate_get_y(TH1* hist, double x) -> double
   return m * x + n;
 }
 
-void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(int Ekin_bin,
-                                                                TH1* hist)
+void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(
+    std::size_t Ekin_bin, TH1* hist)
 {
-  if (Ekin_bin < 1)
+  // The Ekin bins start at 1
+  if (Ekin_bin < 1 || Ekin_bin > m_totalE_probability_ratio.size())
     return;
-  if (Ekin_bin - 1 >= static_cast<int>(m_totalE_probability_ratio.size()))
-    return;
-  m_totalE_probability_ratio[static_cast<std::size_t>(Ekin_bin - 1)] = hist;
+  m_totalE_probability_ratio[Ekin_bin - 1] = hist;
 }
 
 auto TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
-    int Ekin_bin) const -> TH1*
+    std::size_t Ekin_bin) const -> TH1*
 {
-  if (Ekin_bin < 1)
+  // The Ekin bins start at 1
+  if (Ekin_bin < 1 || Ekin_bin > m_totalE_probability_ratio.size())
     return nullptr;
-  if (Ekin_bin - 1 >= static_cast<int>(m_totalE_probability_ratio.size()))
-    return nullptr;
-  return m_totalE_probability_ratio[static_cast<std::size_t>(Ekin_bin - 1)];
+  return m_totalE_probability_ratio[Ekin_bin - 1];
 }
 
 auto TFCSPCAEnergyParametrization::simulate(
@@ -134,16 +133,20 @@ auto TFCSPCAEnergyParametrization::simulate(
     return FCSFatal;
   }
 
-  int pcabin = simulstate.Ebin();
+  const auto pcabin = simulstate.Ebin();
+  if (!pcabin) {
+    FCS_MSG_ERROR("No energy bin chosen before the PCA energy simulation");
+    return FCSFatal;
+  }
 
-  if (pcabin == 0) {
+  if (*pcabin == 0) {
     simulstate.set_E(0);
     for (std::size_t s = 0; s < m_geo->n_layers(); ++s) {
       simulstate.set_E(s, 0.0);
       simulstate.set_Efrac(s, 0.0);
     }
   } else {
-    const auto ibin = static_cast<std::size_t>(pcabin - 1);
+    const std::size_t ibin = *pcabin - 1;
     TMatrixD* EV = m_EV[ibin];
     TVectorD* MeanValues = m_MeanValues[ibin];
     TVectorD* SigmaValues = m_SigmaValues[ibin];
@@ -201,7 +204,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     // Apply hit-and-miss reweighting of total energy response
     // This needs to run before simulstate is modified, otherwise a clean retry
     // is not possible
-    TH1* h_totalE_ratio = get_totalE_probability_ratio(pcabin);
+    TH1* h_totalE_ratio = get_totalE_probability_ratio(*pcabin);
     if (h_totalE_ratio) {
       double pass_probability = 0;
       const double Etot = simdata[layerNr.size()];

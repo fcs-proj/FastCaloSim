@@ -41,31 +41,31 @@ void TFCSParametrizationEkinSelectChain::push_back_in_bin(
 auto TFCSParametrizationEkinSelectChain::get_bin(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const -> int
+    const TFCSExtrapolationState*) const -> std::optional<std::size_t>
 {
   if (!simulstate.randomEngine()) {
-    return -1;
+    return std::nullopt;
   }
 
   const double Ekin = truth->Ekin();
   // The bin edges are single precision, so is the binning variable
-  int bin = val_to_bin(static_cast<float>(Ekin));
+  const auto found = val_to_bin(static_cast<float>(Ekin));
 
   if (!DoRandomInterpolation())
-    return bin;
+    return found;
+  // Drawn also when no bin is found, to keep the random number sequence
   const double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
-  if (bin < 0)
-    return bin;
-  if (bin >= static_cast<int>(get_number_of_bins()))
-    return bin;
+  if (!found)
+    return found;
+  std::size_t bin = *found;
 
   // First parametrization in a bin, nullptr if the bin is empty
-  const auto first_param_in = [this](int ibin) -> TFCSParametrizationBase*
+  const auto first_param_in =
+      [this](std::size_t ibin) -> TFCSParametrizationBase*
   {
-    const auto ubin = static_cast<std::size_t>(ibin);
-    if (m_bin_start[ubin + 1] == m_bin_start[ubin])
+    if (m_bin_start[ibin + 1] == m_bin_start[ibin])
       return nullptr;
-    return chain()[m_bin_start[ubin]];
+    return chain()[m_bin_start[ibin]];
   };
 
   // if no parametrizations for this bin, return
@@ -76,7 +76,7 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
   if (Ekin < first_in_bin->Ekin_nominal()) {
     if (bin == 0)
       return bin;
-    int prevbin = bin - 1;
+    const std::size_t prevbin = bin - 1;
     // if no parametrizations for previous bin, return
     TFCSParametrizationBase* first_in_prevbin = first_param_in(prevbin);
     if (!first_in_prevbin)
@@ -99,9 +99,9 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
                   << " < p(previous)=" << (1 - numerator / denominator)
                   << ")? => orgbin=" << prevbin + 1 << " selbin=" << bin);
   } else {
-    if (bin == static_cast<int>(get_number_of_bins()) - 1)
+    if (bin + 1 == get_number_of_bins())
       return bin;
-    int nextbin = bin + 1;
+    const std::size_t nextbin = bin + 1;
     // if no parametrizations for next bin, return
     TFCSParametrizationBase* first_in_nextbin = first_param_in(nextbin);
     if (!first_in_nextbin)
@@ -135,23 +135,23 @@ auto TFCSParametrizationEkinSelectChain::get_variable_text(
   return std::format("Ekin={:1.1f}", truth->Ekin());
 }
 
-auto TFCSParametrizationEkinSelectChain::get_bin_text(int bin) const
-    -> const std::string
+auto TFCSParametrizationEkinSelectChain::get_bin_text(
+    std::optional<std::size_t> bin) const -> const std::string
 {
-  if (bin == -1 || bin >= static_cast<int>(get_number_of_bins())) {
+  if (!bin || *bin >= get_number_of_bins()) {
     return std::format("bin={} not in [{:1.1f}<=Ekin<{:1.1f})",
-                       bin,
+                       bin_label(bin),
                        m_bin_low_edge[0],
                        m_bin_low_edge[get_number_of_bins()]);
   }
   if (DoRandomInterpolation()) {
     return std::format("bin={}, {:1.1f}<=Ekin(+random)<{:1.1f}",
-                       bin,
-                       get_bin_low_edge(bin),
-                       get_bin_up_edge(bin));
+                       *bin,
+                       get_bin_low_edge(*bin),
+                       get_bin_up_edge(*bin));
   }
   return std::format("bin={}, {:1.1f}<=Ekin<{:1.1f}",
-                     bin,
-                     get_bin_low_edge(bin),
-                     get_bin_up_edge(bin));
+                     *bin,
+                     get_bin_low_edge(*bin),
+                     get_bin_up_edge(*bin));
 }
