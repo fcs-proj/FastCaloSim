@@ -15,10 +15,15 @@
 using TFCS1DFunction_size_t = uint32_t;
 
 /// Converter functions to store/retrieve float numbers in the range [0,1] as
-/// unsigned integers
-template<std::unsigned_integral T, typename Tfloat>
+/// unsigned integers. T is checked with static_assert instead of a constrained
+/// template parameter: the ROOT dictionary forward-declares this template
+/// without the constraint, and the interpreter rejects the constrained
+/// definition as a different redeclaration.
+template<typename T, typename Tfloat>
 class TFCS1DFunction_Numeric
 {
+  static_assert(std::unsigned_integral<T>);
+
 public:
   static constexpr T MaxValue = std::numeric_limits<T>::max();
   static constexpr Tfloat MaxValueFloat = MaxValue;
