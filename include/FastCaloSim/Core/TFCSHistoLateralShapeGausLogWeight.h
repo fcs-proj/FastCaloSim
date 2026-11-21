@@ -13,13 +13,13 @@ public:
                                               const char* title = nullptr);
   ~TFCSHistoLateralShapeGausLogWeight() override;
   TFCSHistoLateralShapeGausLogWeight(
-      const TFCSHistoLateralShapeGausLogWeight&) = default;
+      const TFCSHistoLateralShapeGausLogWeight&) = delete;
   TFCSHistoLateralShapeGausLogWeight(TFCSHistoLateralShapeGausLogWeight&&) =
-      default;
+      delete;
   auto operator=(const TFCSHistoLateralShapeGausLogWeight&)
-      -> TFCSHistoLateralShapeGausLogWeight& = default;
+      -> TFCSHistoLateralShapeGausLogWeight& = delete;
   auto operator=(TFCSHistoLateralShapeGausLogWeight&&)
-      -> TFCSHistoLateralShapeGausLogWeight& = default;
+      -> TFCSHistoLateralShapeGausLogWeight& = delete;
 
   /// weight the energy of one hit in order to generate fluctuations
   auto simulate_hit(Hit& hit,
