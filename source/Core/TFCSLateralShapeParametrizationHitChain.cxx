@@ -408,7 +408,11 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
   stored_sum = sumEhit;
 
   const double Elayer = simulstate.E(calosample());
-  return (std::abs(sumEhit) >= std::abs(Elayer));
+  // N hits of Elayer / N add up to Elayer only up to rounding. Stop within a
+  // relative tolerance, so that the number of hits does not depend on the last
+  // bit of the sum (which differs between compilers and precisions)
+  constexpr double relative_tolerance = 1e-9;
+  return std::abs(sumEhit) >= std::abs(Elayer) * (1 - relative_tolerance);
 }
 
 void TFCSLateralShapeParametrizationHitChain::Print(Option_t* option) const
