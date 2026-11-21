@@ -195,30 +195,6 @@ public:
                    1)  // TFCS1DFunctionInt8Int32Histogram
 };
 
-class TFCS1DFunctionInt16Int16Histogram
-    : public TFCS1DFunctionTemplateHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t>
-{
-public:
-  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
-
-  ClassDefOverride(TFCS1DFunctionInt16Int16Histogram,
-                   1)  // TFCS1DFunctionInt16Int16Histogram
-};
-
-class TFCS1DFunctionInt16Int32Histogram
-    : public TFCS1DFunctionTemplateHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t>
-{
-public:
-  using TFCS1DFunctionTemplateHistogram::TFCS1DFunctionTemplateHistogram;
-
-  ClassDefOverride(TFCS1DFunctionInt16Int32Histogram,
-                   1)  // TFCS1DFunctionInt16Int32Histogram
-};
-
 class TFCS1DFunctionInt32Int32Histogram
     : public TFCS1DFunctionTemplateHistogram<
           TFCS1DFunction_HistogramInt32BinEdges,

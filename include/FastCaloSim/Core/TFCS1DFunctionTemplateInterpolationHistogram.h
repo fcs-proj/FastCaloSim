@@ -104,29 +104,3 @@ public:
   ClassDefOverride(TFCS1DFunctionInt8Int16InterpolationHistogram,
                    1)  // TFCS1DFunctionInt8Int16InterpolationHistogram
 };
-
-class TFCS1DFunctionInt16Int16InterpolationHistogram
-    : public TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint16_t>
-{
-public:
-  using TFCS1DFunctionTemplateInterpolationHistogram::
-      TFCS1DFunctionTemplateInterpolationHistogram;
-
-  ClassDefOverride(TFCS1DFunctionInt16Int16InterpolationHistogram,
-                   1)  // TFCS1DFunctionInt16Int16InterpolationHistogram
-};
-
-class TFCS1DFunctionInt16Int32InterpolationHistogram
-    : public TFCS1DFunctionTemplateInterpolationHistogram<
-          TFCS1DFunction_HistogramInt16BinEdges,
-          uint32_t>
-{
-public:
-  using TFCS1DFunctionTemplateInterpolationHistogram::
-      TFCS1DFunctionTemplateInterpolationHistogram;
-
-  ClassDefOverride(TFCS1DFunctionInt16Int32InterpolationHistogram,
-                   1)  // TFCS1DFunctionInt16Int32InterpolationHistogram
-};
