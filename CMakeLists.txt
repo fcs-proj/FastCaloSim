@@ -176,6 +176,9 @@ set(FastCaloSim_TARGETS FastCaloSim_FastCaloSim)
 if (FastCaloSim_PARAM_MODE)
     # fmt for the parametrization executables
     find_package(fmt REQUIRED)
+    # fmt is built from source when it is not installed: third party code,
+    # no project warnings or analyzers
+    deactivate_checks(fmt::fmt)
     add_subdirectory(param)
 endif()
 
