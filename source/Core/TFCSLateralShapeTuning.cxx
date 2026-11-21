@@ -81,13 +81,13 @@ auto TFCSLateralShapeTuning::initFromModelFile(
   return FCSSuccess;
 }
 
-auto TFCSLateralShapeTuning::initFromMap(
-    const interpolationMap& interpolationMap) -> FCSReturnCode
+auto TFCSLateralShapeTuning::initFromMap(const interpolationMap& parameters)
+    -> FCSReturnCode
 {
   FCS_MSG_DEBUG(
       "[TFCSLateralShapeTuning] Initializing data tuning model from "
       "interpolation map.");
-  m_parameterInterpol = interpolationMap;
+  m_parameterInterpol = parameters;
   return FCSSuccess;
 }
 
