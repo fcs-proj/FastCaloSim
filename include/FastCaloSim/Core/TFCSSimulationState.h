@@ -8,6 +8,7 @@
 #include <set>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
@@ -105,29 +106,9 @@ public:
   // If pointers are stored, a dedicated cleanup is needed
   // If a new data type is needed, a cast operator and an explicit template
   // implementation of the set method has to be added
-  union AuxInfo_t
-  {
-    bool b;
-    char c;
-    int i;
-    float f;
-    double d;
-    void* p;
-
-    // cast operators
-    explicit operator bool() const { return b; }
-    explicit operator char() const { return c; }
-    explicit operator int() const { return i; }
-    explicit operator float() const { return f; }
-    explicit operator double() const { return d; }
-    explicit operator void*() const { return p; }
-
-    // template set method. No general implementation exist, only explicit
-    // implementations are added after the class definition
-    template<class T>
-    void set(T val);
-    void set(const AuxInfo_t& val);
-  };
+  /// The value of an auxiliary information entry: one of these types, the
+  /// one it was stored with
+  using AuxInfo_t = std::variant<bool, char, int, float, double, void*>;
 
   // FNV-1a 32bit hashing algorithm that is evaluated during compile time
   // function taken from https://gist.github.com/Lee-R/3839813
@@ -153,7 +134,7 @@ public:
   template<class T>
   auto getAuxInfo(std::uint32_t index) const -> T
   {
-    return static_cast<T>(m_AuxInfo.at(index));
+    return std::get<T>(m_AuxInfo.at(index));
   }
 
   // Set auxiliary info
@@ -162,7 +143,7 @@ public:
   template<class T>
   void setAuxInfo(std::uint32_t index, const T& val)
   {
-    m_AuxInfo[index].set<T>(val);
+    m_AuxInfo[index] = val;
   }
 
   // Auxiliary info to read and update in place with a single lookup: the
@@ -184,44 +165,6 @@ private:
 
   ClassDefOverride(TFCSSimulationState, 4)  // TFCSSimulationState
 };
-
-// Explicit template implementations for template<class T> void
-// TFCSSimulationState::AuxInfo_t::set(T val);
-inline void TFCSSimulationState::AuxInfo_t::set(
-    const TFCSSimulationState::AuxInfo_t& val)
-{
-  *this = val;
-}
-template<>
-inline void TFCSSimulationState::AuxInfo_t::set<bool>(bool val)
-{
-  b = val;
-}
-template<>
-inline void TFCSSimulationState::AuxInfo_t::set<char>(char val)
-{
-  c = val;
-}
-template<>
-inline void TFCSSimulationState::AuxInfo_t::set<int>(int val)
-{
-  i = val;
-}
-template<>
-inline void TFCSSimulationState::AuxInfo_t::set<float>(float val)
-{
-  f = val;
-}
-template<>
-inline void TFCSSimulationState::AuxInfo_t::set<double>(double val)
-{
-  d = val;
-}
-template<>
-inline void TFCSSimulationState::AuxInfo_t::set<void*>(void* val)
-{
-  p = val;
-}
 
 // Implementation of the compile time text hash operator that can be used for
 // human readable indices to the AuxInfo

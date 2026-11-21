@@ -2,6 +2,8 @@
 
 #include <cstring>
 #include <iostream>
+#include <type_traits>
+#include <variant>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
@@ -46,20 +48,18 @@ void TFCSSimulationState::Print(Option_t* /*option*/) const
     FCS_MSG_INFO("  AuxInfo has " << m_AuxInfo.size() << " elements");
     for (const auto& a : m_AuxInfo) {
       // The stored type is not known here, print the possible interpretations
-      // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access): untyped store
-      FCS_MSG_INFO("    " << a.first
-                          << " : "
-                          // Don't print as char/bool.
-                          // Accessing as a bool is likely to undefined
-                          // behavior (which triggers a warning from
-                          // the sanitizer).  As a char, it may not
-                          // be printable.
-                          //<< "bool=" << a.second.b
-                          //<< " char=" << a.second.c
-                          << " int=" << a.second.i << " float=" << a.second.f
-                          << " double=" << a.second.d
-                          << " void*=" << a.second.p);
-      // NOLINTEND(cppcoreguidelines-pro-type-union-access)
+      std::visit(
+          [&a, this](const auto& value)
+          {
+            // Print chars as numbers, they may not be printable
+            if constexpr (std::is_same_v<std::decay_t<decltype(value)>, char>) {
+              FCS_MSG_INFO("    " << a.first << " : "
+                                  << static_cast<int>(value));
+            } else {
+              FCS_MSG_INFO("    " << a.first << " : " << value);
+            }
+          },
+          a.second);
     }
   }
 }

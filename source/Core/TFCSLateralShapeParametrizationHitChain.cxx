@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <variant>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitChain.h"
 
@@ -399,14 +400,12 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
       simulstate.auxInfoEntry("FCSHitChainEnergySum"_FCShash);
   double sumEhit = 0;
   if (was_stored && hit.idx() > 1) {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access): AuxInfo_t
-    sumEhit = static_cast<double>(stored_sum);
+    sumEhit = std::get<double>(stored_sum);
   }
 
   sumEhit += hit.E();
 
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access): AuxInfo_t
-  stored_sum.set<double>(sumEhit);
+  stored_sum = sumEhit;
 
   const double Elayer = simulstate.E(calosample());
   return (std::abs(sumEhit) >= std::abs(Elayer));
