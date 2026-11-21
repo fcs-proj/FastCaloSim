@@ -1,20 +1,10 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 #include <algorithm>
 #include <cmath>
-#include <iostream>
+#include <vector>
 
 #include "FastCaloSim/Core/TFCS1DFunctionHistogram.h"
-
-#include "TFile.h"
-using namespace std;
-
-//=============================================
-//======= TFCS1DFunctionHistogram =========
-//=============================================
 
 TFCS1DFunctionHistogram::TFCS1DFunctionHistogram(TH1* hist, double cut_maxdev)
 {
@@ -24,61 +14,6 @@ TFCS1DFunctionHistogram::TFCS1DFunctionHistogram(TH1* hist, double cut_maxdev)
 void TFCS1DFunctionHistogram::Initialize(TH1* hist, double cut_maxdev)
 {
   smart_rebin_loop(hist, cut_maxdev);
-}
-
-auto TFCS1DFunctionHistogram::histo_to_array(TH1* hist)
-    -> std::unique_ptr<double[]>
-{
-  std::unique_ptr<TH1D> h_clone(static_cast<TH1D*>(hist->Clone("h_clone")));
-  const double integral = h_clone->Integral();
-  if (integral != 0) {
-    h_clone->Scale(1.0 / integral);
-  }
-
-  auto histoVals = std::make_unique<double[]>(h_clone->GetNbinsX());
-  histoVals[0] = h_clone->GetBinContent(1);
-  for (int i = 1; i < h_clone->GetNbinsX(); i++) {
-    histoVals[i] = histoVals[i - 1] + h_clone->GetBinContent(i + 1);
-  }
-  return histoVals;
-}
-
-auto TFCS1DFunctionHistogram::sample_from_histo(TH1* hist, double random)
-    -> double
-{
-  auto histoVals = histo_to_array(hist);
-  double value = 0.0;
-  const double* first = histoVals.get();
-  const int bin =
-      std::upper_bound(first, first + hist->GetNbinsX(), random) - first;
-  value = hist->GetBinCenter(bin + 1);
-
-  return value;
-}
-
-auto TFCS1DFunctionHistogram::sample_from_histovalues(double random) -> double
-{
-  double value = 0.0;
-
-  std::unique_ptr<TH1> hist = vector_to_histo();
-  hist->SetName("hist");
-  auto histoVals = histo_to_array(hist.get());
-  const double* first = histoVals.get();
-  const int bin =
-      std::upper_bound(first, first + hist->GetNbinsX(), random) - first;
-  value = hist->GetBinCenter(bin + 1);
-
-  return value;
-}
-
-auto TFCS1DFunctionHistogram::vector_to_histo() -> std::unique_ptr<TH1>
-{
-  auto h_out = std::make_unique<TH1D>(
-      "h_out", "h_out", m_HistoBorders.size() - 1, m_HistoBorders.data());
-  for (int b = 1; b <= h_out->GetNbinsX(); b++)
-    h_out->SetBinContent(b, m_HistoContents[b - 1]);
-
-  return h_out;
 }
 
 void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
@@ -91,13 +26,13 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
 
   double maxdev = -1;
 
-  std::unique_ptr<TH1D> h_input((TH1D*)hist->Clone("h_input"));
+  std::unique_ptr<TH1D> h_input(static_cast<TH1D*>(hist->Clone("h_input")));
 
   int i = 0;
   while (true) {
     std::unique_ptr<TH1D> h_out;
     if (i == 0) {
-      h_out.reset((TH1D*)h_input->Clone("h_out"));
+      h_out.reset(static_cast<TH1D*>(h_input->Clone("h_out")));
     } else {
       h_out = smart_rebin(h_input.get());
       h_out->SetName("h_out");
@@ -164,13 +99,13 @@ auto TFCS1DFunctionHistogram::get_change(TH1* histo) -> double
 auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
     -> std::unique_ptr<TH1D>
 {
-  std::unique_ptr<TH1D> h_out1((TH1D*)h_input->Clone("h_out1"));
+  std::unique_ptr<TH1D> h_out1(static_cast<TH1D*>(h_input->Clone("h_out1")));
 
   // get the smallest change
   double change = get_change(h_out1.get()) * 1.00001;
 
-  vector<double> content;
-  vector<double> binborder;
+  std::vector<double> content;
+  std::vector<double> binborder;
 
   binborder.push_back(h_out1->GetXaxis()->GetXmin());
 
@@ -217,26 +152,7 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
 
 auto TFCS1DFunctionHistogram::rnd_to_fct(double rnd) const -> double
 {
-  double value2 = get_inverse(rnd);
-
-  return value2;
-}
-
-auto TFCS1DFunctionHistogram::linear(
-    double y1, double y2, double x1, double x2, double y) -> double
-{
-  double x = -1;
-
-  double eps = 0.0000000001;
-  if ((y2 - y1) < eps)
-    x = x1;
-  else {
-    double m = (y2 - y1) / (x2 - x1);
-    double n = y1 - m * x1;
-    x = (y - n) / m;
-  }
-
-  return x;
+  return get_inverse(rnd);
 }
 
 auto TFCS1DFunctionHistogram::non_linear(
@@ -267,7 +183,7 @@ auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
     value = x;
   } else {
     // find the first HistoContent element that is larger than rnd:
-    vector<float>::const_iterator larger_element =
+    auto larger_element =
         std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), rnd);
     size_t index = larger_element - m_HistoContents.begin();
     if (index >= m_HistoContents.size()) {
