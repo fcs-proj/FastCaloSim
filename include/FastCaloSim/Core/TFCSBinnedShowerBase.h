@@ -8,15 +8,34 @@
 
 // External includes
 #include <cassert>
+#include <string>
 #include <tuple>
+#include <vector>
 
 #include <RtypesCore.h>
+#include <hdf5.h>
+
+#include "FastCaloSim/Core/BinnedShowerLayer.h"
 
 class CaloGeo;
 
 class TFCSBinnedShowerBase : public TFCSLateralShapeParametrizationHitBase
 {
 public:
+  /// One layer of a shower: the bins with an energy deposit and their energy
+  using layer_t = FastCaloSim::BinnedShowerLayer;
+
+  /// Bin boundaries of one layer, in R and alpha
+  struct layer_bins_t
+  {
+    std::vector<float> R_lower;
+    std::vector<float> R_size;
+    std::vector<float> alpha_lower;
+    std::vector<float> alpha_size;
+  };
+
+  using event_bins_t = std::vector<layer_bins_t>;
+
   explicit TFCSBinnedShowerBase(const char* name = nullptr,
                                 const char* title = nullptr);
 
@@ -70,6 +89,46 @@ public:
                     const TFCSExtrapolationState* extrapol)
       -> FCSReturnCode override;
 
+  void enable_upscaling() { m_use_upscaling = true; }
+  void disable_upscaling() { m_use_upscaling = false; }
+
+  void load_sub_bin_distribution(const std::string& filename);
+
+  // Allows to set the voxel boundaries for the given layer manually.
+  void set_bin_boundaries(std::size_t layer_index,
+                          const std::vector<float>& R_lower,
+                          const std::vector<float>& R_size,
+                          const std::vector<float>& alpha_lower,
+                          const std::vector<float>& alpha_size);
+
+  auto get_coordinates() const -> const event_bins_t& { return m_coordinates; }
+
+  void set_coordinates(const event_bins_t& coordinates)
+  {
+    m_coordinates = coordinates;
+  }
+
+  auto get_sub_bin_distribution() const
+      -> const std::vector<std::vector<std::vector<std::vector<float>>>>&
+  {
+    return m_sub_bin_distribution;
+  }
+
+  auto get_upscaling_energies() const -> const std::vector<float>&
+  {
+    return m_upscaling_energies;
+  }
+
+  void set_sub_bin_distribution_and_energies(
+      const std::vector<std::vector<std::vector<std::vector<float>>>>&
+          sub_bin_distribution,
+      const std::vector<float>& upscaling_energies)
+  {
+    m_sub_bin_distribution = sub_bin_distribution;
+    m_upscaling_energies = upscaling_energies;
+    m_use_upscaling = true;
+  }
+
   auto get_geometry() -> CaloGeo* { return m_geo; }
 
   void set_geometry(CaloGeo* geo) override
@@ -93,29 +152,43 @@ public:
 protected:
   CaloGeo* m_geo = nullptr;  //! do not persistify
 
-  // Called at the beginning of the simulation to store and or generate the
-  // needed shower data for the current event
+  // Called at the beginning of the simulation to select or generate the
+  // shower of the current event; stores it with store_event()
   virtual void get_event(TFCSSimulationState& simulstate,
                          double eta_center,
                          double phi_center,
                          double e_init,
                          std::size_t reference_layer_index) const = 0;
 
-  // Returns the number of bins that are used in the given layer
-  virtual auto get_n_hits(TFCSSimulationState& simulstate,
-                          std::size_t layer_index) const -> std::size_t = 0;
+  // Stores the layers of the current event and its initial energy in
+  // simulstate and computes the number of hits and the energy per layer
+  void store_event(TFCSSimulationState& simulstate,
+                   std::vector<layer_t> layers,
+                   double e_init) const;
+
+  // Returns the number of hits that are simulated in the given layer
+  auto get_n_hits(TFCSSimulationState& simulstate,
+                  std::size_t layer_index) const -> std::size_t;
 
   /// Returns the total deposited energy in the given layer for the current
   /// event
-  virtual auto get_layer_energy(TFCSSimulationState& simulstate,
-                                std::size_t layer_index) const -> double = 0;
+  auto get_layer_energy(TFCSSimulationState& simulstate,
+                        std::size_t layer_index) const -> double;
 
   // Returns the position and energy of the corresponding hit in the given
   // event, layer and bin
-  virtual auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
-                                           std::size_t layer_index,
-                                           std::size_t hit_index) const
-      -> std::tuple<double, double, double> = 0;
+  auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
+                                   std::size_t layer_index,
+                                   std::size_t hit_index) const
+      -> std::tuple<double, double, double>;
+
+  // Helper functions to load the HDF5 dataset
+  static auto load_hdf5_dataset(const std::string& filename,
+                                const std::string& datasetname)
+      -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>;
+
+  void load_bin_boundaries(const std::string& filename,
+                           std::size_t layer_index);
 
   // Destroy the data of the previous event that get_event() stored in
   // simulstate
@@ -126,6 +199,38 @@ protected:
   // What is the maximum number of hits per voxel (for runtime reasons)
   int m_max_hits_per_voxel = 100;
 
+  // Bin boundaries of all layers
+  event_bins_t m_coordinates;
+
+  // If true, the sub-cell distribution is used to upscale the energy deposition
+  bool m_use_upscaling = false;
+
+  // Can be used to interpolate the individual voxels according to a higher
+  // resolution average shower
+  std::vector<std::vector<std::vector<std::vector<float>>>>
+      m_sub_bin_distribution;
+  std::vector<float> m_upscaling_energies;  // energies of the avg showers
+
 private:
-  ClassDefOverride(TFCSBinnedShowerBase, 1)  // TFCSBinnedShowerBase
+  // Precomputes the number of hits and the energy of all layers of the event
+  void compute_n_hits_and_elayer(TFCSSimulationState& simulstate) const;
+
+  auto get_coordinates(TFCSSimulationState& simulstate,
+                       std::size_t layer_index,
+                       unsigned int bin_index) const
+      -> std::tuple<double, double>;
+
+  void upscale(TFCSSimulationState& simulstate,
+               double& R_min,
+               double& R_max,
+               double& alpha_min,
+               double& alpha_max,
+               std::size_t layer_index,
+               unsigned int bin_index) const;
+
+  auto get_energy_index(TFCSSimulationState& simulstate,
+                        std::size_t layer_index,
+                        std::size_t hit_index) const -> std::size_t;
+
+  ClassDefOverride(TFCSBinnedShowerBase, 2)  // TFCSBinnedShowerBase
 };

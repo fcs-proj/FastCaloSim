@@ -20,12 +20,6 @@ class CaloGeo;
 class TFCSBinnedShower : public TFCSBinnedShowerBase
 {
 public:
-  struct layer_t
-  {
-    std::vector<unsigned int> bin_index_vector;
-    std::vector<float> E_vector;
-  };
-
   struct event_t
   {
     std::vector<layer_t> event_data;
@@ -35,16 +29,6 @@ public:
   };
 
   using eventvector_t = std::vector<event_t>;
-
-  struct layer_bins_t
-  {
-    std::vector<float> R_lower;
-    std::vector<float> R_size;
-    std::vector<float> alpha_lower;
-    std::vector<float> alpha_size;
-  };
-
-  using event_bins_t = std::vector<layer_bins_t>;
 
   explicit TFCSBinnedShower(const char* name = nullptr,
                             const char* title = nullptr);
@@ -87,16 +71,11 @@ public:
 
   void disable_eta_matching() { m_use_eta_matching = false; }
 
-  void enable_upscaling() { m_use_upscaling = true; }
-  void disable_upscaling() { m_use_upscaling = false; }
-
   // Loads all required data from the given HDF5 file
   // TODO: Define HDF5 file format somewhere
   void load_event_library(const std::string& filename,
                           std::vector<std::size_t>& layers,
                           bool only_load_meta_data = false);
-
-  void load_sub_bin_distribution(const std::string& filename);
 
   // If the HDF5 file path is set, the event library will be loaded
   // automatically at the beginning of the simulation.
@@ -112,13 +91,6 @@ public:
                         std::size_t layer_index,
                         const std::vector<unsigned int>& bin_index_vector,
                         const std::vector<float>& E_vector);
-
-  // Allows to set the voxel boundaries for the given layer manually.
-  void set_bin_boundaries(std::size_t layer_index,
-                          const std::vector<float>& R_lower,
-                          const std::vector<float>& R_size,
-                          const std::vector<float>& alpha_lower,
-                          const std::vector<float>& alpha_size);
 
   // Allows to set the shower center for the given event manually.
   // The layer is needed as reference for the phi modulation calculation.
@@ -138,34 +110,6 @@ public:
     m_eventlibrary = eventlibrary;
   }
 
-  auto get_coordinates() const -> const event_bins_t& { return m_coordinates; }
-
-  void set_coordinates(const event_bins_t& coordinates)
-  {
-    m_coordinates = coordinates;
-  }
-
-  auto get_sub_bin_distribution() const
-      -> const std::vector<std::vector<std::vector<std::vector<float>>>>&
-  {
-    return m_sub_bin_distribution;
-  }
-
-  auto get_upscaling_energies() const -> const std::vector<float>&
-  {
-    return m_upscaling_energies;
-  }
-
-  void set_sub_bin_distribution_and_energies(
-      const std::vector<std::vector<std::vector<std::vector<float>>>>&
-          sub_bin_distribution,
-      const std::vector<float>& upscaling_energies)
-  {
-    m_sub_bin_distribution = sub_bin_distribution;
-    m_upscaling_energies = upscaling_energies;
-    m_use_upscaling = true;
-  }
-
 protected:
   // Returns the event to be used
   void get_event(TFCSSimulationState& simulstate,
@@ -174,34 +118,12 @@ protected:
                  double e_init,
                  std::size_t reference_layer_index) const override;
 
-  // Returns the number of hits that are going to be simulated in the given
-  // layer.
-  auto get_n_hits(TFCSSimulationState& simulstate,
-                  std::size_t layer_index) const -> std::size_t override;
-
-  // Used to precompute the number of hits for all layers in the event.
-  virtual void compute_n_hits_and_elayer(TFCSSimulationState& simulstate) const;
-
-  // Returns the total deposited energy in the given layer for the current event
-  auto get_layer_energy(TFCSSimulationState& simulstate,
-                        std::size_t layer_index) const -> double override;
-
-  // Returns the position and energy of the corresponding hit in the given
-  // event, layer and bin
-  auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
-                                   std::size_t layer_index,
-                                   std::size_t hit_index) const
-      -> std::tuple<double, double, double> override;
-
-  // Delete all pointers that were created in get_event()
-
 private:
   // Enables to load the event library from an HDF5 file on the fly.
   std::string m_hdf5_file;
 
   // Store the used event library
   eventvector_t m_eventlibrary;
-  event_bins_t m_coordinates;
 
   // Event matching flag. Ensures that the chose event
   // from the event library is the same as the one taken
@@ -227,43 +149,9 @@ private:
                        std::size_t reference_layer_index,
                        bool phi_mod_matching) const -> std::size_t;
 
-  auto get_coordinates(TFCSSimulationState& simulstate,
-                       std::size_t layer_index,
-                       unsigned int bin_index) const
-      -> std::tuple<double, double>;
-
-  // If true, the sub-cell distribution is used to upscale the energy deposition
-  bool m_use_upscaling = false;
-
-  // Can be used to interpolate the individual voxels according to a higher
-  // resolution average shower
-  std::vector<std::vector<std::vector<std::vector<float>>>>
-      m_sub_bin_distribution;
-  std::vector<float> m_upscaling_energies;  // energies of the avg showers
-
-  void upscale(TFCSSimulationState& simulstate,
-               double& R_min,
-               double& R_max,
-               double& alpha_min,
-               double& alpha_max,
-               std::size_t layer_index,
-               unsigned int bin_index) const;
-
-  auto get_energy_index(TFCSSimulationState& simulstate,
-                        std::size_t layer_index,
-                        std::size_t hit_index) const -> std::size_t;
-
-  // Helper functions to load the HDF5 dataset
-  static auto load_hdf5_dataset(const std::string& filename,
-                                const std::string& datasetname)
-      -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>;
-
   void load_layer_energy(const std::string& filename, std::size_t layer_index);
-
-  void load_bin_boundaries(const std::string& filename,
-                           std::size_t layer_index);
 
   void load_shower_center_information(const std::string& filename);
 
-  ClassDefOverride(TFCSBinnedShower, 1)  // TFCSBinnedShower
+  ClassDefOverride(TFCSBinnedShower, 2)  // TFCSBinnedShower
 };
