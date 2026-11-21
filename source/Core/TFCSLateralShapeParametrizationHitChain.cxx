@@ -320,7 +320,7 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
         failed = true;
         ++ifail;
         ++itotalfail;
-        retry = status - FCSRetry;
+        retry = status.max_retries();
         retry_warning = retry / 2;
         retry_warning = std::max(retry_warning, 1);
         break;

@@ -37,7 +37,7 @@ auto TFCSParametrizationBase::simulate(
       "normally not happen");
   // Force one retry to issue a printout from the chain causing the call to this
   // method
-  return static_cast<FCSReturnCode>(FCSRetry + 1);
+  return FCSReturnCode::retry(1);
 }
 
 auto TFCSParametrizationBase::compare(const TFCSParametrizationBase& ref) const

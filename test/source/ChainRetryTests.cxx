@@ -21,7 +21,7 @@ namespace
 class ScriptedParametrization : public TFCSParametrizationBase
 {
 public:
-  explicit ScriptedParametrization(std::vector<int> script)
+  explicit ScriptedParametrization(std::vector<FCSReturnCode> script)
       : m_script(std::move(script))
   {
   }
@@ -31,15 +31,16 @@ public:
                 const TFCSExtrapolationState* /*extrapol*/) const
       -> FCSReturnCode override
   {
-    const int code = m_calls < m_script.size() ? m_script[m_calls] : FCSSuccess;
+    const FCSReturnCode code =
+        m_calls < m_script.size() ? m_script[m_calls] : FCSSuccess;
     ++m_calls;
-    return static_cast<FCSReturnCode>(code);
+    return code;
   }
 
   auto calls() const -> std::size_t { return m_calls; }
 
 private:
-  std::vector<int> m_script;
+  std::vector<FCSReturnCode> m_script;
   mutable std::size_t m_calls = 0;
 };
 
@@ -72,13 +73,14 @@ auto simulate(TFCSParametrizationBase& chain) -> FCSReturnCode
   return chain.simulate(simulstate, &truth, nullptr);
 }
 
-constexpr auto retry(int n) -> int
+constexpr auto retry(int n) -> FCSReturnCode
 {
-  return FCSRetry + n;
+  return FCSReturnCode::retry(n);
 }
 }  // namespace
 
-// A parametrization asking for FCSRetry + n is simulated again, alone
+// A parametrization asking for FCSReturnCode::retry(n) is simulated again,
+// alone
 TEST(ChainRetryTest, ParametrizationRetried)
 {
   auto chain = make_chain<TFCSParametrizationChain>("TFCSParametrizationChain");
@@ -168,4 +170,15 @@ TEST(ChainRetryTest, BinSelectionDrawsOneRandomNumberOutsideTheBins)
   // now be at the same position
   CLHEP::RandFlat::shoot(&reference);
   EXPECT_EQ(engine.flat(), reference.flat());
+}
+
+// The return code carries the number of retries of a retry request
+TEST(ChainRetryTest, ReturnCode)
+{
+  static_assert(FCSReturnCode::retry(5).is_retry());
+  static_assert(FCSReturnCode::retry(5).max_retries() == 5);
+  static_assert(!FCSSuccess.is_retry() && FCSSuccess.max_retries() == 0);
+  static_assert(FCSSuccess != FCSFatal);
+  static_assert(FCSReturnCode::retry(0) != FCSSuccess);
+  EXPECT_EQ(FCSReturnCode::retry(3).status(), FCSReturnCode::Status::Retry);
 }

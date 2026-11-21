@@ -33,7 +33,7 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   if (FastCaloSim::exactly_equal(hit.x(), 0.0)
       && FastCaloSim::exactly_equal(hit.y(), 0.0))
   {
-    return static_cast<FCSReturnCode>(FCSRetry + 5);
+    return FCSReturnCode::retry(5);
   }
   // Get the best matching cell
   const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
@@ -44,7 +44,7 @@ auto TFCSHitCellMappingFCal::simulate_hit(
     FCS_MSG_WARNING("Hit in layer " << calosample() << " with E = " << hit.E()
                                     << " x = " << hit.x() << " y = " << hit.y()
                                     << " could not be matched to a cell");
-    return static_cast<FCSReturnCode>(FCSRetry + 5);
+    return FCSReturnCode::retry(5);
   }
 
   // Get hit-cell boundary proximity

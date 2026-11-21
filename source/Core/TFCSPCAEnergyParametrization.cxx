@@ -221,7 +221,11 @@ auto TFCSPCAEnergyParametrization::simulate(
       }
       const double random = CLHEP::RandFlat::shoot(simulstate.randomEngine());
       if (random > pass_probability) {
-        return static_cast<FCSReturnCode>(FCSRetryPCA);
+        // Assuming an extreme h_totalE_ratio histogram that causes a retry
+        // in 50% of the cases, 20 retries cause an accidental WARNING for
+        // every 2^10=1024 simulated particles and an accidental FATAL for
+        // every 2^20, which is safe even for the largest productions
+        return FCSReturnCode::retry(20);
       }
     }
 
