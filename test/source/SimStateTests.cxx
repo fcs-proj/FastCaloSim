@@ -168,15 +168,18 @@ TEST_F(TFCSSimulationStateTest, AuxObjectsAreOwned)
 
     sim_state.setAuxObject(index, Counted(1));
     EXPECT_EQ(Counted::live, 1);
-    ASSERT_NE(sim_state.getAuxObject<Counted>(index), nullptr);
-    EXPECT_EQ(sim_state.getAuxObject<Counted>(index)->value, 1);
+    const auto* first = sim_state.getAuxObject<Counted>(index);
+    ASSERT_NE(first, nullptr);
+    EXPECT_EQ(first->value, 1);
     // An object of another type is not returned
     EXPECT_EQ(sim_state.getAuxObject<int>(index), nullptr);
 
     // Replacing destroys the old object
     sim_state.setAuxObject(index, Counted(2));
     EXPECT_EQ(Counted::live, 1);
-    EXPECT_EQ(sim_state.getAuxObject<Counted>(index)->value, 2);
+    const auto* second = sim_state.getAuxObject<Counted>(index);
+    ASSERT_NE(second, nullptr);
+    EXPECT_EQ(second->value, 2);
 
     // Erasing destroys it
     sim_state.eraseAuxObject(index);
