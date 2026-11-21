@@ -57,9 +57,6 @@ TFCSPredictExtrapWeights::~TFCSPredictExtrapWeights()
   if (m_normStdDevs != nullptr) {
     delete m_normStdDevs;
   }
-  if (m_nn != nullptr) {
-    delete m_nn;
-  }
 }
 
 auto TFCSPredictExtrapWeights::operator==(
@@ -318,13 +315,8 @@ auto TFCSPredictExtrapWeights::initializeNetwork(
     sin << input.rdbuf();
     input.close();
     auto config = lwt::parse_json(sin);
-    m_nn = new lwt::LightweightNeuralNetwork(
+    m_nn = std::make_unique<lwt::LightweightNeuralNetwork>(
         config.inputs, config.layers, config.outputs);
-    if (m_nn == nullptr) {
-      FCS_MSG_ERROR("Could not create LightWeightNeuralNetwork from "
-                    << inputFileName);
-      return false;
-    }
     if (m_input != nullptr) {
       delete m_input;
     }
@@ -347,15 +339,12 @@ void TFCSPredictExtrapWeights::Streamer(TBuffer& R__b)
 
   if (R__b.IsReading()) {
     R__b.ReadClassBuffer(TFCSPredictExtrapWeights::Class(), this);
-    if (m_nn != nullptr) {
-      delete m_nn;
-      m_nn = nullptr;
-    }
+    m_nn.reset();
     if (m_input && !m_input->empty()) {
       std::stringstream sin;
       sin.str(*m_input);
       auto config = lwt::parse_json(sin);
-      m_nn = new lwt::LightweightNeuralNetwork(
+      m_nn = std::make_unique<lwt::LightweightNeuralNetwork>(
           config.inputs, config.layers, config.outputs);
     }
 #ifndef __FastCaloSimStandAlone__
@@ -385,5 +374,5 @@ void TFCSPredictExtrapWeights::Print(Option_t* option) const
     FCS_MSG_INFO(optprint << "  m_input (TFCSPredictExtrapWeights): "
                           << m_input);
   if (longprint)
-    FCS_MSG_INFO(optprint << "  Address of m_nn: " << (void*)m_nn);
+    FCS_MSG_INFO(optprint << "  Address of m_nn: " << (void*)m_nn.get());
 }

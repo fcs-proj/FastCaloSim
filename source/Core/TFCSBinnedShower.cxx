@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #include <cmath>
 #include <cstdlib>
+#include <memory>
 #include <regex>
 
 #include "FastCaloSim/Core/TFCSBinnedShower.h"
@@ -806,7 +807,7 @@ void TFCSBinnedShower::Streamer(TBuffer& R__b)
 void TFCSBinnedShower::load_sub_bin_distribution(const std::string& filename)
 {
   m_use_upscaling = true;
-  TFile* file = TFile::Open(filename.c_str(), "READ");
+  std::unique_ptr<TFile> file(TFile::Open(filename.c_str(), "READ"));
   if (!file || file->IsZombie()) {
     std::cerr << "Failed to open file: " << filename << std::endl;
     return;
@@ -825,7 +826,7 @@ void TFCSBinnedShower::load_sub_bin_distribution(const std::string& filename)
       int layer = std::stoi(match[1].str());
       float energy = std::stod(match[2].str());
 
-      TMatrixD* matrix = dynamic_cast<TMatrixD*>(file->Get(keyname.c_str()));
+      std::unique_ptr<TMatrixD> matrix(file->Get<TMatrixD>(keyname.c_str()));
       if (matrix) {
         std::vector<std::vector<float>> mat_vec(
             matrix->GetNrows(), std::vector<float>(matrix->GetNcols()));
@@ -840,7 +841,6 @@ void TFCSBinnedShower::load_sub_bin_distribution(const std::string& filename)
   }
 
   file->Close();
-  delete file;
 
   // Output containers
   std::vector<float> energies;

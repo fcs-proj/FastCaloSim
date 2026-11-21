@@ -18,7 +18,7 @@ public:
 
   using TFCS1DFunction::rnd_to_fct;
   auto rnd_to_fct(double rnd) const -> double override;
-  auto vector_to_histo() -> TH1*;
+  auto vector_to_histo() -> std::unique_ptr<TH1>;
   auto get_inverse(double rnd) const -> double;
   static auto linear(double y1, double y2, double x1, double x2, double x)
       -> double;
@@ -28,7 +28,7 @@ public:
   static auto get_maxdev(TH1*, TH1D*) -> double;
   void smart_rebin_loop(TH1* hist, double);
   static auto get_change(TH1*) -> double;
-  static auto smart_rebin(TH1D*) -> TH1D*;
+  static auto smart_rebin(TH1D*) -> std::unique_ptr<TH1D>;
   static auto histo_to_array(TH1*) -> std::unique_ptr<double[]>;
   static auto sample_from_histo(TH1* hist, double) -> double;
   auto sample_from_histovalues(double) -> double;

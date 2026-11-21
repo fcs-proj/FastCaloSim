@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <memory>
 #include <regex>
 
 #include "FastCaloSim/Core/TFCSBinnedShowerONNX.h"
@@ -535,10 +536,9 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
     const std::string& filename)
 {
   m_use_upscaling = true;
-  TFile* file = TFile::Open(filename.c_str(), "READ");
+  std::unique_ptr<TFile> file(TFile::Open(filename.c_str(), "READ"));
   if (!file || file->IsZombie()) {
     FCS_MSG_ERROR("Failed to open file: " << filename);
-    delete file;
     return;
   }
 
@@ -555,7 +555,7 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
       int layer = std::stoi(match[1].str());
       float energy = std::stod(match[2].str());
 
-      TMatrixD* matrix = dynamic_cast<TMatrixD*>(file->Get(keyname.c_str()));
+      std::unique_ptr<TMatrixD> matrix(file->Get<TMatrixD>(keyname.c_str()));
       if (matrix) {
         std::vector<std::vector<float>> mat_vec(
             matrix->GetNrows(), std::vector<float>(matrix->GetNcols()));
@@ -570,7 +570,6 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
   }
 
   file->Close();
-  delete file;
 
   // Output containers
   std::vector<float> energies;

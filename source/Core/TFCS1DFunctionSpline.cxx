@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <iostream>
+#include <memory>
 
 #include "FastCaloSim/Core/TFCS1DFunctionSpline.h"
 
@@ -328,7 +329,7 @@ auto TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
   double maxdev = 0;
   maxeffsig = 0;
 
-  TH1* hist_clone = (TH1*)hist->Clone("hist_clone");
+  std::unique_ptr<TH1> hist_clone((TH1*)hist->Clone("hist_clone"));
   hist_clone->SetDirectory(nullptr);
   hist_clone->Reset();
   double interr = 0;
@@ -363,8 +364,6 @@ auto TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
       p_maxeffsig = int1;
     }
   }
-
-  delete hist_clone;
 
   return maxdev;
 }
