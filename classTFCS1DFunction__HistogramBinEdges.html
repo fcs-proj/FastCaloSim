@@ -165,12 +165,6 @@
               const Trandom&amp; drnd) const -&gt; T</span>
             </dt>
             <dd></dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#ab1c851d243173f447784f1b9b9516a9e" class="m-doc">position_exp</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramBinEdges.html#ae019b2676409330e313b9a409592715d" class="m-doc">size_<wbr />t</a> pos,
-              Trandom beta,
-              const Trandom&amp; drnd) const -&gt; T</span>
-            </dt>
-            <dd></dd>
           </dl>
         </section>
         <section>
@@ -195,17 +189,6 @@
               const Trandom&amp; drnd) const -&gt; T</span></span>
             </h3>
 <p>return linearly interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1]</p>
-          </div></section>
-          <section class="m-doc-details" id="ab1c851d243173f447784f1b9b9516a9e"><div>
-            <h3>
-              <div class="m-doc-template">
-                template&lt;typename T, typename Trandom&gt;
-              </div>
-              <span class="m-doc-wrap-bumper">auto TFCS1DFunction_<wbr />HistogramBinEdges&lt;T, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ab1c851d243173f447784f1b9b9516a9e" class="m-doc-self">position_exp</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramBinEdges.html#ae019b2676409330e313b9a409592715d" class="m-doc">size_<wbr />t</a> pos,
-              Trandom beta,
-              const Trandom&amp; drnd) const -&gt; T</span></span>
-            </h3>
-<p>return exponentially interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1]</p><p>(m_array[pos+1] - m_array[pos]);</p>
           </div></section>
         </section>
       </div>
