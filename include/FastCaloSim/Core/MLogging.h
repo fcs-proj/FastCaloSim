@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include <iomanip>
-#include <iostream>
+#include <memory>
+#include <optional>
+#include <ostream>
+#include <sstream>
 #include <string>
+#include <string_view>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TNamed.h>  //for ClassDef
@@ -25,13 +28,110 @@ enum Level
 };  // enum Level
 }  // namespace FastCaloSim::MSG
 
+namespace FastCaloSim
+{
+/// Receives every log message that passes the level check. Install one with
+/// set_log_sink() to forward FastCaloSim messages to another logging system,
+/// for example a framework's message service.
+class FASTCALOSIM_EXPORT LogSink
+{
+public:
+  virtual ~LogSink() = default;
+  /// One message: `file` and `line` locate the call site, `text` is the
+  /// message as written at the call site, without decoration and without
+  /// newlines at the end (newlines inside the text are kept). Called
+  /// concurrently from all threads that log. An exception thrown here does not
+  /// propagate: the message then goes to the default sink.
+  virtual void write(MSG::Level lvl,
+                     std::string_view file,
+                     int line,
+                     std::string_view text) = 0;
+};
+
+/// Replace the log sink for all threads; nullptr restores the default sink,
+/// which writes each message as one decorated line to std::cout.
+FASTCALOSIM_EXPORT void set_log_sink(std::shared_ptr<LogSink> sink);
+
+/// Collects the text of one message and passes it to the log sink when it goes
+/// out of scope. The FCS_MSG_* macros create one per message.
+class FASTCALOSIM_EXPORT LogMessage
+{
+public:
+  LogMessage(MSG::Level lvl, const char* file, int line);
+  LogMessage(const LogMessage&) = delete;
+  auto operator=(const LogMessage&) -> LogMessage& = delete;
+  ~LogMessage();
+
+  auto stream() -> std::ostream& { return m_text; }
+
+private:
+  MSG::Level m_lvl;
+  const char* m_file;
+  int m_line;
+  std::ostringstream m_text;
+};
+
+class MLogging;
+
+/// Collects the text of one FCS_MSG(lvl) << ... statement and adds it to the
+/// open line of this thread when the statement ends. A statement nested in
+/// another one (a function called in the expression that streams itself)
+/// therefore finishes first and does not mix with the outer text.
+class FASTCALOSIM_EXPORT LineStream
+{
+public:
+  /// Streamed by END_FCS_MSG: the line ends with this statement
+  struct [[nodiscard]] End
+  {
+    bool active;
+  };
+
+  LineStream(const MLogging* owner,
+             MSG::Level lvl,
+             const char* file,
+             int line,
+             bool active);
+  LineStream(const LineStream&) = delete;
+  auto operator=(const LineStream&) -> LineStream& = delete;
+  ~LineStream();
+
+  template<typename T>
+  auto operator<<(const T& value) -> LineStream&
+  {
+    if (m_text)
+      *m_text << value;
+    return *this;
+  }
+  auto operator<<(std::ostream& (*manipulator)(std::ostream&)) -> LineStream&
+  {
+    if (m_text)
+      *m_text << manipulator;
+    return *this;
+  }
+  auto operator<<(End end) -> LineStream&
+  {
+    m_end = m_end || end.active;
+    return *this;
+  }
+
+private:
+  const MLogging* m_owner;
+  MSG::Level m_lvl;
+  const char* m_file;
+  int m_line;
+  bool m_end = false;
+  std::optional<std::ostringstream> m_text;  // only if the level is active
+};
+}  // namespace FastCaloSim
+
 // Macro for use outside classes.
 // Use this in standalone functions or static methods.
 #define FCS_MSG_NOCLASS(logger_name, x) \
   do { \
-    logger_name.msg() << logger_name.startMsg( \
-        ::FastCaloSim::MSG::ALWAYS, __FILE__, __LINE__) \
-                      << x << std::endl; \
+    static_cast<void>(logger_name); \
+    ::FastCaloSim::LogMessage fcs_log_message( \
+        ::FastCaloSim::MSG::ALWAYS, __FILE__, __LINE__); \
+    fcs_log_message.stream() << x; \
   } while (0)
 
 namespace FastCaloSim
@@ -44,14 +144,13 @@ using MsgStream = std::ostream;
 #define FCS_MSG_LVL(enum_lvl, x) \
   do { \
     if (this->msgLvl(enum_lvl)) \
-      this->msg() << this->startMsg(enum_lvl, __FILE__, __LINE__) << x \
-                  << std::endl; \
+      FCS_MSG_LVL_NOCHK(enum_lvl, x); \
   } while (0)
 
 #define FCS_MSG_LVL_NOCHK(enum_lvl, x) \
   do { \
-    this->msg() << this->startMsg(enum_lvl, __FILE__, __LINE__) << x \
-                << std::endl; \
+    ::FastCaloSim::LogMessage fcs_log_message(enum_lvl, __FILE__, __LINE__); \
+    fcs_log_message.stream() << x; \
   } while (0)
 
 #define FCS_MSG_VERBOSE(x) FCS_MSG_LVL(::FastCaloSim::MSG::VERBOSE, x)
@@ -61,15 +160,18 @@ using MsgStream = std::ostream;
 #define FCS_MSG_ERROR(x) FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::ERROR, x)
 #define FCS_MSG_FATAL(x) FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::FATAL, x)
 
-// Set up a stream that can be used like: FCS_MSG(INFO) << "hello" <<
-// END_FCS_MSG(INFO); It needs to only write the left columns once, until it is
-// fed another END_FCS_MSG
+// Build one line in pieces: FCS_MSG(INFO) << "a"; ... FCS_MSG(INFO) << "b"
+// << END_FCS_MSG(INFO); Each thread has one open line. It is passed to the log
+// sink at the end of the statement that streams END_FCS_MSG, or when the same
+// thread streams from another object, at another level or from another file.
+// FCS_MSG_* messages in between are passed on by themselves and leave the line
+// open.
 
-// Provide a stream
+// Provide a stream for one statement
 #define FCS_MSG(lvl) this->stream(::FastCaloSim::MSG::lvl, __FILE__, __LINE__)
-// Add a new line if the level is in use, and end any stream
+// Stream this to end the line if the level is in use
 #define END_FCS_MSG(lvl) this->streamerEndLine(::FastCaloSim::MSG::lvl)
-// Force a new line, and end any stream
+// Stream this to end the line
 #define FCS_ENDMSG this->streamerEndLine(::FastCaloSim::MSG::INFO)
 
 class FASTCALOSIM_EXPORT MLogging
@@ -77,15 +179,8 @@ class FASTCALOSIM_EXPORT MLogging
 public:
   /// Constructor
   MLogging() = default;
-  /// Copy constructor
-  MLogging(const MLogging& other)
-      : m_level(other.m_level) {};
-  /// Assignment operator
-  auto operator=(MLogging other) -> MLogging&
-  {
-    m_level = other.m_level;
-    return *this;
-  };
+  MLogging(const MLogging&) = default;
+  auto operator=(const MLogging&) -> MLogging& = default;
 
   /// Destructor
   virtual ~MLogging() = default;
@@ -96,15 +191,11 @@ public:
   virtual void setLevel(int level);
 
   /// Make a message to decorate the start of logging
-  static auto startMsg(MSG::Level lvl, const std::string& file, int line)
+  static auto startMsg(MSG::Level lvl, std::string_view file, int line)
       -> std::string;
 
-  /// Return a stream for sending messages directly (no decoration)
-  auto msg() const -> MsgStream& { return std::cout; }
-  /// Return a stream for sending messages (incomplete decoration)
-  auto msg(const MSG::Level lvl) const -> MsgStream&;
-  /// Return a decorated starting stream for sending messages
-  auto stream(MSG::Level lvl, std::string file, int line) const -> MsgStream&;
+  /// Return a stream for one statement that adds to the open line (FCS_MSG)
+  auto stream(MSG::Level lvl, const char* file, int line) const -> LineStream;
   /// Check whether the logging system is active at the provided verbosity
   /// level: VERBOSE and DEBUG depend on the output level, all other levels are
   /// always printed
@@ -115,28 +206,11 @@ public:
     return true;
   }
 
-  /// Print a whole decorated log message and then end the line.
-  void print(MSG::Level lvl,
-             std::string file,
-             int line,
-             std::string message) const;
-
-  /// Update and end the line if we print this level
-  auto streamerEndLine(MSG::Level lvl) const -> std::string;
+  /// Marker that ends the line if we print this level (END_FCS_MSG)
+  auto streamerEndLine(MSG::Level lvl) const -> LineStream::End;
 
 private:
-  /// Checking the state of the streamer.
-  auto streamerInLine() const -> bool { return m_streamer_in_line; }
-  /// Update if a new start is happening.
-  void streamerInLine(bool is_in_line) const;
-  /// Check if a new start should be done (changed file or level)
-  auto streamerNeedStart(MSG::Level lvl, std::string file) const -> bool;
-
   MSG::Level m_level = MSG::INFO;  //! Do not persistify!
-
-  mutable bool m_streamer_in_line = false;  //! Do not persistify!
-  mutable MSG::Level m_streamer_has_lvl = MSG::NIL;  //! Do not persistify!
-  mutable std::string m_streamer_from_file = "";  //! Do not persistify!
 
   // Version number 0 to tell ROOT not to store this.
   ClassDef(MLogging, 0)

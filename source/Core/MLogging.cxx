@@ -1,7 +1,15 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <array>
+#include <atomic>
 #include <format>
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "FastCaloSim/Core/MLogging.h"
 
@@ -15,17 +23,139 @@ namespace
 const ROOT::TClassAlt* dummy =
     ROOT::AddClassAlternate("FastCaloSim::MLogging", "ISF_FCS::MLogging");
 
-// Stream for messages below the output level: it has no buffer, so everything
-// written to it is discarded. One per thread, as writing sets its state flags.
-auto null_stream() -> std::ostream&
+// Writes each message as one decorated line to std::cout. The mutex keeps
+// lines from different threads apart.
+class CoutSink final : public FastCaloSim::LogSink
 {
-  thread_local std::ostream stream(nullptr);
-  return stream;
+public:
+  void write(FastCaloSim::MSG::Level lvl,
+             std::string_view file,
+             int line,
+             std::string_view text) override
+  {
+    const std::string out = std::format(
+        "{}{}\n", FastCaloSim::MLogging::startMsg(lvl, file, line), text);
+    const std::scoped_lock lock(m_mutex);
+    std::cout << out << std::flush;
+  }
+
+private:
+  std::mutex m_mutex;
+};
+
+// The default sink and the slot of the current sink are never destroyed, so
+// that messages from destructors at exit still work.
+auto default_sink() -> const std::shared_ptr<FastCaloSim::LogSink>&
+{
+  static const auto* sink =
+      new std::shared_ptr<FastCaloSim::LogSink>(std::make_shared<CoutSink>());
+  return *sink;
+}
+
+auto sink_slot() -> std::atomic<std::shared_ptr<FastCaloSim::LogSink>>&
+{
+  static auto* slot =
+      new std::atomic<std::shared_ptr<FastCaloSim::LogSink>>(default_sink());
+  return *slot;
+}
+
+// Called from destructors, so it must not throw. A message that the installed
+// sink fails to take goes to the default sink instead, so that no message is
+// lost. Newlines at the end of the text are removed: sinks end lines
+// themselves.
+void send(FastCaloSim::MSG::Level lvl,
+          std::string_view file,
+          int line,
+          std::string_view text) noexcept
+{
+  while (text.ends_with('\n'))
+    text.remove_suffix(1);
+  try {
+    sink_slot().load()->write(lvl, file, line, text);
+    return;
+  } catch (...) {
+  }
+  try {
+    default_sink()->write(lvl, file, line, text);
+  } catch (...) {
+  }
+}
+
+// The line that the FCS_MSG(lvl) << ... statements of one thread build until
+// END_FCS_MSG.
+struct ThreadState
+{
+  bool open = false;
+  const FastCaloSim::MLogging* owner = nullptr;
+  FastCaloSim::MSG::Level lvl = FastCaloSim::MSG::NIL;
+  std::string_view file;
+  int line = 0;
+  std::ostringstream text;
+
+  void end_line()
+  {
+    if (!open)
+      return;
+    open = false;
+    send(lvl, file, line, text.view());
+    text.str({});
+  }
+};
+
+// Plain thread_local values have no destructor and stay usable while the
+// thread exits, unlike a thread_local ThreadState: static destructors that log
+// run after the thread_local objects of the main thread are gone.
+thread_local ThreadState* t_state = nullptr;
+thread_local bool t_exiting = false;
+
+struct ThreadStateOwner
+{
+  ThreadStateOwner() = default;
+  ThreadStateOwner(const ThreadStateOwner&) = delete;
+  auto operator=(const ThreadStateOwner&) -> ThreadStateOwner& = delete;
+  ~ThreadStateOwner()
+  {
+    t_exiting = true;
+    if (ThreadState* state = std::exchange(t_state, nullptr)) {
+      state->end_line();
+      delete state;
+    }
+  }
+};
+
+auto thread_state() -> ThreadState&
+{
+  if (t_state == nullptr) {
+    t_state = new ThreadState;
+    // Deleted when the thread exits. State created while the thread exits
+    // (logging from later destructors) is not deleted.
+    if (!t_exiting) {
+      [[maybe_unused]] thread_local ThreadStateOwner owner;
+    }
+  }
+  return *t_state;
 }
 }  // namespace
 
 namespace FastCaloSim
 {
+
+void set_log_sink(std::shared_ptr<LogSink> sink)
+{
+  sink_slot().store(sink ? std::move(sink) : default_sink());
+}
+
+LogMessage::LogMessage(MSG::Level lvl, const char* file, int line)
+    : m_lvl(lvl)
+    , m_file(file)
+    , m_line(line)
+{
+}
+
+LogMessage::~LogMessage()
+{
+  send(m_lvl, m_file, m_line, m_text.view());
+}
 
 /// Update outputlevel
 void MLogging::setLevel(int level)
@@ -36,79 +166,57 @@ void MLogging::setLevel(int level)
   m_level = MSG::Level(level);
 }
 
-// startMsg defined at base of file.
-
-/// Return a stream for sending messages (incomplete decoration)
-auto MLogging::msg(const MSG::Level lvl) const -> MsgStream&
+LineStream::LineStream(const MLogging* owner,
+                       MSG::Level lvl,
+                       const char* file,
+                       int line,
+                       bool active)
+    : m_owner(owner)
+    , m_lvl(lvl)
+    , m_file(file)
+    , m_line(line)
 {
-  return this->stream(lvl, "", -1);
-};
+  if (active)
+    m_text.emplace();
+}
 
-/// Open a stream for sending log messages
-// check the lvl of logging is active, otherwise provide dummy stream.
-// if the proposed streamer doesn't match the current one
-// end any running lines and start a new decorated line
-// provide the stream at the end
-auto MLogging::stream(MSG::Level lvl, std::string file, int line) const
-    -> MsgStream&
+/// Add the text of the statement to the open line of this thread. Another
+/// object, level or file ends the line and starts a new one.
+LineStream::~LineStream()
 {
-  // If we shouldn't print this just return a dummy stream.
-  if (!this->msgLvl(lvl))
-    return null_stream();
-  // This is different to the last stream.
-  if (this->streamerNeedStart(lvl, file)) {
-    // end the open stream
-    if (this->streamerInLine())
-      std::cout << this->streamerEndLine(lvl);
-    this->msg() << this->startMsg(lvl, file, line);
-    this->streamerInLine(true);
+  if (!m_text)
+    return;
+  ThreadState& state = thread_state();
+  if (state.open
+      && (m_owner != state.owner || m_lvl != state.lvl
+          || std::string_view(m_file) != state.file))
+    state.end_line();
+  if (!state.open) {
+    state.open = true;
+    state.owner = m_owner;
+    state.lvl = m_lvl;
+    state.file = m_file;
+    state.line = m_line;
   }
-  return this->msg();
+  state.text << m_text->view();
+  // While the thread exits, nothing would end the line later.
+  if (m_end || t_exiting)
+    state.end_line();
 }
 
-/// Print a whole log message and then end the line.
-void MLogging::print(MSG::Level lvl,
-                     std::string file,
-                     int line,
-                     std::string message) const
+auto MLogging::stream(MSG::Level lvl, const char* file, int line) const
+    -> LineStream
 {
-  if (this->msgLvl(lvl)) {
-    this->stream(lvl, file, line) << message << this->streamerEndLine(lvl);
-  }
+  return {this, lvl, file, line, this->msgLvl(lvl)};
 }
 
-/// Update and end the line if we print this level
-auto MLogging::streamerEndLine(MSG::Level lvl) const -> std::string
+auto MLogging::streamerEndLine(MSG::Level lvl) const -> LineStream::End
 {
-  if (this->msgLvl(lvl)) {
-    m_streamer_in_line = false;
-    this->msg() << std::endl;
-  }
-  return "";
+  return {this->msgLvl(lvl)};
 }
 
-/// Update if a new start is happening.
-void MLogging::streamerInLine(bool is_in_line) const
-{
-  m_streamer_in_line = is_in_line;
-}
-
-/// Check if a new start should be done (changed file or level)
-auto MLogging::streamerNeedStart(MSG::Level lvl, std::string file) const -> bool
-{
-  // Are we in the middle of a stream of the same level from the same file.
-  if (lvl == m_streamer_has_lvl && file == m_streamer_from_file
-      && m_streamer_in_line)
-    return false;
-  // Otherwise time for a new start.
-  m_streamer_from_file = file;
-  m_streamer_has_lvl = lvl;
-  return true;
-}
-
-// This is the same either way.
 /// Print a message for the start of logging
-auto MLogging::startMsg(MSG::Level lvl, const std::string& file, int line)
+auto MLogging::startMsg(MSG::Level lvl, std::string_view file, int line)
     -> std::string
 {
   static constexpr std::array<const char*, MSG::NUM_LEVELS> level_names = {
@@ -116,7 +224,8 @@ auto MLogging::startMsg(MSG::Level lvl, const std::string& file, int line)
   // File name from the last '/', or its last 20 characters if longer
   constexpr std::size_t name_len = 20;
   const auto last_slash = file.find_last_of('/');
-  std::size_t trim_point = last_slash == std::string::npos ? 0 : last_slash;
+  std::size_t trim_point =
+      last_slash == std::string_view::npos ? 0 : last_slash;
   if (file.length() - trim_point > name_len)
     trim_point = file.length() - name_len;
   return std::format("{:>20}:{:<5}{:>10}",
