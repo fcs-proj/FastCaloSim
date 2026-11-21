@@ -338,8 +338,12 @@ auto TFCSBinnedShowerONNX::get_coordinates(TFCSSimulationState& simulstate,
     upscale(
         simulstate, R_min, R_max, alpha_min, alpha_max, layer_index, bin_index);
   }
-  const double R =
-      CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
+  double R = R_min;  // If the range is too small, just use the minimum value
+  if (std::abs(R_max - R_min)
+      > static_cast<double>(std::numeric_limits<float>::epsilon()))
+  {
+    R = CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
+  }
   const double alpha =
       CLHEP::RandFlat::shoot(simulstate.randomEngine(), alpha_min, alpha_max);
 
