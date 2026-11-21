@@ -155,10 +155,10 @@ using MsgStream = std::ostream;
 
 #define FCS_MSG_VERBOSE(x) FCS_MSG_LVL(::FastCaloSim::MSG::VERBOSE, x)
 #define FCS_MSG_DEBUG(x) FCS_MSG_LVL(::FastCaloSim::MSG::DEBUG, x)
-#define FCS_MSG_INFO(x) FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::INFO, x)
-#define FCS_MSG_WARNING(x) FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::WARNING, x)
-#define FCS_MSG_ERROR(x) FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::ERROR, x)
-#define FCS_MSG_FATAL(x) FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::FATAL, x)
+#define FCS_MSG_INFO(x) FCS_MSG_LVL(::FastCaloSim::MSG::INFO, x)
+#define FCS_MSG_WARNING(x) FCS_MSG_LVL(::FastCaloSim::MSG::WARNING, x)
+#define FCS_MSG_ERROR(x) FCS_MSG_LVL(::FastCaloSim::MSG::ERROR, x)
+#define FCS_MSG_FATAL(x) FCS_MSG_LVL(::FastCaloSim::MSG::FATAL, x)
 
 // Build one line in pieces: FCS_MSG(INFO) << "a"; ... FCS_MSG(INFO) << "b"
 // << END_FCS_MSG(INFO); Each thread has one open line. It is passed to the log
@@ -196,15 +196,9 @@ public:
 
   /// Return a stream for one statement that adds to the open line (FCS_MSG)
   auto stream(MSG::Level lvl, const char* file, int line) const -> LineStream;
-  /// Check whether the logging system is active at the provided verbosity
-  /// level: VERBOSE and DEBUG depend on the output level, all other levels are
-  /// always printed
-  auto msgLvl(const MSG::Level lvl) const -> bool
-  {
-    if (lvl == MSG::VERBOSE || lvl == MSG::DEBUG)
-      return m_level <= lvl;
-    return true;
-  }
+  /// Check whether messages of the given level are printed: those at or
+  /// above the output level, as in Gaudi
+  auto msgLvl(const MSG::Level lvl) const -> bool { return m_level <= lvl; }
 
   /// Marker that ends the line if we print this level (END_FCS_MSG)
   auto streamerEndLine(MSG::Level lvl) const -> LineStream::End;
