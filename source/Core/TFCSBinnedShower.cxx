@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #include <cmath>
+#include <numeric>
 
 #include "FastCaloSim/Core/TFCSBinnedShower.h"
 
@@ -327,35 +328,35 @@ void TFCSBinnedShower::load_shower_center_information(
   }
 }
 
+void TFCSBinnedShower::set_geometry(CaloGeo* geo)
+{
+  TFCSBinnedShowerBase::set_geometry(geo);
+  if (geo == nullptr || m_hdf5_file.empty() || !m_eventlibrary.empty()) {
+    return;
+  }
+  std::vector<std::size_t> layers(geo->n_layers());
+  std::iota(layers.begin(), layers.end(), std::size_t {0});
+  FCS_MSG_INFO("Loading event library from " << m_hdf5_file);
+  load_event_library(m_hdf5_file, layers);
+  FCS_MSG_INFO("Size after loading " << m_eventlibrary.size());
+}
+
 void TFCSBinnedShower::Streamer(TBuffer& buffer)
 {
-  // Stream an object of class TFCSBinnedShower
-
   if (buffer.IsReading()) {
+    // With an HDF5 file path, the event library is loaded in set_geometry():
+    // the geometry is not known yet
     buffer.ReadClassBuffer(TFCSBinnedShower::Class(), this);
-
-    // Load the event library from file
-    if (!m_hdf5_file.empty()) {
-      std::vector<std::size_t> layers;
-      layers.reserve(m_geo->n_layers());
-      for (std::size_t i = 0; i < m_geo->n_layers(); ++i) {
-        layers.push_back(i);
-      }
-      FCS_MSG_INFO("Loading event library from " << m_hdf5_file);
-      (this)->load_event_library(m_hdf5_file, layers);
-      FCS_MSG_INFO("Size after loading" << m_eventlibrary.size());
-    } else {
-      FCS_MSG_INFO(
-          "Using existing event library of size: " << m_eventlibrary.size());
-    }
-
-  } else {
-    // Remove the event library again, if it was loaded from file
-    if (!m_hdf5_file.empty()) {
-      FCS_MSG_DEBUG("Clear event library before saving");
-      m_eventlibrary.resize(0);
-    }
-
-    buffer.WriteClassBuffer(TFCSBinnedShower::Class(), this);
+    return;
   }
+  if (m_hdf5_file.empty()) {
+    buffer.WriteClassBuffer(TFCSBinnedShower::Class(), this);
+    return;
+  }
+  // The event library is loaded from the HDF5 file: write the object without
+  // it and keep it in memory
+  eventvector_t library;
+  library.swap(m_eventlibrary);
+  buffer.WriteClassBuffer(TFCSBinnedShower::Class(), this);
+  library.swap(m_eventlibrary);
 }

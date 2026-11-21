@@ -53,6 +53,10 @@ public:
 
   void disable_event_matching() { m_use_event_matching = false; }
 
+  // Loads the event library from the HDF5 file, if its path is set and the
+  // library is not loaded yet, for all layers of the geometry
+  void set_geometry(CaloGeo* geo) override;
+
   void enable_event_cherry_picking()
   {
     m_use_event_cherry_picking = true;
@@ -77,11 +81,11 @@ public:
                           std::vector<std::size_t>& layers,
                           bool only_load_meta_data = false);
 
-  // If the HDF5 file path is set, the event library will be loaded
-  // automatically at the beginning of the simulation.
-  // If this class is used, it would be better to use load_event_library()
-  // during the param file creation. In this case, the event library
-  // is stored and not loaded on the fly.
+  // If the HDF5 file path is set, the event library is not written to a
+  // parametrization file; it is loaded from the HDF5 file when the geometry
+  // is set (set_geometry(), which is called after reading the file).
+  // Alternatively, load_event_library() during the parametrization file
+  // creation stores the event library in the file.
   void set_hdf5_path(const std::string& filename) { m_hdf5_file = filename; }
   void delete_hdf5_path() { m_hdf5_file.clear(); }
   auto get_hdf5_path() const -> const std::string& { return m_hdf5_file; }
