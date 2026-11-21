@@ -96,6 +96,9 @@ target_link_libraries(BasicSimTests PRIVATE ATLASFCalGeoPlugin)
 target_link_libraries(AtlasTransportTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasSimTests PRIVATE ATLASFCalGeoPlugin g4app)
 target_link_libraries(AtlasGeoTests PRIVATE ATLASFCalGeoPlugin)
+# The interpreter test loads the library like an interactive ROOT session. The
+# test uses no symbol of the library, so --as-needed drops it from the link.
+target_compile_definitions(RootInterpreterTests PRIVATE FastCaloSimLib="$<TARGET_FILE:FastCaloSim::FastCaloSim>")
 
 # Throughput benchmark of the full chain (not registered with ctest)
 option(FastCaloSim_BUILD_BENCHMARK "Build the ATLAS throughput benchmark" OFF)
