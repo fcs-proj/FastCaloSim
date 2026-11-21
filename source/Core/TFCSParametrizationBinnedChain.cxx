@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <format>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
@@ -63,7 +64,7 @@ auto TFCSParametrizationBinnedChain::get_variable_text(
 auto TFCSParametrizationBinnedChain::get_bin_text(int bin) const
     -> const std::string
 {
-  return std::string(Form("bin %d", bin));
+  return std::format("bin {}", bin);
 }
 
 auto TFCSParametrizationBinnedChain::simulate(
@@ -161,14 +162,10 @@ auto TFCSParametrizationBinnedChain::simulate(
 void TFCSParametrizationBinnedChain::Print(Option_t* option) const
 {
   TFCSParametrization::Print(option);
-  TString opt(option);
-  bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
+  const std::string opt = option != nullptr ? option : "";
+  const auto [shortprint, longprint, optprint] = print_options(option);
 
-  TString prefix = "- ";
+  std::string prefix = "- ";
   for (unsigned int ichain = 0; ichain < size(); ++ichain) {
     if (ichain == 0 && ichain != m_bin_start.front()) {
       prefix = "> ";
@@ -180,7 +177,7 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
         if (ibin < get_number_of_bins() - 1)
           if (ichain == m_bin_start[ibin + 1])
             continue;
-        prefix = Form("%-2d", ibin);
+        prefix = std::format("{:<2}", ibin);
         if (longprint)
           FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
       }
@@ -190,6 +187,6 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
       if (longprint)
         FCS_MSG_INFO(optprint << prefix << "Run for all bins");
     }
-    chain()[ichain]->Print(opt + prefix);
+    chain()[ichain]->Print((opt + prefix).c_str());
   }
 }

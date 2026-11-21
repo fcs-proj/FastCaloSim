@@ -47,15 +47,25 @@ auto TFCSParametrizationBase::compare(const TFCSParametrizationBase& ref) const
   return false;
 }
 
+auto TFCSParametrizationBase::print_options(Option_t* option) const
+    -> PrintOptions
+{
+  std::string optprint = option != nullptr ? option : "";
+  const bool shortprint = optprint.find("short") != std::string::npos;
+  for (auto pos = optprint.find("short"); pos != std::string::npos;
+       pos = optprint.find("short", pos))
+  {
+    optprint.erase(pos, 5);
+  }
+  const bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
+      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
+  return {shortprint, longprint, std::move(optprint)};
+}
+
 /// If called with argument "short", only a one line summary will be printed
 void TFCSParametrizationBase::Print(Option_t* option) const
 {
-  TString opt(option);
-  bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
+  const auto [shortprint, longprint, optprint] = print_options(option);
 
   if (longprint) {
     FCS_MSG_INFO(optprint << GetTitle() << " " << IsA()->GetName());

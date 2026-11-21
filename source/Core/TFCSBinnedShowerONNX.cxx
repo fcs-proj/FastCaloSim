@@ -589,13 +589,12 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
     data.push_back(std::move(layer_vec));
   }
 
-  // Example output
   for (size_t i = 0; i < energies.size(); ++i) {
-    std::cout << "Energy index " << i << ": " << energies[i] << " GeV\n";
+    FCS_MSG_DEBUG("Energy index " << i << ": " << energies[i] << " GeV");
     for (size_t j = 0; j < data[i].size(); ++j) {
       if (!data[i][j].empty()) {
-        std::cout << "  Layer " << j << " Shape: (" << data[i][j].size() << ", "
-                  << data[i][j][0].size() << ")\n";
+        FCS_MSG_DEBUG("  Layer " << j << " Shape: (" << data[i][j].size()
+                                 << ", " << data[i][j][0].size() << ")");
       }
     }
   }

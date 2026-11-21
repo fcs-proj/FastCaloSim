@@ -93,12 +93,7 @@ auto TFCSEnergyInterpolationSpline::simulate(
 
 void TFCSEnergyInterpolationSpline::Print(Option_t* option) const
 {
-  TString opt(option);
-  bool shortprint = opt.Index("short") >= 0;
-  bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
-      || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  TString optprint = opt;
-  optprint.ReplaceAll("short", "");
+  const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
 
   if (longprint)

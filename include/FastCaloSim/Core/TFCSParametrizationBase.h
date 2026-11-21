@@ -5,6 +5,7 @@
 #include <map>
 #include <mutex>
 #include <set>
+#include <string>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 
@@ -178,6 +179,16 @@ protected:
   static constexpr double init_eta_max = 100;  //! Do not persistify!
 
   auto compare(const TFCSParametrizationBase& ref) const -> bool;
+
+  /// Options of Print(): "short" anywhere in the option asks for a one-line
+  /// summary, the rest of the option is the indentation prefix of every line.
+  struct PrintOptions
+  {
+    bool shortprint;  ///< the option contains "short"
+    bool longprint;  ///< print details: DEBUG level, or INFO without "short"
+    std::string optprint;  ///< the option with every "short" removed
+  };
+  auto print_options(Option_t* option) const -> PrintOptions;
 
 public:
   /// Update outputlevel
