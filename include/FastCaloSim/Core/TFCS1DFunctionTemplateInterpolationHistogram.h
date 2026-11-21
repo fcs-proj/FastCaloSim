@@ -79,12 +79,6 @@ public:
     } else
       m = 0;
 
-    // FCS_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
-    // frac="<<m_HistoContents.get_fraction(ibin)<<" dfracprev="<<dfracprev<<"
-    // dfrac="<<dfrac<<" dfracnext="<<dfracnext<<"
-    // dfracprev-dfrac="<<dfracprev-dfrac<<"
-    // dfracnext-dfrac="<<dfracnext-dfrac<<" m="<<m<<"
-    // residual_rnd="<<residual_rnd);
     return m_HistoBorders.position_lin(ibin, m, residual_rnd);
   }
 
@@ -159,26 +153,3 @@ public:
   ClassDefOverride(TFCS1DFunctionInt16Int32InterpolationHistogram,
                    1)  // TFCS1DFunctionInt16Int32InterpolationHistogram
 };
-
-// clang-format off
-#if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      uint8_t, float> + ;
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      uint16_t, float> + ;
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      uint16_t, float> + ;
-#  pragma link C++ class TFCS1DFunctionTemplateInterpolationHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      uint32_t, float> + ;
-
-#  pragma link C++ class TFCS1DFunctionInt8Int8InterpolationHistogram + ;
-#  pragma link C++ class TFCS1DFunctionInt8Int16InterpolationHistogram + ;
-#  pragma link C++ class TFCS1DFunctionInt16Int16InterpolationHistogram + ;
-#  pragma link C++ class TFCS1DFunctionInt16Int32InterpolationHistogram + ;
-
-#endif
-// clang-format on

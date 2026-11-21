@@ -51,7 +51,3 @@ private:
   ClassDefOverride(TFCSEnergyInterpolationHistogram,
                    1)  // TFCSEnergyInterpolationHistogram
 };
-
-#if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#  pragma link C++ class TFCSEnergyInterpolationHistogram + ;
-#endif

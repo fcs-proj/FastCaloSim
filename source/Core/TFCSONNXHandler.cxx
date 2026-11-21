@@ -43,9 +43,7 @@ TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
 {
   FCS_MSG_DEBUG("TFCSONNXHandler copy constructor called");
   m_bytes = copy_from.m_bytes;
-  // Cannot copy a session
-  // m_session = copy_from.m_session;
-  // But can read it from bytes
+  // A session cannot be copied, read it again from the bytes
   readSerializedSession();
   m_inputNodeNames = copy_from.m_inputNodeNames;
   m_inputNodeDims = copy_from.m_inputNodeDims;
@@ -118,11 +116,6 @@ void TFCSONNXHandler::setupPersistedVariables()
 
 void TFCSONNXHandler::setupNet()
 {
-  // From
-  // https://gitlab.cern.ch/atlas/athena/-/blob/master/Control/AthOnnxruntimeUtils/AthOnnxruntimeUtils/OnnxUtils.h
-  // m_session = AthONNX::CreateORTSession(inputFile);
-  // This segfaults.
-
   // TODO; should I be using m_session_options? see
   // https://github.com/microsoft/onnxruntime-inference-examples/blob/2b42b442526b9454d1e2d08caeb403e28a71da5f/c_cxx/squeezenet/main.cpp#L71
   FCS_MSG_INFO("Setting up ONNX session.");
@@ -419,9 +412,6 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
                                       elements_in_node,
                                       m_inputNodeDims[node_n].data(),
                                       n_dimensions);
-    // Problems with the string steam when compiling separately.
-    // FCS_MSG_DEBUG("Created input node " << node << " from values " <<
-    // input_values[node_n]);
 
     node_values.push_back(std::move(node));
   }

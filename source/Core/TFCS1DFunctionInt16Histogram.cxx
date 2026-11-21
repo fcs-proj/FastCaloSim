@@ -57,7 +57,6 @@ void TFCS1DFunctionInt16Histogram::Initialize(const TH1* hist)
 
   for (ibin = 0; ibin < nbins; ++ibin) {
     m_HistoContents[ibin] = s_MaxValue * (temp_HistoContents[ibin] / integral);
-    // FCS_MSG_INFO("bin="<<ibin<<" val="<<m_HistoContents[ibin]);
   }
 }
 

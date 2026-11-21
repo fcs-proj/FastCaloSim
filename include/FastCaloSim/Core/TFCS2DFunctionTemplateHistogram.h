@@ -50,8 +50,6 @@ public:
   {
     return m_HistoContents.get_nbins();
   };
-  // inline size_t get_nbinsx() const {return m_HistoBordersx.get_nbins();};
-  // inline size_t get_nbinsy() const {return m_HistoBordersy.get_nbins();};
 
   /// Initialize from root histogram. Depending on the precision of the x- and
   /// y-axis, bins are merged if numerical identical
@@ -69,39 +67,17 @@ public:
     } else {
       set_nbins(nbinsx, nbinsy);
 
-      // m_HistoBordersx.SetMinMax(hist->GetXaxis()->GetBinLowEdge(first+1),hist->GetXaxis()->GetBinUpEdge(last+1));
       m_HistoBordersx.SetMinMax(hist->GetXaxis()->GetBinLowEdge(1),
                                 hist->GetXaxis()->GetBinUpEdge(nbinsx));
       m_HistoBordersy.SetMinMax(hist->GetYaxis()->GetBinLowEdge(1),
                                 hist->GetYaxis()->GetBinUpEdge(nbinsy));
-      // Int_t ihist=0;
       for (Int_t ibinx = 1; ibinx <= hist->GetNbinsX(); ++ibinx) {
         m_HistoBordersx.SetBinLowEdge(
             ibinx, hist->GetXaxis()->GetBinLowEdge(ibinx + 1));
-        //          if(ihist>0)
-        //          if(m_HistoBorders.GetBinLowEdge(ihist-1)==m_HistoBorders.GetBinLowEdge(ihist))
-        //          { FCS_MSG_INFO( bin="<<ibin+1<<"
-        //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<"
-        //          fx="<<m_HistoBorders.GetBinLowEdge(ihist);
-        //          --ihist;
-        //          FCS_MSG_INFO("     bin="<<ibin  <<"
-        //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin  )<<"
-        //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
-        //          }
       }  // for
       for (Int_t ibiny = 1; ibiny <= hist->GetNbinsY(); ++ibiny) {
         m_HistoBordersy.SetBinLowEdge(
             ibiny, hist->GetYaxis()->GetBinLowEdge(ibiny + 1));
-        //          if(ihist>0)
-        //          if(m_HistoBorders.GetBinLowEdge(ihist-1)==m_HistoBorders.GetBinLowEdge(ihist))
-        //          { FCS_MSG_INFO("Skip bin="<<ibin+1<<"
-        //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<"
-        //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
-        //          --ihist;
-        //          FCS_MSG_INFO("     bin="<<ibin  <<"
-        //          x="<<hist->GetXaxis()->GetBinLowEdge(ibin  )<<"
-        //          fx="<<m_HistoBorders.GetBinLowEdge(ihist));
-        //          }
       }  // for
 
       for (Int_t ibinx = 1; ibinx <= hist->GetNbinsX(); ++ibinx)
@@ -109,71 +85,9 @@ public:
           int globalbin = (ibinx - 1) * hist->GetNbinsY() + ibiny - 1;
           m_HistoContents.set_fraction(
               globalbin, temp_HistoContents[globalbin] / integral);
-          //          if(ihist>0)
-          //          if(m_HistoContents.get_fraction(ihist-1)==m_HistoContents.get_fraction(ihist))
-          //          {
-          //            FCS_MSG_INFO("Skip fbin="<<ihist<<"
-          //            fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
-          //            frac="<<m_HistoContents.get_fraction(ihist));
-          //            --ihist;
-          //            FCS_MSG_INFO("     fbin="<<ihist<<"
-          //            fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
-          //            frac="<<m_HistoContents.get_fraction(ihist));
-          //          }
-
-          //          FCS_MSG_INFO("bin="<<ibin+1<<"
-          //          fbin="<<ihist<<"/"<<m_HistoBorders.get_nbins()<<"
-          //          x=["<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<","<<hist->GetXaxis()->GetBinUpEdge(ibin+1)<<"]
-          //          fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
-          //          int="<<temp_HistoContents[ibin]/integral<<"
-          //          frac="<<m_HistoContents.get_fraction(ihist));
-
-          //          ++ihist;
         }
-      //        if(ihist!=nbins) {
-      //          set_nbins(ihist);
-      //          m_HistoBorders.SetMinMax(hist->GetXaxis()->GetBinLowEdge(first+1),hist->GetXaxis()->GetBinUpEdge(last+1));
-      //        }
-    }  // for ibinx
-  }  // for ibiny
-
-  /*
-          for( Int_t ibiny=1; ibiny<=hist->GetNbinsY(); ++ibiny )
-          for( Int_t ibinx=1; ibinx<=hist->GetNbinsX(); ++ibinx )
-            {
-             int globalbin = (ibiny-1)*hist->GetNbinsX() + ibinx - 1;
-             m_HistoContents.set_fraction(globalbin,
-  temp_HistoContents[globalbin]/integral);
-  //          if(ihist>0)
-  if(m_HistoContents.get_fraction(ihist-1)==m_HistoContents.get_fraction(ihist))
-  {
-  //            FCS_MSG_INFO("Skip fbin="<<ihist<<"
-  fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
-  frac="<<m_HistoContents.get_fraction(ihist));
-  //            --ihist;
-  //            FCS_MSG_INFO("     fbin="<<ihist<<"
-  fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
-  frac="<<m_HistoContents.get_fraction(ihist));
-  //          }
-
-  //          FCS_MSG_INFO("bin="<<ibin+1<<"
-  fbin="<<ihist<<"/"<<m_HistoBorders.get_nbins()<<"
-  x=["<<hist->GetXaxis()->GetBinLowEdge(ibin+1)<<","<<hist->GetXaxis()->GetBinUpEdge(ibin+1)<<"]
-  fx="<<m_HistoBorders.GetBinLowEdge(ihist)<<"
-  int="<<temp_HistoContents[ibin]/integral<<"
-  frac="<<m_HistoContents.get_fraction(ihist));
-
-  //          ++ihist;
-                     }
-  //        if(ihist!=nbins) {
-  //          set_nbins(ihist);
-  //
-  m_HistoBorders.SetMinMax(hist->GetXaxis()->GetBinLowEdge(first+1),hist->GetXaxis()->GetBinUpEdge(last+1));
-  //        }
-          }//for ibinx
-          }//for ibiny
-  */
-  // using TFCS2DFunction::rnd_to_fct;
+    }
+  }
 
   /// Function gets random number rnd in the range [0,1) as argument
   /// and returns function value according to a histogram distribution
@@ -192,8 +106,6 @@ public:
     int ibinx = ibin / m_HistoBordersy.get_nbins();
     valuex = m_HistoBordersx.position(ibinx, 0.5);
     valuey = m_HistoBordersy.position(ibiny, residual_rnd);
-    // valuex = 2.0+ 0.3*rnd;
-    // valuey = 1200.0 + rnd*500.0;
   }
 
   void rnd_to_fct(float& valuex,
@@ -207,31 +119,11 @@ public:
     }
     Trandom residual_rnd;
     size_t ibin = m_HistoContents.get_bin(rnd, residual_rnd);
-    int ibiny = ibin
-        % m_HistoBordersy
-              .get_nbins();  // printf("%d ", m_HistoBordersy.get_nbins() );
-    int ibinx = ibin
-        / m_HistoBordersy
-              .get_nbins();  // printf("%d ", m_HistoBordersx.get_nbins() );
-                             // getchar();
+    int ibiny = ibin % m_HistoBordersy.get_nbins();
+    int ibinx = ibin / m_HistoBordersy.get_nbins();
     valuex = m_HistoBordersx.position(ibinx, rnd2);
     valuey = m_HistoBordersy.position(ibiny, residual_rnd);
-    // valuex = 2.0+ rnd;
-    // valuey = 1200.0 + rnd2*500.0;
   }
-  /*
-  virtual void rnd_to_fct(float& valuex,float& valuey,float rnd, float rnd2)
-  const { if(m_HistoContents.get_nbins()==0) { valuex = 0.0; valuey = 0.0; }
-        Trandom residual_rnd;
-        size_t ibin=m_HistoContents.get_bin(rnd,residual_rnd);
-        int ibiny = ibin / m_HistoBordersx.get_nbins();     //printf("%d ",
-  m_HistoBordersy.get_nbins() ); int ibinx = ibin % m_HistoBordersx.get_nbins();
-  //printf("%d ", m_HistoBordersx.get_nbins() ); getchar(); valuex =
-  m_HistoBordersx.position(ibinx, rnd2); valuey =
-  m_HistoBordersy.position(ibiny,residual_rnd);
-          //valuex = 2.0+ rnd;
-          //valuey = 1200.0 + rnd2*500.0;
-  }*/
 
   inline auto get_HistoBordersx() const -> const Txvec&
   {
@@ -241,9 +133,6 @@ public:
   {
     return m_HistoBordersy;
   };
-
-  /////inline void get_XYZfromGlobal(int &ix, int &iy, int &iz, int global)
-  /// const {hist;};
 
   inline auto get_HistoBordersx() -> Txvec& { return m_HistoBordersx; };
   inline auto get_HistoBordersy() -> Tyvec& { return m_HistoBordersy; };
@@ -742,120 +631,3 @@ public:
   ClassDefOverride(TFCS2DFunctionInt32Int32Int32Histogram,
                    1)  // TFCS2DFunctionInt32Int32Int32Histogram
 };
-
-// clang-format off
-#if defined(__ROOTCLING__) && defined(__FastCaloSimStandAlone__)
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt8BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt16BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt8BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt16BinEdges, uint32_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint8_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint16_t, float> + ;
-#  pragma link C++ class TFCS2DFunctionTemplateHistogram \
-          < TFCS1DFunction_HistogramInt32BinEdges, \
-      TFCS1DFunction_HistogramInt32BinEdges, uint32_t, float> + ;
-
-#  pragma link C++ class TFCS2DFunctionInt8Int8Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int8Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int8Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int16Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int16Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int16Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int32Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int32Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt8Int32Int32Histogram + ;
-
-#  pragma link C++ class TFCS2DFunctionInt16Int8Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int8Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int8Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int16Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int16Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int16Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int32Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int32Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt16Int32Int32Histogram + ;
-
-#  pragma link C++ class TFCS2DFunctionInt32Int8Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int8Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int8Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int16Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int16Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int16Int32Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int32Int8Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int32Int16Histogram + ;
-#  pragma link C++ class TFCS2DFunctionInt32Int32Int32Histogram + ;
-
-#endif
-// clang-format on

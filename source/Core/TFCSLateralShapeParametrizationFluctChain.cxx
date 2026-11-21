@@ -105,7 +105,6 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
   int retry = 0;
   do {
     hit.reset();
-    // hit.E()=Eavghit;
     do {
       hit.set_E(CLHEP::RandGaussZiggurat::shoot(
           simulstate.randomEngine(), Eavghit, m_RMS * Eavghit));

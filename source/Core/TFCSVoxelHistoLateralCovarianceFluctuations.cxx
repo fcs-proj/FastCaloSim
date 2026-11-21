@@ -52,8 +52,6 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   // where hist is the 1D histogram from which a CDF was calculated
 
   inputfile->cd(folder.c_str());
-  //  inputfile->ls();
-
   int cs = calosample();
   int bin = 1;
 
@@ -209,7 +207,6 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     FCS_MSG_DEBUG("simulstate after clearing AuxInfo");
     simulstate.Print();
   }
-  // if(m_parMeans[Ebin-1].GetNrows()<1) {
   if (m_parMeans.empty() || Ebin <= 0) {
     // not initialized, do nothing in case this instance is just used to clean
     // up memory
@@ -302,40 +299,9 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     return FCSFatal;
   }
 
-  /*  int nbinsx = 8;
-    float lowx = 0;
-    float highx = 2 * TMath::Pi();
-    int nbinsy = 9.;
-    float lowy = 0.;
-    float highy = 165.;
-    float coreSize = 5.;
-
-    std::vector<float> bins_x = {};
-    for(int bin = 0; bin <= nbinsx; ++bin){
-        bins_x.push_back(lowx+((highx-lowx)/nbinsx)*bin);
-    }
-
-    std::vector<float> bins_y = {lowy};
-    for(int bin = 0; bin <= nbinsy; ++bin){
-        float step = (highy-lowy)/nbinsy;
-        if(coreSize > 0){
-            if(bin ==0){lowy =lowy+coreSize;}
-            bins_y.push_back(lowy+bin*step);
-        }
-        else{
-            if(bin > 0){
-                bins_y.push_back(lowy+bin*step);
-            }
-        }
-    }
-
-    TH2F* voxel_template = new TH2F("", "", bins_x.size()-1, &bins_x[0],
-    bins_y.size()-1, &bins_y[0]); */
-
   float deta_hit_minus_extrapol = hit.eta() - center_eta;
   float dphi_hit_minus_extrapol = TVector2::Phi_mpi_pi(hit.phi() - center_phi);
 
-  //  if(charge<0.)dphi_hit_minus_extrapol=-dphi_hit_minus_extrapol;
   if (center_eta < 0.)
     deta_hit_minus_extrapol = -deta_hit_minus_extrapol;
 
@@ -387,6 +353,5 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
                           << ", r = " << center_r << ", ix = " << ix
                           << ", iy = " << iy << ", weight = " << weight);
 
-  // delete voxel_template;
   return FCSSuccess;
 }

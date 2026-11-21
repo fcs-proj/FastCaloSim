@@ -31,8 +31,6 @@
 //======= TFCSBinnedShowerONNX =========
 //=============================================
 
-// using namespace TFCSBinnedShowerEventTypes;
-
 TFCSBinnedShowerONNX::TFCSBinnedShowerONNX(const char* name, const char* title)
     : TFCSBinnedShowerBase(name, title)
 {
@@ -427,7 +425,6 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
 
   p = CLHEP::RandFlat::shoot(simulstate.randomEngine(), 0, 1);
   if (layer_index != 2) {
-    // if ((layer_index != 2) && (layer_index != 0)) {
     if (p > p_r) {
       R_min = (R_min + R_max) / 2.;
       return;

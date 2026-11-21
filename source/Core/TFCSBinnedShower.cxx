@@ -30,8 +30,6 @@
 //======= TFCSBinnedShower =========
 //=============================================
 
-// using namespace TFCSBinnedShowerEventTypes;
-
 TFCSBinnedShower::TFCSBinnedShower(const char* name, const char* title)
     : TFCSBinnedShowerBase(name, title)
 {
@@ -146,7 +144,6 @@ auto TFCSBinnedShower::find_best_match(float eta_center,
     float e_diff =
         std::log(m_eventlibrary.at(event_index).e_init / e_init) / std::log(2);
 
-    // float dist2 = eta_diff * eta_diff;
     float dist2 = eta_diff * eta_diff + e_diff * e_diff;
 
     if (phi_mod_matching) {
@@ -457,7 +454,6 @@ void TFCSBinnedShower::upscale(TFCSSimulationState& simulstate,
 
   p = CLHEP::RandFlat::shoot(simulstate.randomEngine(), 0, 1);
   if (layer_index != 2) {
-    // if ((layer_index != 2) && (layer_index != 1)) {
     if (p > p_r) {
       R_min = (R_min + R_max) / 2.;
       return;
