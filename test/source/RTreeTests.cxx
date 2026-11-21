@@ -95,6 +95,27 @@ TEST(RTreeTests, PositionOutsideAllCells)
   EXPECT_EQ(rtree.query_point(at_eta_phi(1000, 0.0)), 2);
 }
 
+TEST(RTreeTests, PositionNotFinite)
+{
+  const RTree rtree(kEtaPhi,
+                    {eta_phi_cell(1, 0.5, 0.0, 1.0, 0.2),  // eta in [0, 1]
+                     eta_phi_cell(2, 1.5, 0.0, 1.0, 0.2)});  // eta in [1, 2]
+
+  // A position that is not finite lies in no cell; one of the cells is
+  // returned, without undefined behavior in the cell lookup
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  const double inf = std::numeric_limits<double>::infinity();
+  for (const Position& pos : {at_eta_phi(nan, 0.0),
+                              at_eta_phi(0.5, nan),
+                              at_eta_phi(nan, nan),
+                              at_eta_phi(inf, 0.0),
+                              at_eta_phi(0.5, -inf)})
+  {
+    const auto id = rtree.query_point(pos);
+    EXPECT_TRUE(id == 1 || id == 2) << "id " << id;
+  }
+}
+
 TEST(RTreeTests, CellAcrossPhiBoundary)
 {
   // Cell 1 covers phi in [pi - 0.1, pi] and [-pi, -pi + 0.1]

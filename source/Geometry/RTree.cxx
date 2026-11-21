@@ -134,8 +134,11 @@ public:
   {
     const double x = point.get<0>();
     const double y = point.get<1>();
-    // Outside the extent of all rectangles (or NaN): no rectangle contains it
-    if (x < m_x0 || x > m_x1 || y < m_y0 || y > m_y1) {
+    // Not finite or outside the extent of all rectangles: no rectangle
+    // contains it (and the bin below needs finite coordinates)
+    if (!std::isfinite(x) || !std::isfinite(y) || x < m_x0 || x > m_x1
+        || y < m_y0 || y > m_y1)
+    {
       return;
     }
     const std::size_t bin = bin_y(y) * m_nx + bin_x(x);
