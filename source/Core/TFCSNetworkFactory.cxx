@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <fstream>  // For checking if files exist
+#include <memory>
 #include <stdexcept>
 
 #include "FastCaloSim/Core/TFCSNetworkFactory.h"
@@ -63,8 +64,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& input)
   FCS_MSG_NOCLASS(
       logger,
       "Directly creating ONNX network from bytes length " << input.size());
-  std::unique_ptr<VNetworkBase> created(new TFCSONNXHandler(input));
-  return created;
+  return std::make_unique<TFCSONNXHandler>(input);
 };
 
 auto TFCSNetworkFactory::create(std::string input)
@@ -76,18 +76,17 @@ auto TFCSNetworkFactory::create(std::string input)
     FCS_MSG_NOCLASS(logger,
                     "Creating ONNX network from file ..."
                         << input.substr(input.length() - 10));
-    std::unique_ptr<VNetworkBase> created(new TFCSONNXHandler(input));
-    return created;
+    return std::make_unique<TFCSONNXHandler>(input);
   } else {
     try {
-      std::unique_ptr<VNetworkBase> created(new TFCSSimpleLWTNNHandler(input));
+      auto created = std::make_unique<TFCSSimpleLWTNNHandler>(input);
       FCS_MSG_NOCLASS(logger,
                       "Succeeded in creating LWTNN nn from string starting "
                           << input.substr(0, 10));
       return created;
     } catch (const boost::property_tree::ptree_bad_path& e) {
       // If we get this error, it was actually a graph, not a NeuralNetwork
-      std::unique_ptr<VNetworkBase> created(new TFCSGANLWTNNHandler(input));
+      auto created = std::make_unique<TFCSGANLWTNNHandler>(input);
       FCS_MSG_NOCLASS(logger, "Succeeded in creating LWTNN graph from string");
       return created;
     };
@@ -103,14 +102,12 @@ auto TFCSNetworkFactory::create(std::string input, bool graph_form)
     FCS_MSG_NOCLASS(logger,
                     "Creating ONNX network from file ..."
                         << input.substr(input.length() - 10));
-    std::unique_ptr<VNetworkBase> created(new TFCSONNXHandler(input));
-    return created;
+    return std::make_unique<TFCSONNXHandler>(input);
   } else if (graph_form) {
     FCS_MSG_NOCLASS(logger, "Creating LWTNN graph from string");
-    std::unique_ptr<VNetworkBase> created(new TFCSGANLWTNNHandler(input));
-    return created;
+    return std::make_unique<TFCSGANLWTNNHandler>(input);
   } else {
-    std::unique_ptr<VNetworkBase> created(new TFCSSimpleLWTNNHandler(input));
+    auto created = std::make_unique<TFCSSimpleLWTNNHandler>(input);
     FCS_MSG_NOCLASS(logger, "Creating LWTNN nn from string");
     return created;
   };

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
@@ -86,7 +87,7 @@ private:
   // after reading in order to free memory
   std::string* m_input = nullptr;
   std::vector<int>* m_relevantLayers = nullptr;
-  lwt::LightweightNeuralNetwork* m_nn = nullptr;  //! Do not persistify
+  std::unique_ptr<lwt::LightweightNeuralNetwork> m_nn;  //! Do not persistify
   std::vector<int>* m_normLayers =
       nullptr;  // vector of index layers (-1 corresponds to truth energy)
   std::vector<float>* m_normMeans =

@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstring>
+#include <memory>
 #include <vector>
 
 #include "TBuffer.h"
@@ -111,11 +111,6 @@ public:
 
   TFCS1DFunction_Array() = default;
   TFCS1DFunction_Array(size_t count) { resize(count); };
-  ~TFCS1DFunction_Array()
-  {
-    if (m_content)
-      delete[] m_content;
-  };
 
   auto MemorySizeArray() const -> std::size_t { return size() * sizeof(T); };
   auto MemorySize() const -> std::size_t
@@ -128,25 +123,18 @@ public:
   /// resize to given count, copying old content
   void resize(size_t count)
   {
-    T* new_cont = nullptr;
+    std::unique_ptr<T[]> new_cont;
     if (count > 0)
-      new_cont = new T[count];
-    if (m_content && new_cont) {
-      size_t ncopy = count;
-      if (size() < ncopy)
-        ncopy = size();
-      ncopy *= sizeof(T);
-      std::memcpy(new_cont, m_content, ncopy);
-    }
-    if (m_content)
-      delete[] m_content;
+      new_cont = std::make_unique_for_overwrite<T[]>(count);
+    if (m_content && new_cont)
+      std::copy_n(m_content.get(), std::min(count, size()), new_cont.get());
     m_size = count;
-    m_content = new_cont;
+    m_content = std::move(new_cont);
   };
 
   /// Direct data pointer
-  inline auto data() -> T* { return m_content; };
-  inline auto data() const -> const T* { return m_content; };
+  inline auto data() -> T* { return m_content.get(); };
+  inline auto data() const -> const T* { return m_content.get(); };
 
   /// Direct access operators. Values are in the range
   /// [0,TFCS1DFunction_Numeric<T>::MaxValue]
@@ -157,15 +145,15 @@ public:
   };
 
   /// begin() iterators
-  inline auto begin() -> T* { return m_content; };
-  inline auto begin() const -> const T* { return m_content; };
+  inline auto begin() -> T* { return m_content.get(); };
+  inline auto begin() const -> const T* { return m_content.get(); };
 
   /// end() iterators
-  inline auto end() -> T* { return m_content + size(); };
-  inline auto end() const -> const T* { return m_content + size(); };
+  inline auto end() -> T* { return m_content.get() + size(); };
+  inline auto end() const -> const T* { return m_content.get() + size(); };
 
 private:
-  T* m_content {nullptr};  //!
+  std::unique_ptr<T[]> m_content;  //!
   size_t m_size {0};
 
   // Use ClassDef without virtual functions. Saves 8 bytes per instance
@@ -181,11 +169,11 @@ void TFCS1DFunction_Array<T>::Streamer(TBuffer& b)
     b >> count;
     resize(count);
     if (m_size > 0)
-      b.ReadFastArray(m_content, m_size);
+      b.ReadFastArray(m_content.get(), m_size);
   } else {
     b << m_size;
     if (m_size > 0)
-      b.WriteFastArray(m_content, m_size);
+      b.WriteFastArray(m_content.get(), m_size);
   }
 }
 

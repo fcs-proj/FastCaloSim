@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <memory>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 
@@ -22,8 +23,8 @@ void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const
 
 auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
 {
-  TH1D* h_input = (TH1D*)h_input1->Clone("h_input");
-  TH1D* h_approx = (TH1D*)h_approx1->Clone("h_approx");
+  std::unique_ptr<TH1D> h_input((TH1D*)h_input1->Clone("h_input"));
+  std::unique_ptr<TH1D> h_approx((TH1D*)h_approx1->Clone("h_approx"));
 
   double maxdev = 0.0;
 
@@ -35,8 +36,6 @@ auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
         h_approx->GetBinContent(h_approx->FindBin(h_input->GetBinCenter(b)));
   }
   if (integral_approx == 0.0) {
-    delete h_input;
-    delete h_approx;
     return 0.;
   }
   h_approx->Scale(integral_input / integral_approx);
@@ -51,9 +50,6 @@ auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
     if (val > maxdev)
       maxdev = val;
   }
-
-  delete h_input;
-  delete h_approx;
 
   return maxdev * 100.0;
 }

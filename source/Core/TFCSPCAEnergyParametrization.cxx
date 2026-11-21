@@ -1,5 +1,8 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <memory>
+#include <vector>
+
 #include "FastCaloSim/Core/TFCSPCAEnergyParametrization.h"
 
 #include "CLHEP/Random/RandFlat.h"
@@ -153,8 +156,8 @@ auto TFCSPCAEnergyParametrization::simulate(
     double* vals_gauss_means = (double*)Gauss_means->GetMatrixArray();
     double* vals_gauss_rms = Gauss_rms->GetMatrixArray();
 
-    double* output_data = new double[layerNr.size() + 1];
-    double* input_data = new double[layerNr.size() + 1];
+    std::vector<double> output_data(layerNr.size() + 1);
+    std::vector<double> input_data(layerNr.size() + 1);
 
     for (unsigned int l = 0; l <= layerNr.size(); l++) {
       double mean = vals_gauss_means[l];
@@ -168,11 +171,11 @@ auto TFCSPCAEnergyParametrization::simulate(
         MeanValues,
         EV,
         layerNr.size() + 1,
-        input_data,
-        output_data,
+        input_data.data(),
+        output_data.data(),
         layerNr.size() + 1);
 
-    double* simdata = new double[layerNr.size() + 1];
+    std::vector<double> simdata(layerNr.size() + 1);
     double sum_fraction = 0.0;
     for (unsigned int l = 0; l <= layerNr.size(); l++) {
       double simdata_uniform =
@@ -209,10 +212,6 @@ auto TFCSPCAEnergyParametrization::simulate(
       }
       float random = CLHEP::RandFlat::shoot(simulstate.randomEngine());
       if (random > pass_probability) {
-        delete[] output_data;
-        delete[] input_data;
-        delete[] simdata;
-
         return (FCSReturnCode)FCSRetryPCA;
       }
     }
@@ -232,10 +231,6 @@ auto TFCSPCAEnergyParametrization::simulate(
       simulstate.set_E(s, energyfrac * total_energy);
       simulstate.set_SF(scalefactor);
     }
-
-    delete[] output_data;
-    delete[] input_data;
-    delete[] simdata;
   }
 
   return FCSSuccess;
@@ -272,20 +267,15 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 {
   bool load_ok = true;
 
-  int trynext = 1;
   TString x;
   if (folder.empty())
     x = "bin";
   else
     x = folder + "/bin";
-  while (trynext) {
-    IntArray* test = (IntArray*)file->Get(
-        x + Form("%i/pca/RelevantLayers", m_numberpcabins));
-    if (test) {
-      m_numberpcabins++;
-      delete test;
-    } else
-      trynext = 0;
+  while (std::unique_ptr<TObject>(
+      file->Get(x + Form("%i/pca/RelevantLayers", m_numberpcabins))))
+  {
+    m_numberpcabins++;
   }
   m_numberpcabins -= 1;
 
