@@ -3,8 +3,7 @@
 #pragma once
 
 #include <cstddef>
-#include <map>
-#include <utility>
+#include <vector>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
@@ -21,41 +20,41 @@ public:
 
   void clear();
 
-  static constexpr int NumSubPos = 3;
+  static constexpr std::size_t NumSubPos = 3;
 
   void set_OK(std::size_t layer, FastCaloSim::SubPos subpos, bool val = true)
   {
-    m_CaloOK[{layer, subpos}] = val;
+    at(layer, subpos).ok = val;
   }
 
   void set_eta(std::size_t layer, FastCaloSim::SubPos subpos, double val)
   {
-    m_etaCalo[{layer, subpos}] = val;
+    at(layer, subpos).eta = val;
   }
 
   void set_phi(std::size_t layer, FastCaloSim::SubPos subpos, double val)
   {
-    m_phiCalo[{layer, subpos}] = val;
+    at(layer, subpos).phi = val;
   }
 
   void set_r(std::size_t layer, FastCaloSim::SubPos subpos, double val)
   {
-    m_rCalo[{layer, subpos}] = val;
+    at(layer, subpos).r = val;
   }
 
   void set_z(std::size_t layer, FastCaloSim::SubPos subpos, double val)
   {
-    m_zCalo[{layer, subpos}] = val;
+    at(layer, subpos).z = val;
   }
 
   void set_d(std::size_t layer, FastCaloSim::SubPos subpos, double val)
   {
-    m_dCalo[{layer, subpos}] = val;
+    at(layer, subpos).d = val;
   }
 
   void set_detaBorder(std::size_t layer, FastCaloSim::SubPos subpos, double val)
   {
-    m_distetaCaloBorder[{layer, subpos}] = val;
+    at(layer, subpos).deta_border = val;
   }
 
   void set_IDCaloBoundary_eta(double val) { m_IDCaloBoundary_eta = val; }
@@ -67,58 +66,37 @@ public:
 
   auto OK(std::size_t layer, FastCaloSim::SubPos subpos) const -> bool
   {
-    // layers/subpositions never reached by the extrapolation are not stored;
-    // read as the pre-map default
-    auto it = m_CaloOK.find({layer, subpos});
-    return it != m_CaloOK.end() ? it->second : false;
+    return get(layer, subpos).ok;
   }
 
   auto eta(std::size_t layer, FastCaloSim::SubPos subpos) const -> double
   {
-    // layers/subpositions never reached by the extrapolation are not stored;
-    // read as the pre-map default
-    auto it = m_etaCalo.find({layer, subpos});
-    return it != m_etaCalo.end() ? it->second : -999;
+    return get(layer, subpos).eta;
   }
 
   auto phi(std::size_t layer, FastCaloSim::SubPos subpos) const -> double
   {
-    // layers/subpositions never reached by the extrapolation are not stored;
-    // read as the pre-map default
-    auto it = m_phiCalo.find({layer, subpos});
-    return it != m_phiCalo.end() ? it->second : -999;
+    return get(layer, subpos).phi;
   }
 
   auto r(std::size_t layer, FastCaloSim::SubPos subpos) const -> double
   {
-    // layers/subpositions never reached by the extrapolation are not stored;
-    // read as the pre-map default
-    auto it = m_rCalo.find({layer, subpos});
-    return it != m_rCalo.end() ? it->second : 0;
+    return get(layer, subpos).r;
   }
 
   auto z(std::size_t layer, FastCaloSim::SubPos subpos) const -> double
   {
-    // layers/subpositions never reached by the extrapolation are not stored;
-    // read as the pre-map default
-    auto it = m_zCalo.find({layer, subpos});
-    return it != m_zCalo.end() ? it->second : 0;
+    return get(layer, subpos).z;
   }
 
   auto d(std::size_t layer, FastCaloSim::SubPos subpos) const -> double
   {
-    // layers/subpositions never reached by the extrapolation are not stored;
-    // read as the pre-map default
-    auto it = m_dCalo.find({layer, subpos});
-    return it != m_dCalo.end() ? it->second : 0;
+    return get(layer, subpos).d;
   }
 
   auto detaBorder(std::size_t layer, FastCaloSim::SubPos subpos) const -> double
   {
-    // layers/subpositions never reached by the extrapolation are not stored;
-    // read as the pre-map default
-    auto it = m_distetaCaloBorder.find({layer, subpos});
-    return it != m_distetaCaloBorder.end() ? it->second : 0;
+    return get(layer, subpos).deta_border;
   }
 
   // Boundary getters
@@ -150,16 +128,45 @@ public:
   }
   void Print(Option_t* option = "") const override;
 
+  /// Extrapolated position of one sub-position of a layer. The defaults are
+  /// the values of a sub-position that the extrapolation did not reach.
+  struct LayerPosition
+  {
+    bool ok {false};
+    double eta {-999};
+    double phi {-999};
+    double r {0};
+    double z {0};
+    double d {0};
+    double deta_border {0};
+  };
+
 private:
-  // 2D Map: (layer, subpos) -> extrapolated position
-  using Key = std::pair<std::size_t, FastCaloSim::SubPos>;
-  std::map<Key, bool> m_CaloOK;
-  std::map<Key, double> m_etaCalo;
-  std::map<Key, double> m_phiCalo;
-  std::map<Key, double> m_rCalo;
-  std::map<Key, double> m_zCalo;
-  std::map<Key, double> m_dCalo;
-  std::map<Key, double> m_distetaCaloBorder;
+  static constexpr auto index(std::size_t layer, FastCaloSim::SubPos subpos)
+      -> std::size_t
+  {
+    return (layer * NumSubPos) + static_cast<std::size_t>(subpos);
+  }
+  /// The stored position, added (with the defaults) if it is not stored yet
+  auto at(std::size_t layer, FastCaloSim::SubPos subpos) -> LayerPosition&
+  {
+    const std::size_t i = index(layer, subpos);
+    if (i >= m_positions.size()) {
+      m_positions.resize((layer + 1) * NumSubPos);
+    }
+    return m_positions[i];
+  }
+  /// The stored position, or the defaults if it is not stored
+  auto get(std::size_t layer, FastCaloSim::SubPos subpos) const
+      -> const LayerPosition&
+  {
+    static constexpr LayerPosition not_reached {};
+    const std::size_t i = index(layer, subpos);
+    return i < m_positions.size() ? m_positions[i] : not_reached;
+  }
+
+  /// Positions of all layers, NumSubPos per layer (index(layer, subpos))
+  std::vector<LayerPosition> m_positions;
 
   double m_IDCaloBoundary_eta {-999};
   double m_IDCaloBoundary_phi {-999};
@@ -171,5 +178,5 @@ private:
   double m_IDCaloBoundary_AngleEta {-999};
   double m_IDCaloBoundary_Angle3D {-999};
 
-  ClassDefOverride(TFCSExtrapolationState, 3)  // TFCSExtrapolationState
+  ClassDefOverride(TFCSExtrapolationState, 4)  // TFCSExtrapolationState
 };

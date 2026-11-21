@@ -203,6 +203,8 @@
 
 #pragma link C++ class TFCSTruthState + ;
 #pragma link C++ class TFCSExtrapolationState + ;
+#pragma link C++ struct TFCSExtrapolationState::LayerPosition + ;
+#pragma link C++ class std::vector<TFCSExtrapolationState::LayerPosition> + ;
 #pragma link C++ class TFCSSimulationState + ;
 
 #pragma link C++ class std::vector<TFCSTruthState> + ;
