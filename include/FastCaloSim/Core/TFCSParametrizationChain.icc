@@ -21,18 +21,18 @@ inline auto TFCSParametrizationChain::simulate_and_retry(
       FCS_MSG_WARNING(
           "TFCSParametrizationChain::simulate_and_retry(): Retry simulate call "
           << attempt << "/" << max_retries);
-}
+    }
 
     const FCSReturnCode status =
         parametrization->simulate(simulstate, truth, extrapol);
     if (status == FCSSuccess || status == FCSFatal) {
       return status;
-}
+    }
 
     max_retries = status.max_retries();
     if (RetryChainFromStart()) {
       return status;
-}
+    }
   }
 
   FCS_MSG_FATAL(
@@ -52,12 +52,12 @@ auto TFCSParametrizationChain::simulate_with_restarts(const char* name,
     if (attempt >= first_warned_retry(max_retries)) {
       FCS_MSG_WARNING(name << ": Retry simulate call " << attempt << "/"
                            << max_retries);
-}
+    }
 
     const FCSReturnCode status = pass();
     if (status == FCSSuccess || status == FCSFatal) {
       return status;
-}
+    }
 
     max_retries = status.max_retries();
   }

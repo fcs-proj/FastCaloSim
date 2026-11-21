@@ -14,8 +14,9 @@ default(EXPECTED_FORMAT_VERSION 20.1.8)
 default(
     PATTERNS
     source/*.cxx source/*.h
-    include/*.h
-    test/*.cxx test/*.h
+    include/*.h include/*.icc
+    test/*.cxx test/*.h test/*.cc test/*.hh
+    param/*.cxx param/*.h
     example/*.cxx example/*.h
 )
 default(FIX NO)

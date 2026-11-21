@@ -4,6 +4,7 @@
 #define PRIMARYGENERATORACTION_HH
 
 #include <G4Types.hh>
+
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "TestHelpers/ParticleContainer.h"
 
@@ -13,21 +14,25 @@ class G4ParticleDefinition;
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
-    PrimaryGeneratorAction();
-    ~PrimaryGeneratorAction() override;
-    PrimaryGeneratorAction(const PrimaryGeneratorAction&) = delete;
-    auto operator=(const PrimaryGeneratorAction&) -> PrimaryGeneratorAction& = delete;
-    PrimaryGeneratorAction(PrimaryGeneratorAction&&) = delete;
-    auto operator=(PrimaryGeneratorAction&&) -> PrimaryGeneratorAction& = delete;
+  PrimaryGeneratorAction();
+  ~PrimaryGeneratorAction() override;
+  PrimaryGeneratorAction(const PrimaryGeneratorAction&) = delete;
+  auto operator=(const PrimaryGeneratorAction&)
+      -> PrimaryGeneratorAction& = delete;
+  PrimaryGeneratorAction(PrimaryGeneratorAction&&) = delete;
+  auto operator=(PrimaryGeneratorAction&&) -> PrimaryGeneratorAction& = delete;
 
-    void GeneratePrimaries(G4Event * /*anEvent*/) override;
+  void GeneratePrimaries(G4Event* /*anEvent*/) override;
 
-    void configure_gun(const TestHelpers::Particle* particle);
-    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;}
+  void configure_gun(const TestHelpers::Particle* particle);
+  void set_particle_container(const TestHelpers::ParticleContainer* container)
+  {
+    fParticleContainer = container;
+  }
 
 private:
-    G4ParticleGun *fParticleGun;
-    const TestHelpers::ParticleContainer *fParticleContainer {nullptr};
+  G4ParticleGun* fParticleGun;
+  const TestHelpers::ParticleContainer* fParticleContainer {nullptr};
 };
 
 #endif
