@@ -62,8 +62,8 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
   // store:
 
   for (int b = 1; b <= h_input->GetNbinsX(); b++)
-    m_HistoBorders.push_back((float)h_input->GetBinLowEdge(b));
-  m_HistoBorders.push_back((float)h_input->GetXaxis()->GetXmax());
+    m_HistoBorders.push_back(static_cast<float>(h_input->GetBinLowEdge(b)));
+  m_HistoBorders.push_back(static_cast<float>(h_input->GetXaxis()->GetXmax()));
 
   for (int b = 1; b < h_input->GetNbinsX(); b++)
     m_HistoContents.push_back(h_input->GetBinContent(b));

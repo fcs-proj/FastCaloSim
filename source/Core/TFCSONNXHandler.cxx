@@ -26,7 +26,7 @@ TFCSONNXHandler::TFCSONNXHandler(const std::string& inputFile)
   TFCSONNXHandler::setupPersistedVariables();
   TFCSONNXHandler::setupNet();
   FCS_MSG_DEBUG("Setup from file complete");
-};
+}
 
 TFCSONNXHandler::TFCSONNXHandler(const std::vector<char>& bytes)
     : m_bytes(bytes)
@@ -36,7 +36,7 @@ TFCSONNXHandler::TFCSONNXHandler(const std::vector<char>& bytes)
   // so it won't call setupNet itself
   TFCSONNXHandler::setupNet();
   FCS_MSG_DEBUG("Setup from session complete");
-};
+}
 
 TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
     : VNetworkBase(copy_from)
@@ -50,33 +50,33 @@ TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
   m_outputNodeNames = copy_from.m_outputNodeNames;
   m_outputNodeDims = copy_from.m_outputNodeDims;
   m_outputLayers = copy_from.m_outputLayers;
-};
+}
 
 auto TFCSONNXHandler::compute(TFCSONNXHandler::NetworkInputs const& inputs)
     const -> TFCSONNXHandler::NetworkOutputs
 {
   return m_computeLambda(inputs);
-};
+}
 
 // Writing out to ttrees
 void TFCSONNXHandler::writeNetToTTree(TTree& tree)
 {
   FCS_MSG_DEBUG("TFCSONNXHandler writing net to tree.");
   this->writeBytesToTTree(tree, m_bytes);
-};
+}
 
 auto TFCSONNXHandler::getOutputLayers() const -> std::vector<std::string>
 {
   FCS_MSG_DEBUG("TFCSONNXHandler output layers requested.");
   return m_outputLayers;
-};
+}
 
 void TFCSONNXHandler::deleteAllButNet()
 {
   // As we don't copy the bytes, and the inputFile
   // is at most a name, nothing is needed here.
   FCS_MSG_DEBUG("Deleted nothing for ONNX.");
-};
+}
 
 void TFCSONNXHandler::print(std::ostream& strm) const
 {
@@ -101,7 +101,7 @@ void TFCSONNXHandler::print(std::ostream& strm) const
     };
     strm << "]\n";
   };
-};
+}
 
 void TFCSONNXHandler::setupPersistedVariables()
 {
@@ -112,7 +112,7 @@ void TFCSONNXHandler::setupPersistedVariables()
     m_bytes = getSerializedSession();
   };
   FCS_MSG_DEBUG("Setup persisted variables for ONNX network.");
-};
+}
 
 void TFCSONNXHandler::setupNet()
 {
@@ -272,7 +272,7 @@ void TFCSONNXHandler::setupNet()
         "input and output types as a subclass of VState.");
   };
   FCS_MSG_DEBUG("Finished setting lambda function.");
-};
+}
 
 // Needs to also work if the input file is a root file
 auto TFCSONNXHandler::getSerializedSession(const std::string& tree_name)
@@ -283,7 +283,7 @@ auto TFCSONNXHandler::getSerializedSession(const std::string& tree_name)
   if (this->isRootFile()) {
     FCS_MSG_INFO("Reading bytes from root file.");
     TFile tfile(this->m_inputFile.c_str(), "READ");
-    TTree* tree = (TTree*)tfile.Get(tree_name.c_str());
+    TTree* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
     std::vector<char> bytes = this->readBytesFromTTree(*tree);
     FCS_MSG_DEBUG("Found bytes size " << bytes.size());
     return bytes;
@@ -299,7 +299,7 @@ auto TFCSONNXHandler::getSerializedSession(const std::string& tree_name)
     FCS_MSG_DEBUG("Found bytes size " << bytes.size());
     return bytes;
   }
-};
+}
 
 auto TFCSONNXHandler::readBytesFromTTree(TTree& tree) -> std::vector<char>
 {
@@ -313,7 +313,7 @@ auto TFCSONNXHandler::readBytesFromTTree(TTree& tree) -> std::vector<char>
   };
   FCS_MSG_DEBUG("TFCSONNXHandler read bytes from tree.");
   return bytes;
-};
+}
 
 void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
                                         const std::vector<char>& bytes)
@@ -328,7 +328,7 @@ void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
   };
   tree.Write();
   FCS_MSG_DEBUG("TFCSONNXHandler written bytes to tree.");
-};
+}
 
 void TFCSONNXHandler::readSerializedSession()
 {
@@ -341,7 +341,7 @@ void TFCSONNXHandler::readSerializedSession()
   m_session =
       std::make_unique<Ort::Session>(env, m_bytes.data(), m_bytes.size(), opts);
   FCS_MSG_DEBUG("Transformed bytes to session.");
-};
+}
 
 template<typename Tin, typename Tout>
 VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
@@ -453,7 +453,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
   removePrefixes(outputs);
   FCS_MSG_DEBUG("Returning outputs from computation on ONNX network.");
   return outputs;
-};
+}
 
 // Possible to avoid copy?
 // https://github.com/microsoft/onnxruntime/issues/8328
@@ -482,4 +482,4 @@ void TFCSONNXHandler::Streamer(TBuffer& buf)
     TFCSONNXHandler::Class()->WriteBuffer(buf, this);
   };
   FCS_MSG_DEBUG("Finished TFCSONNXHandler streamer.");
-};
+}

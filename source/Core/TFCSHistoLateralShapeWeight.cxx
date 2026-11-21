@@ -88,8 +88,8 @@ auto TFCSHistoLateralShapeWeight::Initialize(TH1* hist) -> bool
     return false;
   if (m_hist)
     delete m_hist;
-  m_hist = (TH1*)hist->Clone(
-      (std::string("TFCSHistoLateralShapeWeight_") + hist->GetName()).c_str());
+  m_hist = static_cast<TH1*>(hist->Clone(
+      (std::string("TFCSHistoLateralShapeWeight_") + hist->GetName()).c_str()));
   m_hist->SetDirectory(nullptr);
 
   return true;

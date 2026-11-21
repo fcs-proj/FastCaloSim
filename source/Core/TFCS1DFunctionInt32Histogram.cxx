@@ -69,7 +69,7 @@ auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
   auto it =
       std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), int_rnd);
   int ibin = std::distance(m_HistoContents.begin(), it);
-  if (ibin >= (int)m_HistoContents.size())
+  if (ibin >= static_cast<int>(m_HistoContents.size()))
     ibin = m_HistoContents.size() - 1;
   Int_t binx = ibin;
 

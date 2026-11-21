@@ -29,17 +29,17 @@ public:
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
-  };
+  }
 
   ~TFCSEnergyAndHitGANV2() override;
 
   auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
+  }
   auto is_match_calosample(int calosample) const -> bool override;
-  auto is_match_all_Ekin_bin() const -> bool override { return true; };
-  auto is_match_all_calosample() const -> bool override { return false; };
+  auto is_match_all_Ekin_bin() const -> bool override { return true; }
+  auto is_match_all_calosample() const -> bool override { return false; }
 
   /// Status bit for chain persistency
   enum FCSGANfreemem
@@ -49,9 +49,9 @@ public:
                  ///< m_input should be freed after reading in athena
   };
 
-  auto GANfreemem() const -> bool { return TestBit(kGANfreemem); };
-  void set_GANfreemem() { SetBit(kGANfreemem); };
-  void reset_GANfreemem() { ResetBit(kGANfreemem); };
+  auto GANfreemem() const -> bool { return TestBit(kGANfreemem); }
+  void set_GANfreemem() { SetBit(kGANfreemem); }
+  void reset_GANfreemem() { ResetBit(kGANfreemem); }
 
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
@@ -61,9 +61,9 @@ public:
                  ///< should only be scaled by the GAN
   };
 
-  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
-  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
-  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); }
+  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); }
+  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); }
 
   /// use the layer to be done as binning of the GAN chain
   auto get_bin(TFCSSimulationState& simulstate,
@@ -71,7 +71,7 @@ public:
                const TFCSExtrapolationState*) const -> int override
   {
     return simulstate.getAuxInfo<int>("GANlayer"_FCShash);
-  };
+  }
   auto get_variable_text(TFCSSimulationState& simulstate,
                          const TFCSTruthState*,
                          const TFCSExtrapolationState*) const
@@ -83,12 +83,12 @@ public:
   auto get_Binning() const -> const TFCSGANXMLParameters::Binning&
   {
     return m_param.GetBinning();
-  };
+  }
   auto get_ExtrapolationWeights() const
       -> const TFCSGANEtaSlice::ExtrapolatorWeights&
   {
     return m_slice->GetExtrapolatorWeights();
-  };
+  }
 
   auto initializeNetwork(int const& pid,
                          int const& etaMin,

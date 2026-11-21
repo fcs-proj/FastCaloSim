@@ -15,7 +15,7 @@ public:
   {
     if (hist)
       Initialize(hist);
-  };
+  }
   ~TFCS2DFunctionHistogram() override = default;
 
   void Initialize(TH2* hist);
@@ -29,18 +29,18 @@ public:
   auto get_HistoBordersx() const -> const std::vector<float>&
   {
     return m_HistoBorders;
-  };
-  auto get_HistoBordersx() -> std::vector<float>& { return m_HistoBorders; };
+  }
+  auto get_HistoBordersx() -> std::vector<float>& { return m_HistoBorders; }
   auto get_HistoBordersy() const -> const std::vector<float>&
   {
     return m_HistoBordersy;
-  };
-  auto get_HistoBordersy() -> std::vector<float>& { return m_HistoBordersy; };
+  }
+  auto get_HistoBordersy() -> std::vector<float>& { return m_HistoBordersy; }
   auto get_HistoContents() const -> const std::vector<float>&
   {
     return m_HistoContents;
-  };
-  auto get_HistoContents() -> std::vector<float>& { return m_HistoContents; };
+  }
+  auto get_HistoContents() -> std::vector<float>& { return m_HistoContents; }
 
 protected:
   std::vector<float> m_HistoBorders;

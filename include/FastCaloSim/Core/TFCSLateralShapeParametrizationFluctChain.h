@@ -16,7 +16,7 @@ public:
 
   // set and get the amount of hit energy fluctation around E/n for n hits
   void set_hit_RMS(float RMS);
-  auto get_hit_RMS() const -> float { return m_RMS; };
+  auto get_hit_RMS() const -> float { return m_RMS; }
 
   /// Get hit energy from layer energy and number of hits
   auto get_E_hit(TFCSSimulationState& simulstate,

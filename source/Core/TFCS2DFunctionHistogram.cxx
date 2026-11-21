@@ -77,7 +77,7 @@ void TFCS2DFunctionHistogram::rnd_to_fct(float& valuex,
   auto it =
       std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), rnd0);
   int ibin = std::distance(m_HistoContents.begin(), it);
-  if (ibin >= (int)m_HistoContents.size())
+  if (ibin >= static_cast<int>(m_HistoContents.size()))
     ibin = m_HistoContents.size() - 1;
   Int_t nbinsx = m_HistoBorders.size() - 1;
   Int_t biny = ibin / nbinsx;

@@ -24,7 +24,7 @@ auto TFCSParametrizationAbsEtaSelectChain::get_bin(
 auto TFCSParametrizationAbsEtaSelectChain::get_bin_text(int bin) const
     -> const std::string
 {
-  if (bin == -1 || bin >= (int)get_number_of_bins()) {
+  if (bin == -1 || bin >= static_cast<int>(get_number_of_bins())) {
     return std::format("bin={} not in [{:2.2f}<=|eta|<{:2.2f})",
                        bin,
                        m_bin_low_edge[0],

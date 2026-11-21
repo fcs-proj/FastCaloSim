@@ -53,14 +53,14 @@ public:
   auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
+  }
 
   void enable_event_matching()
   {
     m_use_event_matching = true;
     m_use_event_cherry_picking = false;
     m_use_eta_matching = false;
-  };
+  }
 
   void disable_event_matching() { m_use_event_matching = false; }
 
@@ -69,21 +69,21 @@ public:
     m_use_event_cherry_picking = true;
     m_use_event_matching = false;
     m_use_eta_matching = false;
-  };
+  }
 
-  void disable_event_cherry_picking() { m_use_event_cherry_picking = false; };
+  void disable_event_cherry_picking() { m_use_event_cherry_picking = false; }
 
   void enable_eta_matching()
   {
     m_use_eta_matching = true;
     m_use_event_matching = false;
     m_use_event_cherry_picking = false;
-  };
+  }
 
-  void disable_eta_matching() { m_use_eta_matching = false; };
+  void disable_eta_matching() { m_use_eta_matching = false; }
 
-  void enable_upscaling() { m_use_upscaling = true; };
-  void disable_upscaling() { m_use_upscaling = false; };
+  void enable_upscaling() { m_use_upscaling = true; }
+  void disable_upscaling() { m_use_upscaling = false; }
 
   // Loads all required data from the given HDF5 file
   // TODO: Define HDF5 file format somewhere

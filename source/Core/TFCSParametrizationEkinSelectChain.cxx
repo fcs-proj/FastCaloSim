@@ -51,7 +51,7 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
   float rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (bin < 0)
     return bin;
-  if (bin >= (int)get_number_of_bins())
+  if (bin >= static_cast<int>(get_number_of_bins()))
     return bin;
 
   // if no parametrizations for this bin, return
@@ -91,7 +91,7 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
                   << " < p(previous)=" << (1 - numerator / denominator)
                   << ")? => orgbin=" << prevbin + 1 << " selbin=" << bin);
   } else {
-    if (bin == (int)get_number_of_bins() - 1)
+    if (bin == static_cast<int>(get_number_of_bins()) - 1)
       return bin;
     int nextbin = bin + 1;
     // if no parametrizations for previous bin, return
@@ -133,7 +133,7 @@ auto TFCSParametrizationEkinSelectChain::get_variable_text(
 auto TFCSParametrizationEkinSelectChain::get_bin_text(int bin) const
     -> const std::string
 {
-  if (bin == -1 || bin >= (int)get_number_of_bins()) {
+  if (bin == -1 || bin >= static_cast<int>(get_number_of_bins())) {
     return std::format("bin={} not in [{:1.1f}<=Ekin<{:1.1f})",
                        bin,
                        m_bin_low_edge[0],

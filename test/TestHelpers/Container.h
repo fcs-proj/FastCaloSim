@@ -68,7 +68,7 @@ public:
   /**
    * @brief Set the geometry
    */
-  void set_geometry(CaloGeo* geo) { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) { m_geo = geo; }
 
 protected:
   /**

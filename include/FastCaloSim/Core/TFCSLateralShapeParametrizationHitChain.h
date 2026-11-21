@@ -34,23 +34,20 @@ public:
       -> const TFCSParametrizationBase* override;
   auto operator[](unsigned int ind) -> TFCSParametrizationBase* override;
   void set_daughter(unsigned int ind, TFCSParametrizationBase* param) override;
-  auto chain() const -> const Chain_t& { return m_chain; };
-  auto chain() -> Chain_t& { return m_chain; };
-  void push_back(const Chain_t::value_type& value)
-  {
-    m_chain.push_back(value);
-  };
+  auto chain() const -> const Chain_t& { return m_chain; }
+  auto chain() -> Chain_t& { return m_chain; }
+  void push_back(const Chain_t::value_type& value) { m_chain.push_back(value); }
   void push_back_init(const Chain_t::value_type& value);
 
-  auto get_nr_of_init() const -> unsigned int { return m_ninit; };
-  void set_nr_of_init(unsigned int ninit) { m_ninit = ninit; };
+  auto get_nr_of_init() const -> unsigned int { return m_ninit; }
+  void set_nr_of_init(unsigned int ninit) { m_ninit = ninit; }
 
   /// set which instance should determine the number of hits
   virtual void set_number_of_hits_simul(
       TFCSLateralShapeParametrizationHitBase* sim)
   {
     m_number_of_hits_simul = sim;
-  };
+  }
 
   /// Call get_number_of_hits() only once, as it could contain a random number
   virtual auto get_number_of_hits(TFCSSimulationState& simulstate,

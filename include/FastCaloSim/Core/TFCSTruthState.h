@@ -15,18 +15,18 @@ public:
   TFCSTruthState();
   TFCSTruthState(Double_t x, Double_t y, Double_t z, Double_t t, int pdgid);
 
-  void set_pdgid(int val) { m_pdgid = val; };
-  void set_vertex(const TLorentzVector& val) { m_vertex = val; };
+  void set_pdgid(int val) { m_pdgid = val; }
+  void set_vertex(const TLorentzVector& val) { m_vertex = val; }
   void set_vertex(Double_t x, Double_t y, Double_t z, Double_t t = 0)
   {
     m_vertex.SetXYZT(x, y, z, t);
-  };
-  void set_Ekin_off(double val) { m_ekin_off = val; };
+  }
+  void set_Ekin_off(double val) { m_ekin_off = val; }
 
-  auto pdgid() const -> int { return m_pdgid; };
-  auto Ekin() const -> double { return E() - M() + m_ekin_off; };
-  auto Ekin_off() const -> double { return m_ekin_off; };
-  auto vertex() const -> const TLorentzVector& { return m_vertex; };
+  auto pdgid() const -> int { return m_pdgid; }
+  auto Ekin() const -> double { return E() - M() + m_ekin_off; }
+  auto Ekin_off() const -> double { return m_ekin_off; }
+  auto vertex() const -> const TLorentzVector& { return m_vertex; }
 
   void Print(Option_t* option = "") const override;
 

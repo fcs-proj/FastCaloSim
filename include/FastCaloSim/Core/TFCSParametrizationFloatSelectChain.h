@@ -11,11 +11,15 @@ public:
   TFCSParametrizationFloatSelectChain(const char* name = nullptr,
                                       const char* title = nullptr)
       : TFCSParametrizationBinnedChain(name, title)
-      , m_bin_low_edge(1, 0) {};
+      , m_bin_low_edge(1, 0)
+  {
+  }
   TFCSParametrizationFloatSelectChain(
       const TFCSParametrizationFloatSelectChain& ref)
       : TFCSParametrizationBinnedChain(ref)
-      , m_bin_low_edge(1, 0) {};
+      , m_bin_low_edge(1, 0)
+  {
+  }
 
   virtual auto push_back_in_bin(TFCSParametrizationBase* param,
                                 float low,
@@ -30,11 +34,11 @@ public:
   virtual auto get_bin_low_edge(int bin) const -> double
   {
     return m_bin_low_edge[bin];
-  };
+  }
   virtual auto get_bin_up_edge(int bin) const -> double
   {
     return m_bin_low_edge[bin + 1];
-  };
+  }
 
 protected:
   std::vector<float> m_bin_low_edge;

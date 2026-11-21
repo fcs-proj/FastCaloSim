@@ -20,8 +20,8 @@ public:
                                               const char* title = nullptr);
   ~TFCSVoxelHistoLateralCovarianceFluctuations() override;
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
-  auto get_geometry() -> CaloGeo* { return m_geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
+  auto get_geometry() -> CaloGeo* { return m_geo; }
 
   auto initialize(TFile* inputfile, const std::string& folder) -> bool;
 

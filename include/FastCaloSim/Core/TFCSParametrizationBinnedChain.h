@@ -10,7 +10,9 @@ public:
   TFCSParametrizationBinnedChain(const char* name = nullptr,
                                  const char* title = nullptr)
       : TFCSParametrizationChain(name, title)
-      , m_bin_start(1, 0) {};
+      , m_bin_start(1, 0)
+  {
+  }
   TFCSParametrizationBinnedChain(const TFCSParametrizationBinnedChain& ref) =
       default;
 
@@ -21,7 +23,7 @@ public:
   virtual auto get_number_of_bins() const -> unsigned int
   {
     return m_bin_start.size() - 1;
-  };
+  }
 
   /// this method should determine in derived classes which bin to simulate, so
   /// that the simulate method can call the appropriate TFCSParametrizationBase

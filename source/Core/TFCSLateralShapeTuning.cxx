@@ -52,15 +52,15 @@ auto TFCSLateralShapeTuning::initFromModelFile(
     TFCSEnergyInterpolationPiecewiseLinear* linModelInterpol =
         new TFCSEnergyInterpolationPiecewiseLinear("", "");
 
-    TGraph* modelParameterGraph =
-        (TGraph*)gDirectory->Get(std::format("photons/layer{}/m{}_m{}_{}_{}/{}",
-                                             layer,
-                                             intMaxEta,
-                                             intMinEta,
-                                             intMinEta,
-                                             intMaxEta,
-                                             parameterName)
-                                     .c_str());
+    TGraph* modelParameterGraph = static_cast<TGraph*>(
+        gDirectory->Get(std::format("photons/layer{}/m{}_m{}_{}_{}/{}",
+                                    layer,
+                                    intMaxEta,
+                                    intMinEta,
+                                    intMinEta,
+                                    intMaxEta,
+                                    parameterName)
+                            .c_str()));
     if (modelParameterGraph) {
       // initialize the model interpolation and save in interpolation map
       linModelInterpol->InitFromArrayInEkin(modelParameterGraph->GetN(),

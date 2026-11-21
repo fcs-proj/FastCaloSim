@@ -16,7 +16,7 @@ TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const std::string& inputFile)
   FCS_MSG_DEBUG("Setting up from inputFile.");
   setupPersistedVariables();
   TFCSGANLWTNNHandler::setupNet();
-};
+}
 
 TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler& copy_from)
     : VNetworkLWTNN(copy_from)
@@ -28,7 +28,7 @@ TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler& copy_from)
   const lwt::GraphConfig config = lwt::parse_json_graph(json_stream);
   m_lwtnn_graph = std::make_unique<lwt::LightweightGraph>(config);
   m_outputLayers = copy_from.m_outputLayers;
-};
+}
 
 void TFCSGANLWTNNHandler::setupNet()
 {
@@ -59,12 +59,12 @@ void TFCSGANLWTNNHandler::setupNet()
   FCS_MSG_VERBOSE("Removing prefix from stored layers.");
   removePrefixes(m_outputLayers);
   FCS_MSG_VERBOSE("Finished output nodes.");
-};
+}
 
 auto TFCSGANLWTNNHandler::getOutputLayers() const -> std::vector<std::string>
 {
   return m_outputLayers;
-};
+}
 
 // This is implement the specific compute, and ensure the output is returned in
 // regular format. For LWTNN, that's easy.
@@ -90,7 +90,7 @@ auto TFCSGANLWTNNHandler::compute(
   removePrefixes(outputs);
   FCS_MSG_DEBUG("Computation on LWTNN graph network done, returning.");
   return outputs;
-};
+}
 
 // Giving this it's own streamer to call setupNet
 void TFCSGANLWTNNHandler::Streamer(TBuffer& buf)
@@ -120,4 +120,4 @@ void TFCSGANLWTNNHandler::Streamer(TBuffer& buf)
     // Persist variables
     TFCSGANLWTNNHandler::Class()->WriteBuffer(buf, this);
   };
-};
+}

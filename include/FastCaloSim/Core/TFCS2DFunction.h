@@ -14,7 +14,7 @@ public:
   TFCS2DFunction() = default;
   ~TFCS2DFunction() override = default;
 
-  auto ndim() const -> int override { return 2; };
+  auto ndim() const -> int override { return 2; }
 
   virtual void rnd_to_fct(float& valuex,
                           float& valuey,

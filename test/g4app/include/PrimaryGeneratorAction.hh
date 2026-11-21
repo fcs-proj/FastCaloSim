@@ -19,7 +19,7 @@ public:
     virtual void GeneratePrimaries(G4Event *) override;
 
     void configure_gun(const TestHelpers::Particle* particle);
-    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;};
+    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;}
 
 private:
     G4ParticleGun *fParticleGun;

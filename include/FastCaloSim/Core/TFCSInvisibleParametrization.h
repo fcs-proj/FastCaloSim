@@ -9,16 +9,18 @@ class TFCSInvisibleParametrization : public TFCSParametrization
 public:
   TFCSInvisibleParametrization(const char* name = nullptr,
                                const char* title = nullptr)
-      : TFCSParametrization(name, title) {};
+      : TFCSParametrization(name, title)
+  {
+  }
 
   auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
+  }
   auto is_match_calosample(int /*calosample*/) const -> bool override
   {
     return true;
-  };
+  }
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

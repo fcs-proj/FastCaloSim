@@ -27,22 +27,22 @@ public:
   /// the validity of the 2D shape histogram
   void set_geometry(CaloGeo* geo) override;
 
-  auto is_phi_symmetric() const -> bool { return TestBit(k_phi_symmetric); };
-  virtual void set_phi_symmetric() { SetBit(k_phi_symmetric); };
-  virtual void reset_phi_symmetric() { ResetBit(k_phi_symmetric); };
+  auto is_phi_symmetric() const -> bool { return TestBit(k_phi_symmetric); }
+  virtual void set_phi_symmetric() { SetBit(k_phi_symmetric); }
+  virtual void reset_phi_symmetric() { ResetBit(k_phi_symmetric); }
 
   /// set the integral of the histogram to the desired number of hits
   void set_number_of_hits(float nhits);
 
-  auto get_number_of_expected_hits() const -> float { return m_nhits; };
+  auto get_number_of_expected_hits() const -> float { return m_nhits; }
 
   /// set an offset in r on the simulated histogram
-  void set_r_offset(float r_offset) { m_r_offset = r_offset; };
-  auto r_offset() const -> float { return m_r_offset; };
+  void set_r_offset(float r_offset) { m_r_offset = r_offset; }
+  auto r_offset() const -> float { return m_r_offset; }
 
   /// set an scale factor for r on the simulated histogram
-  void set_r_scale(float r_scale) { m_r_scale = r_scale; };
-  auto r_scale() const -> float { return m_r_scale; };
+  void set_r_scale(float r_scale) { m_r_scale = r_scale; }
+  auto r_scale() const -> float { return m_r_scale; }
 
   /// default for this class is to simulate get_number_of_expected_hits() hits,
   /// which gives fluctuations sigma^2=1/get_number_of_expected_hits()
@@ -71,8 +71,8 @@ public:
   auto Initialize(TH2* hist) -> bool;
   auto Initialize(const char* filepath, const char* histname) -> bool;
 
-  auto histogram() -> TFCS2DFunctionHistogram& { return m_hist; };
-  auto histogram() const -> const TFCS2DFunctionHistogram& { return m_hist; };
+  auto histogram() -> TFCS2DFunctionHistogram& { return m_hist; }
+  auto histogram() const -> const TFCS2DFunctionHistogram& { return m_hist; }
 
   void Print(Option_t* option = "") const override;
 

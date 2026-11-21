@@ -145,5 +145,5 @@ private:
   std::string m_printable_name;
 
   // Supplying a ClassDef for writing to file.
-  ClassDefOverride(VNetworkLWTNN, 1);
+  ClassDefOverride(VNetworkLWTNN, 1)
 };

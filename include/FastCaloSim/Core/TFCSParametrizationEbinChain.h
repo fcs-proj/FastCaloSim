@@ -10,7 +10,9 @@ class TFCSParametrizationEbinChain : public TFCSParametrizationBinnedChain
 public:
   TFCSParametrizationEbinChain(const char* name = nullptr,
                                const char* title = nullptr)
-      : TFCSParametrizationBinnedChain(name, title) {};
+      : TFCSParametrizationBinnedChain(name, title)
+  {
+  }
   TFCSParametrizationEbinChain(const TFCSParametrizationEbinChain& ref) =
       default;
 
@@ -21,7 +23,7 @@ public:
                const TFCSExtrapolationState*) const -> int override
   {
     return simulstate.Ebin();
-  };
+  }
   auto get_variable_text(TFCSSimulationState& simulstate,
                          const TFCSTruthState*,
                          const TFCSExtrapolationState*) const

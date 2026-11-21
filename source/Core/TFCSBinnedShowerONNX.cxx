@@ -230,9 +230,10 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
     for (float e_voxel : layer.E_vector) {
       long unsigned int hits_per_bin;
       if (e_voxel > std::numeric_limits<float>::epsilon()) {
-        hits_per_bin =
-            std::min(std::max(int(e_voxel * e_init / m_default_hit_energy), 1),
-                     m_max_hits_per_voxel);
+        hits_per_bin = std::min(
+            std::max(static_cast<int>(e_voxel * e_init / m_default_hit_energy),
+                     1),
+            m_max_hits_per_voxel);
         elayer.at(layer_index) += e_voxel * e_init;
 
       } else {
@@ -548,7 +549,7 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
   TIter next(file->GetListOfKeys());
   TKey* key;
 
-  while ((key = (TKey*)next())) {
+  while ((key = static_cast<TKey*>(next()))) {
     std::string keyname = key->GetName();
     std::smatch match;
     if (std::regex_match(keyname, match, pattern)) {

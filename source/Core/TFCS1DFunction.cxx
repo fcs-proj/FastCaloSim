@@ -23,8 +23,9 @@ void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const
 
 auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
 {
-  std::unique_ptr<TH1D> h_input((TH1D*)h_input1->Clone("h_input"));
-  std::unique_ptr<TH1D> h_approx((TH1D*)h_approx1->Clone("h_approx"));
+  std::unique_ptr<TH1D> h_input(static_cast<TH1D*>(h_input1->Clone("h_input")));
+  std::unique_ptr<TH1D> h_approx(
+      static_cast<TH1D*>(h_approx1->Clone("h_approx")));
 
   double maxdev = 0.0;
 

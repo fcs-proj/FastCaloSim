@@ -19,7 +19,7 @@ public:
   void add_pdgid(int id) override;
   void clear_pdgid() override;
 
-  auto n_bins() const -> int override { return m_number_of_Ekin_bins; };
+  auto n_bins() const -> int override { return m_number_of_Ekin_bins; }
 
   /// current convention is to start Ekin_bin counting at 1, to be updated to
   /// start counting with 0
@@ -27,7 +27,7 @@ public:
   {
     m_number_of_Ekin_bins = n_Ekin_bin;
     resize();
-  };
+  }
 
   /// set_pdgid_Ekin_bin_probability(): format of probability should be a vector
   /// of float with probability values, e.g. for equal probability of 5 Ekin

@@ -228,14 +228,15 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
       R__stl.reserve(R__n);
       for (R__i = 0; R__i < R__n; R__i++) {
         std::unique_ptr<TFCSParametrizationBase> R__t;
-        R__t.reset((TFCSParametrizationBase*)R__b.ReadObjectAny(R__tcl1));
+        R__t.reset(
+            static_cast<TFCSParametrizationBase*>(R__b.ReadObjectAny(R__tcl1)));
         if (R__t != nullptr) {
           if (R__t->InheritsFrom(TFCSParametrizationPlaceholder::Class())) {
             std::unique_ptr<TFCSParametrizationBase> new_R__t = nullptr;
 
             if (dir) {
-              new_R__t.reset(
-                  (TFCSParametrizationBase*)dir->Get(R__t->GetName()));
+              new_R__t.reset(static_cast<TFCSParametrizationBase*>(
+                  dir->Get(R__t->GetName())));
             }
 
             if (new_R__t) {
@@ -274,7 +275,7 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
     }
 
     TFCSParametrizationChain::Chain_t& R__stl = m_chain;
-    int R__n = int(R__stl.size());
+    int R__n = static_cast<int>(R__stl.size());
     R__b << R__n;
     if (R__n) {
       TFCSParametrizationChain::Chain_t::iterator R__k;

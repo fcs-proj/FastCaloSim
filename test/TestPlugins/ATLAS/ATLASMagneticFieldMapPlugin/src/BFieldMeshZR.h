@@ -81,13 +81,13 @@ inline void BFieldMeshZR::getCache(double z,
   // find the mesh, and relative location in the mesh
   // z
   const std::vector<double>& mz(m_mesh[0]);
-  int iz = int((z - zmin()) * m_invUnit[0]);  // index to LUT
+  int iz = static_cast<int>((z - zmin()) * m_invUnit[0]);  // index to LUT
   iz = m_LUT[0][iz];  // tentative mesh index from LUT
   if (z > mz[iz + 1])
     iz++;
   // r
   const std::vector<double>& mr(m_mesh[1]);
-  int ir = int((r - rmin()) * m_invUnit[1]);  // index to LUT
+  int ir = static_cast<int>((r - rmin()) * m_invUnit[1]);  // index to LUT
   ir = m_LUT[1][ir];  // tentative mesh index from LUT
   if (r > mr[ir + 1])
     ir++;

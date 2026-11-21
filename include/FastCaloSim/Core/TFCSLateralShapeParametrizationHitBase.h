@@ -69,8 +69,10 @@ public:
         , m_center_r(0.)
         , m_center_z(0.)
         , m_center_eta(0.)
-        , m_center_phi(0.) {};  // for hits with the same energy, m_E should
-                                // normalized to E(layer)/nhit
+        , m_center_phi(0.)
+    {
+    }  // for hits with the same energy, m_E should
+       // normalized to E(layer)/nhit
     Hit(float eta, float phi, float E)
         : m_eta_x(eta)
         , m_phi_y(phi)
@@ -80,7 +82,9 @@ public:
         , m_center_r(0.)
         , m_center_z(0.)
         , m_center_eta(0.)
-        , m_center_phi(0.) {};
+        , m_center_phi(0.)
+    {
+    }
     Hit(float x, float y, float z, float E)
         : m_eta_x(x)
         , m_phi_y(y)
@@ -90,7 +94,9 @@ public:
         , m_center_r(0.)
         , m_center_z(0.)
         , m_center_eta(0.)
-        , m_center_phi(0.) {};
+        , m_center_phi(0.)
+    {
+    }
 
     inline void setEtaPhiZE(float eta, float phi, float z, float E)
     {
@@ -126,12 +132,12 @@ public:
       m_useXYZ = false;
     }
 
-    inline auto eta() const -> const auto& { return m_eta_x; };
-    inline auto phi() const -> const auto& { return m_phi_y; };
-    inline auto x() const -> const auto& { return m_eta_x; };
-    inline auto y() const -> const auto& { return m_phi_y; };
-    inline auto E() const -> const auto& { return m_E; };
-    inline auto z() const -> const auto& { return m_z; };
+    inline auto eta() const -> const auto& { return m_eta_x; }
+    inline auto phi() const -> const auto& { return m_phi_y; }
+    inline auto x() const -> const auto& { return m_eta_x; }
+    inline auto y() const -> const auto& { return m_phi_y; }
+    inline auto E() const -> const auto& { return m_E; }
+    inline auto z() const -> const auto& { return m_z; }
     inline auto r() const -> const auto
     {
       if (m_useXYZ)
@@ -143,7 +149,7 @@ public:
     inline auto center_z() const -> const auto& { return m_center_z; }
     inline auto center_eta() const -> const auto& { return m_center_eta; }
     inline auto center_phi() const -> const auto& { return m_center_phi; }
-    inline auto idx() -> const auto& { return m_hit_index; };
+    inline auto idx() -> const auto& { return m_hit_index; }
 
     inline void setCenter_r(float r) { m_center_r = r; }
     inline void setCenter_z(float z) { m_center_z = z; }

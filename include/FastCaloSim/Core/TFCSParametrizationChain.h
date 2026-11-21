@@ -9,10 +9,14 @@ class TFCSParametrizationChain : public TFCSParametrization
 public:
   TFCSParametrizationChain(const char* name = nullptr,
                            const char* title = nullptr)
-      : TFCSParametrization(name, title) {};
+      : TFCSParametrization(name, title)
+  {
+  }
   TFCSParametrizationChain(const TFCSParametrizationChain& ref)
       : TFCSParametrization(ref.GetName(), ref.GetTitle())
-      , m_chain(ref.chain()) {};
+      , m_chain(ref.chain())
+  {
+  }
 
   /// Status bit for chain persistency
   enum FCSSplitChainObjects
@@ -28,42 +32,39 @@ public:
     kRetryChainFromStart = BIT(17)
   };
 
-  auto SplitChainObjects() const -> bool
-  {
-    return TestBit(kSplitChainObjects);
-  };
-  void set_SplitChainObjects() { SetBit(kSplitChainObjects); };
-  void reset_SplitChainObjects() { ResetBit(kSplitChainObjects); };
+  auto SplitChainObjects() const -> bool { return TestBit(kSplitChainObjects); }
+  void set_SplitChainObjects() { SetBit(kSplitChainObjects); }
+  void reset_SplitChainObjects() { ResetBit(kSplitChainObjects); }
 
   auto RetryChainFromStart() const -> bool
   {
     return TestBit(kRetryChainFromStart);
-  };
-  void set_RetryChainFromStart() { SetBit(kRetryChainFromStart); };
-  void reset_RetryChainFromStart() { ResetBit(kRetryChainFromStart); };
+  }
+  void set_RetryChainFromStart() { SetBit(kRetryChainFromStart); }
+  void reset_RetryChainFromStart() { ResetBit(kRetryChainFromStart); }
 
   using Chain_t = std::vector<TFCSParametrizationBase*>;
-  auto size() const -> unsigned int override { return m_chain.size(); };
+  auto size() const -> unsigned int override { return m_chain.size(); }
   auto operator[](unsigned int ind) const
       -> const TFCSParametrizationBase* override
   {
     return m_chain[ind];
-  };
+  }
   auto operator[](unsigned int ind) -> TFCSParametrizationBase* override
   {
     return m_chain[ind];
-  };
+  }
   void set_daughter(unsigned int ind, TFCSParametrizationBase* param) override
   {
     m_chain.at(ind) = param;
-  };
-  auto chain() const -> const Chain_t& { return m_chain; };
-  auto chain() -> Chain_t& { return m_chain; };
+  }
+  auto chain() const -> const Chain_t& { return m_chain; }
+  auto chain() -> Chain_t& { return m_chain; }
   void push_back(const Chain_t::value_type& param)
   {
     m_chain.push_back(param);
     recalc();
-  };
+  }
 
   auto is_match_Ekin_bin(int Ekin_bin) const -> bool override;
   auto is_match_calosample(int calosample) const -> bool override;

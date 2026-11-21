@@ -37,10 +37,10 @@ public:
   auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
+  }
 
-  void enable_upscaling() { m_use_upscaling = true; };
-  void disable_upscaling() { m_use_upscaling = false; };
+  void enable_upscaling() { m_use_upscaling = true; }
+  void disable_upscaling() { m_use_upscaling = false; }
 
   // Loads the ONNX model for the calorimeter simulation.
   auto load_simulator(const std::string& filename) -> bool

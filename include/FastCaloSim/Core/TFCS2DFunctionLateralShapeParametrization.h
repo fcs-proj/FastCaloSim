@@ -23,14 +23,14 @@ public:
         BIT(15)  ///< Set this bit to simulate phi symmetric histograms
   };
 
-  auto is_phi_symmetric() const -> bool { return TestBit(k_phi_symmetric); };
-  virtual void set_phi_symmetric() { SetBit(k_phi_symmetric); };
-  virtual void reset_phi_symmetric() { ResetBit(k_phi_symmetric); };
+  auto is_phi_symmetric() const -> bool { return TestBit(k_phi_symmetric); }
+  virtual void set_phi_symmetric() { SetBit(k_phi_symmetric); }
+  virtual void reset_phi_symmetric() { ResetBit(k_phi_symmetric); }
 
   /// set the desired number of hits
   void set_number_of_hits(float nhits);
 
-  auto get_number_of_expected_hits() const -> float { return m_nhits; };
+  auto get_number_of_expected_hits() const -> float { return m_nhits; }
 
   /// default for this class is to simulate get_number_of_expected_hits() hits,
   /// which gives fluctuations sigma^2=1/get_number_of_expected_hits()
@@ -57,8 +57,8 @@ public:
   /// Init from function
   auto Initialize(TFCS2DFunction* func, float nhits = -1) -> bool;
 
-  auto function() -> TFCS2DFunction* { return m_function; };
-  auto function() const -> const TFCS2DFunction* { return m_function; };
+  auto function() -> TFCS2DFunction* { return m_function; }
+  auto function() const -> const TFCS2DFunction* { return m_function; }
 
   void Print(Option_t* option = "") const override;
 

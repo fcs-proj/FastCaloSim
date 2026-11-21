@@ -108,7 +108,7 @@ void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(int Ekin_bin,
 {
   if (Ekin_bin < 1)
     return;
-  if (Ekin_bin - 1 >= (int)m_totalE_probability_ratio.size())
+  if (Ekin_bin - 1 >= static_cast<int>(m_totalE_probability_ratio.size()))
     return;
   m_totalE_probability_ratio[Ekin_bin - 1] = hist;
 }
@@ -118,7 +118,7 @@ auto TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
 {
   if (Ekin_bin < 1)
     return nullptr;
-  if (Ekin_bin - 1 >= (int)m_totalE_probability_ratio.size())
+  if (Ekin_bin - 1 >= static_cast<int>(m_totalE_probability_ratio.size()))
     return nullptr;
   return m_totalE_probability_ratio[Ekin_bin - 1];
 }
@@ -150,7 +150,8 @@ auto TFCSPCAEnergyParametrization::simulate(
 
     const std::vector<int>& layerNr = m_RelevantLayers;
 
-    double* vals_gauss_means = (double*)Gauss_means->GetMatrixArray();
+    double* vals_gauss_means =
+        static_cast<double*>(Gauss_means->GetMatrixArray());
     double* vals_gauss_rms = Gauss_rms->GetMatrixArray();
 
     std::vector<double> output_data(layerNr.size() + 1);
@@ -209,7 +210,7 @@ auto TFCSPCAEnergyParametrization::simulate(
       }
       float random = CLHEP::RandFlat::shoot(simulstate.randomEngine());
       if (random > pass_probability) {
-        return (FCSReturnCode)FCSRetryPCA;
+        return static_cast<FCSReturnCode>(FCSRetryPCA);
       }
     }
 
@@ -248,8 +249,7 @@ void TFCSPCAEnergyParametrization::P2X(TVectorD* SigmaValues,
   for (int i = 0; i < gNVariables; i++) {
     x[i] = gMeanValues[i];
     for (int j = 0; j < nTest; j++) {
-      x[i] +=
-          p[j] * gSigmaValues[i] * (double)(gEigenVectors[i * gNVariables + j]);
+      x[i] += p[j] * gSigmaValues[i] * (gEigenVectors[i * gNVariables + j]);
     }
   }
 }
@@ -273,7 +273,8 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
   m_numberpcabins -= 1;
 
   file->cd((x + "1/pca").c_str());
-  IntArray* RelevantLayers = (IntArray*)gDirectory->Get("RelevantLayers");
+  IntArray* RelevantLayers =
+      static_cast<IntArray*>(gDirectory->Get("RelevantLayers"));
   if (RelevantLayers == nullptr) {
     FCS_MSG_ERROR(
         "TFCSPCAEnergyParametrization::m_RelevantLayers in first "
@@ -291,11 +292,14 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
   for (int bin = 1; bin <= m_numberpcabins; bin++) {
     file->cd(std::format("{}{}/pca", x, bin).c_str());
 
-    TMatrixDSym* symCov = (TMatrixDSym*)gDirectory->Get("symCov");
-    TVectorD* MeanValues = (TVectorD*)gDirectory->Get("MeanValues");
-    TVectorD* SigmaValues = (TVectorD*)gDirectory->Get("SigmaValues");
-    TVectorD* Gauss_means = (TVectorD*)gDirectory->Get("Gauss_means");
-    TVectorD* Gauss_rms = (TVectorD*)gDirectory->Get("Gauss_rms");
+    TMatrixDSym* symCov = static_cast<TMatrixDSym*>(gDirectory->Get("symCov"));
+    TVectorD* MeanValues =
+        static_cast<TVectorD*>(gDirectory->Get("MeanValues"));
+    TVectorD* SigmaValues =
+        static_cast<TVectorD*>(gDirectory->Get("SigmaValues"));
+    TVectorD* Gauss_means =
+        static_cast<TVectorD*>(gDirectory->Get("Gauss_means"));
+    TVectorD* Gauss_rms = static_cast<TVectorD*>(gDirectory->Get("Gauss_rms"));
 
     if (symCov == nullptr) {
       FCS_MSG_WARNING("TFCSPCAEnergyParametrization::symCov in pcabin "
@@ -349,11 +353,14 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
       file->cd(std::format("{}/bin{}/{}", folder, bin, layer[l]).c_str());
 
       TFCS1DFunction* fct;
-      fct = (TFCS1DFunction*)gDirectory->Get("TFCS1DFunctionRegression");
+      fct = static_cast<TFCS1DFunction*>(
+          gDirectory->Get("TFCS1DFunctionRegression"));
       if (!fct)
-        fct = (TFCS1DFunction*)gDirectory->Get("TFCS1DFunctionRegressionTF");
+        fct = static_cast<TFCS1DFunction*>(
+            gDirectory->Get("TFCS1DFunctionRegressionTF"));
       if (!fct)
-        fct = (TFCS1DFunction*)gDirectory->Get("TFCS1DFunctionHistogram");
+        fct = static_cast<TFCS1DFunction*>(
+            gDirectory->Get("TFCS1DFunctionHistogram"));
       cumulative.push_back(fct);
     }
 

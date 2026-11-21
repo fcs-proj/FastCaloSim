@@ -39,7 +39,7 @@ void TFCSNetworkFactory::resolveGlobs(std::string& filename)
                                   + filename);
     };
   };
-};
+}
 
 auto TFCSNetworkFactory::isOnnxFile(std::string const& filename) -> bool
 {
@@ -55,7 +55,7 @@ auto TFCSNetworkFactory::isOnnxFile(std::string const& filename) -> bool
         (0 == filename.compare(filename_len - ending_len, ending_len, ending));
   };
   return is_onnx;
-};
+}
 
 auto TFCSNetworkFactory::create(std::vector<char> const& input)
     -> std::unique_ptr<VNetworkBase>
@@ -65,7 +65,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& input)
       logger,
       "Directly creating ONNX network from bytes length " << input.size());
   return std::make_unique<TFCSONNXHandler>(input);
-};
+}
 
 auto TFCSNetworkFactory::create(std::string input)
     -> std::unique_ptr<VNetworkBase>
@@ -91,7 +91,7 @@ auto TFCSNetworkFactory::create(std::string input)
       return created;
     };
   };
-};
+}
 
 auto TFCSNetworkFactory::create(std::string input, bool graph_form)
     -> std::unique_ptr<VNetworkBase>
@@ -111,7 +111,7 @@ auto TFCSNetworkFactory::create(std::string input, bool graph_form)
     FCS_MSG_NOCLASS(logger, "Creating LWTNN nn from string");
     return created;
   };
-};
+}
 
 auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                 std::string string_input)
@@ -134,7 +134,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
     throw std::invalid_argument(
         "Neither vector_input nor string_input contain data");
   };
-};
+}
 
 auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                 std::string string_input,
@@ -160,4 +160,4 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
     throw std::invalid_argument(
         "Neither vector_input nor string_input contain data");
   };
-};
+}

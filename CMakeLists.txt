@@ -112,9 +112,9 @@ set( _dictName "FastCaloSim_dict" )
 set( _libName "FastCaloSim_FastCaloSim" )
 ROOT_GENERATE_DICTIONARY( ${_dictName} MODULE ${_libName} LINKDEF include/FastCaloSim/LinkDef.h )
 
-# Deactivate compiler warnings and static analyzers for third party libraries
-# TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim)
+# Deactivate compiler warnings and static analyzers for the dictionary that
+# rootcling generates
+deactivate_checks(FastCaloSim_dict)
 
 # ROOT >= 6.40 emits the generated dictionary as its own (object-library) target
 # and links it PRIVATE into the module. In a static build (BUILD_SHARED_LIBS=OFF)

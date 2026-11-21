@@ -17,7 +17,7 @@ public:
                             const char* title = nullptr,
                             CaloGeo* geo = nullptr);
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
   ~TFCSEnergyRenormalization() override;
 
   auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override;

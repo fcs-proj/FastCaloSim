@@ -497,7 +497,8 @@ bool MagField::AtlasFieldSvc::initializeMap(AtlasFieldSvcTLS& tls)
                 << std::endl;
       std::cout << "to " << std::endl
                 << std::endl
-                << std::string(dirname((char*)resolvedMapFile.c_str()))
+                << std::string(
+                       dirname(const_cast<char*>(resolvedMapFile.c_str())))
                 << std::endl;
       exit(-1);
       return false;
@@ -520,7 +521,8 @@ bool MagField::AtlasFieldSvc::initializeMap(AtlasFieldSvcTLS& tls)
                 << std::endl;
       std::cout << "to " << std::endl
                 << std::endl
-                << std::string(dirname((char*)resolvedMapFile.c_str()))
+                << std::string(
+                       dirname(const_cast<char*>(resolvedMapFile.c_str())))
                 << std::endl;
       exit(-1);
     }
@@ -1452,7 +1454,7 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
       p2[0] = p2x[j];
       p2[1] = p2y[j];
       p2[2] = p2z[j];
-      bool fini = (bool)finite[j];
+      bool fini = static_cast<bool>(finite[j]);
       BFieldCond cond(fini, p1, p2, curr[j]);
       m_zone.back().appendCond(cond);
     }
@@ -1801,7 +1803,7 @@ void MagField::AtlasFieldSvc::buildLUT()
       q = std::min(q, m_edge[j][i + 1] - m_edge[j][i]);
     }
     // find the number of cells in the LUT
-    int n = int(width / q) + 1;
+    int n = static_cast<int>(width / q) + 1;
     q = width / (n + 0.5);
     m_invq[j] = 1.0 / q;
     n++;
@@ -1891,7 +1893,8 @@ void MagField::AtlasFieldSvc::buildZR()
       double Br = 0.0;
       double Bz = 0.0;
       for (int iphi = 0; iphi < nphi; iphi++) {
-        double phi = double(iphi) / double(nphi) * 2. * M_PI;
+        double phi =
+            static_cast<double>(iphi) / static_cast<double>(nphi) * 2. * M_PI;
         double xyz[3];
         xyz[0] = r * cos(phi);
         xyz[1] = r * sin(phi);
@@ -1901,8 +1904,8 @@ void MagField::AtlasFieldSvc::buildZR()
         Br += B[0] * cos(phi) + B[1] * sin(phi);
         Bz += B[2];
       }
-      Br *= 1.0 / double(nphi);
-      Bz *= 1.0 / double(nphi);
+      Br *= 1.0 / static_cast<double>(nphi);
+      Bz *= 1.0 / static_cast<double>(nphi);
       m_meshZR->appendField(BFieldVectorZR(Bz, Br));
     }
   }

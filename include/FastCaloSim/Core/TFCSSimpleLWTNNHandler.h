@@ -109,5 +109,5 @@ private:
   std::vector<std::string> m_outputLayers;  //! Do not persistify
 
   // Supplying a ClassDef for writing to file.
-  ClassDefOverride(TFCSSimpleLWTNNHandler, 1);
+  ClassDefOverride(TFCSSimpleLWTNNHandler, 1)
 };

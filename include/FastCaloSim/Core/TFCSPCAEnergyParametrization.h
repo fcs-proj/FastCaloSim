@@ -30,24 +30,24 @@ public:
                                const char* title = nullptr,
                                CaloGeo* geo = nullptr);
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,
                 const TFCSExtrapolationState* extrapol) const
       -> FCSReturnCode override;
 
-  auto n_pcabins() const -> int { return m_numberpcabins; };
-  auto n_bins() const -> int override { return m_numberpcabins; };
+  auto n_pcabins() const -> int { return m_numberpcabins; }
+  auto n_bins() const -> int override { return m_numberpcabins; }
   auto get_layers() const -> const std::vector<int>&
   {
     return m_RelevantLayers;
-  };
+  }
 
   auto is_match_Ekin_bin(int Ekin_bin) const -> bool override;
   auto is_match_calosample(int calosample) const -> bool override;
-  auto is_match_all_Ekin_bin() const -> bool override { return true; };
-  auto is_match_all_calosample() const -> bool override { return false; };
+  auto is_match_all_Ekin_bin() const -> bool override { return true; }
+  auto is_match_all_calosample() const -> bool override { return false; }
 
   static void P2X(
       TVectorD*, TVectorD*, TMatrixD*, int, const double*, double*, int);
@@ -61,11 +61,11 @@ public:
   auto get_total_energy_normalization() const -> float
   {
     return m_total_energy_normalization;
-  };
+  }
   void set_total_energy_normalization(float norm)
   {
     m_total_energy_normalization = norm;
-  };
+  }
 
   void set_totalE_probability_ratio(int Ekin_bin, TH1* hist);
   auto get_totalE_probability_ratio(int Ekin_bin) const -> TH1*;

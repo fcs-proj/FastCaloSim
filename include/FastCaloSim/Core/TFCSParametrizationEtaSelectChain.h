@@ -10,7 +10,9 @@ class TFCSParametrizationEtaSelectChain
 public:
   TFCSParametrizationEtaSelectChain(const char* name = nullptr,
                                     const char* title = nullptr)
-      : TFCSParametrizationFloatSelectChain(name, title) {};
+      : TFCSParametrizationFloatSelectChain(name, title)
+  {
+  }
   TFCSParametrizationEtaSelectChain(
       const TFCSParametrizationEtaSelectChain& ref) = default;
 

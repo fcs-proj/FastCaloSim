@@ -54,9 +54,9 @@ public:
 
   Cell()
   {
-    m_data.m_id = uint64_t(-1);
+    m_data.m_id = static_cast<uint64_t>(-1);
     m_data.m_pos = {0, 0, 0, 0, 0, 0};
-    m_data.m_layer = uint32_t(-1);
+    m_data.m_layer = static_cast<uint32_t>(-1);
     m_data.m_isBarrel = false;
     m_data.m_isXYZ = m_data.m_isEtaPhiR = m_data.m_isEtaPhiZ =
         m_data.m_isRPhiZ = false;

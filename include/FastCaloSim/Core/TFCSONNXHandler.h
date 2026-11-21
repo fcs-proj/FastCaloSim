@@ -320,5 +320,5 @@ private:
   std::vector<std::string> m_outputLayers;  //! Do not persistify
 
   // For the streamer
-  ClassDefOverride(TFCSONNXHandler, 1);
+  ClassDefOverride(TFCSONNXHandler, 1)
 };

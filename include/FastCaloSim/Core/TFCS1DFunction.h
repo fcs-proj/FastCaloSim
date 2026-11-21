@@ -15,7 +15,7 @@ public:
   TFCS1DFunction() = default;
   ~TFCS1DFunction() override = default;
 
-  auto ndim() const -> int override { return 1; };
+  auto ndim() const -> int override { return 1; }
 
   /// Function gets array of random numbers rnd[] in the range [0,1) as
   /// arguments and returns function value in array value. For a n-dimensional
@@ -32,7 +32,7 @@ public:
   virtual auto operator==(const TFCS1DFunction& ref) const -> bool
   {
     return this == &ref;
-  };
+  }
 
   static auto get_maxdev(TH1*, TH1*) -> double;
 

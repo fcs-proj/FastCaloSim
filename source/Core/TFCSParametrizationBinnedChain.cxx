@@ -88,7 +88,7 @@ auto TFCSParametrizationBinnedChain::simulate(
         // Parametrizations of the bin of this particle
         if (get_number_of_bins() > 0) {
           const int bin = get_bin(simulstate, truth, extrapol);
-          if (bin >= 0 && bin < (int)get_number_of_bins()) {
+          if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
             for (unsigned int ichain = m_bin_start[bin];
                  ichain < m_bin_start[bin + 1];
                  ++ichain)

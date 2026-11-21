@@ -136,17 +136,17 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
     TH2D* h2 = &binsInLayers[layer];
 
     std::string histoName = "r" + std::to_string(layer) + "w";
-    TH1D* h1 = (TH1D*)file->Get(histoName.c_str());
+    TH1D* h1 = static_cast<TH1D*>(file->Get(histoName.c_str()));
     if (!h1 || std::isnan(h1->Integral())) {
       histoName = "r" + std::to_string(layer);
-      h1 = (TH1D*)file->Get(histoName.c_str());
+      h1 = static_cast<TH1D*>(file->Get(histoName.c_str()));
     }
     if (!h1) {
       throw std::runtime_error("Failed to load histogram " + histoName
                                + " from ROOT file: " + rootFileName);
     }
 
-    TAxis* x = (TAxis*)h2->GetXaxis();
+    TAxis* x = h2->GetXaxis();
     for (int ix = 1; ix <= h2->GetNbinsX(); ++ix) {
       FCS_MSG_DEBUG(ix);
       h1->GetXaxis()->SetRangeUser(x->GetBinLowEdge(ix), x->GetBinUpEdge(ix));

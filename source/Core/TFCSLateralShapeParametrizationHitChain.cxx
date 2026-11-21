@@ -265,7 +265,7 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
   int nhit_signed = std::lrint(Elayer / Ehit);
   if (nhit_signed < 1)
     nhit_signed = 1;
-  unsigned int nhit = (unsigned int)nhit_signed;
+  unsigned int nhit = static_cast<unsigned int>(nhit_signed);
 
   float sumEhit = 0;
 

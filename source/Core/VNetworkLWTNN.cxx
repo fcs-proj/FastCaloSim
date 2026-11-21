@@ -20,7 +20,7 @@ VNetworkLWTNN::VNetworkLWTNN(const VNetworkLWTNN& copy_from)
         "Trying to copy a VNetworkLWTNN with length 0 m_json, probably "
         "deleteAllButNet was called on the object being copied from.");
   };
-};
+}
 
 VNetworkLWTNN::~VNetworkLWTNN() = default;
 
@@ -39,17 +39,17 @@ void VNetworkLWTNN::setupPersistedVariables()
     m_printable_name = "JSON from memory";
     m_json = m_inputFile;
   };
-};
+}
 
 void VNetworkLWTNN::print(std::ostream& strm) const
 {
   strm << m_printable_name;
-};
+}
 
 void VNetworkLWTNN::writeNetToTTree(TTree& tree)
 {
   writeStringToTTree(tree, m_json);
-};
+}
 
 void VNetworkLWTNN::fillJson(std::string const& tree_name)
 {
@@ -57,7 +57,7 @@ void VNetworkLWTNN::fillJson(std::string const& tree_name)
   if (this->isRootFile()) {
     FCS_MSG_VERBOSE("Treating input file as a root file");
     TFile tfile(this->m_inputFile.c_str(), "READ");
-    TTree* tree = (TTree*)tfile.Get(tree_name.c_str());
+    TTree* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
     std::string found = this->readStringFromTTree(*tree);
     FCS_MSG_DEBUG("Read json from root file, length " << found.length());
     m_json = std::move(found);
@@ -80,14 +80,14 @@ auto VNetworkLWTNN::readStringFromTTree(TTree& tree) -> std::string
   tree.SetBranchAddress("lwtnn_json", &to_found);
   tree.GetEntry(0);
   return found;
-};
+}
 
 void VNetworkLWTNN::writeStringToTTree(TTree& tree, std::string json_string)
 {
   tree.Branch("lwtnn_json", &json_string);
   tree.Fill();
   tree.Write();
-};
+}
 
 void VNetworkLWTNN::deleteAllButNet()
 {
@@ -102,4 +102,4 @@ void VNetworkLWTNN::deleteAllButNet()
                   << m_inputFile.capacity()
                   << ". m_printable_name now has capacity "
                   << m_printable_name.capacity());
-};
+}

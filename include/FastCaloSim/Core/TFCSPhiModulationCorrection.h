@@ -37,33 +37,33 @@ public:
     m_min_phi.clear();
     m_min_eta.clear();
     m_energy_shift.clear();
-  };
+  }
 
   auto get_phi_modulation() const
       -> const std::vector<std::vector<std::vector<float>>>&
   {
     return m_modulation;
-  };
+  }
   auto get_min_eta() const -> const std::vector<std::vector<float>>&
   {
     return m_min_eta;
-  };
+  }
   auto get_energy_shift() const -> const std::vector<std::vector<float>>&
   {
     return m_energy_shift;
-  };
+  }
   auto get_min_phi() const
       -> const std::vector<std::vector<std::vector<float>>>&
   {
     return m_min_phi;
-  };
+  }
 
   void set_phi_modulation_scale(float phi_modulation_scale)
   {
     m_modulation_scale = phi_modulation_scale;
-  };
+  }
 
-  auto get_phi_modulation_scale() const -> float { return m_modulation_scale; };
+  auto get_phi_modulation_scale() const -> float { return m_modulation_scale; }
 
   static auto get_phi_cell_size(long unsigned int layer, float eta) -> float
   {
@@ -114,9 +114,9 @@ public:
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
-  };
+  }
 
-  auto get_geometry() const -> CaloGeo* { return m_geo; };
+  auto get_geometry() const -> CaloGeo* { return m_geo; }
 
   auto simulate_hit(Hit& hit,
                     TFCSSimulationState& simulstate,

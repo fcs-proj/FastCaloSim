@@ -21,7 +21,7 @@ public:
                            const char* title = nullptr,
                            CaloGeo* geo = nullptr);
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
 
   ~TFCSPredictExtrapWeights() override;
 
@@ -46,8 +46,8 @@ public:
     kfreemem = BIT(17)  ///< Set this bit in the TObject bit if the memory for
                         ///< m_input should be freed after reading in athena
   };
-  auto freemem() const -> bool { return TestBit(kfreemem); };
-  void set_freemem() { SetBit(kfreemem); };
+  auto freemem() const -> bool { return TestBit(kfreemem); }
+  void set_freemem() { SetBit(kfreemem); }
 
   // Initialize Neural Network
   auto initializeNetwork(int pid,
@@ -73,9 +73,9 @@ public:
   auto UseHardcodedWeight() const -> bool
   {
     return TestBit(kUseHardcodedWeight);
-  };
-  void set_UseHardcodedWeight() { SetBit(kUseHardcodedWeight); };
-  void reset_UseHardcodedWeight() { ResetBit(kUseHardcodedWeight); };
+  }
+  void set_UseHardcodedWeight() { SetBit(kUseHardcodedWeight); }
+  void reset_UseHardcodedWeight() { ResetBit(kUseHardcodedWeight); }
 
 protected:
   CaloGeo* m_geo;  //! do not persistify

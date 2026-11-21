@@ -29,11 +29,11 @@ public:
                  ///< should only be scaled by the GAN
   };
 
-  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); }
 
-  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
+  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); }
 
-  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
+  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); }
 
   void set_default_hit_energy(float energy)
   {
@@ -64,13 +64,13 @@ public:
                     const TFCSExtrapolationState* extrapol)
       -> FCSReturnCode override;
 
-  auto get_geometry() -> CaloGeo* { return m_geo; };
+  auto get_geometry() -> CaloGeo* { return m_geo; }
 
   void set_geometry(CaloGeo* geo) override
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
-  };
+  }
 
   auto get_number_of_hits(TFCSSimulationState& simulstate,
                           const TFCSTruthState* /*truth*/,

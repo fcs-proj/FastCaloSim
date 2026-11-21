@@ -210,7 +210,7 @@ auto TFCSPredictExtrapWeights::simulate(
     } else {  // use weight=0.5 for non-relevant layers
       FCS_MSG_DEBUG(
           "Setting weight=0.5 for layer = " << std::to_string(ilayer));
-      simulstate.setAuxInfo<float>(ilayer, float(0.5));
+      simulstate.setAuxInfo<float>(ilayer, static_cast<float>(0.5));
     }
   }
   return FCSSuccess;

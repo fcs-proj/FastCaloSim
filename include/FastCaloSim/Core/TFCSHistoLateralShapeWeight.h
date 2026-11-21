@@ -25,7 +25,7 @@ public:
   /// expected hits to be generated
   auto Initialize(TH1* hist) -> bool;
 
-  auto getHistogram() const -> TH1* { return m_hist; };
+  auto getHistogram() const -> TH1* { return m_hist; }
 
   void Print(Option_t* option = "") const override;
   virtual void setMinWeight(float minWeight) { m_minWeight = minWeight; }

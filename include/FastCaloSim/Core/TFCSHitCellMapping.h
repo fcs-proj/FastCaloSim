@@ -14,8 +14,8 @@ public:
                      const char* title = nullptr,
                      CaloGeo* geo = nullptr);
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
-  auto get_geometry() -> CaloGeo* { return m_geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
+  auto get_geometry() -> CaloGeo* { return m_geo; }
 
   /// fills all hits into calorimeter cells
   auto simulate_hit(Hit& hit,

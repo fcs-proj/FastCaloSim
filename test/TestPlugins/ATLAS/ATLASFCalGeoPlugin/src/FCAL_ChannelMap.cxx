@@ -194,7 +194,7 @@ void FCAL_ChannelMap::create_tileMap(int isam)
   while (tilefirst != tilelast) {
     tileName_t tileName = tilefirst->first;
     unsigned int ntubes = (tilefirst->second).ntubes();
-    float xtubes = (float)ntubes;
+    float xtubes = static_cast<float>(ntubes);
     float x = (tilefirst->second).x() / xtubes;
     float y = (tilefirst->second).y() / xtubes;
     TilePosition tp(x, y, ntubes);
@@ -239,8 +239,8 @@ bool FCAL_ChannelMap::getTileID(
     x = -x;
 
   /* === Compute the tubeID */
-  int ktx = (int)(x / m_tubeDx[isam - 1]);
-  int kty = (int)(y / m_tubeDy[isam - 1]);
+  int ktx = static_cast<int>(x / m_tubeDx[isam - 1]);
+  int kty = static_cast<int>(y / m_tubeDy[isam - 1]);
   if (x < 0.)
     ktx--;
   if (y < 0.)
@@ -270,9 +270,13 @@ bool FCAL_ChannelMap::getTileID(
 
   // take offset from actual map
   int ix = ktx
-      + ((int)((firstId & 0xffff) - it->second.x() / m_tubeDx[isam - 1])) + 1;
-  int iy =
-      kty + ((int)((firstId >> 16) - it->second.y() / m_tubeDy[isam - 1])) + 1;
+      + (static_cast<int>((firstId & 0xffff)
+                          - it->second.x() / m_tubeDx[isam - 1]))
+      + 1;
+  int iy = kty
+      + (static_cast<int>((firstId >> 16)
+                          - it->second.y() / m_tubeDy[isam - 1]))
+      + 1;
 
   int isOddEven = (((firstId >> 16) % 2) + (firstId % 2)) % 2;
   bool movex = false;

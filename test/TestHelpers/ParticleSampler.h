@@ -43,7 +43,7 @@ public:
     // We set the thickness of the boundary to zero for the intersection
     // calculation
     m_IDCaloBoundary.setThickness(0);
-  };
+  }
 
   inline auto generate(int pid, float ekin, float eta) -> Particle
   {
@@ -79,7 +79,7 @@ public:
 
     // If no intersection was found, raise an exception
     throw std::runtime_error("No intersection found with ID-Calo boundary");
-  };
+  }
 
   inline auto discreteEtaSample(int pid, float ekin, std::vector<float> etas)
       -> ParticleContainer
@@ -90,7 +90,7 @@ public:
       particles.add(particle);
     }
     return particles;
-  };
+  }
 
   inline auto uniformEtaSample(int pid,
                                float ekin,
@@ -123,7 +123,7 @@ public:
       etas.emplace_back(min_eta + i * step_size);
     }
     return discreteEtaSample(pid, ekin, etas);
-  };
+  }
 
 private:
   IDCaloBoundary m_IDCaloBoundary;

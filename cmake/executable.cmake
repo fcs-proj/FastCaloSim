@@ -23,5 +23,4 @@ function(add_exec NAME)
 
   add_dependencies("run_${NAME}" "${NAME}")
 
-  deactivate_checks(${NAME})
 endfunction()

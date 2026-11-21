@@ -236,20 +236,21 @@ const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
     // find the edges of the zone
     // z
     const std::vector<double>& edgez(m_edge[0]);
-    int iz = int(m_invq[0] * (z - m_zmin));  // index to LUT
+    int iz = static_cast<int>(m_invq[0] * (z - m_zmin));  // index to LUT
     iz = m_edgeLUT[0][iz];  // tentative index from LUT
     if (z > edgez[iz + 1])
       iz++;
     // r
     const std::vector<double>& edger(m_edge[1]);
-    int ir = int(m_invq[1] * r);  // index to LUT - note minimum r is always 0
+    int ir = static_cast<int>(
+        m_invq[1] * r);  // index to LUT - note minimum r is always 0
     ir = m_edgeLUT[1][ir];  // tentative index from LUT
     if (r > edger[ir + 1])
       ir++;
     // phi
     const std::vector<double>& edgephi(m_edge[2]);
-    int iphi =
-        int(m_invq[2] * (phi + M_PI));  // index to LUT - minimum phi is -pi
+    int iphi = static_cast<int>(
+        m_invq[2] * (phi + M_PI));  // index to LUT - minimum phi is -pi
     iphi = m_edgeLUT[2][iphi];  // tentative index from LUT
     if (phi > edgephi[iphi + 1])
       iphi++;

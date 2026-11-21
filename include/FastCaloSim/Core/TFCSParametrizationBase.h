@@ -64,42 +64,42 @@ public:
   virtual auto is_match_pdgid(int /*id*/) const -> bool
   {
     return TestBit(kMatchAllPDGID);
-  };
-  virtual auto is_match_Ekin(float /*Ekin*/) const -> bool { return false; };
-  virtual auto is_match_eta(float /*eta*/) const -> bool { return false; };
+  }
+  virtual auto is_match_Ekin(float /*Ekin*/) const -> bool { return false; }
+  virtual auto is_match_eta(float /*eta*/) const -> bool { return false; }
 
   virtual auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool
   {
     return false;
-  };
+  }
   virtual auto is_match_calosample(int /*calosample*/) const -> bool
   {
     return false;
-  };
+  }
 
   virtual auto is_match_all_pdgid() const -> bool
   {
     return TestBit(kMatchAllPDGID);
-  };
-  virtual auto is_match_all_Ekin() const -> bool { return false; };
-  virtual auto is_match_all_eta() const -> bool { return false; };
-  virtual auto is_match_all_Ekin_bin() const -> bool { return false; };
-  virtual auto is_match_all_calosample() const -> bool { return false; };
+  }
+  virtual auto is_match_all_Ekin() const -> bool { return false; }
+  virtual auto is_match_all_eta() const -> bool { return false; }
+  virtual auto is_match_all_Ekin_bin() const -> bool { return false; }
+  virtual auto is_match_all_calosample() const -> bool { return false; }
 
   virtual auto pdgid() const -> const std::set<int>&
   {
     static const std::set<int> empty;
     return empty;
-  };
-  virtual auto Ekin_nominal() const -> double { return init_Ekin_nominal; };
-  virtual auto Ekin_min() const -> double { return init_Ekin_min; };
-  virtual auto Ekin_max() const -> double { return init_Ekin_max; };
-  virtual auto eta_nominal() const -> double { return init_eta_nominal; };
-  virtual auto eta_min() const -> double { return init_eta_min; };
-  virtual auto eta_max() const -> double { return init_eta_max; };
+  }
+  virtual auto Ekin_nominal() const -> double { return init_Ekin_nominal; }
+  virtual auto Ekin_min() const -> double { return init_Ekin_min; }
+  virtual auto Ekin_max() const -> double { return init_Ekin_max; }
+  virtual auto eta_nominal() const -> double { return init_eta_nominal; }
+  virtual auto eta_min() const -> double { return init_eta_min; }
+  virtual auto eta_max() const -> double { return init_eta_max; }
 
-  virtual void set_match_all_pdgid() { SetBit(kMatchAllPDGID); };
-  virtual void reset_match_all_pdgid() { ResetBit(kMatchAllPDGID); };
+  virtual void set_match_all_pdgid() { SetBit(kMatchAllPDGID); }
+  virtual void reset_match_all_pdgid() { ResetBit(kMatchAllPDGID); }
 
   /// Method to set the geometry access pointer. Loops over daughter objects if
   /// present
@@ -108,7 +108,7 @@ public:
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual auto size() const -> unsigned int { return 0; };
+  virtual auto size() const -> unsigned int { return 0; }
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
@@ -117,7 +117,7 @@ public:
       -> const TFCSParametrizationBase*
   {
     return nullptr;
-  };
+  }
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
@@ -125,13 +125,15 @@ public:
   virtual auto operator[](unsigned int /*ind*/) -> TFCSParametrizationBase*
   {
     return nullptr;
-  };
+  }
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The set_daughter method allows to change these daughters - expert
   /// use only! The original element at this position is not deleted
   virtual void set_daughter(unsigned int /*ind*/,
-                            TFCSParametrizationBase* /*param*/) {};
+                            TFCSParametrizationBase* /*param*/)
+  {
+  }
 
   /// The == operator compares the content of instances.
   /// The implementation in the base class only returns true for a comparison
@@ -139,7 +141,7 @@ public:
   virtual auto operator==(const TFCSParametrizationBase& ref) const -> bool
   {
     return compare(ref);
-  };
+  }
 
   /// Method in all derived classes to do some simulation
   virtual auto simulate(TFCSSimulationState& simulstate,
@@ -149,7 +151,7 @@ public:
 
   /// Method in all derived classes to delete objects stored in the simulstate
   /// AuxInfo
-  virtual void CleanAuxInfo(TFCSSimulationState& /*simulstate*/) const {};
+  virtual void CleanAuxInfo(TFCSSimulationState& /*simulstate*/) const {}
 
   /// Called immediately after being read from file to fix histograms that
   /// erroneously have kIsOnHeap set. See ATLASSIM-7031.

@@ -14,13 +14,13 @@ public:
       : TFCSParametrizationFloatSelectChain(name, title)
   {
     reset_DoRandomInterpolation();
-  };
+  }
   TFCSParametrizationEkinSelectChain(
       const TFCSParametrizationEkinSelectChain& ref)
       : TFCSParametrizationFloatSelectChain(ref)
   {
     reset_DoRandomInterpolation();
-  };
+  }
 
   /// Status bit for Ekin Selection
   enum FCSEkinStatusBits
@@ -33,9 +33,9 @@ public:
   auto DoRandomInterpolation() const -> bool
   {
     return TestBit(kDoRandomInterpolation);
-  };
-  void set_DoRandomInterpolation() { SetBit(kDoRandomInterpolation); };
-  void reset_DoRandomInterpolation() { ResetBit(kDoRandomInterpolation); };
+  }
+  void set_DoRandomInterpolation() { SetBit(kDoRandomInterpolation); }
+  void reset_DoRandomInterpolation() { ResetBit(kDoRandomInterpolation); }
 
   using TFCSParametrizationFloatSelectChain::push_back_in_bin;
   virtual void push_back_in_bin(TFCSParametrizationBase* param);

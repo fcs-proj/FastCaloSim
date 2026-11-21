@@ -34,40 +34,40 @@ public:
     m_randomEngine = engine;
   }
 
-  auto is_valid() const -> bool { return m_Ebin >= 0; };
-  auto E() const -> double { return m_Etot; };
+  auto is_valid() const -> bool { return m_Ebin >= 0; }
+  auto E() const -> double { return m_Etot; }
   // NOTE: layers without energy are not stored in the maps; as for the
   // original array-based implementation, such layers read as 0 energy.
   auto E(int sample) const -> double
   {
     auto it = m_E.find(sample);
     return it != m_E.end() ? it->second : 0.;
-  };
+  }
   auto Efrac(int sample) const -> double
   {
     auto it = m_Efrac.find(sample);
     return it != m_Efrac.end() ? it->second : 0.;
-  };
-  auto Ebin() const -> int { return m_Ebin; };
+  }
+  auto Ebin() const -> int { return m_Ebin; }
 
-  void set_Ebin(int bin) { m_Ebin = bin; };
-  void set_E(int sample, double Esample) { m_E[sample] = Esample; };
+  void set_Ebin(int bin) { m_Ebin = bin; }
+  void set_E(int sample, double Esample) { m_E[sample] = Esample; }
   void set_Efrac(int sample, double Efracsample)
   {
     m_Efrac[sample] = Efracsample;
-  };
-  void set_E(double E) { m_Etot = E; };
+  }
+  void set_E(double E) { m_Etot = E; }
   void add_E(int sample, double Esample)
   {
     m_E[sample] += Esample;
     m_Etot += Esample;
-  };
+  }
 
   // maps the cell id to the energy deposited in the cell
   using cellmap = std::unordered_map<unsigned long long, float>;
 
-  auto cells() -> cellmap& { return m_cells; };
-  auto cells() const -> const cellmap& { return m_cells; };
+  auto cells() -> cellmap& { return m_cells; }
+  auto cells() const -> const cellmap& { return m_cells; }
 
   void deposit(const unsigned long long cell_id, float E);
 
@@ -76,7 +76,7 @@ public:
   // TODO: Remove explicit functions for SF here and use
   // getAuxInfo<double>("SF"_FCShash) and setAuxInfo<double>("SF"_FCShash,mysf)
   // directly in the energy parametrization
-  void set_SF(double mysf) { setAuxInfo<double>("SF"_FCShash, mysf); };
+  void set_SF(double mysf) { setAuxInfo<double>("SF"_FCShash, mysf); }
   auto get_SF() -> double { return getAuxInfo<double>("SF"_FCShash); }
 
   void clear();
@@ -111,12 +111,12 @@ public:
     void* p;
 
     // cast operators
-    operator bool() const { return b; };
-    operator char() const { return c; };
-    operator int() const { return i; };
-    operator float() const { return f; };
-    operator double() const { return d; };
-    operator void*() const { return p; };
+    operator bool() const { return b; }
+    operator char() const { return c; }
+    operator int() const { return i; }
+    operator float() const { return f; }
+    operator double() const { return d; }
+    operator void*() const { return p; }
 
     // template set method. No general implementation exist, only explicit
     // implementations are added after the class definition
@@ -141,7 +141,7 @@ public:
   auto hasAuxInfo(std::uint32_t index) const -> bool
   {
     return m_AuxInfo.find(index) != m_AuxInfo.end();
-  };
+  }
 
   // Get auxiliary info
   // Use as TFCSSimulationState::getAuxInfo<int>(index)

@@ -115,5 +115,5 @@ private:
   std::string* m_input = nullptr;
 
   // Supplying a ClassDef for writing to file.
-  ClassDefOverride(TFCSGANLWTNNHandler, 6);
+  ClassDefOverride(TFCSGANLWTNNHandler, 6)
 };

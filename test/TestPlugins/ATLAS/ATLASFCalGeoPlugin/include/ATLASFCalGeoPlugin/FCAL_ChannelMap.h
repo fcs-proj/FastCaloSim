@@ -140,7 +140,7 @@ public:
   tileMap_const_iterator end(int isam) const
   {
     return m_tileMap[isam - 1].end();
-  };
+  }
 
 private:
   /** Geometrical parameters here, in CLHEP::cm please to be compatible with G3

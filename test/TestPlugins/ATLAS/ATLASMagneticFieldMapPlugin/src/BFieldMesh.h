@@ -339,7 +339,7 @@ void BFieldMesh<T>::buildLUT()
       q = std::min(q, m_mesh[j][i + 1] - m_mesh[j][i]);
     }
     // find the number of units in the LUT
-    int n = int(width / q) + 1;
+    int n = static_cast<int>(width / q) + 1;
     q = width / (n + 0.5);
     m_invUnit[j] = 1.0 / q;  // new unit size
     n++;

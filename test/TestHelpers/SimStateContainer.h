@@ -83,7 +83,7 @@ class SimStateContainer
     }
 
     return data;
-  };
+  }
 };
 
 }  // namespace TestHelpers

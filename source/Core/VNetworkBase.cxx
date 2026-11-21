@@ -13,19 +13,23 @@
 
 // Probably called by a streamer.
 VNetworkBase::VNetworkBase()
-    : m_inputFile("unknown") {};
+    : m_inputFile("unknown")
+{
+}
 
 // record the input file and provided it's not empty call SetUp
 VNetworkBase::VNetworkBase(const std::string& inputFile)
     : m_inputFile(inputFile)
 {
   FCS_MSG_DEBUG("Constructor called with inputFile");
-};
+}
 
 // No setupPersistedVariables or setupNet here!
 VNetworkBase::VNetworkBase(const VNetworkBase& copy_from)
     : MLogging()
-    , m_inputFile(copy_from.m_inputFile) {};
+    , m_inputFile(copy_from.m_inputFile)
+{
+}
 
 // Nothing is needed from the destructor right now.
 // We don't use new anywhere, so the whole thing should clean
@@ -51,7 +55,7 @@ auto VNetworkBase::representNetworkInputs(
   };
   representation += "\n";
   return representation;
-};
+}
 
 auto VNetworkBase::representNetworkOutputs(
     VNetworkBase::NetworkOutputs const& outputs, int maxValues) -> std::string
@@ -67,7 +71,7 @@ auto VNetworkBase::representNetworkOutputs(
   };
   representation += "\n";
   return representation;
-};
+}
 
 // this is also used for the stream operator
 void VNetworkBase::print(std::ostream& strm) const
@@ -79,7 +83,7 @@ void VNetworkBase::print(std::ostream& strm) const
     FCS_MSG_DEBUG("Making a network with input file " << m_inputFile);
     strm << m_inputFile;
   };
-};
+}
 
 void VNetworkBase::writeNetToTTree(TFile& root_file,
                                    std::string const& tree_name)
@@ -90,7 +94,7 @@ void VNetworkBase::writeNetToTTree(TFile& root_file,
   TTree tree(tree_name.c_str(), title.c_str());
   this->writeNetToTTree(tree);
   root_file.Write();
-};
+}
 
 void VNetworkBase::writeNetToTTree(std::string const& root_name,
                                    std::string const& tree_name)
@@ -99,7 +103,7 @@ void VNetworkBase::writeNetToTTree(std::string const& root_name,
   TFile root_file(root_name.c_str(), "UPDATE");
   this->writeNetToTTree(root_file, tree_name);
   root_file.Close();
-};
+}
 
 auto VNetworkBase::isRootFile(std::string const& filename) const -> bool
 {
@@ -116,12 +120,12 @@ auto VNetworkBase::isRootFile(std::string const& filename) const -> bool
   }
   return (0
           == to_check->compare(filename_len - ending_len, ending_len, ending));
-};
+}
 
 auto VNetworkBase::isFile() const -> bool
 {
   return isFile(m_inputFile);
-};
+}
 
 auto VNetworkBase::isFile(std::string const& inputFile) -> bool
 {
@@ -131,7 +135,7 @@ auto VNetworkBase::isFile(std::string const& inputFile) -> bool
   } else {
     return false;
   };
-};
+}
 
 namespace
 {
@@ -148,7 +152,7 @@ auto GetPrefixLength(const std::vector<std::string>& strings) -> int
     }
   }
   return length;
-};
+}
 }  // namespace
 
 void VNetworkBase::removePrefixes(std::vector<std::string>& output_names) const
@@ -156,7 +160,7 @@ void VNetworkBase::removePrefixes(std::vector<std::string>& output_names) const
   const int length = GetPrefixLength(output_names);
   for (long unsigned int i = 0; i < output_names.size(); i++)
     output_names[i] = output_names[i].substr(length);
-};
+}
 
 void VNetworkBase::removePrefixes(VNetworkBase::NetworkOutputs& outputs) const
 {
@@ -172,4 +176,4 @@ void VNetworkBase::removePrefixes(VNetworkBase::NetworkOutputs& outputs) const
     // replace the output
     outputs.insert(std::move(nodeHandle));
   }
-};
+}

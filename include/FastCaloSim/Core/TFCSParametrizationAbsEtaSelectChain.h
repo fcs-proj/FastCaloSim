@@ -10,7 +10,9 @@ class TFCSParametrizationAbsEtaSelectChain
 public:
   TFCSParametrizationAbsEtaSelectChain(const char* name = nullptr,
                                        const char* title = nullptr)
-      : TFCSParametrizationEtaSelectChain(name, title) {};
+      : TFCSParametrizationEtaSelectChain(name, title)
+  {
+  }
   TFCSParametrizationAbsEtaSelectChain(
       const TFCSParametrizationAbsEtaSelectChain& ref) = default;
 

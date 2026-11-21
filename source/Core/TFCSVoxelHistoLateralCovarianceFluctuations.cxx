@@ -122,7 +122,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       for (int y = 0; y < m_nDim_y; ++y) {
         // Naming of hists is hist_xy where x, y are indices of cells
         std::string histname = std::format("hist_{}_{}{}", x, y, label);
-        TH1* hist = (TH1*)inputfile->Get(histname.c_str());
+        TH1* hist = static_cast<TH1*>(inputfile->Get(histname.c_str()));
         if (!hist) {
           FCS_MSG_ERROR("Histogram " << histname << " not found");
           return false;

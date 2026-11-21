@@ -9,16 +9,18 @@ class TFCSParametrizationPlaceholder : public TFCSParametrizationBase
 public:
   TFCSParametrizationPlaceholder(const char* name = nullptr,
                                  const char* title = nullptr)
-      : TFCSParametrizationBase(name, title) {};
+      : TFCSParametrizationBase(name, title)
+  {
+  }
 
   auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
+  }
   auto is_match_calosample(int /*calosample*/) const -> bool override
   {
     return true;
-  };
+  }
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

@@ -21,7 +21,7 @@ public:
     virtual void Build() const override;
 
     // @brief Set the container of particles you want to use
-    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;};
+    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;}
 
     private:
 

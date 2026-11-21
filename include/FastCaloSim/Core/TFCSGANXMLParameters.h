@@ -36,15 +36,15 @@ public:
   auto GetRelevantLayers() const -> const std::vector<int>&
   {
     return m_relevantlayers;
-  };
-  auto GetBinning() const -> const Binning& { return m_binning; };
-  auto GetLatentSpaceSize() const -> int { return m_latentDim; };
-  auto GetGANVersion() const -> int { return m_ganVersion; };
-  auto IsSymmetrisedAlpha() const -> bool { return m_symmetrisedAlpha; };
+  }
+  auto GetBinning() const -> const Binning& { return m_binning; }
+  auto GetLatentSpaceSize() const -> int { return m_latentDim; }
+  auto GetGANVersion() const -> int { return m_ganVersion; }
+  auto IsSymmetrisedAlpha() const -> bool { return m_symmetrisedAlpha; }
   auto GetInputFolder() const -> const std::string&
   {
     return m_fastCaloGANInputFolderName;
-  };
+  }
 
 private:
   static auto ReadBooleanAttribute(const std::string& name, xmlNodePtr node)

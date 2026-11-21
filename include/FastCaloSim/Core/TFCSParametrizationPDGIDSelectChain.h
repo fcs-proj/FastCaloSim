@@ -12,13 +12,13 @@ public:
       : TFCSParametrizationChain(name, title)
   {
     reset_SimulateOnlyOnePDGID();
-  };
+  }
   TFCSParametrizationPDGIDSelectChain(
       const TFCSParametrizationPDGIDSelectChain& ref)
       : TFCSParametrizationChain(ref)
   {
     reset_SimulateOnlyOnePDGID();
-  };
+  }
 
   /// Status bit for PDGID Selection
   enum FCSPDGIDStatusBits
@@ -31,9 +31,9 @@ public:
   auto SimulateOnlyOnePDGID() const -> bool
   {
     return TestBit(kSimulateOnlyOnePDGID);
-  };
-  void set_SimulateOnlyOnePDGID() { SetBit(kSimulateOnlyOnePDGID); };
-  void reset_SimulateOnlyOnePDGID() { ResetBit(kSimulateOnlyOnePDGID); };
+  }
+  void set_SimulateOnlyOnePDGID() { SetBit(kSimulateOnlyOnePDGID); }
+  void reset_SimulateOnlyOnePDGID() { ResetBit(kSimulateOnlyOnePDGID); }
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

@@ -29,29 +29,29 @@ public:
   inline auto get_number_of_bins() const -> unsigned int
   {
     return m_functions.size();
-  };
+  }
 
   inline auto get_bin_low_edge(int bin) const -> double
   {
     return m_bin_low_edge[bin];
-  };
+  }
   inline auto get_bin_up_edge(int bin) const -> double
   {
     return m_bin_low_edge[bin + 1];
-  };
+  }
 
   inline auto get_function(int bin) const -> const TFCS1DFunction*
   {
     return m_functions[bin];
-  };
+  }
   auto get_functions() const -> const std::vector<const TFCS1DFunction*>&
   {
     return m_functions;
-  };
+  }
   auto get_bin_low_edges() const -> const std::vector<float>&
   {
     return m_bin_low_edge;
-  };
+  }
 
   /// modify one hit position to emulate the LAr accordion shape
   /// and then fills all hits into calorimeter cells

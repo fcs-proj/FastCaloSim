@@ -59,7 +59,7 @@ public:
     m_used_layers = std::move(used_layers);
     m_nVoxels = m_layer_boundaries.back();
     m_nLayers = m_used_layers.size();
-  };
+  }
 
 private:
   std::unique_ptr<VNetworkBase> m_onnx_model = nullptr;

@@ -34,7 +34,10 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
   TFCSLateralShapeParametrizationHitBase::set_geometry(geo);
   if (!m_hist.get_HistoContents().empty()) {
     int first_fix_bin = -1;
-    for (int i = (int)(m_hist.get_HistoContents().size() - 1); i >= 0; --i) {
+    for (int i = static_cast<int>(m_hist.get_HistoContents().size() - 1);
+         i >= 0;
+         --i)
+    {
       if (std::isnan(m_hist.get_HistoContents()[i])) {
         FCS_MSG_DEBUG("nan in histo content for "
                       << GetTitle() << ", bin[" << i
@@ -209,7 +212,7 @@ auto TFCSHistoLateralShapeParametrization::Initialize(const char* filepath,
     return false;
 
   // histogram with hit pattern
-  TH2* inputShape = (TH2*)inputfile->Get(histname);
+  TH2* inputShape = static_cast<TH2*>(inputfile->Get(histname));
   if (inputShape == nullptr)
     return false;
 
