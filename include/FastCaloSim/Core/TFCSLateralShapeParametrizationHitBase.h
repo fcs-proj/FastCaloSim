@@ -6,6 +6,25 @@
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 
+namespace FastCaloSim
+{
+/// Distance from the origin of a point at radius r and position z along the
+/// beam
+inline auto dist000(double r, double z) -> float
+{
+  return std::sqrt(r * r + z * z);
+}
+
+/// |dtheta/deta| = 1/cosh(eta). Together with dist000 it converts a distance
+/// in eta at the given eta into mm: delta_mm = delta_eta * eta_jakobi *
+/// dist000. Evaluated in the precision of the argument (float or double).
+template<typename T>
+inline auto eta_jakobi(T eta) -> float
+{
+  return std::abs(2.0 * std::exp(-eta) / (1.0 + std::exp(-2 * eta)));
+}
+}  // namespace FastCaloSim
+
 class TFCSLateralShapeParametrizationHitBase
     : public TFCSLateralShapeParametrization
 {

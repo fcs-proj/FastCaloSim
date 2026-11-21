@@ -127,9 +127,8 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi_mm = -delta_phi_mm;
 
-  const float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi =
-      std::abs(2.0 * std::exp(-center_eta) / (1.0 + std::exp(-2 * center_eta)));
+  const float dist000 = FastCaloSim::dist000(center_r, center_z);
+  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
   const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
   const float delta_phi = delta_phi_mm / center_r;
