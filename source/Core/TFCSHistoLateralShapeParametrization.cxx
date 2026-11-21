@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <optional>
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeParametrization.h"
 
@@ -32,42 +33,40 @@ TFCSHistoLateralShapeParametrization::~TFCSHistoLateralShapeParametrization() =
 void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
 {
   TFCSLateralShapeParametrizationHitBase::set_geometry(geo);
-  if (!m_hist.get_HistoContents().empty()) {
-    int first_fix_bin = -1;
-    for (int i = static_cast<int>(m_hist.get_HistoContents().size() - 1);
-         i >= 0;
-         --i)
-    {
-      if (std::isnan(m_hist.get_HistoContents()[i])) {
-        FCS_MSG_DEBUG("nan in histo content for "
-                      << GetTitle() << ", bin[" << i
-                      << "]=" << m_hist.get_HistoContents()[i] << " -> 1");
-        m_hist.get_HistoContents()[i] = 1;
+  auto& contents = m_hist.get_HistoContents();
+  if (!contents.empty()) {
+    std::optional<std::size_t> first_fix_bin;
+    for (std::size_t i = contents.size(); i-- > 0;) {
+      if (std::isnan(contents[i])) {
+        FCS_MSG_DEBUG("nan in histo content for " << GetTitle() << ", bin[" << i
+                                                  << "]=" << contents[i]
+                                                  << " -> 1");
+        contents[i] = 1;
         first_fix_bin = i;
       }
     }
-    if (first_fix_bin < 0)
+    if (!first_fix_bin)
       return;
 
-    if (first_fix_bin == 0) {
+    if (*first_fix_bin == 0) {
       FCS_MSG_WARNING("nan in histo content for "
                       << GetTitle()
                       << " for all bins. Fixed to probability 1 causing hits "
                          "to be deposited in the shower center");
     } else {
-      int last_fix_bin = -1;
-      for (size_t i = 0; i < m_hist.get_HistoContents().size(); ++i) {
-        if (std::isnan(m_hist.get_HistoContents()[i])) {
-          FCS_MSG_DEBUG("nan in histo content for "
-                        << GetTitle() << ", bin[" << i
-                        << "]=" << m_hist.get_HistoContents()[i] << " -> 0");
-          m_hist.get_HistoContents()[i] = 0;
+      std::size_t last_fix_bin = 0;
+      for (std::size_t i = 0; i < contents.size(); ++i) {
+        if (std::isnan(contents[i])) {
+          FCS_MSG_DEBUG("nan in histo content for " << GetTitle() << ", bin["
+                                                    << i << "]=" << contents[i]
+                                                    << " -> 0");
+          contents[i] = 0;
           last_fix_bin = i;
         }
       }
       FCS_MSG_WARNING("nan in histo content for "
                       << GetTitle() << ". Fixed up to bin " << last_fix_bin
-                      << " with probability 0 and beyond bin " << first_fix_bin
+                      << " with probability 0 and beyond bin " << *first_fix_bin
                       << " with probability 1.");
     }
   }
@@ -79,9 +78,10 @@ auto TFCSHistoLateralShapeParametrization::get_sigma2_fluctuation(
     const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
   // Limit to factor 1000 fluctuations
-  if (m_nhits < 0.001)
+  const auto nhits = static_cast<double>(m_nhits);
+  if (nhits < 0.001)
     return 1000;
-  return 1.0 / m_nhits;
+  return 1.0 / nhits;
 }
 
 auto TFCSHistoLateralShapeParametrization::get_number_of_hits(
@@ -93,7 +93,8 @@ auto TFCSHistoLateralShapeParametrization::get_number_of_hits(
     return -1;
   }
 
-  return CLHEP::RandPoisson::shoot(simulstate.randomEngine(), m_nhits);
+  return static_cast<int>(CLHEP::RandPoisson::shoot(
+      simulstate.randomEngine(), static_cast<double>(m_nhits)));
 }
 
 void TFCSHistoLateralShapeParametrization::set_number_of_hits(float nhits)
@@ -126,7 +127,7 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  float alpha, r, rnd1, rnd2;
+  double alpha, r, rnd1, rnd2;
   rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
@@ -155,13 +156,13 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  r *= m_r_scale;
-  r += m_r_offset;
+  r *= static_cast<double>(m_r_scale);
+  r += static_cast<double>(m_r_offset);
   if (r < 0)
     r = 0;
 
-  float delta_eta_mm = r * cos(alpha);
-  float delta_phi_mm = r * sin(alpha);
+  double delta_eta_mm = r * std::cos(alpha);
+  double delta_phi_mm = r * std::sin(alpha);
 
   // Particles with negative eta are expected to have the same shape as those
   // with positive eta after transformation: delta_eta --> -delta_eta
@@ -173,11 +174,11 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
   if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi_mm = -delta_phi_mm;
 
-  const float dist000 = FastCaloSim::dist000(center_r, center_z);
-  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+  const double dist000 = FastCaloSim::dist000(center_r, center_z);
+  const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
-  const float delta_phi = delta_phi_mm / center_r;
+  const double delta_eta = delta_eta_mm / eta_jakobi / dist000;
+  const double delta_phi = delta_phi_mm / center_r;
 
   hit.setEtaPhiZE(
       center_eta + delta_eta, center_phi + delta_phi, center_z, hit.E());
@@ -197,7 +198,7 @@ auto TFCSHistoLateralShapeParametrization::Initialize(TH2* hist) -> bool
   if (m_hist.get_HistoContents().empty())
     return false;
 
-  set_number_of_hits(hist->Integral());
+  set_number_of_hits(static_cast<float>(hist->Integral()));
 
   return true;
 }

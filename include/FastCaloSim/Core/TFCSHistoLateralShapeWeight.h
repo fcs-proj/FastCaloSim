@@ -30,8 +30,8 @@ public:
   void Print(Option_t* option = "") const override;
   virtual void setMinWeight(float minWeight) { m_minWeight = minWeight; }
   virtual void setMaxWeight(float maxWeight) { m_maxWeight = maxWeight; }
-  auto getMinWeight() const -> float override;
-  auto getMaxWeight() const -> float override;
+  auto getMinWeight() const -> double override;
+  auto getMaxWeight() const -> double override;
 
 protected:
   /// Histogram to be used for the shape simulation

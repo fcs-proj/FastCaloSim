@@ -22,7 +22,7 @@ public:
   auto get_E_hit(TFCSSimulationState& simulstate,
                  const TFCSTruthState* truth,
                  const TFCSExtrapolationState* extrapol) const
-      -> float override;
+      -> double override;
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

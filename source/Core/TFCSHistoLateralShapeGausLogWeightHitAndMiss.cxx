@@ -6,6 +6,7 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
+#include "FastCaloSim/Core/GaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "TH1.h"
 #include "TVector2.h"
@@ -39,14 +40,14 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  const float dist000 = FastCaloSim::dist000(center_r, center_z);
-  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+  const double dist000 = FastCaloSim::dist000(center_r, center_z);
+  const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  const float delta_eta = hit.eta() - center_eta;
-  const float delta_phi = hit.phi() - center_phi;
-  const float delta_eta_mm = delta_eta * eta_jakobi * dist000;
-  const float delta_phi_mm = delta_phi * center_r;
-  const float delta_r_mm =
+  const double delta_eta = hit.eta() - center_eta;
+  const double delta_phi = hit.phi() - center_phi;
+  const double delta_eta_mm = delta_eta * eta_jakobi * dist000;
+  const double delta_phi_mm = delta_phi * center_r;
+  const double delta_r_mm =
       std::sqrt(delta_eta_mm * delta_eta_mm + delta_phi_mm * delta_phi_mm);
 
   // TODO: delta_r_mm should perhaps be cached in hit
@@ -56,13 +57,13 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
     bin = 1;
   if (bin > m_hist->GetNbinsX())
     bin = m_hist->GetNbinsX();
-  float meanweight = m_hist->GetBinContent(bin);
-  float weight = meanweight;
-  float RMS = m_hist->GetBinError(bin);
+  double meanweight = m_hist->GetBinContent(bin);
+  double weight = meanweight;
+  double RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
-    float logweight = CLHEP::RandGaussZiggurat::shoot(
+    double logweight = FastCaloSim::gauss_ziggurat(
         simulstate.randomEngine(), -0.5 * RMS * RMS, RMS);
-    weight *= std::exp(static_cast<double>(logweight));
+    weight *= std::exp(logweight);
   }
   if (meanweight <= 1) {
     // if meanweight<=1, give lower energy to hit.
@@ -73,8 +74,8 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
     // if meanweight>1, accept only 1/meanweight events, but give them a higher
     // energy increased by weight. This leads to larger fluctuations, while
     // keeping the shape unchanged.
-    float prob = 1.0 / meanweight;
-    float rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+    double prob = 1.0 / meanweight;
+    double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
     if (rnd < prob)
       hit.set_E(weight * hit.E());
     else

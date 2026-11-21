@@ -10,6 +10,7 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
+#include "FastCaloSim/Core/GaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
@@ -161,7 +162,7 @@ auto TFCSPCAEnergyParametrization::simulate(
       double mean = vals_gauss_means[l];
       double rms = vals_gauss_rms[l];
       double gauszz =
-          CLHEP::RandGaussZiggurat::shoot(simulstate.randomEngine(), mean, rms);
+          FastCaloSim::gauss_ziggurat(simulstate.randomEngine(), mean, rms);
       input_data[l] = gauszz;
     }
 

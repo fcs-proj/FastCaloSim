@@ -7,6 +7,7 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
+#include "FastCaloSim/Core/GaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "TH1.h"
 #include "TVector2.h"
@@ -27,14 +28,14 @@ TFCSHistoLateralShapeWeight::~TFCSHistoLateralShapeWeight()
     delete m_hist;
 }
 
-auto TFCSHistoLateralShapeWeight::getMinWeight() const -> float
+auto TFCSHistoLateralShapeWeight::getMinWeight() const -> double
 {
-  return m_minWeight;
+  return static_cast<double>(m_minWeight);
 }
 
-auto TFCSHistoLateralShapeWeight::getMaxWeight() const -> float
+auto TFCSHistoLateralShapeWeight::getMaxWeight() const -> double
 {
-  return m_maxWeight;
+  return static_cast<double>(m_maxWeight);
 }
 
 auto TFCSHistoLateralShapeWeight::simulate_hit(
@@ -52,14 +53,14 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  const float dist000 = FastCaloSim::dist000(center_r, center_z);
-  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+  const double dist000 = FastCaloSim::dist000(center_r, center_z);
+  const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  const float delta_eta = hit.eta() - center_eta;
-  const float delta_phi = hit.phi() - center_phi;
-  const float delta_eta_mm = delta_eta * eta_jakobi * dist000;
-  const float delta_phi_mm = delta_phi * center_r;
-  const float delta_r_mm =
+  const double delta_eta = hit.eta() - center_eta;
+  const double delta_phi = hit.phi() - center_phi;
+  const double delta_eta_mm = delta_eta * eta_jakobi * dist000;
+  const double delta_phi_mm = delta_phi * center_r;
+  const double delta_r_mm =
       std::sqrt(delta_eta_mm * delta_eta_mm + delta_phi_mm * delta_phi_mm);
 
   // TODO: delta_r_mm should perhaps be cached in hit
@@ -69,11 +70,11 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
     bin = 1;
   if (bin > m_hist->GetNbinsX())
     bin = m_hist->GetNbinsX();
-  float weight = m_hist->GetBinContent(bin);
-  float RMS = m_hist->GetBinError(bin);
+  double weight = m_hist->GetBinContent(bin);
+  double RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
     weight =
-        CLHEP::RandGaussZiggurat::shoot(simulstate.randomEngine(), weight, RMS);
+        FastCaloSim::gauss_ziggurat(simulstate.randomEngine(), weight, RMS);
   }
   hit.set_E(weight * hit.E());
 

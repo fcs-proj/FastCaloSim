@@ -7,7 +7,9 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFluctChain.h"
 
 #include "CLHEP/Random/RandGaussZiggurat.h"
+#include "FastCaloSim/Core/GaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSLateralShapeParametrizationFluctChain =========
@@ -32,13 +34,13 @@ TFCSLateralShapeParametrizationFluctChain::
 auto TFCSLateralShapeParametrizationFluctChain::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const -> float
+    const TFCSExtrapolationState* extrapol) const -> double
 {
-  const float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
+  const double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   const int sample = calosample();
   if (sigma2 <= 0 || sample < 0)
     return -1.;
-  const float maxWeight = getMaxWeight();
+  const double maxWeight = getMaxWeight();
 
   if (maxWeight > 0)
     return simulstate.E(sample) * sigma2 / maxWeight;
@@ -64,14 +66,14 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
 
   // Initialize hit energy only now, as init loop above might change the layer
   // energy
-  const float Elayer = simulstate.E(calosample());
-  if (Elayer == 0) {
+  const double Elayer = simulstate.E(calosample());
+  if (FastCaloSim::exactly_equal(Elayer, 0.0)) {
     FCS_MSG_VERBOSE("Elayer=0, nothing to do");
     return FCSSuccess;
   }
 
   // Call get_sigma2_fluctuation only once, as it could contain a random number
-  float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
+  double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   if (sigma2 >= s_max_sigma2_fluctuation) {
     FCS_MSG_ERROR(
         "TFCSLateralShapeParametrizationFluctChain::simulate(): "
@@ -86,11 +88,11 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
 
   // Make a good guess of the needed hit energy, assuming all hits would have
   // the same energy
-  const float Eavghit = get_E_hit(simulstate, truth, extrapol);
-  const float absEavghit_tenth = std::abs(Eavghit / 10);
-  float sumEhit = 0;
-  float error2_sumEhit = 0;
-  float error2 = 2 * s_max_sigma2_fluctuation;
+  const double Eavghit = get_E_hit(simulstate, truth, extrapol);
+  const double absEavghit_tenth = std::abs(Eavghit / 10);
+  double sumEhit = 0;
+  double error2_sumEhit = 0;
+  double error2 = 2 * s_max_sigma2_fluctuation;
 
   if (debug) {
     PropagateMSGLevel(old_level);
@@ -107,8 +109,10 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
   do {
     hit.reset();
     do {
-      hit.set_E(CLHEP::RandGaussZiggurat::shoot(
-          simulstate.randomEngine(), Eavghit, m_RMS * Eavghit));
+      hit.set_E(
+          FastCaloSim::gauss_ziggurat(simulstate.randomEngine(),
+                                      Eavghit,
+                                      static_cast<double>(m_RMS) * Eavghit));
     } while (std::abs(hit.E()) < absEavghit_tenth);
     bool failed = false;
     if (debug)
@@ -141,9 +145,9 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
     if (!failed) {
       ifail = 0;
       ++ihit;
-      const float Ehit = hit.E();
+      const double Ehit = hit.E();
       sumEhit += Ehit;
-      float sumEhit2 = sumEhit * sumEhit;
+      double sumEhit2 = sumEhit * sumEhit;
       error2_sumEhit += Ehit * Ehit;
       if (sumEhit2 > 0)
         error2 = error2_sumEhit / sumEhit2;

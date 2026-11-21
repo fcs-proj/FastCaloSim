@@ -126,13 +126,22 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
     return FCSFatal;
   }
 
-  float eta = std::fabs(hit.eta());
-  if (eta < m_bin_low_edge[0] || eta >= m_bin_low_edge[get_number_of_bins()]) {
+  const double eta = std::fabs(hit.eta());
+  if (eta < get_bin_low_edge(0)
+      || eta >= get_bin_up_edge(get_number_of_bins() - 1))
+  {
     return TFCSHitCellMapping::simulate_hit(hit, simulstate, truth, extrapol);
   }
 
-  auto it = std::upper_bound(m_bin_low_edge.begin(), m_bin_low_edge.end(), eta);
-  int bin = std::distance(m_bin_low_edge.begin(), it) - 1;
+  // The bin edges are stored in single precision
+  const auto it =
+      std::upper_bound(m_bin_low_edge.begin(),
+                       m_bin_low_edge.end(),
+                       eta,
+                       [](double value, float edge)
+                       { return value < static_cast<double>(edge); });
+  const auto bin =
+      static_cast<unsigned int>(std::distance(m_bin_low_edge.begin(), it) - 1);
 
   const TFCS1DFunction* func = get_function(bin);
   if (func) {

@@ -10,6 +10,7 @@
 #include <TClass.h>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSLateralShapeParametrizationHitChain =========
@@ -38,9 +39,9 @@ TFCSLateralShapeParametrizationHitChain::
 auto TFCSLateralShapeParametrizationHitChain::size() const -> unsigned int
 {
   if (m_number_of_hits_simul)
-    return m_chain.size() + 1;
+    return static_cast<unsigned int>(m_chain.size() + 1);
   else
-    return m_chain.size();
+    return static_cast<unsigned int>(m_chain.size());
 }
 
 void TFCSLateralShapeParametrizationHitChain::push_back_init(
@@ -121,20 +122,20 @@ auto TFCSLateralShapeParametrizationHitChain::get_number_of_hits(
   return 1;
 }
 
-auto TFCSLateralShapeParametrizationHitChain::getMinWeight() const -> float
+auto TFCSLateralShapeParametrizationHitChain::getMinWeight() const -> double
 {
   for (TFCSLateralShapeParametrizationHitBase* hitsim : m_chain) {
-    float weight = hitsim->getMinWeight();
+    double weight = hitsim->getMinWeight();
     if (weight > 0.)
       return weight;
   }
   return -1.;
 }
 
-auto TFCSLateralShapeParametrizationHitChain::getMaxWeight() const -> float
+auto TFCSLateralShapeParametrizationHitChain::getMaxWeight() const -> double
 {
   for (TFCSLateralShapeParametrizationHitBase* hitsim : m_chain) {
-    float weight = hitsim->getMaxWeight();
+    double weight = hitsim->getMaxWeight();
     if (weight > 0.)
       return weight;
   }
@@ -144,7 +145,7 @@ auto TFCSLateralShapeParametrizationHitChain::getMaxWeight() const -> float
 auto TFCSLateralShapeParametrizationHitChain::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const -> float
+    const TFCSExtrapolationState* extrapol) const -> double
 {
   const int nhits = get_number_of_hits(simulstate, truth, extrapol);
 
@@ -157,7 +158,7 @@ auto TFCSLateralShapeParametrizationHitChain::get_E_hit(
     return 0;
   if (nhits <= 0)
     return simulstate.E(sample);
-  const float maxWeight =
+  const double maxWeight =
       getMaxWeight();  // maxWeight = -1 if  shapeWeight class is not in m_chain
 
   if (maxWeight > 0)
@@ -172,7 +173,7 @@ auto TFCSLateralShapeParametrizationHitChain::get_E_hit(
 auto TFCSLateralShapeParametrizationHitChain::get_sigma2_fluctuation(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const -> float
+    const TFCSExtrapolationState* extrapol) const -> double
 {
   if (m_number_of_hits_simul) {
     double sigma2 = m_number_of_hits_simul->get_sigma2_fluctuation(
@@ -245,12 +246,12 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
   int cs = calosample();
   // Initialize hit energy only now, as init loop above might change the layer
   // energy
-  const float Elayer = simulstate.E(cs);
-  if (Elayer == 0) {
+  const double Elayer = simulstate.E(cs);
+  if (FastCaloSim::exactly_equal(Elayer, 0.0)) {
     FCS_MSG_VERBOSE("Elayer=0, nothing to do");
     return FCSSuccess;
   }
-  const float Ehit = get_E_hit(simulstate, truth, extrapol);
+  const double Ehit = get_E_hit(simulstate, truth, extrapol);
   if (Ehit * Elayer <= 0) {
     FCS_MSG_ERROR(
         "TFCSLateralShapeParametrizationHitChain::simulate(): Ehit "
@@ -262,12 +263,12 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
   // Call get_number_of_hits() only once inside get_E_hit(...),
   // as it could contain a random number
   // TODO: should read simulate value!
-  int nhit_signed = std::lrint(Elayer / Ehit);
+  int nhit_signed = static_cast<int>(std::lrint(Elayer / Ehit));
   if (nhit_signed < 1)
     nhit_signed = 1;
   unsigned int nhit = static_cast<unsigned int>(nhit_signed);
 
-  float sumEhit = 0;
+  double sumEhit = 0;
 
   if (debug) {
     PropagateMSGLevel(old_level);
@@ -385,16 +386,16 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
   // Called for every hit: read and update the sum with a single lookup
   auto [stored_sum, was_stored] =
       simulstate.auxInfoEntry("FCSHitChainEnergySum"_FCShash);
-  float sumEhit = 0;
+  double sumEhit = 0;
   if (was_stored && hit.idx() > 1) {
-    sumEhit = static_cast<float>(stored_sum);
+    sumEhit = static_cast<double>(stored_sum);
   }
 
   sumEhit += hit.E();
 
-  stored_sum.set<float>(sumEhit);
+  stored_sum.set<double>(sumEhit);
 
-  float Elayer = simulstate.E(calosample());
+  const double Elayer = simulstate.E(calosample());
   return (std::abs(sumEhit) >= std::abs(Elayer));
 }
 

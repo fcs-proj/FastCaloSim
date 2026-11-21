@@ -21,10 +21,10 @@ public:
   void Initialize(TH2* hist);
 
   using TFCS2DFunction::rnd_to_fct;
-  void rnd_to_fct(float& valuex,
-                  float& valuey,
-                  float rnd0,
-                  float rnd1) const override;
+  void rnd_to_fct(double& valuex,
+                  double& valuey,
+                  double rnd0,
+                  double rnd1) const override;
 
   auto get_HistoBordersx() const -> const std::vector<float>&
   {

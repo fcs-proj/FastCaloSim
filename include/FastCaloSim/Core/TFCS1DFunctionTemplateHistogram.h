@@ -6,11 +6,8 @@
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 #include "FastCaloSim/Core/TFCS1DFunctionTemplateHelpers.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "TH1.h"
-
-// Initialize merges bins whose stored edges or contents are exactly equal
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 
 template<typename Txvec, typename Ty, typename Trandom = float>
 class TFCS1DFunctionTemplateHistogram : public TFCS1DFunction
@@ -51,7 +48,7 @@ public:
   /// y-axis, bins are merged if numerical identical
   void Initialize(const TH1* hist, bool doprint = true)
   {
-    Int_t nbins = hist->GetNbinsX();
+    const auto nbins = static_cast<size_t>(hist->GetNbinsX());
 
     std::vector<double> temp_HistoContents;
     int first, last;
@@ -59,68 +56,69 @@ public:
         CheckAndIntegrate1DHistogram(hist, temp_HistoContents, first, last);
     if (integral <= 0) {
       set_nbins(0);
-    } else {
-      set_nbins(nbins);
+      return;
+    }
+    set_nbins(nbins);
 
-      m_HistoBorders.SetMinMax(hist->GetXaxis()->GetBinLowEdge(first + 1),
-                               hist->GetXaxis()->GetBinUpEdge(last + 1));
-      Int_t ihist = 0;
-      for (Int_t ibin = first; ibin <= last; ++ibin) {
-        m_HistoBorders.SetBinLowEdge(ihist,
-                                     hist->GetXaxis()->GetBinLowEdge(ibin + 1));
-        // Merge bins that are numerically identical at the stored precision
-        if (ihist > 0
-            && m_HistoBorders.GetBinLowEdge(ihist - 1)
-                == m_HistoBorders.GetBinLowEdge(ihist))
-        {
-          if (doprint)
-            FCS_MSG_INFO("Skip bin="
-                         << ibin + 1
-                         << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
-                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
-          --ihist;
-          if (doprint)
-            FCS_MSG_INFO("     bin="
-                         << ibin
-                         << " x=" << hist->GetXaxis()->GetBinLowEdge(ibin)
-                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
-        }
-        m_HistoContents.set_fraction(ihist,
-                                     temp_HistoContents[ibin] / integral);
-        if (ihist > 0
-            && m_HistoContents.get_fraction(ihist - 1)
-                == m_HistoContents.get_fraction(ihist))
-        {
-          if (doprint)
-            FCS_MSG_INFO("Skip fbin="
-                         << ihist
-                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                         << " frac=" << m_HistoContents.get_fraction(ihist));
-          --ihist;
-          if (doprint)
-            FCS_MSG_INFO("     fbin="
-                         << ihist
-                         << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                         << " frac=" << m_HistoContents.get_fraction(ihist));
-        }
+    // The bin edges are stored with the precision of Txvec
+    using edge_type = typename Txvec::value_type;
+    const TAxis* axis = hist->GetXaxis();
+    const auto low_edge = [axis](int bin)
+    { return static_cast<edge_type>(axis->GetBinLowEdge(bin)); };
+    const auto up_edge = [axis](int bin)
+    { return static_cast<edge_type>(axis->GetBinUpEdge(bin)); };
 
+    m_HistoBorders.SetMinMax(low_edge(first + 1), up_edge(last + 1));
+    size_t ihist = 0;
+    for (int ibin = first; ibin <= last; ++ibin) {
+      m_HistoBorders.SetBinLowEdge(ihist, low_edge(ibin + 1));
+      // Merge bins that are numerically identical at the stored precision
+      if (ihist > 0
+          && FastCaloSim::exactly_equal(m_HistoBorders.GetBinLowEdge(ihist - 1),
+                                        m_HistoBorders.GetBinLowEdge(ihist)))
+      {
         if (doprint)
-          FCS_MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
-                              << m_HistoBorders.get_nbins() << " x=["
-                              << hist->GetXaxis()->GetBinLowEdge(ibin + 1)
-                              << "," << hist->GetXaxis()->GetBinUpEdge(ibin + 1)
-                              << "] fx=" << m_HistoBorders.GetBinLowEdge(ihist)
-                              << " int=" << temp_HistoContents[ibin] / integral
-                              << " frac="
-                              << m_HistoContents.get_fraction(ihist));
+          FCS_MSG_INFO("Skip bin="
+                       << ibin + 1 << " x=" << axis->GetBinLowEdge(ibin + 1)
+                       << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
+        --ihist;
+        if (doprint)
+          FCS_MSG_INFO("     bin=" << ibin << " x=" << axis->GetBinLowEdge(ibin)
+                                   << " fx="
+                                   << m_HistoBorders.GetBinLowEdge(ihist));
+      }
+      const double fraction =
+          temp_HistoContents[static_cast<std::size_t>(ibin)] / integral;
+      m_HistoContents.set_fraction(ihist, static_cast<Trandom>(fraction));
+      if (ihist > 0
+          && FastCaloSim::exactly_equal(m_HistoContents.get_fraction(ihist - 1),
+                                        m_HistoContents.get_fraction(ihist)))
+      {
+        if (doprint)
+          FCS_MSG_INFO("Skip fbin="
+                       << ihist << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                       << " frac=" << m_HistoContents.get_fraction(ihist));
+        --ihist;
+        if (doprint)
+          FCS_MSG_INFO("     fbin="
+                       << ihist << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                       << " frac=" << m_HistoContents.get_fraction(ihist));
+      }
 
-        ++ihist;
-      }
-      if (ihist != nbins) {
-        set_nbins(ihist);
-        m_HistoBorders.SetMinMax(hist->GetXaxis()->GetBinLowEdge(first + 1),
-                                 hist->GetXaxis()->GetBinUpEdge(last + 1));
-      }
+      if (doprint)
+        FCS_MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
+                            << m_HistoBorders.get_nbins() << " x=["
+                            << axis->GetBinLowEdge(ibin + 1) << ","
+                            << axis->GetBinUpEdge(ibin + 1)
+                            << "] fx=" << m_HistoBorders.GetBinLowEdge(ihist)
+                            << " int=" << fraction
+                            << " frac=" << m_HistoContents.get_fraction(ihist));
+
+      ++ihist;
+    }
+    if (ihist != nbins) {
+      set_nbins(ihist);
+      m_HistoBorders.SetMinMax(low_edge(first + 1), up_edge(last + 1));
     }
   }
 
@@ -133,8 +131,9 @@ public:
     if (m_HistoContents.get_nbins() == 0)
       return 0;
     Trandom residual_rnd;
-    size_t ibin = m_HistoContents.get_bin(rnd, residual_rnd);
-    return m_HistoBorders.position(ibin, residual_rnd);
+    size_t ibin =
+        m_HistoContents.get_bin(static_cast<Trandom>(rnd), residual_rnd);
+    return static_cast<double>(m_HistoBorders.position(ibin, residual_rnd));
   }
 
   auto get_HistoBordersx() const -> const Txvec& { return m_HistoBorders; }
@@ -206,5 +205,3 @@ public:
   ClassDefOverride(TFCS1DFunctionInt32Int32Histogram,
                    1)  // TFCS1DFunctionInt32Int32Histogram
 };
-
-#pragma GCC diagnostic pop

@@ -26,19 +26,19 @@ class TFCS1DFunction_Numeric
 
 public:
   static constexpr T MaxValue = std::numeric_limits<T>::max();
-  static constexpr Tfloat MaxValueFloat = MaxValue;
+  static constexpr Tfloat MaxValueFloat = static_cast<Tfloat>(MaxValue);
 
   static auto MaxCeilOnlyForInt(const Tfloat value) -> T
   {
-    return std::ceil(MaxValueFloat * value);
+    return static_cast<T>(std::ceil(MaxValueFloat * value));
   }
   static auto ExpandToMaxRange(const Tfloat value) -> T
   {
-    return value * (1 + MaxValueFloat);
+    return static_cast<T>(value * (1 + MaxValueFloat));
   }
   static auto ToNormalizedRange(const T value) -> Tfloat
   {
-    return value / (1 + MaxValueFloat);
+    return static_cast<Tfloat>(value) / (1 + MaxValueFloat);
   }
 };
 
@@ -151,7 +151,8 @@ public:
   {
     if (pos >= size())
       return 1;
-    return m_array[pos] / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
+    return static_cast<Trandom>(m_array[pos])
+        / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
   }
 
   /// set number of bins.
@@ -178,7 +179,8 @@ public:
       residual_rnd = drnd;
       return 0;
     }
-    T rnd = TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat * drnd;
+    T rnd = static_cast<T>(TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat
+                           * drnd);
     auto it = std::upper_bound(m_array.begin(), m_array.end(), rnd);
 
     T basecont = 0;
@@ -191,7 +193,8 @@ public:
 
     T dcont = fullcont - basecont;
     if (dcont > 0) {
-      residual_rnd = static_cast<Trandom>(rnd - basecont) / dcont;
+      residual_rnd =
+          static_cast<Trandom>(rnd - basecont) / static_cast<Trandom>(dcont);
       if (residual_rnd > 1)
         residual_rnd = std::nextafter(static_cast<Trandom>(1.0),
                                       static_cast<Trandom>(0.0));
@@ -201,7 +204,7 @@ public:
 
     if (it == m_array.end())
       return size();
-    return std::distance(m_array.begin(), it);
+    return static_cast<size_t>(std::distance(m_array.begin(), it));
   }
 
 private:

@@ -72,22 +72,22 @@ auto TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) -> double
 
   // Now for layer dependent approach
   if (layer == 1) {
-    const int bin =
-        std::ranges::upper_bound(m_wiggleLayer1, searchRand) - m_wiggleLayer1;
+    const auto bin = static_cast<int>(
+        std::ranges::upper_bound(m_wiggleLayer1, searchRand) - m_wiggleLayer1);
     double x_wigg = ((-0.98) + bin * 0.04) / 2;
     wiggle = x_wigg * cell_dphi / 4;
   }
 
   if (layer == 2) {
-    const int bin =
-        std::ranges::upper_bound(m_wiggleLayer2, searchRand) - m_wiggleLayer2;
+    const auto bin = static_cast<int>(
+        std::ranges::upper_bound(m_wiggleLayer2, searchRand) - m_wiggleLayer2);
     double x_wigg = ((-0.98) + bin * 0.04) / 2;
     wiggle = x_wigg * cell_dphi;
   }
 
   if (layer == 3) {
-    const int bin =
-        std::ranges::upper_bound(m_wiggleLayer3, searchRand) - m_wiggleLayer3;
+    const auto bin = static_cast<int>(
+        std::ranges::upper_bound(m_wiggleLayer3, searchRand) - m_wiggleLayer3);
     double x_wigg = ((-0.98) + bin * 0.04) / 2;
     wiggle = x_wigg * cell_dphi;
   }

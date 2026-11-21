@@ -9,6 +9,7 @@
 #include "FastCaloSim/Core/TFCS2DFunction.h"
 
 #include "FastCaloSim/Core/TFCS2DFunctionHistogram.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "TH2.h"
 #include "TRandom.h"
 
@@ -18,7 +19,12 @@
 
 void TFCS2DFunction::rnd_to_fct(float value[], const float rnd[]) const
 {
-  rnd_to_fct(value[0], value[1], rnd[0], rnd[1]);
+  double valuex = 0;
+  double valuey = 0;
+  rnd_to_fct(
+      valuex, valuey, static_cast<double>(rnd[0]), static_cast<double>(rnd[1]));
+  value[0] = static_cast<float>(valuex);
+  value[1] = static_cast<float>(valuey);
 }
 
 //================================================================================================================================
@@ -32,14 +38,15 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
   Int_t nbinsy = hist->GetNbinsY();
   Int_t nbins = nbinsx * nbinsy;
 
-  float integral = 0.0;
-  float hint = hist->Integral();
-  integral_vec.resize(nbins);
+  double integral = 0.0;
+  const double hint = hist->Integral();
+  integral_vec.resize(static_cast<std::size_t>(nbins));
 
   for (int ix = 1; ix <= nbinsx; ix++) {
     for (int iy = 1; iy <= nbinsy; iy++) {
-      int globalbin = (ix - 1) * nbinsy + iy - 1;
-      float binval = hist->GetBinContent(ix, iy);
+      const auto globalbin =
+          static_cast<std::size_t>((ix - 1) * nbinsy + iy - 1);
+      double binval = hist->GetBinContent(ix, iy);
       if (binval < 0) {
         // Can't work if a bin is negative, forcing bins to 0 in this case
         double fraction = binval / hint;
@@ -58,11 +65,13 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
     }
   }
 
+  const auto integral_at = [&integral_vec](int bin)
+  { return integral_vec[static_cast<std::size_t>(bin)]; };
   for (first = 0; first < nbins; first++)
-    if (integral_vec[first] != 0)
+    if (!FastCaloSim::exactly_equal(integral_at(first), 0.0))
       break;
   for (last = nbins - 1; last > 0; last--)
-    if (integral_vec[last] != integral)
+    if (!FastCaloSim::exactly_equal(integral_at(last), integral))
       break;
   last++;
 

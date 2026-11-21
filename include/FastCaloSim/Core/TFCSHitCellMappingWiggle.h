@@ -28,19 +28,19 @@ public:
 
   inline auto get_number_of_bins() const -> unsigned int
   {
-    return m_functions.size();
+    return static_cast<unsigned int>(m_functions.size());
   }
 
-  inline auto get_bin_low_edge(int bin) const -> double
+  inline auto get_bin_low_edge(unsigned int bin) const -> double
   {
-    return m_bin_low_edge[bin];
+    return static_cast<double>(m_bin_low_edge[bin]);
   }
-  inline auto get_bin_up_edge(int bin) const -> double
+  inline auto get_bin_up_edge(unsigned int bin) const -> double
   {
-    return m_bin_low_edge[bin + 1];
+    return static_cast<double>(m_bin_low_edge[bin + 1]);
   }
 
-  inline auto get_function(int bin) const -> const TFCS1DFunction*
+  inline auto get_function(unsigned int bin) const -> const TFCS1DFunction*
   {
     return m_functions[bin];
   }

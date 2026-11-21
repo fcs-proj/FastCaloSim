@@ -35,7 +35,7 @@ auto TFCSLateralShapeParametrizationHitBase::get_number_of_hits(
 auto TFCSLateralShapeParametrizationHitBase::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const -> float
+    const TFCSExtrapolationState* extrapol) const -> double
 {
   const int nhits = get_number_of_hits(simulstate, truth, extrapol);
   const int sample = calosample();
@@ -45,12 +45,12 @@ auto TFCSLateralShapeParametrizationHitBase::get_E_hit(
     return simulstate.E(sample) / nhits;
 }
 
-auto TFCSLateralShapeParametrizationHitBase::getMinWeight() const -> float
+auto TFCSLateralShapeParametrizationHitBase::getMinWeight() const -> double
 {
   return -1.;
 }
 
-auto TFCSLateralShapeParametrizationHitBase::getMaxWeight() const -> float
+auto TFCSLateralShapeParametrizationHitBase::getMaxWeight() const -> double
 {
   return -1.;
 }

@@ -39,7 +39,7 @@ auto TFCS2DFunctionLateralShapeParametrization::get_sigma2_fluctuation(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
-  return 1.0 / m_nhits;
+  return 1.0 / static_cast<double>(m_nhits);
 }
 
 auto TFCS2DFunctionLateralShapeParametrization::get_number_of_hits(
@@ -51,7 +51,8 @@ auto TFCS2DFunctionLateralShapeParametrization::get_number_of_hits(
     return -1;
   }
 
-  return CLHEP::RandPoisson::shoot(simulstate.randomEngine(), m_nhits);
+  return static_cast<int>(CLHEP::RandPoisson::shoot(
+      simulstate.randomEngine(), static_cast<double>(m_nhits)));
 }
 
 void TFCS2DFunctionLateralShapeParametrization::set_number_of_hits(float nhits)
@@ -87,7 +88,7 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  float alpha, r, rnd1, rnd2;
+  double alpha, r, rnd1, rnd2;
   rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
@@ -114,8 +115,8 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  float delta_eta_mm = r * std::cos(alpha);
-  float delta_phi_mm = r * std::sin(alpha);
+  double delta_eta_mm = r * std::cos(alpha);
+  double delta_phi_mm = r * std::sin(alpha);
 
   // Particles with negative eta are expected to have the same shape as those
   // with positive eta after transformation: delta_eta --> -delta_eta
@@ -127,11 +128,11 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi_mm = -delta_phi_mm;
 
-  const float dist000 = FastCaloSim::dist000(center_r, center_z);
-  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+  const double dist000 = FastCaloSim::dist000(center_r, center_z);
+  const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
-  const float delta_phi = delta_phi_mm / center_r;
+  const double delta_eta = delta_eta_mm / eta_jakobi / dist000;
+  const double delta_phi = delta_phi_mm / center_r;
 
   hit.setEtaPhiZE(
       center_eta + delta_eta, center_phi + delta_phi, center_z, hit.E());

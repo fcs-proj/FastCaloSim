@@ -25,14 +25,15 @@ auto TFCSCenterPositionCalculation::simulate_hit(
 {
   const int cs = calosample();
 
-  double r = (1. - m_extrapWeight) * extrapol->r(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->r(cs, Cell::SubPos::EXT);
-  double z = (1. - m_extrapWeight) * extrapol->z(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->z(cs, Cell::SubPos::EXT);
-  double eta = (1. - m_extrapWeight) * extrapol->eta(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->eta(cs, Cell::SubPos::EXT);
-  double phi = (1. - m_extrapWeight) * extrapol->phi(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->phi(cs, Cell::SubPos::EXT);
+  const auto weight = static_cast<double>(m_extrapWeight);
+  double r = (1. - weight) * extrapol->r(cs, Cell::SubPos::ENT)
+      + weight * extrapol->r(cs, Cell::SubPos::EXT);
+  double z = (1. - weight) * extrapol->z(cs, Cell::SubPos::ENT)
+      + weight * extrapol->z(cs, Cell::SubPos::EXT);
+  double eta = (1. - weight) * extrapol->eta(cs, Cell::SubPos::ENT)
+      + weight * extrapol->eta(cs, Cell::SubPos::EXT);
+  double phi = (1. - weight) * extrapol->phi(cs, Cell::SubPos::ENT)
+      + weight * extrapol->phi(cs, Cell::SubPos::EXT);
 
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))

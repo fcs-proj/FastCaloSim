@@ -48,7 +48,7 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
   int cs = calosample();
-  float energy = simulstate.E(cs);
+  const double energy = simulstate.E(cs);
 
   if (energy < 0) {
     return 1;
@@ -85,8 +85,9 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
     return -1;
   }
 
-  float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
-  int hits = CLHEP::RandPoisson::shoot(simulstate.randomEngine(), 1.0 / sigma2);
+  const double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
+  const auto hits = static_cast<int>(
+      CLHEP::RandPoisson::shoot(simulstate.randomEngine(), 1.0 / sigma2));
 
   FCS_MSG_DEBUG("#hits=" << hits);
 

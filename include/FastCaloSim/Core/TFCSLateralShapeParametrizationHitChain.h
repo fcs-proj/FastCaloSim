@@ -58,20 +58,21 @@ public:
   /// Get hit energy from layer energy and number of hits
   virtual auto get_E_hit(TFCSSimulationState& simulstate,
                          const TFCSTruthState* truth,
-                         const TFCSExtrapolationState* extrapol) const -> float;
+                         const TFCSExtrapolationState* extrapol) const
+      -> double;
 
   /// Give the effective size sigma^2 of the fluctuations that should be
   /// generated.
   virtual auto get_sigma2_fluctuation(
       TFCSSimulationState& simulstate,
       const TFCSTruthState* truth,
-      const TFCSExtrapolationState* extrapol) const -> float;
+      const TFCSExtrapolationState* extrapol) const -> double;
 
   /// Get minimum and maximum value of weight for hit energy reweighting
-  virtual auto getMinWeight() const -> float;
-  virtual auto getMaxWeight() const -> float;
+  virtual auto getMinWeight() const -> double;
+  virtual auto getMaxWeight() const -> double;
 
-  static constexpr float s_max_sigma2_fluctuation =
+  static constexpr double s_max_sigma2_fluctuation =
       1000;  //! Do not persistify!
 
   void Print(Option_t* option = "") const override;

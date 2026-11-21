@@ -10,7 +10,7 @@ namespace FastCaloSim
 {
 /// Distance from the origin of a point at radius r and position z along the
 /// beam
-inline auto dist000(double r, double z) -> float
+inline auto dist000(double r, double z) -> double
 {
   return std::sqrt(r * r + z * z);
 }
@@ -19,7 +19,7 @@ inline auto dist000(double r, double z) -> float
 /// in eta at the given eta into mm: delta_mm = delta_eta * eta_jakobi *
 /// dist000. Evaluated in the precision of the argument (float or double).
 template<typename T>
-inline auto eta_jakobi(T eta) -> float
+inline auto eta_jakobi(T eta) -> double
 {
   return std::abs(2.0 * std::exp(-eta) / (1.0 + std::exp(-2 * eta)));
 }
@@ -51,11 +51,12 @@ public:
   /// Get hit energy from layer energy and number of hits
   virtual auto get_E_hit(TFCSSimulationState& simulstate,
                          const TFCSTruthState* truth,
-                         const TFCSExtrapolationState* extrapol) const -> float;
+                         const TFCSExtrapolationState* extrapol) const
+      -> double;
 
   /// Get minimum and maximum value of weight for hit energy reweighting
-  virtual auto getMinWeight() const -> float;
-  virtual auto getMaxWeight() const -> float;
+  virtual auto getMinWeight() const -> double;
+  virtual auto getMaxWeight() const -> double;
 
   class Hit
   {
@@ -73,7 +74,7 @@ public:
     {
     }  // for hits with the same energy, m_E should
        // normalized to E(layer)/nhit
-    Hit(float eta, float phi, float E)
+    Hit(double eta, double phi, double E)
         : m_eta_x(eta)
         , m_phi_y(phi)
         , m_z(0.)
@@ -85,7 +86,7 @@ public:
         , m_center_phi(0.)
     {
     }
-    Hit(float x, float y, float z, float E)
+    Hit(double x, double y, double z, double E)
         : m_eta_x(x)
         , m_phi_y(y)
         , m_z(z)
@@ -98,7 +99,7 @@ public:
     {
     }
 
-    inline void setEtaPhiZE(float eta, float phi, float z, float E)
+    inline void setEtaPhiZE(double eta, double phi, double z, double E)
     {
       m_eta_x = eta;
       m_phi_y = phi;
@@ -106,7 +107,7 @@ public:
       m_E = E;
       m_useXYZ = false;
     }
-    inline void setXYZE(float x, float y, float z, float E)
+    inline void setXYZE(double x, double y, double z, double E)
     {
       m_eta_x = x;
       m_phi_y = y;
@@ -151,30 +152,30 @@ public:
     inline auto center_phi() const -> const auto& { return m_center_phi; }
     inline auto idx() -> const auto& { return m_hit_index; }
 
-    inline void setCenter_r(float r) { m_center_r = r; }
-    inline void setCenter_z(float z) { m_center_z = z; }
-    inline void setCenter_eta(float eta) { m_center_eta = eta; }
-    inline void setCenter_phi(float phi) { m_center_phi = phi; }
-    inline void set_eta_x(float eta_x) { m_eta_x = eta_x; }
-    inline void set_phi_y(float phi_y) { m_phi_y = phi_y; }
-    inline void set_z(float z) { m_z = z; }
-    inline void set_E(float E) { m_E = E; }
+    inline void setCenter_r(double r) { m_center_r = r; }
+    inline void setCenter_z(double z) { m_center_z = z; }
+    inline void setCenter_eta(double eta) { m_center_eta = eta; }
+    inline void setCenter_phi(double phi) { m_center_phi = phi; }
+    inline void set_eta_x(double eta_x) { m_eta_x = eta_x; }
+    inline void set_phi_y(double phi_y) { m_phi_y = phi_y; }
+    inline void set_z(double z) { m_z = z; }
+    inline void set_E(double E) { m_E = E; }
     inline void set_idx(long unsigned int hit_index)
     {
       m_hit_index = hit_index;
     }
 
   private:
-    float m_eta_x;  // eta for barrel and end-cap, x for FCal
-    float m_phi_y;  // phi for barrel and end-cap, y for FCal
-    float m_z;
-    float m_E;
+    double m_eta_x;  // eta for barrel and end-cap, x for FCal
+    double m_phi_y;  // phi for barrel and end-cap, y for FCal
+    double m_z;
+    double m_E;
     bool m_useXYZ;
     // Variables used to store extrapolated position
-    float m_center_r;
-    float m_center_z;
-    float m_center_eta;
-    float m_center_phi;
+    double m_center_r;
+    double m_center_z;
+    double m_center_eta;
+    double m_center_phi;
     long unsigned int m_hit_index {};
   };
 

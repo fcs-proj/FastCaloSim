@@ -42,7 +42,7 @@ auto TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  float alpha, r, rnd1, rnd2;
+  double alpha, r, rnd1, rnd2;
   rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
@@ -71,14 +71,14 @@ auto TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
     return FCSFatal;
   }
 
-  const float hit_r = r * std::cos(alpha) + center_r;
-  float delta_phi = r * std::sin(alpha) / center_r;
+  const double hit_r = r * std::cos(alpha) + center_r;
+  double delta_phi = r * std::sin(alpha) / center_r;
   // We derive the shower shapes for electrons and positively charged hadrons.
   // Particle with the opposite charge are expected to have the same shower
   // shape after the transformation: delta_phi --> -delta_phi
   if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi = -delta_phi;
-  const float hit_phi = delta_phi + center_phi;
+  const double hit_phi = delta_phi + center_phi;
 
   hit.setXYZE(
       hit_r * std::cos(hit_phi), hit_r * std::sin(hit_phi), center_z, hit.E());
