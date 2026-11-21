@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "FastCaloSim/Core/BinnedShowerLayer.h"
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
@@ -23,11 +24,7 @@ public:
   auto operator=(TFCSMLCalorimeterSimulator&&)
       -> TFCSMLCalorimeterSimulator& = default;
 
-  struct layer_t
-  {
-    std::vector<unsigned int> bin_index_vector;
-    std::vector<float> E_vector;
-  };
+  using layer_t = FastCaloSim::BinnedShowerLayer;
 
   struct event_t
   {
