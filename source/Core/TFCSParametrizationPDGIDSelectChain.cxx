@@ -29,56 +29,31 @@ auto TFCSParametrizationPDGIDSelectChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  Int_t retry = 0;
-  Int_t retry_warning = 1;
-
-  FCSReturnCode status = FCSSuccess;
-  for (int i = 0; i <= retry; i++) {
-    if (i >= retry_warning)
-      FCS_MSG_WARNING(
-          "TFCSParametrizationPDGIDSelectChain::simulate(): Retry "
-          "simulate call "
-          << i << "/" << retry);
-
-    FCS_MSG_DEBUG("Running for pdgid=" << truth->pdgid());
-    for (const auto& param : chain()) {
-      FCS_MSG_DEBUG("Now testing: "
-                    << param->GetName()
-                    << ((SimulateOnlyOnePDGID() == true)
-                            ? ", abort PDGID loop afterwards"
-                            : ", continue PDGID loop afterwards"));
-      if (param->is_match_pdgid(truth->pdgid())) {
-        FCS_MSG_DEBUG("pdgid=" << truth->pdgid()
-                               << ", now run: " << param->GetName()
-                               << ((SimulateOnlyOnePDGID() == true)
-                                       ? ", abort PDGID loop afterwards"
-                                       : ", continue PDGID loop afterwards"));
-        status = simulate_and_retry(param, simulstate, truth, extrapol);
-        if (status >= FCSRetry) {
-          retry = status - FCSRetry;
-          retry_warning = retry >> 1;
-          if (retry_warning < 1)
-            retry_warning = 1;
-          break;
+  return simulate_with_restarts(
+      "TFCSParametrizationPDGIDSelectChain::simulate()",
+      [&]
+      {
+        FCS_MSG_DEBUG("Running for pdgid=" << truth->pdgid());
+        for (const auto& param : chain()) {
+          FCS_MSG_DEBUG("Now testing: "
+                        << param->GetName()
+                        << ((SimulateOnlyOnePDGID() == true)
+                                ? ", abort PDGID loop afterwards"
+                                : ", continue PDGID loop afterwards"));
+          if (!param->is_match_pdgid(truth->pdgid()))
+            continue;
+          FCS_MSG_DEBUG("pdgid=" << truth->pdgid()
+                                 << ", now run: " << param->GetName()
+                                 << ((SimulateOnlyOnePDGID() == true)
+                                         ? ", abort PDGID loop afterwards"
+                                         : ", continue PDGID loop afterwards"));
+          const FCSReturnCode status =
+              simulate_and_retry(param, simulstate, truth, extrapol);
+          if (status != FCSSuccess)
+            return status;
+          if (SimulateOnlyOnePDGID())
+            break;
         }
-        if (status == FCSFatal)
-          return FCSFatal;
-
-        if (SimulateOnlyOnePDGID())
-          break;
-      }
-    }
-
-    if (status == FCSSuccess)
-      break;
-  }
-
-  if (status != FCSSuccess) {
-    FCS_MSG_FATAL(
-        "TFCSParametrizationChain::simulate(): Simulate call failed after "
-        << retry << " retries");
-    return FCSFatal;
-  }
-
-  return FCSSuccess;
+        return FCSSuccess;
+      });
 }

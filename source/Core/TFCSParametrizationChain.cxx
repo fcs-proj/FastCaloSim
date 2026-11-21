@@ -167,41 +167,18 @@ auto TFCSParametrizationChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  Int_t retry = 0;
-  Int_t retry_warning = 1;
-
-  FCSReturnCode status = FCSSuccess;
-  for (int i = 0; i <= retry; i++) {
-    if (i >= retry_warning)
-      FCS_MSG_WARNING(
-          "TFCSParametrizationChain::simulate(): Retry simulate call "
-          << i << "/" << retry);
-    for (const auto& param : m_chain) {
-      status = simulate_and_retry(param, simulstate, truth, extrapol);
-
-      if (status >= FCSRetry) {
-        retry = status - FCSRetry;
-        retry_warning = retry >> 1;
-        if (retry_warning < 1)
-          retry_warning = 1;
-        break;
-      }
-      if (status == FCSFatal)
-        return FCSFatal;
-    }
-
-    if (status == FCSSuccess)
-      break;
-  }
-
-  if (status != FCSSuccess) {
-    FCS_MSG_FATAL(
-        "TFCSParametrizationChain::simulate(): Simulate call failed after "
-        << retry << " retries");
-    return FCSFatal;
-  }
-
-  return FCSSuccess;
+  return simulate_with_restarts("TFCSParametrizationChain::simulate()",
+                                [&]
+                                {
+                                  for (const auto& param : m_chain) {
+                                    const FCSReturnCode status =
+                                        simulate_and_retry(
+                                            param, simulstate, truth, extrapol);
+                                    if (status != FCSSuccess)
+                                      return status;
+                                  }
+                                  return FCSSuccess;
+                                });
 }
 
 void TFCSParametrizationChain::Print(Option_t* option) const
