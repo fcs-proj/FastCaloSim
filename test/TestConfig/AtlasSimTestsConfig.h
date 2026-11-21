@@ -57,7 +57,16 @@ public:
         {22, 16384, 3.2, "endcap_fcal_transition"},
         {22, 131072, 3.2, "endcap_fcal_transition"},
         {211, 16384, 3.2, "endcap_fcal_transition"},
-        {211, 131072, 3.2, "endcap_fcal_transition"}};
+        {211, 131072, 3.2, "endcap_fcal_transition"},
+        // Barrel, ATLAS MC23 parametrization (eta = 0.225, center of the
+        // 0.20-0.25 bin): GAN for photons below 11.6 GeV and for pions above
+        // 5.7 GeV, PCA and histogram shapes otherwise. Kaons are simulated
+        // with the pion parametrization and their own energy correction.
+        {22, 4096, 0.225, "barrel_ml"},
+        {22, 65536, 0.225, "barrel_ml"},
+        {211, 2048, 0.225, "barrel_ml"},
+        {211, 65536, 0.225, "barrel_ml"},
+        {321, 16384, 0.225, "barrel_ml"}};
 
     // Loop over the parameters and create the events
     for (const auto& ptcl : params) {
