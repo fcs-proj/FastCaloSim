@@ -151,10 +151,6 @@ public:
                         const TFCSExtrapolationState* extrapol) const
       -> FCSReturnCode;
 
-  /// Method in all derived classes to delete objects stored in the simulstate
-  /// AuxInfo
-  virtual void CleanAuxInfo(TFCSSimulationState& /*simulstate*/) const {}
-
   /// Called immediately after being read from file to fix histograms that
   /// erroneously have kIsOnHeap set. See ATLASSIM-7031.
   virtual void fixHists() {}

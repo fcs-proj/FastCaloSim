@@ -194,7 +194,6 @@ protected:
       -> std::tuple<double, double, double> override;
 
   // Delete all pointers that were created in get_event()
-  void delete_event(TFCSSimulationState& simulstate) const override;
 
 private:
   // Enables to load the event library from an HDF5 file on the fly.

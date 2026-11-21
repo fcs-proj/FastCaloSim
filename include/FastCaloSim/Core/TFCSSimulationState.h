@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include <any>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
-#include <set>
 #include <unordered_map>
 #include <utility>
 #include <variant>
@@ -14,7 +14,6 @@
 #include <TObject.h>
 
 #include "FastCaloSim/Core/MLogging.h"
-class TFCSParametrizationBase;
 
 namespace CLHEP
 {
@@ -98,17 +97,16 @@ private:
   cellmap m_cells;
 
 public:
-  // Allow to store arbitrary type objects as auxiliary information
-  // Use compile time hashes of strings as index to an unordered map of union
-  // AuxInfo_t Example: TFCSSimulationState s;
-  // s.setAuxInfo<double>("SF"_FCShash,2);
+  // Auxiliary information: values that parametrizations store for each other
+  // or for later steps of the same particle, indexed by compile time hashes
+  // of names. Example: TFCSSimulationState s;
+  // s.setAuxInfo<double>("SF"_FCShash, 2);
   //
-  // If pointers are stored, a dedicated cleanup is needed
-  // If a new data type is needed, a cast operator and an explicit template
-  // implementation of the set method has to be added
+  // Scalar values are stored with setAuxInfo<T>, objects (vectors, event
+  // data, ...) with setAuxObject<T>, see below.
   /// The value of an auxiliary information entry: one of these types, the
   /// one it was stored with
-  using AuxInfo_t = std::variant<bool, char, int, float, double, void*>;
+  using AuxInfo_t = std::variant<bool, char, int, float, double>;
 
   // FNV-1a 32bit hashing algorithm that is evaluated during compile time
   // function taken from https://gist.github.com/Lee-R/3839813
@@ -164,13 +162,36 @@ public:
     return {it->second, !inserted};
   }
 
-  void AddAuxInfoCleanup(const TFCSParametrizationBase* para);
-  void DoAuxInfoCleanup();
+  // Auxiliary objects: owned by the simulation state, so that they are
+  // destroyed when they are replaced or erased, or with the state
+  // Store an object, replacing a stored one, and return it
+  template<class T>
+  auto setAuxObject(std::uint32_t index, T object) -> T&
+  {
+    return m_AuxObjects[index].emplace<T>(std::move(object));
+  }
+
+  // The object stored at index, or nullptr if there is none of type T
+  template<class T>
+  auto getAuxObject(std::uint32_t index) -> T*
+  {
+    const auto it = m_AuxObjects.find(index);
+    return it == m_AuxObjects.end() ? nullptr : std::any_cast<T>(&it->second);
+  }
+  template<class T>
+  auto getAuxObject(std::uint32_t index) const -> const T*
+  {
+    const auto it = m_AuxObjects.find(index);
+    return it == m_AuxObjects.end() ? nullptr : std::any_cast<T>(&it->second);
+  }
+
+  // Destroy the object stored at index, if any
+  void eraseAuxObject(std::uint32_t index) { m_AuxObjects.erase(index); }
 
 private:
   std::unordered_map<std::uint32_t, AuxInfo_t> m_AuxInfo;  //! Do not persistify
-  std::set<const TFCSParametrizationBase*>
-      m_AuxInfoCleanup;  //! Do not persistify
+  std::unordered_map<std::uint32_t, std::any>
+      m_AuxObjects;  //! Do not persistify
 
   ClassDefOverride(TFCSSimulationState, 4)  // TFCSSimulationState
 };
