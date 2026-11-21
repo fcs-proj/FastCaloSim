@@ -36,7 +36,8 @@ auto TFCSParametrizationEtaSelectChain::get_bin(
     const TFCSTruthState*,
     const TFCSExtrapolationState* extrapol) const -> int
 {
-  return val_to_bin(extrapol->IDCaloBoundary_eta());
+  // The bin edges are single precision, so is the binning variable
+  return val_to_bin(static_cast<float>(extrapol->IDCaloBoundary_eta()));
 }
 
 auto TFCSParametrizationEtaSelectChain::get_variable_text(

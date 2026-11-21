@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <memory>
 #include <numbers>
@@ -116,10 +117,12 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       EigenVectors.Print();
     }
 
-    transform.resize(m_nDim_x);
-    for (int x = 0; x < m_nDim_x; ++x) {
-      transform[x].resize(m_nDim_y);
-      for (int y = 0; y < m_nDim_y; ++y) {
+    const auto n_x = static_cast<std::size_t>(m_nDim_x);
+    const auto n_y = static_cast<std::size_t>(m_nDim_y);
+    transform.resize(n_x);
+    for (std::size_t x = 0; x < n_x; ++x) {
+      transform[x].resize(n_y);
+      for (std::size_t y = 0; y < n_y; ++y) {
         // Naming of hists is hist_xy where x, y are indices of cells
         std::string histname = std::format("hist_{}_{}{}", x, y, label);
         TH1* hist = static_cast<TH1*>(inputfile->Get(histname.c_str()));
@@ -145,14 +148,14 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
 void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
     TFCSSimulationState& simulstate, TVectorD& genPars) const
 {
-  int Ebin = simulstate.Ebin();
+  const auto ibin = static_cast<std::size_t>(simulstate.Ebin() - 1);
 
-  int nPars = m_parMeans[Ebin - 1].GetNrows();
+  int nPars = m_parMeans[ibin].GetNrows();
   genPars.ResizeTo(nPars);
 
-  TVectorD rotParMeans = m_EigenVectors[Ebin - 1] * m_parMeans[Ebin - 1];
+  TVectorD rotParMeans = m_EigenVectors[ibin] * m_parMeans[ibin];
   for (int iPar = 0; iPar < nPars; iPar++) {
-    double variance = m_EigenValues[Ebin - 1][iPar];
+    double variance = m_EigenValues[ibin][iPar];
     // check for positive-definiteness of covMatrix
     if (variance < 0) {
       FCS_MSG_ERROR("Got a negative eigenvariance (" << variance
@@ -165,7 +168,7 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
                              << " rotParMeans[iPar]=" << rotParMeans[iPar]
                              << " sqrt(variance)=" << std::sqrt(variance));
   }
-  genPars = m_EigenVectors[Ebin - 1] * genPars;
+  genPars = m_EigenVectors[ibin] * genPars;
 }
 
 auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
@@ -225,25 +228,28 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   // TODO: the following code should be executed for all relevant calo layers,
   // possibly simulating correlated fluctuations between layers depending on the
   // PCA bin
-  weightvec = new weight_t(m_nDim_x);
-  for (int x = 0; x < m_nDim_x; ++x)
-    (*weightvec)[x].resize(m_nDim_y);
+  const auto ibin = static_cast<std::size_t>(Ebin - 1);
+  const auto n_x = static_cast<std::size_t>(m_nDim_x);
+  const auto n_y = static_cast<std::size_t>(m_nDim_y);
+  weightvec = new weight_t(n_x);
+  for (std::size_t x = 0; x < n_x; ++x)
+    (*weightvec)[x].resize(n_y);
 
-  TVectorD genPars(m_parMeans[Ebin - 1].GetNrows());
+  TVectorD genPars(m_parMeans[ibin].GetNrows());
 
   // Fill genPars with multivarate random Gauss
   MultiGaus(simulstate, genPars);
 
   // Loop through voxels
   int count = 0;
-  for (int x = 0; x < m_nDim_x; ++x) {
-    for (int y = 0; y < m_nDim_y; ++y) {
+  for (std::size_t x = 0; x < n_x; ++x) {
+    for (std::size_t y = 0; y < n_y; ++y) {
       // Get value of CDF corresponding to generated Gauss random
       double cdf_val =
           (std::erf(genPars[count] * 2.0 / std::numbers::pi) + 1) / 2.0;
 
       // Map that cdf value to input bin and value
-      double orig_val = m_transform[Ebin - 1][x][y]->rnd_to_fct(cdf_val);
+      double orig_val = m_transform[ibin][x][y]->rnd_to_fct(cdf_val);
 
       // Fill hist, keep linear count
       (*weightvec)[x][y] = orig_val;
@@ -257,8 +263,9 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   voxel_temp = static_cast<TH2*>(m_voxel_template[0]->Clone());
 
   // For now simulating only the layer calosample()
-  simulstate.setAuxInfo<void*>(layer_hash(calosample()), weightvec);
-  simulstate.setAuxInfo<void*>(layer_hash_geo(calosample()), voxel_temp);
+  const auto cs = static_cast<unsigned int>(calosample());
+  simulstate.setAuxInfo<void*>(layer_hash(cs), weightvec);
+  simulstate.setAuxInfo<void*>(layer_hash_geo(cs), voxel_temp);
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("simulstate after storing weight " << weightvec
@@ -280,7 +287,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  int cs = calosample();
+  const auto cs = static_cast<unsigned int>(calosample());
   weight_t* weightvec = nullptr;
   if (simulstate.hasAuxInfo(layer_hash(cs)))
     weightvec =
@@ -302,24 +309,25 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     return FCSFatal;
   }
 
-  float deta_hit_minus_extrapol = hit.eta() - center_eta;
-  float dphi_hit_minus_extrapol = TVector2::Phi_mpi_pi(hit.phi() - center_phi);
+  double deta_hit_minus_extrapol = hit.eta() - center_eta;
+  const double dphi_hit_minus_extrapol =
+      TVector2::Phi_mpi_pi(hit.phi() - center_phi);
 
   if (center_eta < 0.)
     deta_hit_minus_extrapol = -deta_hit_minus_extrapol;
 
-  float phi_dist2r = 1.0;
-  float dist000 = FastCaloSim::dist000(center_r, center_z);
-  float eta_jakobi = FastCaloSim::eta_jakobi(hit.eta());
+  const double phi_dist2r = 1.0;
+  const double dist000 = FastCaloSim::dist000(center_r, center_z);
+  const double eta_jakobi = FastCaloSim::eta_jakobi(hit.eta());
 
-  float deta_hit_minus_extrapol_mm =
+  const double deta_hit_minus_extrapol_mm =
       deta_hit_minus_extrapol * eta_jakobi * dist000;
-  float dphi_hit_minus_extrapol_mm =
+  const double dphi_hit_minus_extrapol_mm =
       dphi_hit_minus_extrapol * center_r * phi_dist2r;
 
-  float alpha_mm =
+  const double alpha_mm =
       std::atan2(dphi_hit_minus_extrapol_mm, deta_hit_minus_extrapol_mm);
-  float radius_mm =
+  const double radius_mm =
       std::sqrt(dphi_hit_minus_extrapol_mm * dphi_hit_minus_extrapol_mm
                 + deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
 
@@ -338,13 +346,11 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
       ix = voxel_template->GetXaxis()->FindBin(alpha_mm) - 1;
   }
 
-  const int sizex = (*weightvec).size();
-
-  float weight = 1;
-  if (ix >= 0 && ix < sizex) {
-    const int sizey = (*weightvec)[ix].size();
-    if (iy >= 0 && iy < sizey) {
-      weight = (*weightvec)[ix][iy];
+  double weight = 1;
+  if (ix >= 0 && static_cast<std::size_t>(ix) < weightvec->size()) {
+    const auto& weights_x = (*weightvec)[static_cast<std::size_t>(ix)];
+    if (iy >= 0 && static_cast<std::size_t>(iy) < weights_x.size()) {
+      weight = weights_x[static_cast<std::size_t>(iy)];
     }
   }
 

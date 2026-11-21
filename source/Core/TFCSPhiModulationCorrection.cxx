@@ -10,6 +10,7 @@
 
 // External includes
 #include <cmath>
+#include <cstddef>
 
 #include <RtypesCore.h>
 #include <TFile.h>
@@ -72,8 +73,11 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
   auto eta_it = std::upper_bound(m_min_eta.at(layer_index).begin(),
                                  m_min_eta.at(layer_index).end(),
                                  eta_min);
-  long unsigned int eta_index =
-      std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1;
+  auto eta_index = static_cast<long unsigned int>(
+      std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1);
+  // Iterator to the element after eta_index
+  const auto after_eta_index = [&eta_index](auto& vec)
+  { return vec.begin() + static_cast<std::ptrdiff_t>(eta_index) + 1; };
 
   // Check if we have to append further boundaries
   if (eta_index >= eta_mins.size() - 1) {
@@ -91,20 +95,18 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
   } else {
     // Check if we need to insert a new eta_min
     if (eta_mins.at(eta_index) < eta_min) {
-      eta_mins.insert(eta_mins.begin() + eta_index + 1, eta_min);
-      phi_mins.insert(phi_mins.begin() + eta_index + 1, std::vector<float>());
-      modulation.insert(modulation.begin() + eta_index + 1,
-                        std::vector<float>());
-      energy_shifts.insert(energy_shifts.begin() + eta_index + 1, -1.0);
+      eta_mins.insert(after_eta_index(eta_mins), eta_min);
+      phi_mins.insert(after_eta_index(phi_mins), std::vector<float>());
+      modulation.insert(after_eta_index(modulation), std::vector<float>());
+      energy_shifts.insert(after_eta_index(energy_shifts), -1.0);
       eta_index++;
     }
     // Check if we need to insert a new eta_max
     if (eta_mins.at(eta_index + 1) > eta_max) {
-      eta_mins.insert(eta_mins.begin() + eta_index + 1, eta_max);
-      phi_mins.insert(phi_mins.begin() + eta_index + 1, std::vector<float>());
-      modulation.insert(modulation.begin() + eta_index + 1,
-                        std::vector<float>());
-      energy_shifts.insert(energy_shifts.begin() + eta_index + 1, -1.0);
+      eta_mins.insert(after_eta_index(eta_mins), eta_max);
+      phi_mins.insert(after_eta_index(phi_mins), std::vector<float>());
+      modulation.insert(after_eta_index(modulation), std::vector<float>());
+      energy_shifts.insert(after_eta_index(energy_shifts), -1.0);
     }
   }
 
@@ -128,19 +130,20 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
 
   for (int i = 1; i <= n_bins; i++) {
     phi_mins.at(eta_index).push_back(
-        muon_corr_hist->GetXaxis()->GetBinLowEdge(i));
+        static_cast<float>(muon_corr_hist->GetXaxis()->GetBinLowEdge(i)));
   }
   phi_mins.at(eta_index).push_back(
-      muon_corr_hist->GetXaxis()->GetBinUpEdge(n_bins));
+      static_cast<float>(muon_corr_hist->GetXaxis()->GetBinUpEdge(n_bins)));
 
   for (int i = 1; i <= n_bins; i++) {
-    modulation.at(eta_index).push_back(muon_corr_hist->GetBinContent(i));
+    modulation.at(eta_index).push_back(
+        static_cast<float>(muon_corr_hist->GetBinContent(i)));
   }
 
   TParameter<double>* param =
       dynamic_cast<TParameter<double>*>(muon_corr->Get("energy_shift"));
   if (param) {
-    energy_shifts.at(eta_index) = param->GetVal();
+    energy_shifts.at(eta_index) = static_cast<float>(param->GetVal());
     FCS_MSG_DEBUG("Energy shift: " << energy_shifts.at(eta_index));
   }
 
@@ -149,16 +152,21 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
 
 // TODO: Use FCSReturnCode
 auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
-    float phi, float eta, long unsigned int layer_index) const
+    double phi, double eta, long unsigned int layer_index) const
     -> std::tuple<int, long unsigned int, long unsigned int>
 {
-  float eta_abs = std::abs(eta);
+  // The bin boundaries are stored in single precision
+  const auto less = [](double value, float boundary)
+  { return value < static_cast<double>(boundary); };
+
+  const double eta_abs = std::abs(eta);
 
   auto eta_it = std::upper_bound(m_min_eta.at(layer_index).begin(),
                                  m_min_eta.at(layer_index).end(),
-                                 eta_abs);
-  long unsigned int eta_index =
-      std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1;
+                                 eta_abs,
+                                 less);
+  const auto eta_index = static_cast<long unsigned int>(
+      std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1);
 
   if (eta_index >= m_min_eta.at(layer_index).size() - 1) {
     FCS_MSG_ERROR("Found invalid eta index for phi modulation");
@@ -175,8 +183,9 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
     return std::make_tuple(1, 0, 0);  // Error code 1: Invalid eta index
   }
 
-  if (m_min_eta.at(layer_index).at(eta_index) > eta_abs
-      || m_min_eta.at(layer_index).at(eta_index + 1) < eta_abs)
+  if (static_cast<double>(m_min_eta.at(layer_index).at(eta_index)) > eta_abs
+      || static_cast<double>(m_min_eta.at(layer_index).at(eta_index + 1))
+          < eta_abs)
   {
     FCS_MSG_ERROR(
         "Found eta outside of the specified eta range for the phi modulation");
@@ -193,13 +202,14 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
   Position pos {};
   pos.m_eta = eta;
   pos.m_phi = phi;
-  const auto& cell = m_geo->get_cell(layer_index, pos);
+  const auto& cell =
+      m_geo->get_cell(static_cast<unsigned int>(layer_index), pos);
 
-  float cell_phi = cell.phi();
+  const double cell_phi = cell.phi();
 
-  float phi_within_cell = phi - cell_phi;
+  double phi_within_cell = phi - cell_phi;
 
-  float phi_cell_size = get_phi_cell_size(layer_index, eta);
+  const double phi_cell_size = get_phi_cell_size(layer_index, eta);
 
   phi_within_cell = std::fmod(phi_within_cell, phi_cell_size);
 
@@ -216,8 +226,9 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
 
   // Find the phi bin of the hit
   auto phi_it =
-      std::upper_bound(phi_mins.begin(), phi_mins.end(), phi_within_cell);
-  long unsigned int phi_index = std::distance(phi_mins.begin(), phi_it) - 1;
+      std::upper_bound(phi_mins.begin(), phi_mins.end(), phi_within_cell, less);
+  const auto phi_index = static_cast<long unsigned int>(
+      std::distance(phi_mins.begin(), phi_it) - 1);
 
   if (phi_index >= modulation.size()) {
     FCS_MSG_ERROR("Found bin "
@@ -239,14 +250,14 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
 }
 
 auto TFCSPhiModulationCorrection::add_phi_modulation(
-    TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> float
+    TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> double
 {
-  return add_phi_modulation(hit, calosample());
+  return add_phi_modulation(hit, static_cast<long unsigned int>(calosample()));
 }
 
 auto TFCSPhiModulationCorrection::add_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
-    long unsigned int layer_index) const -> float
+    long unsigned int layer_index) const -> double
 {
   if (layer_index >= m_min_eta.size()) {
     return hit.E();
@@ -260,19 +271,20 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
     return hit.E();
   }
 
-  float energy = hit.E();
-  float phi = hit.phi();
-  float eta = hit.eta();
+  const double energy = hit.E();
+  const double phi = hit.phi();
+  const double eta = hit.eta();
 
-  float reweighted_energy = add_phi_modulation(energy, phi, eta, layer_index);
+  const double reweighted_energy =
+      add_phi_modulation(energy, phi, eta, layer_index);
   hit.set_E(reweighted_energy);
 
   return reweighted_energy;
 }
 
 auto TFCSPhiModulationCorrection::add_phi_modulation(
-    float energy, float phi, float eta, long unsigned int layer_index) const
-    -> float
+    double energy, double phi, double eta, long unsigned int layer_index) const
+    -> double
 {
   if (layer_index >= m_min_eta.size()) {
     return energy;
@@ -300,21 +312,25 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
   const std::vector<float>& modulation =
       m_modulation.at(layer_index).at(eta_index);
 
-  energy *= ((modulation.at(phi_index) - 1) * m_modulation_scale + 1);
-  energy *= m_energy_shift.at(layer_index).at(eta_index);
+  const double weight = (static_cast<double>(modulation.at(phi_index)) - 1)
+          * static_cast<double>(m_modulation_scale)
+      + 1;
+  energy *= weight;
+  energy *= static_cast<double>(m_energy_shift.at(layer_index).at(eta_index));
 
   return energy;
 }
 
 auto TFCSPhiModulationCorrection::remove_phi_modulation(
-    TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> float
+    TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> double
 {
-  return remove_phi_modulation(hit, calosample());
+  return remove_phi_modulation(hit,
+                               static_cast<long unsigned int>(calosample()));
 }
 
 auto TFCSPhiModulationCorrection::remove_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
-    long unsigned int layer_index) const -> float
+    long unsigned int layer_index) const -> double
 {
   if (layer_index >= m_min_eta.size()) {
     return hit.E();
@@ -328,11 +344,11 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
     return hit.E();
   }
 
-  float energy = hit.E();
-  float phi = hit.phi();
-  float eta = hit.eta();
+  const double energy = hit.E();
+  const double phi = hit.phi();
+  const double eta = hit.eta();
 
-  float reweighted_energy =
+  const double reweighted_energy =
       remove_phi_modulation(energy, phi, eta, layer_index);
   hit.set_E(reweighted_energy);
 
@@ -340,8 +356,8 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
 }
 
 auto TFCSPhiModulationCorrection::remove_phi_modulation(
-    float energy, float phi, float eta, long unsigned int layer_index) const
-    -> float
+    double energy, double phi, double eta, long unsigned int layer_index) const
+    -> double
 {
   if (layer_index >= m_min_eta.size()) {
     return energy;
@@ -369,7 +385,10 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
   const std::vector<float>& modulation =
       m_modulation.at(layer_index).at(eta_index);
 
-  energy /= ((modulation.at(phi_index) - 1) * m_modulation_scale + 1);
+  const double weight = (static_cast<double>(modulation.at(phi_index)) - 1)
+          * static_cast<double>(m_modulation_scale)
+      + 1;
+  energy /= weight;
 
   return energy;
 }

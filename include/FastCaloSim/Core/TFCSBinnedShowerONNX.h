@@ -104,9 +104,9 @@ public:
 protected:
   // Returns the event to be used
   void get_event(TFCSSimulationState& simulstate,
-                 float eta_center,
-                 float phi_center,
-                 float e_init,
+                 double eta_center,
+                 double phi_center,
+                 double e_init,
                  long unsigned int reference_layer_index) const override;
 
   // Returns the number of hits that are going to be simulated in the given
@@ -120,14 +120,14 @@ protected:
 
   // Returns the total deposited energy in the given layer for the current event
   auto get_layer_energy(TFCSSimulationState& simulstate,
-                        long unsigned int layer_index) const -> float override;
+                        long unsigned int layer_index) const -> double override;
 
   // Returns the position and energy of the corresponding hit in the given
   // event, layer and bin
   auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
                                    long unsigned int layer_index,
                                    long unsigned int hit_index) const
-      -> std::tuple<float, float, float> override;
+      -> std::tuple<double, double, double> override;
 
   // Delete all pointers that were created in get_event()
   void delete_event(TFCSSimulationState& simulstate) const override;
@@ -138,7 +138,8 @@ private:
 
   auto get_coordinates(TFCSSimulationState& simulstate,
                        long unsigned int layer_index,
-                       int bin_index) const -> std::tuple<float, float>;
+                       unsigned int bin_index) const
+      -> std::tuple<double, double>;
 
   // If true, the sub-cell distribution is used to upscale the energy deposition
   bool m_use_upscaling = false;
@@ -150,12 +151,12 @@ private:
   std::vector<float> m_upscaling_energies;  // energies of the avg showers
 
   void upscale(TFCSSimulationState& simulstate,
-               float& R_min,
-               float& R_max,
-               float& alpha_min,
-               float& alpha_max,
+               double& R_min,
+               double& R_max,
+               double& alpha_min,
+               double& alpha_max,
                long unsigned int layer_index,
-               int bin_index) const;
+               unsigned int bin_index) const;
 
   auto get_energy_index(TFCSSimulationState& simulstate,
                         long unsigned int layer_index,

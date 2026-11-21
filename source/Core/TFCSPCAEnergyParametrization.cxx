@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <memory>
 #include <numbers>
@@ -69,14 +70,14 @@ void TFCSPCAEnergyParametrization::Print(Option_t* option) const
   }
 }
 
-auto interpolate_get_y(TH1* hist, float x) -> float
+auto interpolate_get_y(TH1* hist, double x) -> double
 {
-  float m = 0;
-  float n = 0;
-  float x1 = 1;
-  float x2 = 0;
-  float y1 = 0;
-  float y2 = 0;
+  double m = 0;
+  double n = 0;
+  double x1 = 1;
+  double x2 = 0;
+  double y1 = 0;
+  double y2 = 0;
   if (x <= hist->GetBinCenter(1))
     return hist->GetBinContent(1);
   if (x >= hist->GetBinCenter(hist->GetNbinsX()))
@@ -111,7 +112,7 @@ void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(int Ekin_bin,
     return;
   if (Ekin_bin - 1 >= static_cast<int>(m_totalE_probability_ratio.size()))
     return;
-  m_totalE_probability_ratio[Ekin_bin - 1] = hist;
+  m_totalE_probability_ratio[static_cast<std::size_t>(Ekin_bin - 1)] = hist;
 }
 
 auto TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
@@ -121,7 +122,7 @@ auto TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
     return nullptr;
   if (Ekin_bin - 1 >= static_cast<int>(m_totalE_probability_ratio.size()))
     return nullptr;
-  return m_totalE_probability_ratio[Ekin_bin - 1];
+  return m_totalE_probability_ratio[static_cast<std::size_t>(Ekin_bin - 1)];
 }
 
 auto TFCSPCAEnergyParametrization::simulate(
@@ -142,12 +143,13 @@ auto TFCSPCAEnergyParametrization::simulate(
       simulstate.set_Efrac(s, 0.0);
     }
   } else {
-    TMatrixD* EV = m_EV[pcabin - 1];
-    TVectorD* MeanValues = m_MeanValues[pcabin - 1];
-    TVectorD* SigmaValues = m_SigmaValues[pcabin - 1];
-    TVectorD* Gauss_means = m_Gauss_means[pcabin - 1];
-    TVectorD* Gauss_rms = m_Gauss_rms[pcabin - 1];
-    const std::vector<TFCS1DFunction*>& cumulative = m_cumulative[pcabin - 1];
+    const auto ibin = static_cast<std::size_t>(pcabin - 1);
+    TMatrixD* EV = m_EV[ibin];
+    TVectorD* MeanValues = m_MeanValues[ibin];
+    TVectorD* SigmaValues = m_SigmaValues[ibin];
+    TVectorD* Gauss_means = m_Gauss_means[ibin];
+    TVectorD* Gauss_rms = m_Gauss_rms[ibin];
+    const std::vector<TFCS1DFunction*>& cumulative = m_cumulative[ibin];
 
     const std::vector<int>& layerNr = m_RelevantLayers;
 
@@ -166,19 +168,21 @@ auto TFCSPCAEnergyParametrization::simulate(
       input_data[l] = gauszz;
     }
 
+    // The relevant layers plus the total energy
+    const int n_variables = static_cast<int>(layerNr.size()) + 1;
     P2X(SigmaValues,
         MeanValues,
         EV,
-        layerNr.size() + 1,
+        n_variables,
         input_data.data(),
         output_data.data(),
-        layerNr.size() + 1);
+        n_variables);
 
     std::vector<double> simdata(layerNr.size() + 1);
     double sum_fraction = 0.0;
     for (unsigned int l = 0; l <= layerNr.size(); l++) {
       double simdata_uniform =
-          (std::erf(output_data[l] / std::numbers::sqrt2) + 1) / 2.f;
+          (std::erf(output_data[l] / std::numbers::sqrt2) + 1) / 2.0;
 
       simdata[l] = cumulative[l]->rnd_to_fct(simdata_uniform);
 
@@ -190,10 +194,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     if (!do_rescale)
       scalefactor = 1.0;
 
-    // Using signed int for better loop optimization and vectorization where
-    // possible
-    int layerNrsize = static_cast<int>(layerNr.size());
-    for (int l = 0; l < layerNrsize; l++) {
+    for (std::size_t l = 0; l < layerNr.size(); l++) {
       simdata[l] *= scalefactor;
     }
 
@@ -202,21 +203,21 @@ auto TFCSPCAEnergyParametrization::simulate(
     // is not possible
     TH1* h_totalE_ratio = get_totalE_probability_ratio(pcabin);
     if (h_totalE_ratio) {
-      float pass_probability = 0;
-      float Etot = simdata[layerNr.size()];
+      double pass_probability = 0;
+      const double Etot = simdata[layerNr.size()];
       if (Etot > h_totalE_ratio->GetXaxis()->GetXmin()
           && Etot < h_totalE_ratio->GetXaxis()->GetXmax())
       {
         pass_probability = interpolate_get_y(h_totalE_ratio, Etot);
       }
-      float random = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+      const double random = CLHEP::RandFlat::shoot(simulstate.randomEngine());
       if (random > pass_probability) {
         return static_cast<FCSReturnCode>(FCSRetryPCA);
       }
     }
 
-    double total_energy =
-        simdata[layerNr.size()] * simulstate.E() / m_total_energy_normalization;
+    double total_energy = simdata[layerNr.size()] * simulstate.E()
+        / static_cast<double>(m_total_energy_normalization);
     simulstate.set_E(total_energy);
     FCS_MSG_DEBUG("set E to total_energy=" << total_energy);
 
@@ -286,9 +287,9 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
   if (!load_ok)
     return false;
 
-  m_RelevantLayers.reserve(RelevantLayers->GetSize());
+  m_RelevantLayers.reserve(static_cast<std::size_t>(RelevantLayers->GetSize()));
   for (int i = 0; i < RelevantLayers->GetSize(); i++)
-    m_RelevantLayers.push_back(RelevantLayers->GetAt(i));
+    m_RelevantLayers.push_back(static_cast<int>(RelevantLayers->GetAt(i)));
 
   for (int bin = 1; bin <= m_numberpcabins; bin++) {
     file->cd(std::format("{}{}/pca", x, bin).c_str());
@@ -367,7 +368,8 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 
     m_cumulative.emplace_back(std::move(cumulative));
   }
-  m_totalE_probability_ratio.resize(m_numberpcabins - 1, nullptr);
+  m_totalE_probability_ratio.resize(
+      static_cast<std::size_t>(m_numberpcabins - 1), nullptr);
 
   return true;
 }
@@ -385,12 +387,12 @@ void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
   if (R__b.IsReading()) {
     UInt_t R__s, R__c;
     Version_t R__v = R__b.ReadVersion(&R__s, &R__c);
-    R__b.SetBufferOffset(R__s);
+    R__b.SetBufferOffset(static_cast<Int_t>(R__s));
 
     R__b.ReadClassBuffer(TFCSPCAEnergyParametrization::Class(), this);
 
     if (R__v == 1) {
-      set_total_energy_normalization(Ekin_nominal());
+      set_total_energy_normalization(static_cast<float>(Ekin_nominal()));
       // Check if min and max range is a factor 2 within 1 MeV tolerance
       // If yes, the nominal to log-avergage
       if (std::abs(Ekin_max() - 2 * Ekin_min()) < 1) {
@@ -398,7 +400,8 @@ void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
       }
     }
     if (R__v <= 2) {
-      m_totalE_probability_ratio.resize(m_numberpcabins - 1, nullptr);
+      m_totalE_probability_ratio.resize(
+          static_cast<std::size_t>(m_numberpcabins - 1), nullptr);
     }
   } else {
     R__b.WriteClassBuffer(TFCSPCAEnergyParametrization::Class(), this);

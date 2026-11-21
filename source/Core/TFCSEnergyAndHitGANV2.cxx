@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <iostream>
 #include <limits>
@@ -55,7 +56,7 @@ auto TFCSEnergyAndHitGANV2::get_nr_of_init(unsigned int bin) const
 {
   if (bin >= m_bin_ninit.size())
     return 0;
-  return m_bin_ninit[bin];
+  return static_cast<unsigned int>(m_bin_ninit[bin]);
 }
 
 void TFCSEnergyAndHitGANV2::set_nr_of_init(unsigned int bin, unsigned int ninit)
@@ -64,7 +65,7 @@ void TFCSEnergyAndHitGANV2::set_nr_of_init(unsigned int bin, unsigned int ninit)
     m_bin_ninit.resize(bin + 1, 0);
     m_bin_ninit.shrink_to_fit();
   }
-  m_bin_ninit[bin] = ninit;
+  m_bin_ninit[bin] = static_cast<int>(ninit);
 }
 
 // initialize lwtnn network
@@ -129,10 +130,10 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   const int pdgId = truth->pdgid();
-  const float charge = ParticleData::charge(pdgId);
+  const double charge = ParticleData::charge(pdgId);
 
-  float Einit;
-  const float Ekin = truth->Ekin();
+  double Einit;
+  const double Ekin = truth->Ekin();
   if (OnlyScaleEnergy())
     Einit = simulstate.E();
   else
@@ -238,9 +239,10 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     if (get_number_of_bins() > 0) {
       const int bin = get_bin(simulstate, truth, extrapol);
       if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
-        for (unsigned int ichain = m_bin_start[bin];
-             ichain < std::min(m_bin_start[bin] + get_nr_of_init(bin),
-                               m_bin_start[bin + 1]);
+        const auto ubin = static_cast<unsigned int>(bin);
+        for (unsigned int ichain = m_bin_start[ubin];
+             ichain < std::min(m_bin_start[ubin] + get_nr_of_init(ubin),
+                               m_bin_start[ubin + 1]);
              ++ichain)
         {
           FCS_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
@@ -291,8 +293,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     FCS_MSG_VERBOSE(" Layer " << layer << " Extrap eta " << center_eta
                               << " phi " << center_phi << " R " << center_r);
 
-    const float dist000 = FastCaloSim::dist000(center_r, center_z);
-    const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+    const double dist000 = FastCaloSim::dist000(center_r, center_z);
+    const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
     int nHitsAlpha {};
     int nHitsR {};
@@ -300,6 +302,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     // Now create hits
     for (int ix = 1; ix <= xBinNum; ++ix) {
       const int binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
+      const auto r_bin = static_cast<std::size_t>(ix - 1);
 
       // Horrible work around for variable # of bins along alpha direction
       const int binsToMerge = yBinNum == 32 ? 32 / binsInAlphaInRBin : 1;
@@ -317,25 +320,27 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
         if (std::abs(pdgId) == 22 || std::abs(pdgId) == 11) {
           // maximum 10 MeV per hit, equally distributed in alpha and r
-          int maxHitsInVoxel = energyInVoxel * truth->Ekin() / 10;
+          int maxHitsInVoxel =
+              static_cast<int>(energyInVoxel * truth->Ekin() / 10);
           if (maxHitsInVoxel < 1)
             maxHitsInVoxel = 1;
-          nHitsAlpha = std::sqrt(maxHitsInVoxel);
-          nHitsR = std::sqrt(maxHitsInVoxel);
+          nHitsAlpha = static_cast<int>(std::sqrt(maxHitsInVoxel));
+          nHitsR = static_cast<int>(std::sqrt(maxHitsInVoxel));
         } else {
           // One hit per mm along r
-          nHitsR = x->GetBinUpEdge(ix) - x->GetBinLowEdge(ix);
+          nHitsR = static_cast<int>(x->GetBinUpEdge(ix) - x->GetBinLowEdge(ix));
           if (yBinNum == 1) {
             // nbins in alpha depend on circumference length
             const double r = x->GetBinUpEdge(ix);
-            nHitsAlpha = std::ceil(2 * std::numbers::pi * r / binResolution);
+            nHitsAlpha = static_cast<int>(
+                std::ceil(2 * std::numbers::pi * r / binResolution));
           } else {
             // d = 2*r*sin (a/2r) this distance at the upper r must be 1mm for
             // layer 1 or 5, 5mm otherwise.
             const double angle = y->GetBinUpEdge(iy) - y->GetBinLowEdge(iy);
             const double r = x->GetBinUpEdge(ix);
             const double d = 2 * r * std::sin(angle / 2 * r);
-            nHitsAlpha = std::ceil(d / binResolution);
+            nHitsAlpha = static_cast<int>(std::ceil(d / binResolution));
           }
 
           if (layer != 1 && layer != 5) {
@@ -354,8 +359,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
           for (int ialpha = 1; ialpha <= nHitsAlpha; ++ialpha) {
             if (ganVersion > 1) {
-              if (!FastCaloSim::exactly_equal(fitResults.at(layer)[ix - 1],
-                                              0.0))
+              if (!FastCaloSim::exactly_equal(fitResults.at(layer)[r_bin], 0.0))
               {
                 int tries = 0;
                 double a = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
@@ -363,7 +367,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                                                   x->GetBinUpEdge(ix));
                 double rand_r =
                     std::log((a - x->GetBinLowEdge(ix)) / (x->GetBinWidth(ix)))
-                    / fitResults.at(layer)[ix - 1];
+                    / fitResults.at(layer)[r_bin];
                 while ((rand_r < x->GetBinLowEdge(ix)
                         || rand_r > x->GetBinUpEdge(ix))
                        && tries < 100)
@@ -373,14 +377,14 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                                              x->GetBinUpEdge(ix));
                   rand_r = std::log((a - x->GetBinLowEdge(ix))
                                     / (x->GetBinWidth(ix)))
-                      / fitResults.at(layer)[ix - 1];
+                      / fitResults.at(layer)[r_bin];
                   tries++;
                 }
                 if (tries >= 100) {
                   FCS_MSG_VERBOSE(" Too many tries for bin ["
                                   << x->GetBinLowEdge(ix) << "-"
                                   << x->GetBinUpEdge(ix) << "] having slope "
-                                  << fitResults.at(layer)[ix - 1]
+                                  << fitResults.at(layer)[r_bin]
                                   << " will use grid (old method)");
                 } else {
                   r = rand_r;
@@ -413,8 +417,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             hit.set_E(Einit * energyInVoxel / (nHitsAlpha * nHitsR));
 
             if (layer <= 20) {
-              float delta_eta_mm = r * std::cos(alpha);
-              float delta_phi_mm = r * std::sin(alpha);
+              double delta_eta_mm = r * std::cos(alpha);
+              double delta_phi_mm = r * std::sin(alpha);
 
               FCS_MSG_VERBOSE("delta_eta_mm " << delta_eta_mm
                                               << " delta_phi_mm "
@@ -432,8 +436,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               if ((charge < 0. && pdgId != 11) || pdgId == -11)
                 delta_phi_mm = -delta_phi_mm;
 
-              const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
-              const float delta_phi = delta_phi_mm / center_r;
+              const double delta_eta = delta_eta_mm / eta_jakobi / dist000;
+              const double delta_phi = delta_phi_mm / center_r;
 
               hit.set_eta_x(center_eta + delta_eta);
               hit.set_phi_y(TVector2::Phi_mpi_pi(center_phi + delta_phi));
@@ -441,15 +445,15 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               FCS_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                           << " layer " << layer);
             } else {  // FCAL is in (x,y,z)
-              const float hit_r = r * std::cos(alpha) + center_r;
-              float delta_phi = r * std::sin(alpha) / center_r;
+              const double hit_r = r * std::cos(alpha) + center_r;
+              double delta_phi = r * std::sin(alpha) / center_r;
               // We derive the shower shapes for electrons and positively
               // charged hadrons. Particle with the opposite charge are expected
               // to have the same shower shape after the transformation:
               // delta_phi --> -delta_phi
               if ((charge < 0. && pdgId != 11) || pdgId == -11)
                 delta_phi = -delta_phi;
-              const float hit_phi =
+              const double hit_phi =
                   TVector2::Phi_mpi_pi(center_phi + delta_phi);
               hit.set_eta_x(hit_r * std::cos(hit_phi));
               hit.set_phi_y(hit_r * std::sin(hit_phi));
@@ -461,9 +465,10 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             if (get_number_of_bins() > 0) {
               const int bin = get_bin(simulstate, truth, extrapol);
               if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
+                const auto ubin = static_cast<unsigned int>(bin);
                 for (unsigned int ichain =
-                         m_bin_start[bin] + get_nr_of_init(bin);
-                     ichain < m_bin_start[bin + 1];
+                         m_bin_start[ubin] + get_nr_of_init(ubin);
+                     ichain < m_bin_start[ubin + 1];
                      ++ichain)
                 {
                   FCS_MSG_DEBUG(
@@ -582,7 +587,7 @@ auto TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
                                    << " (" << x->GetBinLowEdge(ix) << "-"
                                    << x->GetBinUpEdge(ix) << ")");
   }
-  return binsInAlphaInRBin;
+  return static_cast<int>(binsInAlphaInRBin);
 }
 
 void TFCSEnergyAndHitGANV2::fixHists()

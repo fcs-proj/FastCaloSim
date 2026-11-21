@@ -59,7 +59,7 @@ public:
                      const std::string& FastCaloTXTInputFolderName) -> bool;
 
   // Prepare inputs to the Neural Network
-  auto prepareInputs(TFCSSimulationState& simulstate, const float truthE) const
+  auto prepareInputs(TFCSSimulationState& simulstate, const double truthE) const
       -> std::map<std::string, double>;
 
   // Print()

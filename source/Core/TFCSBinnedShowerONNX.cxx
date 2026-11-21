@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <memory>
@@ -48,22 +49,25 @@ TFCSBinnedShowerONNX::~TFCSBinnedShowerONNX()
 
 void TFCSBinnedShowerONNX::get_event(
     TFCSSimulationState& simulstate,
-    float eta_center,
-    float phi_center,
-    float e_init,
+    double eta_center,
+    double phi_center,
+    double e_init,
     long unsigned int reference_layer_index) const
 {
   (void)reference_layer_index;  // Unused parameter
   (void)phi_center;  // Unused parameter
 
   const TFCSMLCalorimeterSimulator::event_t& event =
-      m_ai_simulator->getEvent(simulstate, eta_center, e_init);
+      // The network takes its inputs in single precision
+      m_ai_simulator->getEvent(simulstate,
+                               static_cast<float>(eta_center),
+                               static_cast<float>(e_init));
 
   // Store a pointer to the event
   TFCSMLCalorimeterSimulator::event_t* event_ptr =
       new TFCSMLCalorimeterSimulator::event_t(event);
   simulstate.setAuxInfo<void*>("BSEventData"_FCShash, event_ptr);
-  simulstate.setAuxInfo<float>("BSEinit"_FCShash, e_init);
+  simulstate.setAuxInfo<double>("BSEinit"_FCShash, e_init);
 
   compute_n_hits_and_elayer(simulstate);
 }
@@ -108,7 +112,7 @@ auto TFCSBinnedShowerONNX::load_hdf5_dataset(const std::string& filename,
 
   // Get the number of dimensions and the size of each dimension
   int rank = dataspace.getSimpleExtentNdims();
-  std::vector<hsize_t> dims_out(rank);
+  std::vector<hsize_t> dims_out(static_cast<std::size_t>(rank));
   dataspace.getSimpleExtentDims(dims_out.data(), nullptr);
 
   // Calculate the total number of elements
@@ -211,14 +215,14 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
         "get_event must run first");
     return;
   }
-  float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
+  const auto e_init = simulstate.getAuxInfo<double>("BSEinit"_FCShash);
 
   // Loop over all layers
   long unsigned int n_layers = event->event_data.size();
   std::vector<std::vector<long unsigned int>> hits_per_layer;
-  std::vector<float> elayer;
+  std::vector<double> elayer;
   hits_per_layer.resize(n_layers);
-  elayer.resize(n_layers, 0.0f);
+  elayer.resize(n_layers, 0.0);
 
   for (long unsigned int layer_index = 0; layer_index < n_layers; ++layer_index)
   {
@@ -230,11 +234,13 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
     for (float e_voxel : layer.E_vector) {
       long unsigned int hits_per_bin;
       if (e_voxel > std::numeric_limits<float>::epsilon()) {
-        hits_per_bin = std::min(
-            std::max(static_cast<int>(e_voxel * e_init / m_default_hit_energy),
+        const double e_hits = static_cast<double>(e_voxel) * e_init;
+        hits_per_bin = static_cast<long unsigned int>(std::min(
+            std::max(static_cast<int>(
+                         e_hits / static_cast<double>(m_default_hit_energy)),
                      1),
-            m_max_hits_per_voxel);
-        elayer.at(layer_index) += e_voxel * e_init;
+            m_max_hits_per_voxel));
+        elayer.at(layer_index) += e_hits;
 
       } else {
         hits_per_bin = 0;
@@ -250,7 +256,7 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
   simulstate.setAuxInfo<void*>("BSNHits"_FCShash, hits_per_layer_ptr);
 
   // Store the energy per layer
-  std::vector<float>* elayer_ptr = new std::vector<float>(std::move(elayer));
+  auto* elayer_ptr = new std::vector<double>(std::move(elayer));
   simulstate.setAuxInfo<void*>("BSELayer"_FCShash, elayer_ptr);
 }
 
@@ -272,16 +278,16 @@ auto TFCSBinnedShowerONNX::get_n_hits(TFCSSimulationState& simulstate,
 
 auto TFCSBinnedShowerONNX::get_layer_energy(TFCSSimulationState& simulstate,
                                             long unsigned int layer_index) const
-    -> float
+    -> double
 {
-  std::vector<float>* elayer_ptr = static_cast<std::vector<float>*>(
+  auto* elayer_ptr = static_cast<std::vector<double>*>(
       simulstate.getAuxInfo<void*>("BSELayer"_FCShash));
   if (!elayer_ptr) {
     FCS_MSG_ERROR("Invalid layer energy information");
-    return 0.0f;
+    return 0.0;
   }
   if (layer_index >= elayer_ptr->size()) {
-    return 0.0f;
+    return 0.0;
   }
 
   FCS_MSG_DEBUG("returning energy for layer " << layer_index << ": "
@@ -313,7 +319,8 @@ auto TFCSBinnedShowerONNX::get_energy_index(TFCSSimulationState& simulstate,
   const std::vector<long unsigned int>& hits =
       hits_per_layer_ptr->at(layer_index);
   auto it = std::upper_bound(hits.begin(), hits.end(), hit_index);
-  long unsigned int energy_index = std::distance(hits.begin(), it);
+  const auto energy_index =
+      static_cast<long unsigned int>(std::distance(hits.begin(), it));
 
   if (energy_index >= hits.size()) {
     FCS_MSG_ERROR("Energy index out of bounds: " << energy_index
@@ -331,78 +338,91 @@ auto TFCSBinnedShowerONNX::get_energy_index(TFCSSimulationState& simulstate,
 
 auto TFCSBinnedShowerONNX::get_coordinates(TFCSSimulationState& simulstate,
                                            long unsigned int layer_index,
-                                           int bin_index) const
-    -> std::tuple<float, float>
+                                           unsigned int bin_index) const
+    -> std::tuple<double, double>
 {
-  float R_min = m_coordinates.at(layer_index).R_lower.at(bin_index);
-  float R_max = m_coordinates.at(layer_index).R_size.at(bin_index)
-      + m_coordinates.at(layer_index).R_lower.at(bin_index);
+  // The bin coordinates are stored in single precision
+  const auto& coordinates = m_coordinates.at(layer_index);
+  const auto at_bin = [bin_index](const std::vector<float>& values)
+  { return static_cast<double>(values.at(bin_index)); };
+  double R_min = at_bin(coordinates.R_lower);
+  double R_max = at_bin(coordinates.R_size) + at_bin(coordinates.R_lower);
 
-  float alpha_min = m_coordinates.at(layer_index).alpha_lower.at(bin_index);
-  float alpha_max = m_coordinates.at(layer_index).alpha_size.at(bin_index)
-      + m_coordinates.at(layer_index).alpha_lower.at(bin_index);
+  double alpha_min = at_bin(coordinates.alpha_lower);
+  double alpha_max =
+      at_bin(coordinates.alpha_size) + at_bin(coordinates.alpha_lower);
 
   if (m_use_upscaling) {
     upscale(
         simulstate, R_min, R_max, alpha_min, alpha_max, layer_index, bin_index);
   }
-
-  float R = CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
-  float alpha =
+  const double R =
+      CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
+  const double alpha =
       CLHEP::RandFlat::shoot(simulstate.randomEngine(), alpha_min, alpha_max);
 
   return std::make_tuple(R, alpha);
 }
 
 void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
-                                   float& R_min,
-                                   float& R_max,
-                                   float& alpha_min,
-                                   float& alpha_max,
+                                   double& R_min,
+                                   double& R_max,
+                                   double& alpha_min,
+                                   double& alpha_max,
                                    long unsigned int layer_index,
-                                   int bin_index) const
+                                   unsigned int bin_index) const
 {
-  float p = CLHEP::RandFlat::shoot(simulstate.randomEngine(), 0, 1);
+  double p = CLHEP::RandFlat::shoot(simulstate.randomEngine(), 0, 1);
 
-  float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
-  std::vector<float> available_energies = m_upscaling_energies;
+  const auto e_init = simulstate.getAuxInfo<double>("BSEinit"_FCShash);
+  // Energies and sub-bin probabilities are stored in single precision
+  const std::vector<float>& available_energies = m_upscaling_energies;
+  const auto energy = [&available_energies](std::size_t index)
+  { return static_cast<double>(available_energies.at(index)); };
+  const auto sub_bin = [this, layer_index, bin_index](
+                           std::size_t index) -> const std::vector<float>&
+  { return m_sub_bin_distribution.at(index).at(layer_index).at(bin_index); };
 
-  unsigned int e_index = 0;
+  std::size_t e_index = 0;
 
-  std::vector<float> probabilities = {0.25f, 0.5f, 0.75f};
+  std::array<double, 3> probabilities = {0.25, 0.5, 0.75};
+  const auto set_probabilities = [&probabilities](const std::vector<float>& p)
+  {
+    for (std::size_t i = 0; i < probabilities.size(); ++i)
+      probabilities[i] = static_cast<double>(p[i]);
+  };
 
   if (available_energies.size() > 1) {
     // find closest energy index using binary search
-    auto it = std::upper_bound(
-        available_energies.begin(), available_energies.end(), e_init);
+    const auto it =
+        std::upper_bound(available_energies.begin(),
+                         available_energies.end(),
+                         e_init,
+                         [](double value, float element)
+                         { return value < static_cast<double>(element); });
     if (it != available_energies.end()) {
-      e_index = std::distance(available_energies.begin(), it);
+      e_index = static_cast<std::size_t>(
+          std::distance(available_energies.begin(), it));
     } else {
       e_index = available_energies.size() - 1;
     }
 
-    float e_high = available_energies.at(e_index);
+    const double e_high = energy(e_index);
     if (e_high < e_init || e_index == 0) {
       if (m_sub_bin_distribution.at(e_index).size() > layer_index) {
-        probabilities =
-            m_sub_bin_distribution.at(e_index).at(layer_index).at(bin_index);
+        set_probabilities(sub_bin(e_index));
       }
     } else {
       if (m_sub_bin_distribution.at(e_index).size() > layer_index
           && m_sub_bin_distribution.at(e_index - 1).size() > layer_index)
       {
-        float e_low = available_energies.at(e_index - 1);
-        float f_low = std::log(e_high / e_init) / (std::log(e_high / e_low));
-        float f_high = 1 - f_low;
-        for (unsigned int i = 0; i < 3; ++i) {
-          float p_low = m_sub_bin_distribution.at(e_index - 1)
-                            .at(layer_index)
-                            .at(bin_index)
-                            .at(i);
-          float p_high = m_sub_bin_distribution.at(e_index)
-                             .at(layer_index)
-                             .at(bin_index)
-                             .at(i);
+        const double e_low = energy(e_index - 1);
+        const double f_low =
+            std::log(e_high / e_init) / (std::log(e_high / e_low));
+        const double f_high = 1 - f_low;
+        for (std::size_t i = 0; i < 3; ++i) {
+          const auto p_low = static_cast<double>(sub_bin(e_index - 1).at(i));
+          const auto p_high = static_cast<double>(sub_bin(e_index).at(i));
           probabilities[i] = f_low * p_low + f_high * p_high;
         }
       }
@@ -411,11 +431,12 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
 
   else if (available_energies.size() == 1)
   {
-    probabilities = m_sub_bin_distribution.at(0).at(layer_index).at(bin_index);
+    set_probabilities(sub_bin(0));
   }
 
-  float p_alpha_low = probabilities[2] - probabilities[1] + probabilities[0];
-  float p_r;
+  const double p_alpha_low =
+      probabilities[2] - probabilities[1] + probabilities[0];
+  double p_r;
 
   if (p < p_alpha_low) {
     alpha_max = (alpha_min + alpha_max) / 2.;
@@ -442,12 +463,14 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
     p_r = 0.25;  // Values below 0.25 are not allowed for linear pdf
   } else if (p_r > 0.75) {
     p_r = 0.75;  // Values above 0.75 are not allowed for linear pdf
-  } else if (std::abs(p_r - 0.5) < std::numeric_limits<float>::epsilon()) {
+  } else if (std::abs(p_r - 0.5)
+             < static_cast<double>(std::numeric_limits<float>::epsilon()))
+  {
     return;  // Best upscaling is uniform sampling. Nothing to do here.
   }
 
   // Inverse CDF for linear pdf
-  float r = (1. - 4. * p_r) / (2. - 4. * p_r)
+  double r = (1. - 4. * p_r) / (2. - 4. * p_r)
       - std::sqrt(((1. - 4. * p_r) / (2. - 4. * p_r))
                       * ((1. - 4. * p_r) / (2. - 4. * p_r))
                   + p / ((1. / 2.) - p_r));
@@ -465,22 +488,22 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
 auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
     TFCSSimulationState& simulstate,
     long unsigned int layer_index,
-    long unsigned int hit_index) const -> std::tuple<float, float, float>
+    long unsigned int hit_index) const -> std::tuple<double, double, double>
 {
   TFCSMLCalorimeterSimulator::event_t* event =
       static_cast<TFCSMLCalorimeterSimulator::event_t*>(
           simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
   if (!event) {
     FCS_MSG_ERROR("No BSEventData available in get_hit_position_and_energy");
-    return std::make_tuple(0.0f, 0.0f, 0.0f);
+    return std::make_tuple(0.0, 0.0, 0.0);
   }
 
-  float e_init = simulstate.getAuxInfo<float>("BSEinit"_FCShash);
+  const auto e_init = simulstate.getAuxInfo<double>("BSEinit"_FCShash);
 
   if (layer_index >= event->event_data.size()) {
     FCS_MSG_ERROR("Layer index out of bounds: " << layer_index << " >= "
                                                 << event->event_data.size());
-    return std::make_tuple(0.0f, 0.0f, 0.0f);
+    return std::make_tuple(0.0, 0.0, 0.0);
   }
 
   long unsigned int energy_index = get_energy_index(
@@ -498,7 +521,7 @@ auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
         - hits_per_layer_ptr->at(layer_index).at(energy_index - 1);
   }
 
-  float r, alpha;
+  double r, alpha;
 
   TFCSMLCalorimeterSimulator::layer_t& layer =
       event->event_data.at(layer_index);
@@ -506,7 +529,8 @@ auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
   std::tie(r, alpha) = get_coordinates(
       simulstate, layer_index, layer.bin_index_vector.at(energy_index));
 
-  float E = layer.E_vector.at(energy_index) * e_init / hits_per_bin;
+  const double E = static_cast<double>(layer.E_vector.at(energy_index)) * e_init
+      / static_cast<double>(hits_per_bin);
 
   return std::make_tuple(r, alpha, E);
 }
@@ -529,7 +553,7 @@ void TFCSBinnedShowerONNX::delete_event(TFCSSimulationState& simulstate) const
 
   void* elayer_ptr = simulstate.getAuxInfo<void*>("BSELayer"_FCShash);
   if (elayer_ptr) {
-    delete static_cast<std::vector<float>*>(elayer_ptr);
+    delete static_cast<std::vector<double>*>(elayer_ptr);
     simulstate.setAuxInfo<void*>("BSELayer"_FCShash, nullptr);
   }
 }
@@ -554,15 +578,19 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
     std::smatch match;
     if (std::regex_match(keyname, match, pattern)) {
       int layer = std::stoi(match[1].str());
-      float energy = std::stod(match[2].str());
+      const auto energy = static_cast<float>(std::stod(match[2].str()));
 
       std::unique_ptr<TMatrixD> matrix(file->Get<TMatrixD>(keyname.c_str()));
       if (matrix) {
-        std::vector<std::vector<float>> mat_vec(
-            matrix->GetNrows(), std::vector<float>(matrix->GetNcols()));
-        for (int i = 0; i < matrix->GetNrows(); ++i) {
-          for (int j = 0; j < matrix->GetNcols(); ++j) {
-            mat_vec[i][j] = static_cast<float>((*matrix)(i, j));
+        const int n_rows = matrix->GetNrows();
+        const int n_cols = matrix->GetNcols();
+        std::vector<std::vector<float>> mat_vec;
+        mat_vec.reserve(static_cast<std::size_t>(n_rows));
+        for (int i = 0; i < n_rows; ++i) {
+          std::vector<float>& row = mat_vec.emplace_back();
+          row.reserve(static_cast<std::size_t>(n_cols));
+          for (int j = 0; j < n_cols; ++j) {
+            row.push_back(static_cast<float>((*matrix)(i, j)));
           }
         }
         temp_storage[energy][layer] = std::move(mat_vec);
@@ -583,9 +611,10 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
     for (const auto& [l, _] : layer_map)
       max_layer = std::max(max_layer, l);
 
-    std::vector<std::vector<std::vector<float>>> layer_vec(max_layer + 1);
+    std::vector<std::vector<std::vector<float>>> layer_vec(
+        static_cast<std::size_t>(max_layer) + 1);
     for (const auto& [layer_idx, mat] : layer_map) {
-      layer_vec[layer_idx] = mat;
+      layer_vec.at(static_cast<std::size_t>(layer_idx)) = mat;
     }
     data.push_back(std::move(layer_vec));
   }

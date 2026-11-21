@@ -43,7 +43,8 @@ public:
 protected:
   CaloGeo* m_geo = nullptr;  //! do not persistify
 
-  using weight_t = std::vector<std::vector<float>>;
+  // Transient per-event weights, not persistified
+  using weight_t = std::vector<std::vector<double>>;
 
   std::vector<std::vector<std::vector<TFCS1DFunction*>>> m_transform;
 

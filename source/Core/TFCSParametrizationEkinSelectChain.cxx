@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <iostream>
 
@@ -31,7 +32,10 @@ void TFCSParametrizationEkinSelectChain::recalc()
 void TFCSParametrizationEkinSelectChain::push_back_in_bin(
     TFCSParametrizationBase* param)
 {
-  push_back_in_bin(param, param->Ekin_min(), param->Ekin_max());
+  // The bin edges are stored in single precision
+  push_back_in_bin(param,
+                   static_cast<float>(param->Ekin_min()),
+                   static_cast<float>(param->Ekin_max()));
 }
 
 auto TFCSParametrizationEkinSelectChain::get_bin(
@@ -43,22 +47,29 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
     return -1;
   }
 
-  float Ekin = truth->Ekin();
-  int bin = val_to_bin(Ekin);
+  const double Ekin = truth->Ekin();
+  // The bin edges are single precision, so is the binning variable
+  int bin = val_to_bin(static_cast<float>(Ekin));
 
   if (!DoRandomInterpolation())
     return bin;
-  float rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  const double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (bin < 0)
     return bin;
   if (bin >= static_cast<int>(get_number_of_bins()))
     return bin;
 
-  // if no parametrizations for this bin, return
-  if (m_bin_start[bin + 1] == m_bin_start[bin])
-    return bin;
+  // First parametrization in a bin, nullptr if the bin is empty
+  const auto first_param_in = [this](int ibin) -> TFCSParametrizationBase*
+  {
+    const auto ubin = static_cast<std::size_t>(ibin);
+    if (m_bin_start[ubin + 1] == m_bin_start[ubin])
+      return nullptr;
+    return chain()[m_bin_start[ubin]];
+  };
 
-  TFCSParametrizationBase* first_in_bin = chain()[m_bin_start[bin]];
+  // if no parametrizations for this bin, return
+  TFCSParametrizationBase* first_in_bin = first_param_in(bin);
   if (!first_in_bin)
     return bin;
 
@@ -67,18 +78,15 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
       return bin;
     int prevbin = bin - 1;
     // if no parametrizations for previous bin, return
-    if (m_bin_start[prevbin + 1] == m_bin_start[prevbin])
-      return bin;
-
-    TFCSParametrizationBase* first_in_prevbin = chain()[m_bin_start[prevbin]];
+    TFCSParametrizationBase* first_in_prevbin = first_param_in(prevbin);
     if (!first_in_prevbin)
       return bin;
 
-    float logEkin = std::log(Ekin);
-    float logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
-    float logEkin_previous = std::log(first_in_prevbin->Ekin_nominal());
-    float numerator = logEkin - logEkin_previous;
-    float denominator = logEkin_nominal - logEkin_previous;
+    const double logEkin = std::log(Ekin);
+    const double logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
+    const double logEkin_previous = std::log(first_in_prevbin->Ekin_nominal());
+    const double numerator = logEkin - logEkin_previous;
+    const double denominator = logEkin_nominal - logEkin_previous;
     if (denominator <= 0)
       return bin;
 
@@ -94,19 +102,16 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
     if (bin == static_cast<int>(get_number_of_bins()) - 1)
       return bin;
     int nextbin = bin + 1;
-    // if no parametrizations for previous bin, return
-    if (m_bin_start[nextbin + 1] == m_bin_start[nextbin])
-      return bin;
-
-    TFCSParametrizationBase* first_in_nextbin = chain()[m_bin_start[nextbin]];
+    // if no parametrizations for next bin, return
+    TFCSParametrizationBase* first_in_nextbin = first_param_in(nextbin);
     if (!first_in_nextbin)
       return bin;
 
-    float logEkin = std::log(Ekin);
-    float logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
-    float logEkin_next = std::log(first_in_nextbin->Ekin_nominal());
-    float numerator = logEkin - logEkin_nominal;
-    float denominator = logEkin_next - logEkin_nominal;
+    const double logEkin = std::log(Ekin);
+    const double logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
+    const double logEkin_next = std::log(first_in_nextbin->Ekin_nominal());
+    const double numerator = logEkin - logEkin_nominal;
+    const double denominator = logEkin_next - logEkin_nominal;
     if (denominator <= 0)
       return bin;
 
@@ -142,11 +147,11 @@ auto TFCSParametrizationEkinSelectChain::get_bin_text(int bin) const
   if (DoRandomInterpolation()) {
     return std::format("bin={}, {:1.1f}<=Ekin(+random)<{:1.1f}",
                        bin,
-                       m_bin_low_edge[bin],
-                       m_bin_low_edge[bin + 1]);
+                       get_bin_low_edge(bin),
+                       get_bin_up_edge(bin));
   }
   return std::format("bin={}, {:1.1f}<=Ekin<{:1.1f}",
                      bin,
-                     m_bin_low_edge[bin],
-                     m_bin_low_edge[bin + 1]);
+                     get_bin_low_edge(bin),
+                     get_bin_up_edge(bin));
 }

@@ -77,7 +77,8 @@ public:
                           const TFCSExtrapolationState* /*extrapol*/) const
       -> int override
   {
-    long unsigned int nhits = get_n_hits(simulstate, calosample());
+    const long unsigned int nhits =
+        get_n_hits(simulstate, static_cast<long unsigned int>(calosample()));
     if (nhits == 0)
       return -1;
     return static_cast<int>(nhits);
@@ -89,9 +90,9 @@ protected:
   // Called at the beginning of the simulation to store and or generate the
   // needed shower data for the current event
   virtual void get_event(TFCSSimulationState& simulstate,
-                         float eta_center,
-                         float phi_center,
-                         float e_init,
+                         double eta_center,
+                         double phi_center,
+                         double e_init,
                          long unsigned int reference_layer_index) const = 0;
 
   // Returns the number of bins that are used in the given layer
@@ -103,14 +104,14 @@ protected:
   /// event
   virtual auto get_layer_energy(TFCSSimulationState& simulstate,
                                 long unsigned int layer_index) const
-      -> float = 0;
+      -> double = 0;
 
   // Returns the position and energy of the corresponding hit in the given
   // event, layer and bin
   virtual auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
                                            long unsigned int layer_index,
                                            long unsigned int hit_index) const
-      -> std::tuple<float, float, float> = 0;
+      -> std::tuple<double, double, double> = 0;
 
   // Delete all pointers that were created in get_event()
   virtual void delete_event(TFCSSimulationState& simulstate) const = 0;

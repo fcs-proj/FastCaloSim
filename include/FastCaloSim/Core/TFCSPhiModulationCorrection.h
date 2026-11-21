@@ -65,7 +65,7 @@ public:
 
   auto get_phi_modulation_scale() const -> float { return m_modulation_scale; }
 
-  static auto get_phi_cell_size(long unsigned int layer, float eta) -> float
+  static auto get_phi_cell_size(long unsigned int layer, double eta) -> double
   {
     if (layer <= 3) {
       return 2 * std::numbers::pi / 1024;
@@ -77,36 +77,36 @@ public:
   }
 
   // Adds adds the phi-modulation in the energy to the given hit
-  auto add_phi_modulation(Hit& hit) const -> float;
+  auto add_phi_modulation(Hit& hit) const -> double;
 
   // Adds adds the phi-modulation in the energy to the given hit
   auto add_phi_modulation(Hit& hit, long unsigned int layer_index) const
-      -> float;
+      -> double;
 
   // Adds adds the phi-modulation in the energy to the given hit
-  auto add_phi_modulation(float energy,
-                          float phi,
-                          float eta,
-                          long unsigned int layer_index) const -> float;
+  auto add_phi_modulation(double energy,
+                          double phi,
+                          double eta,
+                          long unsigned int layer_index) const -> double;
 
   // Removes the phi-modulation in the energy from the given hit
-  auto remove_phi_modulation(Hit& hit) const -> float;
+  auto remove_phi_modulation(Hit& hit) const -> double;
 
   // Removes the phi-modulation in the energy from the given hit
   auto remove_phi_modulation(Hit& hit, long unsigned int layer_index) const
-      -> float;
+      -> double;
 
   // Removes the phi-modulation in the energy from the given hit
-  auto remove_phi_modulation(float energy,
-                             float phi,
-                             float eta,
-                             long unsigned int layer_index) const -> float;
+  auto remove_phi_modulation(double energy,
+                             double phi,
+                             double eta,
+                             long unsigned int layer_index) const -> double;
 
   // Returns the correct eta and phi index for the position of the hit.
   // Used to extract the correct modulation factor from the stored modulation
   // curves.
-  auto get_eta_and_phi_index(float phi,
-                             float eta,
+  auto get_eta_and_phi_index(double phi,
+                             double eta,
                              long unsigned int layer_index) const
       -> std::tuple<int, long unsigned int, long unsigned int>;
 

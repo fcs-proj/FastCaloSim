@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cstddef>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 
@@ -143,9 +145,16 @@ auto TFCSPredictExtrapWeights::getNormInputs(
 // prepareInputs()
 // Prepare input variables to the Neural Network
 auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
-                                             const float truthE) const
+                                             const double truthE) const
     -> std::map<std::string, double>
 {
+  // The normalization constants are stored in single precision
+  const auto normalize = [this](double value, std::size_t index)
+  {
+    return (value - static_cast<double>(std::as_const(m_normMeans)->at(index)))
+        / static_cast<double>(std::as_const(m_normStdDevs)->at(index));
+  };
+
   std::map<std::string, double> inputVariables;
   for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer) {
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
@@ -156,10 +165,10 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
       auto itr =
           std::find(m_normLayers->cbegin(), m_normLayers->cend(), ilayer);
       if (itr != m_normLayers->cend()) {
-        const int index = std::distance(m_normLayers->cbegin(), itr);
+        const auto index = static_cast<std::size_t>(
+            std::distance(m_normLayers->cbegin(), itr));
         inputVariables["ef_" + layer] =
-            (simulstate.Efrac(ilayer) - std::as_const(m_normMeans)->at(index))
-            / std::as_const(m_normStdDevs)->at(index);
+            normalize(simulstate.Efrac(ilayer), index);
       } else {
         FCS_MSG_ERROR("Normalization information not found for layer "
                       << ilayer);
@@ -168,9 +177,9 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
   }
   // Find index for truth energy
   auto itr = std::find(m_normLayers->cbegin(), m_normLayers->cend(), -1);
-  int index = std::distance(m_normLayers->cbegin(), itr);
-  inputVariables["etrue"] = (truthE - std::as_const(m_normMeans)->at(index))
-      / std::as_const(m_normStdDevs)->at(index);
+  const auto index =
+      static_cast<std::size_t>(std::distance(m_normLayers->cbegin(), itr));
+  inputVariables["etrue"] = normalize(truthE, index);
   if (is_match_pdgid(22)) {
     inputVariables["pdgId"] = 1;  // one hot encoding
   } else if (is_match_pdgid(11) || is_match_pdgid(-11)) {
@@ -199,18 +208,18 @@ auto TFCSPredictExtrapWeights::simulate(
       FCS_MSG_DEBUG("TFCSPredictExtrapWeights::simulate: layer: "
                     << ilayer << " weight: "
                     << outputs["extrapWeight_" + std::to_string(ilayer)]);
-      float weight = outputs["extrapWeight_" + std::to_string(ilayer)];
+      double weight = outputs["extrapWeight_" + std::to_string(ilayer)];
       // Protections
       if (weight < 0) {
         weight = 0;
       } else if (weight > 1) {
         weight = 1;
       }
-      simulstate.setAuxInfo<float>(ilayer, weight);
+      simulstate.setAuxInfo<double>(static_cast<std::uint32_t>(ilayer), weight);
     } else {  // use weight=0.5 for non-relevant layers
       FCS_MSG_DEBUG(
           "Setting weight=0.5 for layer = " << std::to_string(ilayer));
-      simulstate.setAuxInfo<float>(ilayer, static_cast<float>(0.5));
+      simulstate.setAuxInfo<double>(static_cast<std::uint32_t>(ilayer), 0.5);
     }
   }
   return FCSSuccess;
@@ -226,9 +235,10 @@ auto TFCSPredictExtrapWeights::simulate_hit(
   const int cs = calosample();
 
   // Get corresponding predicted extrapolation weight from simulstate
-  float extrapWeight;
-  if (simulstate.hasAuxInfo(cs)) {
-    extrapWeight = simulstate.getAuxInfo<float>(cs);
+  double extrapWeight;
+  if (simulstate.hasAuxInfo(static_cast<std::uint32_t>(cs))) {
+    extrapWeight =
+        simulstate.getAuxInfo<double>(static_cast<std::uint32_t>(cs));
   } else {  // missing AuxInfo
     FCS_MSG_FATAL(
         "Simulstate is not decorated with extrapolation weights for cs = "
@@ -240,7 +250,7 @@ auto TFCSPredictExtrapWeights::simulate_hit(
       + extrapWeight * extrapol->eta(cs, Cell::SubPos::EXT);
   double phi = (1. - extrapWeight) * extrapol->phi(cs, Cell::SubPos::ENT)
       + extrapWeight * extrapol->phi(cs, Cell::SubPos::EXT);
-  float extrapWeight_for_r_z = extrapWeight;
+  double extrapWeight_for_r_z = extrapWeight;
   if (UseHardcodedWeight()) {
     extrapWeight_for_r_z = 0.5;
     FCS_MSG_DEBUG(

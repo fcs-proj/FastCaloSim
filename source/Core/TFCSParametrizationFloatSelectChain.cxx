@@ -3,6 +3,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <iterator>
 
@@ -28,15 +29,19 @@ auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
     m_bin_low_edge[1] = up;
     return 0;
   }
+  // Bin edge for a bin index that is known to be valid
+  const auto edge = [this](int bin) -> float&
+  { return m_bin_low_edge[static_cast<std::size_t>(bin)]; };
+
   int ilow = val_to_bin(low);
   int iup = val_to_bin(up);
   if (ilow < 0 && iup < 0 && m_bin_low_edge[get_number_of_bins()] == low) {
     // special case of adding bin at the end of existing bins
-    int endbin = get_number_of_bins();
+    const unsigned int endbin = get_number_of_bins();
     push_back_in_bin(param, endbin);
     m_bin_low_edge[endbin] = low;
     m_bin_low_edge[endbin + 1] = up;
-    return endbin;
+    return static_cast<int>(endbin);
   }
 
   if (ilow < 0 && iup < 0) {
@@ -48,30 +53,29 @@ auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
     return -1;
   }
 
-  if (iup >= 0 && ilow >= 0 && iup - ilow == 1 && m_bin_low_edge[ilow] == low
-      && m_bin_low_edge[iup] == up)
+  if (iup >= 0 && ilow >= 0 && iup - ilow == 1 && edge(ilow) == low
+      && edge(iup) == up)
   {
     // Case of adding to an existing bin
-    push_back_in_bin(param, ilow);
+    push_back_in_bin(param, static_cast<unsigned int>(ilow));
     return ilow;
   }
 
-  if (ilow < 0 && iup == 0 && m_bin_low_edge[iup] == up) {
+  if (ilow < 0 && iup == 0 && edge(iup) == up) {
     // Case of adding a new first bin before existing bins
-    int newbin = iup;
-    int oldsize = m_bin_start.size();
+    const std::size_t oldsize = m_bin_start.size();
     m_bin_start.resize(oldsize + 1, m_bin_start.back());
     m_bin_start.shrink_to_fit();
     m_bin_low_edge.resize(oldsize + 1, m_bin_low_edge.back());
     m_bin_low_edge.shrink_to_fit();
-    for (int i = oldsize; i > newbin; --i) {
+    for (std::size_t i = oldsize; i > 0; --i) {
       m_bin_start[i] = m_bin_start[i - 1];
       m_bin_low_edge[i] = m_bin_low_edge[i - 1];
     }
-    m_bin_low_edge[newbin] = low;
-    m_bin_low_edge[newbin + 1] = up;
-    push_back_in_bin(param, newbin);
-    return newbin;
+    m_bin_low_edge[0] = low;
+    m_bin_low_edge[1] = up;
+    push_back_in_bin(param, 0);
+    return 0;
   }
 
   FCS_MSG_ERROR("Cannot add "
@@ -107,7 +111,8 @@ auto TFCSParametrizationFloatSelectChain::val_to_bin(float val) const -> int
   }
 
   auto it = std::upper_bound(m_bin_low_edge.begin(), m_bin_low_edge.end(), val);
-  int dist = std::distance(m_bin_low_edge.begin(), it) - 1;
+  const auto dist =
+      static_cast<int>(std::distance(m_bin_low_edge.begin(), it) - 1);
   FCS_MSG_VERBOSE("val_to_bin(" << val << ")=" << dist);
   return dist;
 }

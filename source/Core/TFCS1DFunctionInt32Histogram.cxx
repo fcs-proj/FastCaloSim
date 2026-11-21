@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS1DFunctionInt32Histogram.h"
@@ -17,16 +18,16 @@ const TFCS1DFunctionInt32Histogram::HistoContent_t
 
 void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
 {
-  Int_t nbinsx = hist->GetNbinsX();
-  Int_t nbins = nbinsx;
+  const Int_t nbinsx = hist->GetNbinsX();
+  const auto nbins = static_cast<std::size_t>(nbinsx);
 
-  float integral = 0;
-  m_HistoBorders.resize(nbinsx + 1);
+  double integral = 0;
+  m_HistoBorders.resize(nbins + 1);
   m_HistoContents.resize(nbins);
   std::vector<double> temp_HistoContents(nbins);
-  int ibin = 0;
+  std::size_t ibin = 0;
   for (int ix = 1; ix <= nbinsx; ix++) {
-    float binval = hist->GetBinContent(ix);
+    double binval = hist->GetBinContent(ix);
     if (binval < 0) {
       // Can't work if a bin is negative, forcing bins to 0 in this case
       double fraction = binval / hist->Integral();
@@ -51,12 +52,15 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
     return;
   }
 
-  for (int ix = 1; ix <= nbinsx; ix++)
-    m_HistoBorders[ix - 1] = hist->GetXaxis()->GetBinLowEdge(ix);
-  m_HistoBorders[nbinsx] = hist->GetXaxis()->GetXmax();
+  // The bin borders are stored in single precision
+  for (std::size_t i = 0; i < nbins; i++)
+    m_HistoBorders[i] = static_cast<float>(
+        hist->GetXaxis()->GetBinLowEdge(static_cast<int>(i) + 1));
+  m_HistoBorders[nbins] = static_cast<float>(hist->GetXaxis()->GetXmax());
 
   for (ibin = 0; ibin < nbins; ++ibin) {
-    m_HistoContents[ibin] = s_MaxValue * (temp_HistoContents[ibin] / integral);
+    m_HistoContents[ibin] = static_cast<HistoContent_t>(
+        s_MaxValue * (temp_HistoContents[ibin] / integral));
   }
 }
 
@@ -65,27 +69,28 @@ auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
   if (m_HistoContents.empty()) {
     return 0;
   }
-  HistoContent_t int_rnd = s_MaxValue * rnd;
+  const auto int_rnd = static_cast<HistoContent_t>(s_MaxValue * rnd);
   auto it =
       std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), int_rnd);
-  int ibin = std::distance(m_HistoContents.begin(), it);
-  if (ibin >= static_cast<int>(m_HistoContents.size()))
+  auto ibin =
+      static_cast<std::size_t>(std::distance(m_HistoContents.begin(), it));
+  if (ibin >= m_HistoContents.size())
     ibin = m_HistoContents.size() - 1;
-  Int_t binx = ibin;
 
   HistoContent_t basecont = 0;
   if (ibin > 0)
     basecont = m_HistoContents[ibin - 1];
 
-  HistoContent_t dcont = m_HistoContents[ibin] - basecont;
+  const auto low_edge = static_cast<double>(m_HistoBorders[ibin]);
+  const auto bin_width =
+      static_cast<double>(m_HistoBorders[ibin + 1]) - low_edge;
+  const HistoContent_t dcont = m_HistoContents[ibin] - basecont;
   if (dcont > 0) {
-    return m_HistoBorders[binx]
-        + ((m_HistoBorders[binx + 1] - m_HistoBorders[binx])
-           * (int_rnd - basecont))
-        / dcont;
+    return low_edge
+        + bin_width * static_cast<double>(int_rnd - basecont)
+        / static_cast<double>(dcont);
   } else {
-    return m_HistoBorders[binx]
-        + (m_HistoBorders[binx + 1] - m_HistoBorders[binx]) / 2;
+    return low_edge + bin_width / 2;
   }
 }
 

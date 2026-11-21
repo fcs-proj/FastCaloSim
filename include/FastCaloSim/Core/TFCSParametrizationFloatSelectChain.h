@@ -33,11 +33,12 @@ public:
 
   virtual auto get_bin_low_edge(int bin) const -> double
   {
-    return m_bin_low_edge[bin];
+    return static_cast<double>(m_bin_low_edge[static_cast<std::size_t>(bin)]);
   }
   virtual auto get_bin_up_edge(int bin) const -> double
   {
-    return m_bin_low_edge[bin + 1];
+    return static_cast<double>(
+        m_bin_low_edge[static_cast<std::size_t>(bin) + 1]);
   }
 
 protected:
