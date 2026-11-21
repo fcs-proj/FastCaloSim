@@ -43,5 +43,8 @@ void TFCS1DFunctionRegression::set_weights(
 
 auto TFCS1DFunctionRegression::sigmoid(double x) -> double
 {
-  return 1 / (1 + std::exp(-x));
+  if (x >= 0)
+    return 1 / (1 + std::exp(-x));
+  const double e = std::exp(x);
+  return e / (1 + e);
 }
