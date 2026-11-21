@@ -19,10 +19,9 @@ public:
     }
 
     // Sort by ID, needed for binary search in lookup
-    std::sort(m_cells.begin(),
-              m_cells.end(),
-              [](const CellData& a, const CellData& b) -> bool
-              { return a.m_id < b.m_id; });
+    std::ranges::sort(m_cells,
+                      [](const CellData& a, const CellData& b) -> bool
+                      { return a.m_id < b.m_id; });
 
     for (const CellData& data : m_cells) {
       uint64_t id = data.m_id;

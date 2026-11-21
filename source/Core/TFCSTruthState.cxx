@@ -17,9 +17,9 @@ TFCSTruthState::TFCSTruthState()
 TFCSTruthState::TFCSTruthState(
     Double_t x, Double_t y, Double_t z, Double_t t, int pdgid)
     : TLorentzVector(x, y, z, t)
+    , m_pdgid(pdgid)
     , m_vertex(0, 0, 0, 0)
 {
-  m_pdgid = pdgid;
 }
 
 void TFCSTruthState::Print(Option_t* /*option*/) const

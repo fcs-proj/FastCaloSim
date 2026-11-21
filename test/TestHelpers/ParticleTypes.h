@@ -18,9 +18,9 @@ struct ParticleType
   {
   }
 
-  const int pid;
-  const std::string_view name;
-  const std::string_view label;
+  int pid;
+  std::string_view name;
+  std::string_view label;
 };
 
 constexpr auto make_particle(int pid,

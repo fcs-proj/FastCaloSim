@@ -46,15 +46,15 @@ enum FCSReturnCode : int
   FCSRetry = 2
 };
 
-#define FCS_RETRY_COUNT 3
+constexpr int FCS_RETRY_COUNT = 3;
 
 class FASTCALOSIM_EXPORT TFCSParametrizationBase
     : public TNamed
     , public FastCaloSim::MLogging
 {
 public:
-  TFCSParametrizationBase(const char* name = nullptr,
-                          const char* title = nullptr);
+  explicit TFCSParametrizationBase(const char* name = nullptr,
+                                   const char* title = nullptr);
 
   /// Status bit for FCS needs
   enum FCSStatusBits
@@ -170,7 +170,7 @@ public:
   };
   using FindDuplicates_t = std::map<TFCSParametrizationBase*, Duplicate_t>;
   using FindDuplicateClasses_t = std::map<std::string, FindDuplicates_t>;
-  void FindDuplicates(FindDuplicateClasses_t& dup);
+  void FindDuplicates(FindDuplicateClasses_t& dupclasses);
   void RemoveDuplicates();
   void RemoveNameTitle();
 

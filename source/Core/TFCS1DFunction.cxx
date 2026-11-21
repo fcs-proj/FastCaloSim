@@ -16,7 +16,7 @@
 //======= TFCS1DFunction =========
 //=============================================
 
-void TFCS1DFunction::rnd_to_fct(float value[], const float rnd[]) const
+void TFCS1DFunction::rnd_to_fct(float* value, const float* rnd) const
 {
   value[0] = static_cast<float>(rnd_to_fct(static_cast<double>(rnd[0])));
 }

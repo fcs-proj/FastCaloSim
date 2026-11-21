@@ -6,22 +6,24 @@
 // BFieldSolenoid.cxx
 //
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <string>
+#include <vector>
 
 #include "BFieldSolenoid.h"
 // #include "TTree.h"
-using namespace std;
 
 //
 // read an ASCII field map from istream
 // return 0 if successful
 //
-auto BFieldSolenoid::readMap(istream& input) -> int
+auto BFieldSolenoid::readMap(std::istream& input) -> int
 {
   const double meter(1000.0);  // meter in mm
   const double gauss(1.0e-7);  // gauss in kT
-  const string myname("BFieldSolenoid::readMap()");
+  const std::string myname("BFieldSolenoid::readMap()");
   if (m_orig == m_tilt) {
     delete m_orig;
   } else {
@@ -30,22 +32,22 @@ auto BFieldSolenoid::readMap(istream& input) -> int
   }
   m_orig = m_tilt = new BFieldMesh<double>;
   // first line contains version
-  int version;
+  int version {};
   input >> version;
   if (version != 4) {
-    cerr << myname << ": version number is " << version << " instead of 4"
-         << '\n';
+    std::cerr << myname << ": version number is " << version << " instead of 4"
+              << '\n';
     return 1;
   }
   // second line contains number of bins
-  int nz;
-  int nr;
-  int nphi;
-  double unused;
+  int nz {};
+  int nr {};
+  int nphi {};
+  double unused {};
   input >> nz >> nr >> nphi >> unused >> unused >> unused;
   m_orig->reserve(nz, nr, nphi + 1);  // extra phi at 2pi
   // read mesh definitions
-  double x;
+  double x {};
   for (int i = 0; i < nr; i++) {
     input >> x;
     m_orig->appendMesh(1, x * meter);
@@ -71,10 +73,10 @@ auto BFieldSolenoid::readMap(istream& input) -> int
   // read field values
   // the index order is opposite to the toroid - have to reorder
   // also convert from gauss to Tesla here.
-  vector<double> Bz;
-  vector<double> Br;
-  vector<double> Bphi;
-  double b;
+  std::vector<double> Bz;
+  std::vector<double> Br;
+  std::vector<double> Bphi;
+  double b {};
   for (int k = 0; k < nphi; k++) {
     for (int j = 0; j < nr; j++) {
       for (int i = 0; i < nz; i++) {
@@ -98,12 +100,14 @@ auto BFieldSolenoid::readMap(istream& input) -> int
   for (int i = 0; i < nz; i++) {
     for (int j = 0; j < nr; j++) {
       for (int k = 0; k < nphi; k++) {
-        const auto index = static_cast<std::size_t>(i + nz * (j + nr * k));
+        const int ijk = i + nz * (j + nr * k);
+        const auto index = static_cast<std::size_t>(ijk);
         BFieldVector<double> const field(Bz[index], Br[index], Bphi[index]);
         m_orig->appendField(field);
       }
       // close phi at 2pi
-      const auto index = static_cast<std::size_t>(i + nz * j);
+      const int ij = i + nz * j;
+      const auto index = static_cast<std::size_t>(ij);
       BFieldVector<double> const field(Bz[index], Br[index], Bphi[index]);
       m_orig->appendField(field);
     }
@@ -275,13 +279,13 @@ auto BFieldSolenoid::readMap(istream& input) -> int
 void BFieldSolenoid::getB(const double* xyz, double* B, double* deriv) const
 {
   double const z = xyz[2];
-  double const r = sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]);
-  double const phi = atan2(xyz[1], xyz[0]);
-  if (m_tilt && m_tilt->inside(z, r, phi)) {
+  double const r = std::sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]);
+  double const phi = std::atan2(xyz[1], xyz[0]);
+  if (m_tilt != nullptr && m_tilt->inside(z, r, phi)) {
     m_tilt->getB(xyz, B, deriv);
   } else {
     B[0] = B[1] = B[2] = 0.0;
-    if (deriv) {
+    if (deriv != nullptr) {
       for (int i = 0; i < 9; i++) {
         deriv[i] = 0.0;
       }
@@ -297,8 +301,8 @@ void BFieldSolenoid::moveMap(
     double dx, double dy, double dz, double ax, double ay)
 {
   if (m_orig == nullptr) {
-    cerr << "BFieldSolenoid::moveMap() : original map has not been read"
-         << '\n';
+    std::cerr << "BFieldSolenoid::moveMap() : original map has not been read"
+              << '\n';
     return;
   }
   if (m_tilt != m_orig) {
@@ -314,7 +318,7 @@ void BFieldSolenoid::moveMap(
   m_tilt->appendMesh(0, -zlim);
   for (unsigned i = 0; i < m_orig->nmesh(0); i++) {
     const double zi = m_orig->mesh(0, static_cast<int>(i));
-    if (abs(zi) < zlim) {
+    if (std::abs(zi) < zlim) {
       m_tilt->appendMesh(0, zi);
     }
   }
@@ -335,18 +339,18 @@ void BFieldSolenoid::moveMap(
   // loop over the new mesh, and compute the field at the
   // corresponding location in the original map
   //
-  double const sinax(sin(ax));
-  double const cosax(cos(ax));
-  double const sinay(sin(ay));
-  double const cosay(cos(ay));
+  double const sinax(std::sin(ax));
+  double const cosax(std::cos(ax));
+  double const sinay(std::sin(ay));
+  double const cosay(std::cos(ay));
   for (unsigned i = 0; i < m_tilt->nmesh(0); i++) {
     double const z0(m_tilt->mesh(0, static_cast<int>(i)));
     for (unsigned j = 0; j < m_tilt->nmesh(1); j++) {
       double const r0(m_tilt->mesh(1, static_cast<int>(j)));
       for (unsigned k = 0; k < m_tilt->nmesh(2); k++) {
         double const phi0(m_tilt->mesh(2, static_cast<int>(k)));
-        double const x0(r0 * cos(phi0));
-        double const y0(r0 * sin(phi0));
+        double const x0(r0 * std::cos(phi0));
+        double const y0(r0 * std::sin(phi0));
         // shift
         double const x1(x0 - dx);
         double const y1(y0 - dy);
@@ -356,10 +360,11 @@ void BFieldSolenoid::moveMap(
         double const y2(y1 * cosax + z1 * sinax);
         double const z2(z1 * cosax - y1 * sinax);
         // rotate around y by -ay
-        double xyz3[3] = {x2 * cosay - z2 * sinay, y2, z2 * cosay + x2 * sinay};
+        const std::array<double, 3> xyz3 = {
+            x2 * cosay - z2 * sinay, y2, z2 * cosay + x2 * sinay};
         // get (Bx,By,Bz) in the original frame
-        double B[3];
-        m_orig->getB(xyz3, B);
+        std::array<double, 3> B {};
+        m_orig->getB(xyz3.data(), B.data());
         // rotate around y by +ay
         double const Bx1(B[0] * cosay + B[2] * sinay);
         double const By1(B[1]);
@@ -369,8 +374,8 @@ void BFieldSolenoid::moveMap(
         double const By2(By1 * cosax - Bz1 * sinax);
         double const Bz2(Bz1 * cosax + By1 * sinax);
         // convert to cylindrical
-        double const cosphi0(cos(phi0));
-        double const sinphi0(sin(phi0));
+        double const cosphi0(std::cos(phi0));
+        double const sinphi0(std::sin(phi0));
         double const Br(Bx2 * cosphi0 + By2 * sinphi0);
         double const Bphi(-Bx2 * sinphi0 + By2 * cosphi0);
         BFieldVector<double> const field(Bz2, Br, Bphi);

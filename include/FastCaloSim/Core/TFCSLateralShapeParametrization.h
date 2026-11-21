@@ -4,14 +4,15 @@
 
 #include <cstddef>
 #include <optional>
+#include <utility>
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
 class TFCSLateralShapeParametrization : public TFCSParametrization
 {
 public:
-  TFCSLateralShapeParametrization(const char* name = nullptr,
-                                  const char* title = nullptr);
+  explicit TFCSLateralShapeParametrization(const char* name = nullptr,
+                                           const char* title = nullptr);
 
   auto is_match_Ekin_bin(std::size_t bin) const -> bool override
   {
@@ -19,8 +20,7 @@ public:
   }
   auto is_match_calosample(std::size_t calosample) const -> bool override
   {
-    return m_calosample >= 0
-        && static_cast<std::size_t>(m_calosample) == calosample;
+    return std::cmp_equal(m_calosample, calosample);
   }
 
   auto is_match_all_Ekin_bin() const -> bool override { return !Ekin_bin(); }
@@ -50,6 +50,9 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
+  // Not virtual: compares only the members of this class, the derived classes
+  // call it qualified
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:

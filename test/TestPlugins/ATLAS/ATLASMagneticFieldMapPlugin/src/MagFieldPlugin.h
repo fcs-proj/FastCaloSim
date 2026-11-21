@@ -1,5 +1,5 @@
-#ifndef _MAGFIELDPLUGIN_H_
-#define _MAGFIELDPLUGIN_H_
+#ifndef MAGFIELDPLUGIN_H
+#define MAGFIELDPLUGIN_H
 class G4MagneticField;
 class MagFieldPlugin
 {
@@ -10,12 +10,12 @@ public:
   // Destructor
   virtual ~MagFieldPlugin() = default;
 
-  virtual auto getField() -> G4MagneticField* = 0;
-
-private:
   MagFieldPlugin(const MagFieldPlugin&) = delete;
-
   auto operator=(const MagFieldPlugin&) -> MagFieldPlugin& = delete;
+  MagFieldPlugin(MagFieldPlugin&&) = delete;
+  auto operator=(MagFieldPlugin&&) -> MagFieldPlugin& = delete;
+
+  virtual auto getField() -> G4MagneticField* = 0;
 };
 
 #endif

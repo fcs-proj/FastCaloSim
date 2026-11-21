@@ -18,12 +18,14 @@ namespace lwt
 class LightweightGraph;
 }  // namespace lwt
 
+// No copy and move: they are implicitly deleted by the std::mutex member
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSEnergyAndHitGANV2 : public TFCSParametrizationBinnedChain
 {
 public:
-  TFCSEnergyAndHitGANV2(const char* name = nullptr,
-                        const char* title = nullptr,
-                        CaloGeo* geo = nullptr);
+  explicit TFCSEnergyAndHitGANV2(const char* name = nullptr,
+                                 const char* title = nullptr,
+                                 CaloGeo* geo = nullptr);
 
   void set_geometry(CaloGeo* geo) override
   {

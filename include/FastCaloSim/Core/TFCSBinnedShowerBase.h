@@ -17,9 +17,15 @@ class CaloGeo;
 class TFCSBinnedShowerBase : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSBinnedShowerBase(const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSBinnedShowerBase(const char* name = nullptr,
+                                const char* title = nullptr);
 
   ~TFCSBinnedShowerBase() override;
+  TFCSBinnedShowerBase(const TFCSBinnedShowerBase&) = default;
+  TFCSBinnedShowerBase(TFCSBinnedShowerBase&&) = default;
+  auto operator=(const TFCSBinnedShowerBase&)
+      -> TFCSBinnedShowerBase& = default;
+  auto operator=(TFCSBinnedShowerBase&&) -> TFCSBinnedShowerBase& = default;
 
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits

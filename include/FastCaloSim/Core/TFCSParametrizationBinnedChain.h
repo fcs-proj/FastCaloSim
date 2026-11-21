@@ -11,14 +11,21 @@
 class TFCSParametrizationBinnedChain : public TFCSParametrizationChain
 {
 public:
-  TFCSParametrizationBinnedChain(const char* name = nullptr,
-                                 const char* title = nullptr)
+  explicit TFCSParametrizationBinnedChain(const char* name = nullptr,
+                                          const char* title = nullptr)
       : TFCSParametrizationChain(name, title)
       , m_bin_start(1, 0)
   {
   }
   TFCSParametrizationBinnedChain(const TFCSParametrizationBinnedChain& ref) =
       default;
+  TFCSParametrizationBinnedChain(TFCSParametrizationBinnedChain&& ref) =
+      default;
+  auto operator=(const TFCSParametrizationBinnedChain& ref)
+      -> TFCSParametrizationBinnedChain& = default;
+  auto operator=(TFCSParametrizationBinnedChain&& ref)
+      -> TFCSParametrizationBinnedChain& = default;
+  ~TFCSParametrizationBinnedChain() override = default;
 
   virtual void push_before_first_bin(TFCSParametrizationBase* param);
   virtual void push_back_in_bin(TFCSParametrizationBase* param,

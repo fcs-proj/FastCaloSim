@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <fstream>
@@ -154,13 +155,10 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
 
   std::map<std::string, double> inputVariables;
   for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
-    if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
-        != m_relevantLayers->cend())
-    {
+    if (std::ranges::contains(*m_relevantLayers, ilayer)) {
       const std::string layer = std::to_string(ilayer);
       // Find index
-      auto itr =
-          std::find(m_normLayers->cbegin(), m_normLayers->cend(), ilayer);
+      auto itr = std::ranges::find(std::as_const(*m_normLayers), ilayer);
       if (itr != m_normLayers->cend()) {
         const auto index = FastCaloSim::index_of(*m_normLayers, itr);
         inputVariables["ef_" + layer] =
@@ -172,7 +170,7 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
     }
   }
   // Find index for truth energy
-  auto itr = std::find(m_normLayers->cbegin(), m_normLayers->cend(), -1);
+  auto itr = std::ranges::find(std::as_const(*m_normLayers), -1);
   const auto index = FastCaloSim::index_of(*m_normLayers, itr);
   inputVariables["etrue"] = normalize(truthE, index);
   if (is_match_pdgid(22)) {
@@ -197,9 +195,7 @@ auto TFCSPredictExtrapWeights::simulate(
   // Get predicted extrapolation weights
   auto outputs = m_nn->compute(inputVariables);
   for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
-    if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
-        != m_relevantLayers->cend())
-    {
+    if (std::ranges::contains(*m_relevantLayers, ilayer)) {
       FCS_MSG_DEBUG("TFCSPredictExtrapWeights::simulate: layer: "
                     << ilayer << " weight: "
                     << outputs["extrapWeight_" + std::to_string(ilayer)]);
@@ -230,21 +226,20 @@ auto TFCSPredictExtrapWeights::simulate_hit(
   const std::size_t cs = calosample();
 
   // Get corresponding predicted extrapolation weight from simulstate
-  double extrapWeight;
-  if (simulstate.hasAuxInfo(static_cast<std::uint32_t>(cs))) {
-    extrapWeight =
-        simulstate.getAuxInfo<double>(static_cast<std::uint32_t>(cs));
-  } else {  // missing AuxInfo
+  if (!simulstate.hasAuxInfo(static_cast<std::uint32_t>(cs))) {
+    // missing AuxInfo
     FCS_MSG_FATAL(
         "Simulstate is not decorated with extrapolation weights for cs = "
         << std::to_string(cs));
     return FCSFatal;
   }
+  const auto extrapWeight =
+      simulstate.getAuxInfo<double>(static_cast<std::uint32_t>(cs));
 
-  double eta = (1. - extrapWeight) * extrapol->eta(cs, Cell::SubPos::ENT)
-      + extrapWeight * extrapol->eta(cs, Cell::SubPos::EXT);
-  double phi = (1. - extrapWeight) * extrapol->phi(cs, Cell::SubPos::ENT)
-      + extrapWeight * extrapol->phi(cs, Cell::SubPos::EXT);
+  double eta = (1. - extrapWeight) * extrapol->eta(cs, FastCaloSim::SubPos::ENT)
+      + extrapWeight * extrapol->eta(cs, FastCaloSim::SubPos::EXT);
+  double phi = (1. - extrapWeight) * extrapol->phi(cs, FastCaloSim::SubPos::ENT)
+      + extrapWeight * extrapol->phi(cs, FastCaloSim::SubPos::EXT);
   double extrapWeight_for_r_z = extrapWeight;
   if (UseHardcodedWeight()) {
     extrapWeight_for_r_z = 0.5;
@@ -255,10 +250,12 @@ auto TFCSPredictExtrapWeights::simulate_hit(
         "Will use predicted extrapWeight also for r and z when "
         "constructing a hit");
   }
-  double r = (1. - extrapWeight_for_r_z) * extrapol->r(cs, Cell::SubPos::ENT)
-      + extrapWeight_for_r_z * extrapol->r(cs, Cell::SubPos::EXT);
-  double z = (1. - extrapWeight_for_r_z) * extrapol->z(cs, Cell::SubPos::ENT)
-      + extrapWeight_for_r_z * extrapol->z(cs, Cell::SubPos::EXT);
+  double r =
+      (1. - extrapWeight_for_r_z) * extrapol->r(cs, FastCaloSim::SubPos::ENT)
+      + extrapWeight_for_r_z * extrapol->r(cs, FastCaloSim::SubPos::EXT);
+  double z =
+      (1. - extrapWeight_for_r_z) * extrapol->z(cs, FastCaloSim::SubPos::ENT)
+      + extrapWeight_for_r_z * extrapol->z(cs, FastCaloSim::SubPos::EXT);
 
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))
@@ -312,40 +309,39 @@ auto TFCSPredictExtrapWeights::initializeNetwork(
   if (inputFileName.empty()) {
     FCS_MSG_ERROR("Could not find json file " << inputFileName);
     return false;
-  } else {
-    FCS_MSG_INFO("For pid: " << pid << " and etaBin" << etaBin
-                             << ", loading json file " << inputFileName);
-    std::ifstream input(inputFileName);
-    std::stringstream sin;
-    sin << input.rdbuf();
-    input.close();
-    auto config = lwt::parse_json(sin);
-    m_nn = std::make_unique<lwt::LightweightNeuralNetwork>(
-        config.inputs, config.layers, config.outputs);
+  }
+  FCS_MSG_INFO("For pid: " << pid << " and etaBin" << etaBin
+                           << ", loading json file " << inputFileName);
+  std::ifstream input(inputFileName);
+  std::stringstream sin;
+  sin << input.rdbuf();
+  input.close();
+  auto config = lwt::parse_json(sin);
+  m_nn = std::make_unique<lwt::LightweightNeuralNetwork>(
+      config.inputs, config.layers, config.outputs);
 
-    delete m_input;
+  delete m_input;
 
-    m_input = new std::string(sin.str());
-    // Extract relevant layers from the outputs
-    m_relevantLayers = new std::vector<int>();
-    for (auto name : config.outputs) {
-      int const layer = std::stoi(
-          name.erase(0, 13));  // remove "extrapWeight_" and convert to int
-      m_relevantLayers->push_back(layer);
-    }
+  m_input = new std::string(sin.str());
+  // Extract relevant layers from the outputs
+  m_relevantLayers = new std::vector<int>();
+  for (auto name : config.outputs) {
+    int const layer = std::stoi(
+        name.erase(0, 13));  // remove "extrapWeight_" and convert to int
+    m_relevantLayers->push_back(layer);
   }
   return true;
 }
 
 // Streamer()
-void TFCSPredictExtrapWeights::Streamer(TBuffer& R__b)
+void TFCSPredictExtrapWeights::Streamer(TBuffer& buffer)
 {
   // Stream an object of class TFCSPredictExtrapWeights
 
-  if (R__b.IsReading()) {
-    R__b.ReadClassBuffer(TFCSPredictExtrapWeights::Class(), this);
+  if (buffer.IsReading()) {
+    buffer.ReadClassBuffer(TFCSPredictExtrapWeights::Class(), this);
     m_nn.reset();
-    if (m_input && !m_input->empty()) {
+    if (m_input != nullptr && !m_input->empty()) {
       std::stringstream sin;
       sin.str(*m_input);
       auto config = lwt::parse_json(sin);
@@ -361,7 +357,7 @@ void TFCSPredictExtrapWeights::Streamer(TBuffer& R__b)
     }
 #endif
   } else {
-    R__b.WriteClassBuffer(TFCSPredictExtrapWeights::Class(), this);
+    buffer.WriteClassBuffer(TFCSPredictExtrapWeights::Class(), this);
   }
 }
 

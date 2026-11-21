@@ -8,13 +8,20 @@ class TFCSParametrizationAbsEtaSelectChain
     : public TFCSParametrizationEtaSelectChain
 {
 public:
-  TFCSParametrizationAbsEtaSelectChain(const char* name = nullptr,
-                                       const char* title = nullptr)
+  explicit TFCSParametrizationAbsEtaSelectChain(const char* name = nullptr,
+                                                const char* title = nullptr)
       : TFCSParametrizationEtaSelectChain(name, title)
   {
   }
   TFCSParametrizationAbsEtaSelectChain(
       const TFCSParametrizationAbsEtaSelectChain& ref) = default;
+  TFCSParametrizationAbsEtaSelectChain(
+      TFCSParametrizationAbsEtaSelectChain&& ref) = default;
+  auto operator=(const TFCSParametrizationAbsEtaSelectChain& ref)
+      -> TFCSParametrizationAbsEtaSelectChain& = default;
+  auto operator=(TFCSParametrizationAbsEtaSelectChain&& ref)
+      -> TFCSParametrizationAbsEtaSelectChain& = default;
+  ~TFCSParametrizationAbsEtaSelectChain() override = default;
 
   // selects on |extrapol->IDCaloBoundary_eta()|
   // returns no value if outside range

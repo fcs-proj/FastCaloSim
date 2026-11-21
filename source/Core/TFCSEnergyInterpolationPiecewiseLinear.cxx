@@ -28,7 +28,7 @@ TFCSEnergyInterpolationPiecewiseLinear::TFCSEnergyInterpolationPiecewiseLinear(
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInLogEkin(
-    Int_t np, const Double_t logEkin[], const Double_t response[])
+    Int_t np, const Double_t* logEkin, const Double_t* response)
 {
   // save logEkin and response as std::vector class members
   // this is required for using the custom streamer
@@ -36,12 +36,12 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInLogEkin(
   m_response.assign(response, response + np);
   m_linInterpol.SetData(m_logEkin, m_response);
 
-  auto min_max = std::minmax_element(m_logEkin.begin(), m_logEkin.end());
-  m_MinMaxlogEkin = std::pair<double, double>(*min_max.first, *min_max.second);
+  const auto [min_it, max_it] = std::ranges::minmax_element(m_logEkin);
+  m_MinMaxlogEkin = std::pair<double, double>(*min_it, *max_it);
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
-    Int_t np, const Double_t Ekin[], const Double_t response[])
+    Int_t np, const Double_t* Ekin, const Double_t* response)
 {
   std::vector<Double_t> logEkin(static_cast<std::size_t>(np));
   for (std::size_t i = 0; i < logEkin.size(); ++i) {
@@ -63,17 +63,19 @@ auto TFCSEnergyInterpolationPiecewiseLinear::simulate(
   const double logEkin =
       Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV);
 
-  double Emean;
-  if (logEkin < m_MinMaxlogEkin.first) {
-    Emean = m_linInterpol.Eval(m_MinMaxlogEkin.first) * Einit;
-  } else if (logEkin > m_MinMaxlogEkin.second) {
-    Emean = (m_linInterpol.Eval(m_MinMaxlogEkin.second)
-             + m_linInterpol.Deriv(m_MinMaxlogEkin.second)
-                 * (logEkin - m_MinMaxlogEkin.second))
-        * Einit;
-  } else {
-    Emean = m_linInterpol.Eval(logEkin) * Einit;
-  }
+  const double Emean = [&] -> double
+  {
+    if (logEkin < m_MinMaxlogEkin.first) {
+      return m_linInterpol.Eval(m_MinMaxlogEkin.first) * Einit;
+    }
+    if (logEkin > m_MinMaxlogEkin.second) {
+      return (m_linInterpol.Eval(m_MinMaxlogEkin.second)
+              + m_linInterpol.Deriv(m_MinMaxlogEkin.second)
+                  * (logEkin - m_MinMaxlogEkin.second))
+          * Einit;
+    }
+    return m_linInterpol.Eval(logEkin) * Einit;
+  }();
 
   if (OnlyScaleEnergy()) {
     FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << Ekin
@@ -105,10 +107,10 @@ auto TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double& Ekin) const
   if (logEkin < m_MinMaxlogEkin.first) {
     return m_linInterpol.Eval(m_MinMaxlogEkin.first);
   }
-  if (logEkin > m_MinMaxlogEkin.second)
+  if (logEkin > m_MinMaxlogEkin.second) {
     return m_linInterpol.Eval(m_MinMaxlogEkin.second);
-  else
-    return m_linInterpol.Eval(logEkin);
+  }
+  return m_linInterpol.Eval(logEkin);
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t* option) const
@@ -126,18 +128,19 @@ void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t* option) const
   }
 }
 
-void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer& R__b)
+void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer& buffer)
 {
   // Stream an object of class TFCSEnergyInterpolationPiecewiseLinear
-  if (R__b.IsReading()) {
+  if (buffer.IsReading()) {
     // read the class buffer
-    R__b.ReadClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(), this);
+    buffer.ReadClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(),
+                           this);
     // initialize interpolation from saved class members
     InitFromArrayInLogEkin(static_cast<Int_t>(m_logEkin.size()),
                            m_logEkin.data(),
                            m_response.data());
   } else {
-    R__b.WriteClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(),
-                          this);
+    buffer.WriteClassBuffer(TFCSEnergyInterpolationPiecewiseLinear::Class(),
+                            this);
   }
 }

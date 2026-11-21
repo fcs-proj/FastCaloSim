@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <format>
+
 #include "FastCaloSim/Core/TFCSGANLWTNNHandler.h"
 
 // For writing to a tree
@@ -53,7 +55,7 @@ void TFCSGANLWTNNHandler::setupNet()
     for (const std::string& label : node_config.labels) {
       FCS_MSG_VERBOSE("Found output layer called " << node_name << "_"
                                                    << label);
-      m_outputLayers.push_back(node_name + "_" + label);
+      m_outputLayers.push_back(std::format("{}_{}", node_name, label));
     }
   };
   FCS_MSG_VERBOSE("Removing prefix from stored layers.");

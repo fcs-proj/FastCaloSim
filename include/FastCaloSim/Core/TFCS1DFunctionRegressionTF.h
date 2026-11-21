@@ -13,6 +13,12 @@ public:
   TFCS1DFunctionRegressionTF() = default;
   TFCS1DFunctionRegressionTF(float /*rangeval*/, float /*startval*/);
   ~TFCS1DFunctionRegressionTF() override = default;
+  TFCS1DFunctionRegressionTF(const TFCS1DFunctionRegressionTF&) = default;
+  TFCS1DFunctionRegressionTF(TFCS1DFunctionRegressionTF&&) = default;
+  auto operator=(const TFCS1DFunctionRegressionTF&)
+      -> TFCS1DFunctionRegressionTF& = default;
+  auto operator=(TFCS1DFunctionRegressionTF&&)
+      -> TFCS1DFunctionRegressionTF& = default;
 
   using TFCS1DFunctionRegression::rnd_to_fct;
   auto rnd_to_fct(double rnd) const -> double override;

@@ -12,6 +12,7 @@
 #ifndef BFIELDMESHZR_H
 #define BFIELDMESHZR_H
 
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <vector>
@@ -24,21 +25,23 @@ class BFieldMeshZR
 public:
   // constructor
   BFieldMeshZR(double zmin, double zmax, double rmin, double rmax)
+      : m_min {zmin, rmin}
+      , m_max {zmax, rmax}
   {
-    m_min[0] = zmin;
-    m_max[0] = zmax;
-    m_min[1] = rmin;
-    m_max[1] = rmax;
   }
   // allocate space to vectors
   void reserve(int nz, int nr)
   {
     m_mesh[0].reserve(static_cast<std::size_t>(nz));
     m_mesh[1].reserve(static_cast<std::size_t>(nr));
-    m_field.reserve(static_cast<std::size_t>(nz * nr));
+    m_field.reserve(static_cast<std::size_t>(nz)
+                    * static_cast<std::size_t>(nr));
   }
   // add elements to vectors
-  void appendMesh(int i, double mesh) { m_mesh[i].push_back(mesh); }
+  void appendMesh(int i, double mesh)
+  {
+    m_mesh[static_cast<std::size_t>(i)].push_back(mesh);
+  }
   void appendField(const BFieldVectorZR& field) { m_field.push_back(field); }
   // build LUT
   void buildLUT();
@@ -50,19 +53,19 @@ public:
   // find the bin
   inline void getCache(double z, double r, BFieldCacheZR& cache) const;
   // accessors
-  auto min(int i) const -> double { return m_min[i]; }
-  auto max(int i) const -> double { return m_max[i]; }
+  auto min(int i) const -> double { return m_min[static_cast<std::size_t>(i)]; }
+  auto max(int i) const -> double { return m_max[static_cast<std::size_t>(i)]; }
   auto zmin() const -> double { return m_min[0]; }
   auto zmax() const -> double { return m_max[0]; }
   auto rmin() const -> double { return m_min[1]; }
   auto rmax() const -> double { return m_max[1]; }
   auto nmesh(int i) const -> unsigned
   {
-    return static_cast<unsigned>(m_mesh[i].size());
+    return static_cast<unsigned>(m_mesh[static_cast<std::size_t>(i)].size());
   }
   auto mesh(int i, int j) const -> double
   {
-    return m_mesh[i][static_cast<std::size_t>(j)];
+    return m_mesh[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)];
   }
   auto nfield() const -> unsigned
   {
@@ -76,19 +79,19 @@ public:
 
 private:
   // tentative mesh index in dimension j from the LUT, x = coordinate - min(j)
-  auto lutLookup(int j, double x) const -> std::size_t
+  auto lutLookup(std::size_t j, double x) const -> std::size_t
   {
     const auto ilut = static_cast<int>(x * m_invUnit[j]);  // index to LUT
     return static_cast<std::size_t>(m_LUT[j][static_cast<std::size_t>(ilut)]);
   }
 
-  double m_min[2], m_max[2];
-  std::vector<double> m_mesh[2];
+  std::array<double, 2> m_min {}, m_max {};
+  std::array<std::vector<double>, 2> m_mesh;
   std::vector<BFieldVectorZR> m_field;
   // look-up table and related variables
-  std::vector<int> m_LUT[2];
-  double m_invUnit[2];  // inverse unit size in the LUT
-  int m_zoff;
+  std::array<std::vector<int>, 2> m_LUT;
+  std::array<double, 2> m_invUnit {};  // inverse unit size in the LUT
+  int m_zoff {};
 };
 
 //

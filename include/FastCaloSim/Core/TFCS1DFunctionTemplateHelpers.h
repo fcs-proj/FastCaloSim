@@ -50,7 +50,7 @@ public:
   using size_t = TFCS1DFunction_size_t;
 
   TFCS1DFunction_Array() = default;
-  TFCS1DFunction_Array(size_t count) { resize(count); }
+  explicit TFCS1DFunction_Array(size_t count) { resize(count); }
 
   auto MemorySizeArray() const -> std::size_t { return size() * sizeof(T); }
   auto MemorySize() const -> std::size_t
@@ -63,8 +63,10 @@ public:
   /// resize to given count, copying old content
   void resize(size_t count)
   {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
     std::unique_ptr<T[]> new_cont;
     if (count > 0) {
+      // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
       new_cont = std::make_unique_for_overwrite<T[]>(count);
     }
     if (m_content && new_cont) {
@@ -92,6 +94,9 @@ public:
   auto end() const -> const T* { return m_content.get() + size(); }
 
 private:
+  // A pointer only, the size is stored separately: the parametrization
+  // files contain many of these arrays
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
   std::unique_ptr<T[]> m_content;  //!
   size_t m_size {0};
 
@@ -104,7 +109,7 @@ template<typename T>
 void TFCS1DFunction_Array<T>::Streamer(TBuffer& b)
 {
   if (b.IsReading()) {
-    size_t count;
+    size_t count = 0;
     b >> count;
     resize(count);
     if (m_size > 0) {
@@ -128,7 +133,7 @@ public:
   using value_type = T;
   using random_type = Trandom;
 
-  TFCS1DFunction_HistogramContent(size_t nbins = 0)
+  explicit TFCS1DFunction_HistogramContent(size_t nbins = 0)
       : m_array(nbins >= 1 ? nbins - 1 : 0)
   {
   }
@@ -261,11 +266,10 @@ public:
   using random_type = Trandom;
   using internal_storage_type = Tint;
 
-  TFCS1DFunction_HistogramCompactBinEdges(size_t nbins = 0)
+  explicit TFCS1DFunction_HistogramCompactBinEdges(size_t nbins = 0)
       : m_array(nbins >= 1 ? nbins - 1 : 0)
   {
   }
-  ~TFCS1DFunction_HistogramCompactBinEdges() = default;
 
   auto MemorySizeArray() const -> std::size_t
   {

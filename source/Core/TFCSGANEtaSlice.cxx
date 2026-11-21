@@ -6,6 +6,7 @@
 
 // class header include
 #include <cmath>
+#include <format>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -22,6 +23,7 @@
 
 TFCSGANEtaSlice::TFCSGANEtaSlice() = default;
 
+// NOLINTBEGIN(modernize-pass-by-value): keep the public signature
 TFCSGANEtaSlice::TFCSGANEtaSlice(int pid,
                                  int etaMin,
                                  int etaMax,
@@ -32,6 +34,7 @@ TFCSGANEtaSlice::TFCSGANEtaSlice(int pid,
     , m_param(param)
 {
 }
+// NOLINTEND(modernize-pass-by-value)
 
 TFCSGANEtaSlice::~TFCSGANEtaSlice()
 {
@@ -144,13 +147,15 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
 
     std::string histoName = "r" + std::to_string(layer) + "w";
     TH1D* h1 = static_cast<TH1D*>(file->Get(histoName.c_str()));
-    if (!h1 || std::isnan(h1->Integral())) {
+    if (h1 == nullptr || std::isnan(h1->Integral())) {
       histoName = "r" + std::to_string(layer);
       h1 = static_cast<TH1D*>(file->Get(histoName.c_str()));
     }
-    if (!h1) {
-      throw std::runtime_error("Failed to load histogram " + histoName
-                               + " from ROOT file: " + rootFileName);
+    if (h1 == nullptr) {
+      throw std::runtime_error(
+          std::format("Failed to load histogram {} from ROOT file: {}",
+                      histoName,
+                      rootFileName));
     }
 
     TAxis const* x = h2->GetXaxis();
@@ -185,7 +190,7 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
                              + rootFileName);
   }
   auto* tree = file->Get<TTree>("rootTree");
-  if (!tree) {
+  if (tree == nullptr) {
     throw std::runtime_error("No rootTree in " + rootFileName);
   }
   for (int const layer : m_param.GetRelevantLayers()) {

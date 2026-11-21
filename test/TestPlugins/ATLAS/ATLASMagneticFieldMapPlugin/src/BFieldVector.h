@@ -13,17 +13,18 @@
 #ifndef BFIELDVECTOR_H
 #define BFIELDVECTOR_H
 
+#include <array>
+#include <cstddef>
+
 template<class T>
 class BFieldVector
 {
 public:
   // constructor
-  BFieldVector() { ; }
+  BFieldVector() = default;
   BFieldVector(T Bz, T Br, T Bphi)
+      : m_B {Bz, Br, Bphi}
   {
-    m_B[0] = Bz;
-    m_B[1] = Br;
-    m_B[2] = Bphi;
   }
   // setter
   void set(T Bz, T Br, T Bphi)
@@ -37,10 +38,10 @@ public:
   auto r() const -> T { return m_B[1]; }
   auto phi() const -> T { return m_B[2]; }
   // array-like accessor
-  auto operator[](int i) const -> T { return m_B[i]; }
+  auto operator[](std::size_t i) const -> T { return m_B[i]; }
 
 private:
-  T m_B[3];
+  std::array<T, 3> m_B {};
 };
 
 #endif

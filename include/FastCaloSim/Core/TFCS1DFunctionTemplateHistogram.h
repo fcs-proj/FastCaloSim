@@ -18,13 +18,13 @@ public:
   using xvec_type = Txvec;
   using y_value_type = Ty;
 
-  TFCS1DFunctionTemplateHistogram(TH1* hist = nullptr, bool doprint = true)
+  explicit TFCS1DFunctionTemplateHistogram(TH1* hist = nullptr,
+                                           bool doprint = true)
   {
-    if (hist) {
+    if (hist != nullptr) {
       Initialize(hist, doprint);
     }
   }
-  ~TFCS1DFunctionTemplateHistogram() override = default;
 
   auto MemorySizeArray() const -> std::size_t
   {
@@ -52,8 +52,8 @@ public:
     const auto nbins = static_cast<size_t>(hist->GetNbinsX());
 
     std::vector<double> temp_HistoContents;
-    int first;
-    int last;
+    int first = 0;
+    int last = 0;
     double const integral =
         CheckAndIntegrate1DHistogram(hist, temp_HistoContents, first, last);
     if (integral <= 0) {
@@ -63,7 +63,7 @@ public:
     set_nbins(nbins);
 
     // The bin edges are stored with the precision of Txvec
-    using edge_type = typename Txvec::value_type;
+    using edge_type = Txvec::value_type;
     const TAxis* axis = hist->GetXaxis();
     const auto low_edge = [axis](int bin) -> auto
     { return static_cast<edge_type>(axis->GetBinLowEdge(bin)); };

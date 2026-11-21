@@ -58,7 +58,7 @@ void VNetworkLWTNN::fillJson(std::string const& tree_name)
     FCS_MSG_VERBOSE("Treating input file as a root file");
     TFile tfile(this->m_inputFile.c_str(), "READ");
     auto* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
-    std::string found = this->readStringFromTTree(*tree);
+    std::string found = readStringFromTTree(*tree);
     FCS_MSG_DEBUG("Read json from root file, length " << found.length());
     m_json = std::move(found);
   } else {

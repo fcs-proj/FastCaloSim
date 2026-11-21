@@ -5,12 +5,14 @@
 #include "FastCaloSim/Core/TFCSParametrizationFloatSelectChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
+// Custom copy constructor, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationEkinSelectChain
     : public TFCSParametrizationFloatSelectChain
 {
 public:
-  TFCSParametrizationEkinSelectChain(const char* name = nullptr,
-                                     const char* title = nullptr)
+  explicit TFCSParametrizationEkinSelectChain(const char* name = nullptr,
+                                              const char* title = nullptr)
       : TFCSParametrizationFloatSelectChain(name, title)
   {
     reset_DoRandomInterpolation();

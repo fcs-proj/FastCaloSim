@@ -21,10 +21,11 @@ public:
   /// FCAL:    28.5%/sqrt(E)
   ///    stochastic=0.285;
   ///    constant=0.035;
-  TFCSLateralShapeParametrizationHitNumberFromE(const char* name = nullptr,
-                                                const char* title = nullptr,
-                                                double stochastic = 0.1,
-                                                double constant = 0);
+  explicit TFCSLateralShapeParametrizationHitNumberFromE(
+      const char* name = nullptr,
+      const char* title = nullptr,
+      double stochastic = 0.1,
+      double constant = 0);
 
   TFCSLateralShapeParametrizationHitNumberFromE(const char* name,
                                                 const char* title,
@@ -49,6 +50,9 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
+  // Not virtual: compares only the members of this class, the derived classes
+  // call it qualified
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:

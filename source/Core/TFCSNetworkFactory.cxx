@@ -92,11 +92,10 @@ auto TFCSNetworkFactory::create(std::string input, bool graph_form)
   if (graph_form) {
     FCS_MSG_NOCLASS(logger, "Creating LWTNN graph from string");
     return std::make_unique<TFCSGANLWTNNHandler>(input);
-  } else {
-    auto created = std::make_unique<TFCSSimpleLWTNNHandler>(input);
-    FCS_MSG_NOCLASS(logger, "Creating LWTNN nn from string");
-    return created;
-  };
+  }
+  auto created = std::make_unique<TFCSSimpleLWTNNHandler>(input);
+  FCS_MSG_NOCLASS(logger, "Creating LWTNN nn from string");
+  return created;
 }
 
 auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
@@ -112,15 +111,14 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                                  << ", creating from bytes.");
     return create(vector_input);
   }
-  if (string_input.length() > 0) {
+  if (!string_input.empty()) {
     FCS_MSG_NOCLASS(
         logger,
         "No data in bytes, string contains data, " << "creating from string.");
     return create(std::move(string_input));
-  } else {
-    throw std::invalid_argument(
-        "Neither vector_input nor string_input contain data");
-  };
+  }
+  throw std::invalid_argument(
+      "Neither vector_input nor string_input contain data");
 }
 
 auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
@@ -139,13 +137,12 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                                  << ", creating from bytes.");
     return create(vector_input);
   }
-  if (string_input.length() > 0) {
+  if (!string_input.empty()) {
     FCS_MSG_NOCLASS(
         logger,
         "No data in bytes, string contains data, " << "creating from string.");
     return create(std::move(string_input), graph_form);
-  } else {
-    throw std::invalid_argument(
-        "Neither vector_input nor string_input contain data");
-  };
+  }
+  throw std::invalid_argument(
+      "Neither vector_input nor string_input contain data");
 }

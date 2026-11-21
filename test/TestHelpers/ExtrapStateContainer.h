@@ -28,37 +28,38 @@ struct ExtrapStateContainerData
 class ExtrapStateContainer
     : public Container<TFCSExtrapolationState, ExtrapStateContainerData>
 {
+protected:
   auto flatten() const -> std::vector<ExtrapStateContainerData> override
   {
     std::vector<ExtrapStateContainerData> data;
     int state_id = 0;
     for (const auto& state : m_container) {
       // Serialize IDCaloBoundary with layer_id = -1
-      data.push_back({state_id,
-                      -1,
-                      "IDCaloBoundary",
-                      state.IDCaloBoundary_eta(),
-                      state.IDCaloBoundary_phi(),
-                      state.IDCaloBoundary_r() / CLHEP::m,
-                      state.IDCaloBoundary_z() / CLHEP::m});
+      data.push_back({.state_id = state_id,
+                      .layer_id = -1,
+                      .subpos = "IDCaloBoundary",
+                      .eta = state.IDCaloBoundary_eta(),
+                      .phi = state.IDCaloBoundary_phi(),
+                      .r = state.IDCaloBoundary_r() / CLHEP::m,
+                      .z = state.IDCaloBoundary_z() / CLHEP::m});
 
       // Define subpositions
-      const std::vector<std::pair<std::string, Cell::SubPos>> subpositions = {
-          {"ENT", Cell::SubPos::ENT},
-          {"MID", Cell::SubPos::MID},
-          {"EXT", Cell::SubPos::EXT}};
+      const std::vector<std::pair<std::string, FastCaloSim::SubPos>>
+          subpositions = {{"ENT", FastCaloSim::SubPos::ENT},
+                          {"MID", FastCaloSim::SubPos::MID},
+                          {"EXT", FastCaloSim::SubPos::EXT}};
 
       // Serialize each layer for each subposition
       for (std::size_t layer = 0; layer <= 23; ++layer) {
         for (const auto& [subpos_name, subpos] : subpositions) {
-          data.push_back({state_id,
+          data.push_back({.state_id = state_id,
                           // The output column stays int
-                          static_cast<int>(layer),
-                          subpos_name,
-                          state.eta(layer, subpos),
-                          state.phi(layer, subpos),
-                          state.r(layer, subpos) / CLHEP::m,
-                          state.z(layer, subpos) / CLHEP::m});
+                          .layer_id = static_cast<int>(layer),
+                          .subpos = subpos_name,
+                          .eta = state.eta(layer, subpos),
+                          .phi = state.phi(layer, subpos),
+                          .r = state.r(layer, subpos) / CLHEP::m,
+                          .z = state.z(layer, subpos) / CLHEP::m});
         }
       }
 

@@ -13,8 +13,11 @@
 #ifndef FCAL_CHANNELMAP_H
 #define FCAL_CHANNELMAP_H
 
+#include <array>
+#include <cstddef>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 /** This class contains the tube and tile maps for the FCAL <br>
@@ -35,10 +38,8 @@ public:
   {  //
   public:  //
     TubePosition();  //
-    TubePosition(tileName_t name,
-                 float x,
-                 float y,
-                 const std::string& hvFT);  //
+    TubePosition(tileName_t name, float x, float y,
+                 std::string hvFT);  //
     auto get_tileName() const -> tileName_t;  //
     auto x() const -> float;  //
     auto y() const -> float;  //
@@ -52,7 +53,7 @@ public:
   //-------------------------------------------------------------//
 
   /**  Constructors: */
-  FCAL_ChannelMap(int itemp);
+  explicit FCAL_ChannelMap(int flag);
 
   using tubeMap_t = std::map<tubeID_t, TubePosition>;
   using tubemap_sizetype = tubeMap_t::size_type;
@@ -60,9 +61,9 @@ public:
   using tubemap_const_iterator = tubeMap_t::const_iterator;
 
   /** tubeMap access functions */
-  auto tubemap_begin(int isam) const -> tubemap_const_iterator;
-  auto tubemap_end(int isam) const -> tubemap_const_iterator;
-  auto tubemap_size(int isam) const -> tubemap_sizetype;
+  auto tubemap_begin(int imap) const -> tubemap_const_iterator;
+  auto tubemap_end(int imap) const -> tubemap_const_iterator;
+  auto tubemap_size(int imap) const -> tubemap_sizetype;
 
   // Get the tube by copy number:
   auto getTubeByCopyNumber(int isam, int copyNo) const
@@ -71,7 +72,8 @@ public:
   /**  ---- For the new LArFCAL_ID Identifier
    */
 
-  auto getTileID(int isam, float x, float y, int& eta, int& phi) const -> bool;
+  auto getTileID(int isam, float x_orig, float y_orig, int& eta, int& phi) const
+      -> bool;
 
   /** For reconstruction, decoding of tile identifiers */
   auto x(int isam, int eta, int phi) const -> float;
@@ -79,10 +81,10 @@ public:
 
   void tileSize(int sam, int eta, int phi, float& dx, float& dy) const;
 
-  void tileSize(int isam, int ntubes, float& dx, float& dy) const;
+  void tileSize(int sam, int ntubes, float& dx, float& dy) const;
 
   /** print functions */
-  void print_tubemap(int isam) const;
+  void print_tubemap(int imap) const;
 
   /** set and get for the inversion flags
    */
@@ -98,15 +100,15 @@ public:
                 int id,
                 int i,
                 int j,
-                double xCm,
-                double yCm);  // original
+                double x,
+                double y);  // original
   void add_tube(const std::string& tileName,
                 int mod,
                 int id,
                 int i,
                 int j,
-                double xCm,
-                double yCm,
+                double x,
+                double y,
                 const std::string& hvFT);  // 29-03-07 include HV
 
   // Finish the job. Create the tile map.
@@ -136,30 +138,36 @@ public:
   // Methods to iterate over the tile map:
   auto begin(int isam) const -> tileMap_const_iterator
   {
-    return m_tileMap[isam - 1].begin();
+    return m_tileMap[sam_index(isam)].begin();
   }
   auto end(int isam) const -> tileMap_const_iterator
   {
-    return m_tileMap[isam - 1].end();
+    return m_tileMap[sam_index(isam)].end();
   }
 
 private:
+  /** Index of the arrays below for the sampling (module) number 1 - 3 */
+  static auto sam_index(int isam) -> std::size_t
+  {
+    return static_cast<std::size_t>(isam - 1);
+  }
+
   /** Geometrical parameters here, in CLHEP::cm please to be compatible with G3
    */
-  static const double m_tubeSpacing[];
-  double m_tubeDx[3];
-  double m_tubeDy[3];
-  double m_tileDx[3];
-  double m_tileDy[3];
+  static const std::array<double, 3> m_tubeSpacing;
+  std::array<double, 3> m_tubeDx {};
+  std::array<double, 3> m_tubeDy {};
+  std::array<double, 3> m_tileDx {};
+  std::array<double, 3> m_tileDy {};
   mutable bool m_invert_x;  // Some geometry need x inverted
   mutable bool m_invert_xy;  // Some geometry need xy crossed
 
-  tileMap_t m_tileMap[3];
+  std::array<tileMap_t, 3> m_tileMap;
   void create_tileMap(int isam);
 
   /** TubeMap */
-  tubeMap_t m_tubeMap[3];
-  std::vector<tubemap_const_iterator> m_tubeIndex[3];
+  std::array<tubeMap_t, 3> m_tubeMap;
+  std::array<std::vector<tubemap_const_iterator>, 3> m_tubeIndex;
 };
 
 // Tube Position functions
@@ -175,11 +183,11 @@ inline FCAL_ChannelMap::TubePosition::TubePosition()
 inline FCAL_ChannelMap::TubePosition::TubePosition(tileName_t name,
                                                    float x,
                                                    float y,
-                                                   const std::string& hvFT)
+                                                   std::string hvFT)
     : m_tileName(name)
     , m_x(x)
     , m_y(y)
-    , m_hvFT(hvFT)
+    , m_hvFT(std::move(hvFT))
 {
 }
 

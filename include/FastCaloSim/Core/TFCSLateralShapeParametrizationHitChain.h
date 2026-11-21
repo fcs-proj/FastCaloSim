@@ -11,10 +11,10 @@ class TFCSLateralShapeParametrizationHitChain
     : public TFCSLateralShapeParametrization
 {
 public:
-  TFCSLateralShapeParametrizationHitChain(const char* name = nullptr,
-                                          const char* title = nullptr);
+  explicit TFCSLateralShapeParametrizationHitChain(const char* name = nullptr,
+                                                   const char* title = nullptr);
 
-  TFCSLateralShapeParametrizationHitChain(
+  explicit TFCSLateralShapeParametrizationHitChain(
       TFCSLateralShapeParametrizationHitBase* hitsim);
 
   virtual auto init_hit(TFCSLateralShapeParametrizationHitBase::Hit& hit,

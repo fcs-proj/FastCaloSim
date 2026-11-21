@@ -46,7 +46,7 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
@@ -85,7 +85,7 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
 
 auto TFCSHistoLateralShapeWeight::Initialize(TH1* hist) -> bool
 {
-  if (!hist) {
+  if (hist == nullptr) {
     return false;
   }
   {
@@ -104,7 +104,7 @@ void TFCSHistoLateralShapeWeight::Print(Option_t* option) const
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
-    if (m_hist) {
+    if (m_hist != nullptr) {
       FCS_MSG_INFO(optprint
                    << "  Histogram: " << m_hist->GetNbinsX() << " bins ["
                    << std::as_const(m_hist)->GetXaxis()->GetXmin() << ","

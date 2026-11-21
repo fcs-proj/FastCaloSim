@@ -1,5 +1,8 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSMLCalorimeterSimulator.h"
 
 #include "CLHEP/Random/RandGauss.h"
@@ -113,12 +116,8 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
   // Check if any output contains NaN; retry up to 5 times if so
   auto has_nan = [](const VNetworkBase::NetworkOutputs& out) -> bool
   {
-    for (const auto& kv : out) {
-      if (std::isnan(kv.second)) {
-        return true;
-      }
-    }
-    return false;
+    return std::ranges::any_of(
+        out, [](const auto& kv) -> bool { return std::isnan(kv.second); });
   };
 
   int retry = 0;

@@ -10,9 +10,15 @@ class TFCSHistoLateralShapeWeight
     : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSHistoLateralShapeWeight(const char* name = nullptr,
-                              const char* title = nullptr);
+  explicit TFCSHistoLateralShapeWeight(const char* name = nullptr,
+                                       const char* title = nullptr);
   ~TFCSHistoLateralShapeWeight() override;
+  TFCSHistoLateralShapeWeight(const TFCSHistoLateralShapeWeight&) = default;
+  TFCSHistoLateralShapeWeight(TFCSHistoLateralShapeWeight&&) = default;
+  auto operator=(const TFCSHistoLateralShapeWeight&)
+      -> TFCSHistoLateralShapeWeight& = default;
+  auto operator=(TFCSHistoLateralShapeWeight&&)
+      -> TFCSHistoLateralShapeWeight& = default;
 
   /// weight the energy of one hit in order to generate fluctuations
   auto simulate_hit(Hit& hit,

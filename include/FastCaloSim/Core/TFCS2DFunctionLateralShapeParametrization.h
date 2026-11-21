@@ -12,9 +12,17 @@ class TFCS2DFunctionLateralShapeParametrization
     : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCS2DFunctionLateralShapeParametrization(const char* name = nullptr,
-                                            const char* title = nullptr);
+  explicit TFCS2DFunctionLateralShapeParametrization(
+      const char* name = nullptr, const char* title = nullptr);
   ~TFCS2DFunctionLateralShapeParametrization() override;
+  TFCS2DFunctionLateralShapeParametrization(
+      const TFCS2DFunctionLateralShapeParametrization&) = default;
+  TFCS2DFunctionLateralShapeParametrization(
+      TFCS2DFunctionLateralShapeParametrization&&) = default;
+  auto operator=(const TFCS2DFunctionLateralShapeParametrization&)
+      -> TFCS2DFunctionLateralShapeParametrization& = default;
+  auto operator=(TFCS2DFunctionLateralShapeParametrization&&)
+      -> TFCS2DFunctionLateralShapeParametrization& = default;
 
   /// Status bit for FCS needs
   enum FCSStatusBits

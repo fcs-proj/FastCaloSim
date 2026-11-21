@@ -25,6 +25,7 @@
 #include "IMagFieldSvc.h"
 
 // STL includes
+#include <array>
 #include <iostream>
 #include <vector>
 
@@ -46,16 +47,21 @@ class AtlasFieldSvc : public IMagFieldSvc
   // IIncidentListener> {
 public:
   /** Constructor with parameters */
-  AtlasFieldSvc(bool isAscii = true);
+  explicit AtlasFieldSvc(bool isAscii = true);
 
   /** Constructor with parameters */
-  AtlasFieldSvc(const std::string& name,
-                bool isAscii = true,
-                bool solenoidOFF = false,
-                bool toroidsOFF = false);
+  explicit AtlasFieldSvc(const std::string& name,
+                         bool isAscii = true,
+                         bool solenoidOFF = false,
+                         bool toroidsOFF = false);
 
   /** Destructor */
   ~AtlasFieldSvc() override;
+  // the solenoid ZR map is owned by this object
+  AtlasFieldSvc(const AtlasFieldSvc&) = delete;
+  auto operator=(const AtlasFieldSvc&) -> AtlasFieldSvc& = delete;
+  AtlasFieldSvc(AtlasFieldSvc&&) = delete;
+  auto operator=(AtlasFieldSvc&&) -> AtlasFieldSvc& = delete;
 
   /** Athena algorithm's interface methods */
   //      virtual bool  initialize() override;
@@ -85,14 +91,14 @@ public:
                   double* bxyz,
                   double* deriv = nullptr) const final;
 
-  auto GetUseSolenoidCurrent() -> double { return m_useSoleCurrent; }
+  auto GetUseSolenoidCurrent() const -> double { return m_useSoleCurrent; }
   void SetUseSolenoidCurrent(double current) { m_useSoleCurrent = current; }
-  auto GetUseToroidsCurrent() -> double { return m_useToroCurrent; }
+  auto GetUseToroidsCurrent() const -> double { return m_useToroCurrent; }
   void SetUseToroidsCurrent(double current) { m_useToroCurrent = current; }
 
 private:
   /** Retrieve, initialize and return a thread-local storage object */
-  inline auto getAtlasFieldSvcTLS() const -> struct AtlasFieldSvcTLS&;
+  static inline auto getAtlasFieldSvcTLS() -> struct AtlasFieldSvcTLS&;
 
   /* // Methods called to get field
      // pointer to actual function
@@ -125,12 +131,12 @@ private:
   // initialize map
   auto initializeMap(AtlasFieldSvcTLS& tls) -> bool;
   // read the field map from an ASCII or ROOT file
-  auto readMap(const char* filename) -> bool;
+  static auto readMap(const char* filename) -> bool;
   auto readMap(std::istream& input) -> bool;
   /** readMap, can be enabled when fROOT dependency is on **/
   // bool readMap( TFile* rootfile );
   /** read the field map from a ROOT file, no fROOT dependency needed**/
-  auto readMapRoot(std::string filename) -> bool;
+  auto readMapRoot(const std::string& filename) -> bool;
 
   // translate the map from root file into ascii file and write it out
   auto translateMap(std::string inFile,
@@ -143,9 +149,9 @@ private:
   void clearMap(AtlasFieldSvcTLS& tls);
 
   // utility functions used by readMap
-  auto read_packed_data(std::istream& input, std::vector<int>& data) const
+  static auto read_packed_data(std::istream& input, std::vector<int>& data)
       -> int;
-  auto read_packed_int(std::istream& input, int& n) const -> int;
+  static auto read_packed_int(std::istream& input, int& n) -> int;
   void buildLUT();
   void buildZR();
 
@@ -194,9 +200,9 @@ private:
   BFieldMeshZR* m_meshZR;
 
   // data members used in zone-finding
-  std::vector<double> m_edge[3];  // zone boundaries in z, r, phi
-  std::vector<int> m_edgeLUT[3];  // look-up table for zone edges
-  double m_invq[3];  // 1/stepsize in m_edgeLUT
+  std::array<std::vector<double>, 3> m_edge;  // zone boundaries in z, r, phi
+  std::array<std::vector<int>, 3> m_edgeLUT;  // look-up table for zone edges
+  std::array<double, 3> m_invq {};  // 1/stepsize in m_edgeLUT
   std::vector<const BFieldZone*> m_zoneLUT;  // look-up table for zones
   // more data members to speed up zone-finding
   double m_zmin;  // minimum z
@@ -217,7 +223,7 @@ private:
 //
 // Initialize and return a thread-local storage object
 //
-auto MagField::AtlasFieldSvc::getAtlasFieldSvcTLS() const
+auto MagField::AtlasFieldSvc::getAtlasFieldSvcTLS()
     -> struct MagField::AtlasFieldSvcTLS&
 {
   static thread_local AtlasFieldSvcTLS tls = AtlasFieldSvcTLS();
@@ -271,7 +277,7 @@ auto MagField::AtlasFieldSvc::findZone(double z, double r, double phi) const
                      + iphi];
   }  // std::cout<<"z is :"<<z<<" and should be >= "<<m_zmin<<"  && z <=
   // "<<m_zmax<< "  && r is "<<r <<" and should be <= "<<m_rmax<<std::endl;
-  return 0;
+  return nullptr;
 }
 
 /** fill given magnetic field zone */
@@ -303,7 +309,7 @@ auto MagField::AtlasFieldSvc::fillFieldCacheZR(double z,
     -> bool
 {
   // is it inside the solenoid zone?
-  if (m_meshZR && m_meshZR->inside(z, r)) {
+  if (m_meshZR != nullptr && m_meshZR->inside(z, r)) {
     // fill the cache
     m_meshZR->getCache(z, r, tls.cacheZR);
   } else {

@@ -19,7 +19,7 @@ public:
   using TFCS1DFunction::rnd_to_fct;
   auto rnd_to_fct(double rnd) const -> double override;
   auto get_inverse(double rnd) const -> double;
-  static auto non_linear(double y1, double y2, double x1, double x2, double x)
+  static auto non_linear(double y1, double y2, double x1, double x2, double y)
       -> double;
 
   static auto get_maxdev(TH1* /*h_in*/, TH1D* /*h_out*/) -> double;

@@ -7,8 +7,8 @@
 class TFCSInvisibleParametrization : public TFCSParametrization
 {
 public:
-  TFCSInvisibleParametrization(const char* name = nullptr,
-                               const char* title = nullptr)
+  explicit TFCSInvisibleParametrization(const char* name = nullptr,
+                                        const char* title = nullptr)
       : TFCSParametrization(name, title)
   {
   }

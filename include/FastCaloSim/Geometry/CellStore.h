@@ -73,7 +73,7 @@ public:
       throw std::runtime_error("Failed to open data file: " + data_path);
     }
 
-    struct stat st;
+    struct stat st {};
     if (fstat(fd, &st) == -1) {
       ::close(fd);
       throw std::runtime_error("Failed to stat data file: " + data_path);
@@ -133,7 +133,7 @@ public:
   ///       thread. Copy the Cell if you need to hold more than one at a time.
   auto get_at_index(size_t idx) const -> const Cell&
   {
-    if (!m_data) {
+    if (m_data == nullptr) {
       throw std::runtime_error("CellStore not loaded - call load() first");
     }
 

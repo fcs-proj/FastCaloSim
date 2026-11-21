@@ -74,6 +74,7 @@ auto TFCSParametrizationBinnedChain::bin_label(std::optional<std::size_t> bin)
   return bin ? std::to_string(*bin) : std::string("none");
 }
 
+// NOLINTNEXTLINE(readability-const-return-type): virtual, overridden
 auto TFCSParametrizationBinnedChain::get_variable_text(
     TFCSSimulationState& /*unused*/,
     const TFCSTruthState* /*unused*/,
@@ -82,6 +83,7 @@ auto TFCSParametrizationBinnedChain::get_variable_text(
   return std::string("NO VARIABLE DEFINED");
 }
 
+// NOLINTNEXTLINE(readability-const-return-type): virtual, overridden
 auto TFCSParametrizationBinnedChain::get_bin_text(
     std::optional<std::size_t> bin) const -> const std::string
 {
@@ -150,6 +152,8 @@ auto TFCSParametrizationBinnedChain::simulate(
 
 void TFCSParametrizationBinnedChain::Print(Option_t* option) const
 {
+  // The chain is printed per bin below, not as in TFCSParametrizationChain
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call): skip the chain printout
   TFCSParametrization::Print(option);
   const std::string opt = option != nullptr ? option : "";
   const auto [shortprint, longprint, optprint] = print_options(option);

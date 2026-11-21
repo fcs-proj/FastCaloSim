@@ -46,9 +46,14 @@ public:
 
   using event_bins_t = std::vector<layer_bins_t>;
 
-  TFCSBinnedShower(const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSBinnedShower(const char* name = nullptr,
+                            const char* title = nullptr);
 
   ~TFCSBinnedShower() override;
+  TFCSBinnedShower(const TFCSBinnedShower&) = default;
+  TFCSBinnedShower(TFCSBinnedShower&&) = default;
+  auto operator=(const TFCSBinnedShower&) -> TFCSBinnedShower& = default;
+  auto operator=(TFCSBinnedShower&&) -> TFCSBinnedShower& = default;
 
   auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
@@ -250,8 +255,8 @@ private:
                         std::size_t hit_index) const -> std::size_t;
 
   // Helper functions to load the HDF5 dataset
-  auto load_hdf5_dataset(const std::string& filename,
-                         const std::string& datasetname)
+  static auto load_hdf5_dataset(const std::string& filename,
+                                const std::string& datasetname)
       -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>;
 
   void load_layer_energy(const std::string& filename, std::size_t layer_index);

@@ -62,11 +62,11 @@ auto TFCSLateralShapeParametrizationHitBase::simulate_hit(
 {
   std::size_t const cs = calosample();
   hit.set_eta_x(0.5
-                * (extrapol->eta(cs, Cell::SubPos::ENT)
-                   + extrapol->eta(cs, Cell::SubPos::EXT)));
+                * (extrapol->eta(cs, FastCaloSim::SubPos::ENT)
+                   + extrapol->eta(cs, FastCaloSim::SubPos::EXT)));
   hit.set_phi_y(0.5
-                * (extrapol->phi(cs, Cell::SubPos::ENT)
-                   + extrapol->phi(cs, Cell::SubPos::EXT)));
+                * (extrapol->phi(cs, FastCaloSim::SubPos::ENT)
+                   + extrapol->phi(cs, FastCaloSim::SubPos::EXT)));
 
   return FCSSuccess;
 }

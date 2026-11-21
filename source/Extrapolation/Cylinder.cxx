@@ -65,7 +65,7 @@ auto endcapIntersection(const Cylinder& cylinder,
     return std::nullopt;
   }
   const Vector3D center(0, 0, endcapZ);
-  const Vector3D intersection = b + ((center - b).z() / ab.z()) * ab;
+  Vector3D intersection = b + ((center - b).z() / ab.z()) * ab;
   if ((intersection - center).mag() <= cylinder.r()) {
     return intersection;
   }

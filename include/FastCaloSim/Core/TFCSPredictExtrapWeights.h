@@ -14,12 +14,14 @@ namespace lwt
 class LightweightNeuralNetwork;
 }  // namespace lwt
 
+// Owns the persistent pointers; never copied, copy is kept for ROOT
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSPredictExtrapWeights : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSPredictExtrapWeights(const char* name = nullptr,
-                           const char* title = nullptr,
-                           CaloGeo* geo = nullptr);
+  explicit TFCSPredictExtrapWeights(const char* name = nullptr,
+                                    const char* title = nullptr,
+                                    CaloGeo* geo = nullptr);
 
   void set_geometry(CaloGeo* geo) override { m_geo = geo; }
 

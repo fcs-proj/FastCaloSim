@@ -111,7 +111,7 @@ auto CaloGeo::is_eta_phi_z(std::size_t layer) const -> bool
 
 auto CaloGeo::zpos(std::size_t layer,
                    const Position& pos,
-                   Cell::SubPos subpos) const -> double
+                   FastCaloSim::SubPos subpos) const -> double
 {
   const Cell& cell = get_cell(layer, pos);
   return cell.z(subpos);
@@ -119,7 +119,7 @@ auto CaloGeo::zpos(std::size_t layer,
 
 auto CaloGeo::rpos(std::size_t layer,
                    const Position& pos,
-                   Cell::SubPos subpos) const -> double
+                   FastCaloSim::SubPos subpos) const -> double
 {
   const Cell& cell = get_cell(layer, pos);
   return cell.r(subpos);
@@ -142,11 +142,11 @@ void CaloGeo::set_alt_geo_handler(std::size_t layer,
   m_alt_geo_handlers[layer] = std::move(handler);
 }
 
-void CaloGeo::set_alt_geo_handler(std::size_t ilayer,
-                                  std::size_t llayer,
-                                  std::shared_ptr<CaloGeo> handler)
+void CaloGeo::set_alt_geo_handler(std::size_t first_layer,
+                                  std::size_t last_layer,
+                                  const std::shared_ptr<CaloGeo>& handler)
 {
-  for (std::size_t i = ilayer; i <= llayer; ++i) {
+  for (std::size_t i = first_layer; i <= last_layer; ++i) {
     m_layer_lookup[i].alt_geo_handler = handler.get();
     m_alt_geo_handlers[i] = handler;
   }
@@ -224,7 +224,6 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   CellStoreBuilder cell_store_builder;
 
   // Process cells in bulk
-  Position pos;
   for (size_t i = 0; i < m_n_total_cells; ++i) {
     unsigned int layer_id = layer->at(i);
 
@@ -250,12 +249,12 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
     // The geometry is stored in single precision
     const auto value = [i](auto& column) -> auto
     { return static_cast<double>(column->at(i)); };
-    pos.m_x = value(x);
-    pos.m_y = value(y);
-    pos.m_z = value(z);
-    pos.m_eta = value(eta);
-    pos.m_phi = value(phi);
-    pos.m_r = value(r);
+    const Position pos {.m_x = value(x),
+                        .m_y = value(y),
+                        .m_z = value(z),
+                        .m_eta = value(eta),
+                        .m_phi = value(phi),
+                        .m_r = value(r)};
 
     Cell const cell(id->at(i),
                     pos,

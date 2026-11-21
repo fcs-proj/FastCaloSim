@@ -16,6 +16,12 @@ class TFCSMLCalorimeterSimulator : public FastCaloSim::MLogging
 public:
   TFCSMLCalorimeterSimulator();
   ~TFCSMLCalorimeterSimulator() override;
+  TFCSMLCalorimeterSimulator(const TFCSMLCalorimeterSimulator&) = delete;
+  auto operator=(const TFCSMLCalorimeterSimulator&)
+      -> TFCSMLCalorimeterSimulator& = delete;
+  TFCSMLCalorimeterSimulator(TFCSMLCalorimeterSimulator&&) = default;
+  auto operator=(TFCSMLCalorimeterSimulator&&)
+      -> TFCSMLCalorimeterSimulator& = default;
 
   struct layer_t
   {

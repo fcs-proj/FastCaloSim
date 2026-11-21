@@ -28,6 +28,7 @@ public:
   auto compareLogs() const -> bool
   {
     const std::string diff_cmd = buildDiffCommand();
+    // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): diff pipeline
     int const diff_status = system(diff_cmd.c_str());
     return diff_status == 0;  // Return true if logs match, false otherwise
   }
@@ -36,8 +37,8 @@ public:
   auto getDiffCommand() const -> std::string { return buildDiffCommand(); }
 
 private:
-  const std::string ref_log_file;
-  const std::string new_log_file;
+  std::string ref_log_file;
+  std::string new_log_file;
   std::vector<std::string> ignore_patterns;
 
   // Build the grep -F command that ignores lines containing any pattern

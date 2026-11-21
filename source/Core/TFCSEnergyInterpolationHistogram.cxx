@@ -25,23 +25,20 @@ auto TFCSEnergyInterpolationHistogram::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  double Emean;
-  double Einit;
   const double Ekin = truth->Ekin();
-  if (OnlyScaleEnergy()) {
-    Einit = simulstate.E();
-  } else {
-    Einit = Ekin;
-  }
-  if (Einit < m_hist.GetXaxis()->GetBinLowEdge(1)) {
-    Emean = m_hist.GetBinContent(1) * Einit;
-  } else {
-    if (Einit > m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX())) {
-      Emean = m_hist.GetBinContent(m_hist.GetNbinsX()) * Einit;
-    } else {
-      Emean = m_hist.GetBinContent(m_hist.GetXaxis()->FindBin(Einit)) * Einit;
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
+  // Outside of the histogram range, the first or last bin is used
+  const int bin = [&] -> int
+  {
+    if (Einit < m_hist.GetXaxis()->GetBinLowEdge(1)) {
+      return 1;
     }
-  }
+    if (Einit > m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX())) {
+      return m_hist.GetNbinsX();
+    }
+    return m_hist.GetXaxis()->FindBin(Einit);
+  }();
+  const double Emean = m_hist.GetBinContent(bin) * Einit;
 
   if (OnlyScaleEnergy()) {
     FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin()

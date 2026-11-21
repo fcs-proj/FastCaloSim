@@ -21,7 +21,7 @@ class BFieldSolenoid
 {
 public:
   // constructor
-  BFieldSolenoid() { ; }
+  BFieldSolenoid() = default;
   // destructor
   ~BFieldSolenoid()
   {
@@ -30,6 +30,11 @@ public:
       delete m_tilt;
     }
   }
+  // the maps are owned by this object
+  BFieldSolenoid(const BFieldSolenoid&) = delete;
+  auto operator=(const BFieldSolenoid&) -> BFieldSolenoid& = delete;
+  BFieldSolenoid(BFieldSolenoid&&) = delete;
+  auto operator=(BFieldSolenoid&&) -> BFieldSolenoid& = delete;
   // read/write map from/to file
   auto readMap(std::istream& input) -> int;
   // int readMap( TFile* rootfile );
@@ -43,8 +48,9 @@ public:
 
 private:
   // data members
-  BFieldMesh<double>* m_orig {0};  // original map as it was read from file
-  BFieldMesh<double>* m_tilt {0};  // tilted and moved map
+  BFieldMesh<double>* m_orig {
+      nullptr};  // original map as it was read from file
+  BFieldMesh<double>* m_tilt {nullptr};  // tilted and moved map
   // cache for speed
   mutable BFieldCache m_cache;
 };

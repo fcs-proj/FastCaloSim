@@ -36,7 +36,7 @@ TFCSLateralShapeParametrizationHitChain::
 
 auto TFCSLateralShapeParametrizationHitChain::size() const -> std::size_t
 {
-  if (m_number_of_hits_simul) {
+  if (m_number_of_hits_simul != nullptr) {
     return m_chain.size() + 1;
   }
   return m_chain.size();
@@ -57,7 +57,7 @@ void TFCSLateralShapeParametrizationHitChain::push_back_init(
 auto TFCSLateralShapeParametrizationHitChain::operator[](std::size_t ind) const
     -> const TFCSParametrizationBase*
 {
-  if (m_number_of_hits_simul) {
+  if (m_number_of_hits_simul != nullptr) {
     if (ind == 0) {
       return m_number_of_hits_simul;
     }
@@ -69,7 +69,7 @@ auto TFCSLateralShapeParametrizationHitChain::operator[](std::size_t ind) const
 auto TFCSLateralShapeParametrizationHitChain::operator[](std::size_t ind)
     -> TFCSParametrizationBase*
 {
-  if (m_number_of_hits_simul) {
+  if (m_number_of_hits_simul != nullptr) {
     if (ind == 0) {
       return m_number_of_hits_simul;
     }
@@ -89,7 +89,7 @@ void TFCSLateralShapeParametrizationHitChain::set_daughter(
     }
     param_typed = static_cast<TFCSLateralShapeParametrizationHitBase*>(param);
   }
-  if (m_number_of_hits_simul) {
+  if (m_number_of_hits_simul != nullptr) {
     if (ind == 0) {
       m_number_of_hits_simul = param_typed;
     } else {
@@ -106,7 +106,7 @@ auto TFCSLateralShapeParametrizationHitChain::get_number_of_hits(
     const TFCSExtrapolationState* extrapol) const -> int
 {
   // TODO: should we still do it?
-  if (m_number_of_hits_simul) {
+  if (m_number_of_hits_simul != nullptr) {
     int n =
         m_number_of_hits_simul->get_number_of_hits(simulstate, truth, extrapol);
     n = std::max(n, 1);
@@ -178,7 +178,7 @@ auto TFCSLateralShapeParametrizationHitChain::get_sigma2_fluctuation(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> double
 {
-  if (m_number_of_hits_simul) {
+  if (m_number_of_hits_simul != nullptr) {
     double const sigma2 = m_number_of_hits_simul->get_sigma2_fluctuation(
         simulstate, truth, extrapol);
     if (sigma2 > 0) {
@@ -272,7 +272,7 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
   // TODO: should read simulate value!
   int nhit_signed = static_cast<int>(std::lrint(Elayer / Ehit));
   nhit_signed = std::max(nhit_signed, 1);
-  auto const nhit = static_cast<unsigned int>(nhit_signed);
+  auto const nhit = static_cast<std::size_t>(nhit_signed);
 
   double sumEhit = 0;
 
@@ -320,7 +320,7 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
         ++ifail;
         ++itotalfail;
         retry = status - FCSRetry;
-        retry_warning = retry >> 1;
+        retry_warning = retry / 2;
         retry_warning = std::max(retry_warning, 1);
         break;
       }
@@ -329,7 +329,6 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
         sumEhit += hit.E();
         hit.set_idx(hit.idx() + 1);
 
-        // TODO: Different signedness:
         if (((hit.idx() == 20 * nhit) || (hit.idx() == 100 * nhit))
             && hit.idx() >= 100)
         {
@@ -400,11 +399,13 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
       simulstate.auxInfoEntry("FCSHitChainEnergySum"_FCShash);
   double sumEhit = 0;
   if (was_stored && hit.idx() > 1) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access): AuxInfo_t
     sumEhit = static_cast<double>(stored_sum);
   }
 
   sumEhit += hit.E();
 
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access): AuxInfo_t
   stored_sum.set<double>(sumEhit);
 
   const double Elayer = simulstate.E(calosample());
@@ -417,7 +418,7 @@ void TFCSLateralShapeParametrizationHitChain::Print(Option_t* option) const
   const std::string opt = option != nullptr ? option : "";
   const auto [shortprint, longprint, optprint] = print_options(option);
 
-  if (m_number_of_hits_simul) {
+  if (m_number_of_hits_simul != nullptr) {
     if (longprint) {
       FCS_MSG_INFO(optprint << "#:Number of hits simulation:");
     }

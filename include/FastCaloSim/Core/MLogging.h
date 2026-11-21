@@ -36,6 +36,11 @@ namespace FastCaloSim
 class FASTCALOSIM_EXPORT LogSink
 {
 public:
+  LogSink() = default;
+  LogSink(const LogSink&) = default;
+  LogSink(LogSink&&) = default;
+  auto operator=(const LogSink&) -> LogSink& = default;
+  auto operator=(LogSink&&) -> LogSink& = default;
   virtual ~LogSink() = default;
   /// One message: `file` and `line` locate the call site, `text` is the
   /// message as written at the call site, without decoration and without
@@ -60,6 +65,8 @@ public:
   LogMessage(MSG::Level lvl, const char* file, int line);
   LogMessage(const LogMessage&) = delete;
   auto operator=(const LogMessage&) -> LogMessage& = delete;
+  LogMessage(LogMessage&&) = delete;
+  auto operator=(LogMessage&&) -> LogMessage& = delete;
   ~LogMessage();
 
   auto stream() -> std::ostream& { return m_text; }
@@ -93,6 +100,8 @@ public:
              bool active);
   LineStream(const LineStream&) = delete;
   auto operator=(const LineStream&) -> LineStream& = delete;
+  LineStream(LineStream&&) = delete;
+  auto operator=(LineStream&&) -> LineStream& = delete;
   ~LineStream();
 
   template<typename T>
@@ -133,6 +142,7 @@ private:
     static_cast<void>(logger_name); \
     ::FastCaloSim::LogMessage fcs_log_message( \
         ::FastCaloSim::MSG::ALWAYS, __FILE__, __LINE__); \
+    /* NOLINTNEXTLINE(bugprone-macro-parentheses): x is a << chain */ \
     fcs_log_message.stream() << x; \
   } while (0)
 
@@ -152,6 +162,7 @@ using MsgStream = std::ostream;
 #define FCS_MSG_LVL_NOCHK(enum_lvl, x) \
   do { \
     ::FastCaloSim::LogMessage fcs_log_message(enum_lvl, __FILE__, __LINE__); \
+    /* NOLINTNEXTLINE(bugprone-macro-parentheses): x is a << chain */ \
     fcs_log_message.stream() << x; \
   } while (0)
 
@@ -183,6 +194,8 @@ public:
   MLogging() = default;
   MLogging(const MLogging&) = default;
   auto operator=(const MLogging&) -> MLogging& = default;
+  MLogging(MLogging&&) = default;
+  auto operator=(MLogging&&) -> MLogging& = default;
 
   /// Destructor
   virtual ~MLogging() = default;

@@ -119,12 +119,12 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> bool
 {
-  if (!truth) {
+  if (truth == nullptr) {
     FCS_MSG_ERROR("Invalid truth pointer");
     return false;
   }
 
-  if (!extrapol) {
+  if (extrapol == nullptr) {
     FCS_MSG_ERROR("Invalid extrapolation pointer");
     return false;
   }
@@ -132,13 +132,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
   const int pdgId = truth->pdgid();
   const double charge = ParticleData::charge(pdgId);
 
-  double Einit;
   const double Ekin = truth->Ekin();
-  if (OnlyScaleEnergy()) {
-    Einit = simulstate.E();
-  } else {
-    Einit = Ekin;
-  }
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
 
   FCS_MSG_VERBOSE("Momentum " << truth->P() << " pdgId " << truth->pdgid());
   // check that the network exists
@@ -214,7 +209,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     if (simulate_and_retry(chain()[ichain], simulstate, truth, extrapol)
         != FCSSuccess)
     {
-      return FCSFatal;
+      return false;
     }
   }
 
@@ -393,24 +388,21 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               }
             }
 
-            double alpha;
-            if (binsInAlphaInRBin == 1) {
-              alpha = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
-                                             -std::numbers::pi,
-                                             std::numbers::pi);
-            } else {
-              alpha = y->GetBinLowEdge(lowEdgeIndex)
-                  + y->GetBinWidth(iy) * binsToMerge / (nHitsAlpha + 1)
-                      * ialpha;
-
-              if (m_param.IsSymmetrisedAlpha()) {
-                if (CLHEP::RandFlat::shoot(simulstate.randomEngine(),
-                                           -std::numbers::pi,
-                                           std::numbers::pi)
-                    < 0)
-                {
-                  alpha = -alpha;
-                }
+            const bool random_alpha = binsInAlphaInRBin == 1;
+            double alpha = random_alpha
+                ? CLHEP::RandFlat::shoot(simulstate.randomEngine(),
+                                         -std::numbers::pi,
+                                         std::numbers::pi)
+                : y->GetBinLowEdge(lowEdgeIndex)
+                    + y->GetBinWidth(iy) * binsToMerge / (nHitsAlpha + 1)
+                        * ialpha;
+            if (!random_alpha && m_param.IsSymmetrisedAlpha()) {
+              if (CLHEP::RandFlat::shoot(simulstate.randomEngine(),
+                                         -std::numbers::pi,
+                                         std::numbers::pi)
+                  < 0)
+              {
+                alpha = -alpha;
               }
             }
 
@@ -563,12 +555,13 @@ auto TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins) -> int
   if (bins < 4) {
     return 4;
   }
-  if (bins < 8)
+  if (bins < 8) {
     return 8;
-  else if (bins < 16)
+  }
+  if (bins < 16) {
     return 16;
-  else
-    return 32;
+  }
+  return 32;
 }
 
 auto TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,

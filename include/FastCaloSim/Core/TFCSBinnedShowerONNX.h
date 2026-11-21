@@ -30,9 +30,15 @@ public:
 
   using event_bins_t = std::vector<layer_bins_t>;
 
-  TFCSBinnedShowerONNX(const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSBinnedShowerONNX(const char* name = nullptr,
+                                const char* title = nullptr);
 
   ~TFCSBinnedShowerONNX() override;
+  TFCSBinnedShowerONNX(const TFCSBinnedShowerONNX&) = default;
+  TFCSBinnedShowerONNX(TFCSBinnedShowerONNX&&) = default;
+  auto operator=(const TFCSBinnedShowerONNX&)
+      -> TFCSBinnedShowerONNX& = default;
+  auto operator=(TFCSBinnedShowerONNX&&) -> TFCSBinnedShowerONNX& = default;
 
   auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
@@ -45,7 +51,7 @@ public:
   // Loads the ONNX model for the calorimeter simulation.
   auto load_simulator(const std::string& filename) -> bool
   {
-    if (m_ai_simulator) {
+    if (m_ai_simulator != nullptr) {
       delete m_ai_simulator;
       m_ai_simulator = nullptr;
     }
@@ -161,8 +167,8 @@ private:
                         std::size_t layer_index,
                         std::size_t hit_index) const -> std::size_t;
   // Helper functions to load the HDF5 dataset
-  auto load_hdf5_dataset(const std::string& filename,
-                         const std::string& datasetname)
+  static auto load_hdf5_dataset(const std::string& filename,
+                                const std::string& datasetname)
       -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>;
 
   void load_bin_boundaries(const std::string& filename,

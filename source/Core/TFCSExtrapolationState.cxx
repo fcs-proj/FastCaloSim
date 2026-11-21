@@ -8,10 +8,7 @@
 //======= TFCSExtrapolationState =========
 //=============================================
 
-TFCSExtrapolationState::TFCSExtrapolationState()
-{
-  clear();
-}
+TFCSExtrapolationState::TFCSExtrapolationState() = default;
 
 void TFCSExtrapolationState::Print(Option_t* /*option*/) const
 {
@@ -24,7 +21,7 @@ void TFCSExtrapolationState::Print(Option_t* /*option*/) const
   for (const auto& [key, ok] : m_CaloOK) {
     const auto& [layer, subpos] = key;
     if (ok) {
-      FCS_MSG_INFO("  layer " << layer << " subpos " << subpos
+      FCS_MSG_INFO("  layer " << layer << " subpos " << static_cast<int>(subpos)
                               << " MID eta=" << m_etaCalo.at(key) << " phi="
                               << m_phiCalo.at(key) << " r=" << m_rCalo.at(key)
                               << " z=" << m_zCalo.at(key));
@@ -49,6 +46,8 @@ void TFCSExtrapolationState::clear()
   m_IDCaloBoundary_eta = -999;
   m_IDCaloBoundary_phi = -999;
   m_IDCaloBoundary_r = 0;
+  m_IDCaloBoundary_x = 0;
+  m_IDCaloBoundary_y = 0;
   m_IDCaloBoundary_z = 0;
 
   m_IDCaloBoundary_AngleEta = -999;

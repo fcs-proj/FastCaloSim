@@ -72,8 +72,7 @@ auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
     return 0;
   }
   const auto int_rnd = static_cast<HistoContent_t>(s_MaxValue * rnd);
-  auto it =
-      std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), int_rnd);
+  auto it = std::ranges::upper_bound(m_HistoContents, int_rnd);
   auto ibin = FastCaloSim::index_of(m_HistoContents, it);
   if (ibin >= m_HistoContents.size()) {
     ibin = m_HistoContents.size() - 1;

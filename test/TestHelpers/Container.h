@@ -83,7 +83,7 @@ protected:
   virtual auto flatten() const -> std::vector<SerializedType> = 0;
 
   std::vector<ElementType> m_container;
-  CaloGeo* m_geo;
+  CaloGeo* m_geo {nullptr};
 };
 
 }  // namespace TestHelpers

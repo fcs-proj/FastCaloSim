@@ -56,5 +56,5 @@ TEST(TFCSTruthStateTest, Print)
   testing::internal::CaptureStdout();
   ts.Print("");
   std::string const output = testing::internal::GetCapturedStdout();
-  EXPECT_TRUE(output.find("PDGID=11") != std::string::npos);
+  EXPECT_TRUE(output.contains("PDGID=11"));
 }

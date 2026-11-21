@@ -9,9 +9,17 @@ class TH1;
 class TFCSHistoLateralShapeGausLogWeight : public TFCSHistoLateralShapeWeight
 {
 public:
-  TFCSHistoLateralShapeGausLogWeight(const char* name = nullptr,
-                                     const char* title = nullptr);
+  explicit TFCSHistoLateralShapeGausLogWeight(const char* name = nullptr,
+                                              const char* title = nullptr);
   ~TFCSHistoLateralShapeGausLogWeight() override;
+  TFCSHistoLateralShapeGausLogWeight(
+      const TFCSHistoLateralShapeGausLogWeight&) = default;
+  TFCSHistoLateralShapeGausLogWeight(TFCSHistoLateralShapeGausLogWeight&&) =
+      default;
+  auto operator=(const TFCSHistoLateralShapeGausLogWeight&)
+      -> TFCSHistoLateralShapeGausLogWeight& = default;
+  auto operator=(TFCSHistoLateralShapeGausLogWeight&&)
+      -> TFCSHistoLateralShapeGausLogWeight& = default;
 
   /// weight the energy of one hit in order to generate fluctuations
   auto simulate_hit(Hit& hit,

@@ -20,10 +20,16 @@ class TFCSPhiModulationCorrection
     : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSPhiModulationCorrection(const char* name = nullptr,
-                              const char* title = nullptr);
+  explicit TFCSPhiModulationCorrection(const char* name = nullptr,
+                                       const char* title = nullptr);
 
   ~TFCSPhiModulationCorrection() override;
+  TFCSPhiModulationCorrection(const TFCSPhiModulationCorrection& ref) = default;
+  TFCSPhiModulationCorrection(TFCSPhiModulationCorrection&& ref) = default;
+  auto operator=(const TFCSPhiModulationCorrection& ref)
+      -> TFCSPhiModulationCorrection& = default;
+  auto operator=(TFCSPhiModulationCorrection&& ref)
+      -> TFCSPhiModulationCorrection& = default;
 
   void load_phi_modulation(const std::string& filename,
                            std::size_t layer_index,
@@ -31,6 +37,8 @@ public:
                            float eta_max,
                            float energy_shift = 1.0);
 
+  // Clears only the modulation tables, unlike TFCSParametrization::clear()
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   void clear()
   {
     m_modulation.clear();
@@ -72,9 +80,8 @@ public:
     }
     if (std::abs(eta) < 2.5) {
       return 2 * std::numbers::pi / 768;
-    } else {
-      return 2 * std::numbers::pi / 256;
     }
+    return 2 * std::numbers::pi / 256;
   }
 
   // Adds adds the phi-modulation in the energy to the given hit

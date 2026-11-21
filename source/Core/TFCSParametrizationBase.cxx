@@ -62,7 +62,9 @@ auto TFCSParametrizationBase::print_options(Option_t* option) const
   }
   const bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
       || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  return {shortprint, longprint, std::move(optprint)};
+  return {.shortprint = shortprint,
+          .longprint = longprint,
+          .optprint = std::move(optprint)};
 }
 
 /// If called with argument "short", only a one line summary will be printed
@@ -118,7 +120,8 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
         FCS_MSG_WARNING(" - Occurs in parent  : " << this << " ("
                                                   << this->ClassName() << ")"
                                                   << " index=" << i);
-        if (checkexist->second.replace) {
+        if (checkexist->second.replace != nullptr) {
+          // NOLINTNEXTLINE(misc-const-correctness): key of a map of non-const
           TFCSParametrizationBase* refparam = checkexist->second.replace;
           FCS_MSG_DEBUG("Found duplicate pointer: "
                         << refparam << "=" << refparam->GetName()
@@ -142,7 +145,7 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
           continue;
         }
         // skip reference that is itself going to get replaced
-        if (ref.second.replace) {
+        if (ref.second.replace != nullptr) {
           continue;
         }
         // Check for objects with identical content
@@ -180,6 +183,7 @@ void TFCSParametrizationBase::RemoveDuplicates()
       for (std::size_t i = 0; i < onedup.second.mother.size(); ++i) {
         const std::size_t index = onedup.second.index[i];
         TFCSParametrizationBase* mother = onedup.second.mother[i];
+        // NOLINTNEXTLINE(misc-const-correctness): key of a map of non-const
         TFCSParametrizationBase* delparam = mother->operator[](index);
         const std::size_t delcount = dup[delparam].mother.size();
         if (delcount == 0) {

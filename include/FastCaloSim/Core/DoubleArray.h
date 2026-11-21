@@ -11,8 +11,12 @@ class DoubleArray
 {
 public:
   DoubleArray();
-  DoubleArray(int /*n*/);
+  explicit DoubleArray(int /*n*/);
   ~DoubleArray() override;
+  DoubleArray(const DoubleArray&) = default;
+  DoubleArray(DoubleArray&&) = default;
+  auto operator=(const DoubleArray&) -> DoubleArray& = default;
+  auto operator=(DoubleArray&&) -> DoubleArray& = default;
 
 private:
   ClassDefOverride(DoubleArray, 1)

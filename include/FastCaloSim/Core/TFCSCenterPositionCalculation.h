@@ -8,8 +8,8 @@ class TFCSCenterPositionCalculation
     : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSCenterPositionCalculation(const char* name = nullptr,
-                                const char* title = nullptr);
+  explicit TFCSCenterPositionCalculation(const char* name = nullptr,
+                                         const char* title = nullptr);
 
   /// Used to decorate Hit with extrap center positions
   auto simulate_hit(Hit& hit,
@@ -18,7 +18,7 @@ public:
                     const TFCSExtrapolationState* extrapol)
       -> FCSReturnCode override;
   void setExtrapWeight(const float weight) { m_extrapWeight = weight; }
-  auto getExtrapWeight() -> float { return m_extrapWeight; }
+  auto getExtrapWeight() const -> float { return m_extrapWeight; }
   void Print(Option_t* option = "") const override;
 
 private:

@@ -6,10 +6,7 @@
 #include "EventAction.hh"
 
 
-ActionInitialization::ActionInitialization()
-     
-{
-}
+ActionInitialization::ActionInitialization() = default;
 
 ActionInitialization::~ActionInitialization()
 = default;
@@ -23,7 +20,7 @@ void ActionInitialization::Build() const
 {
     auto * primaryGeneratorAction = new PrimaryGeneratorAction;
 
-    if (!fParticleContainer)
+    if (fParticleContainer == nullptr)
     {
         G4Exception("ActionInitialization::Build()", "ActionInitialization", FatalException, "Particle container not set");
     }

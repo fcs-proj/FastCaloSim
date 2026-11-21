@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -28,6 +29,10 @@ public:
 
   // Virtual destructor to ensure proper cleanup
   ~FCal() override = default;
+  FCal(const FCal&) = delete;
+  auto operator=(const FCal&) -> FCal& = delete;
+  FCal(FCal&&) = delete;
+  auto operator=(FCal&&) -> FCal& = delete;
 
   /// @brief Set the geo pointer
   auto set_geo(CaloGeo* geo) { m_geo = geo; }
@@ -39,7 +44,7 @@ public:
     unsigned long long const cell_id = this->get_fcal_cell_id(
         static_cast<int>(layer), pos.x(), pos.y(), pos.z());
 
-    if (cell_id == static_cast<unsigned long long>(-1)) {
+    if (cell_id == std::numeric_limits<unsigned long long>::max()) {
       static Cell const invalid_cell;
       return invalid_cell;
     }
@@ -67,26 +72,26 @@ public:
       electrodes.push_back(std::move(directStream));
     }
 
-    int thisTubeId;
-    int thisTubeI;
-    int thisTubeJ;
+    int thisTubeId {};
+    int thisTubeI {};
+    int thisTubeJ {};
     // int    thisTubeID;
     // int    thisTubeMod;
-    double thisTubeX;
-    double thisTubeY;
+    double thisTubeX {};
+    double thisTubeY {};
     TString tubeName;
 
     // int second_column;
     std::string seventh_column;
     std::string eight_column;
-    int ninth_column;
+    int ninth_column {};
 
     for (int imodule = 1; imodule <= 3; imodule++) {
       // std::cout << "Loading FCal electrode #" << imodule << std::endl;
 
       std::istream& electrode =
           *electrodes[static_cast<std::size_t>(imodule - 1)];
-      while (1) {
+      while (true) {
         electrode >> tubeName;
         if (electrode.eof()) {
           break;
@@ -118,8 +123,6 @@ public:
         if (tileStream3) {
           tileStream3 >> a3;
         }
-
-        std::stringstream const s;
 
         m_FCal_ChannelMap.add_tube(tubeNamestring,
                                    imodule,
@@ -208,7 +211,7 @@ public:
         i++;
       }
     }
-    if (steps) {
+    if (steps != nullptr) {
       *steps = i + 1;
     }
     return i < nmax;
@@ -229,13 +232,13 @@ public:
     }
     int iphi(-100000);
     int ieta(-100000);
-    Long64_t const mask1[] {0x34, 0x34, 0x35};
-    Long64_t const mask2[] {0x36, 0x36, 0x37};
+    const std::array<unsigned long long, 3> mask1 {0x34, 0x34, 0x35};
+    const std::array<unsigned long long, 3> mask2 {0x36, 0x36, 0x37};
     // The channel map works in single precision
     const auto xf = static_cast<float>(x);
     const auto yf = static_cast<float>(y);
     bool found = m_FCal_ChannelMap.getTileID(isam, xf, yf, ieta, iphi);
-    if (steps && found) {
+    if (steps != nullptr && found) {
       *steps = 0;
     }
     if (!found) {
@@ -247,20 +250,24 @@ public:
       std::cout << "Error: Unable to find the closest FCal cell!" << '\n';
       return static_cast<unsigned long long>(-1);
     }
-    Long64_t id = (ieta << 5) + 2 * iphi;
+    // The identifier is computed in unsigned arithmetic, which gives the same
+    // bits as the signed one of Athena
+    unsigned long long id = (static_cast<unsigned long long>(ieta) << 5U)
+        + 2 * static_cast<unsigned long long>(iphi);
     if (isam == 2) {
-      id += (8 << 8);
+      id += (8ULL << 8U);
     }
 
+    const auto imask = static_cast<std::size_t>(isam - 1);
     if (z > 0) {
-      id += (mask2[isam - 1] << 12);
+      id += (mask2[imask] << 12U);
     } else {
-      id += (mask1[isam - 1] << 12);
+      id += (mask1[imask] << 12U);
     }
 
-    id = id << 44;
+    id = id << 44U;
 
-    return static_cast<unsigned long long>(id);
+    return id;
   }
 
 protected:
@@ -270,5 +277,5 @@ protected:
   std::vector<double> m_FCal_rmin, m_FCal_rmax;
 
   // Pointer to geo as we use the FastCaloSim cell store
-  CaloGeo* m_geo;
+  CaloGeo* m_geo {nullptr};
 };

@@ -52,6 +52,10 @@
 # cert-err58-cpp, bugprone-throwing-static-initialization: static tables
 #   whose construction cannot fail in practice
 # boost-use-ranges, llvm-use-ranges: duplicates of modernize-use-ranges
+# modernize-use-constraints: clang-tidy 18 (used in CI) crashes in it on the
+#   Boost.Multiprecision headers that Boost.Geometry includes
+# clang-analyzer-optin.core.EnumCastOutOfRange: FCSReturnCode encodes retry
+#   counts as FCSRetry + n, valid values of its fixed underlying type
 Checks: "*,\
   -altera-*,\
   -fuchsia-*,\
@@ -95,7 +99,9 @@ Checks: "*,\
   -cert-err58-cpp,\
   -bugprone-throwing-static-initialization,\
   -boost-use-ranges,\
-  -llvm-use-ranges"
+  -llvm-use-ranges,\
+  -modernize-use-constraints,\
+  -clang-analyzer-optin.core.EnumCastOutOfRange"
 WarningsAsErrors: ''
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'

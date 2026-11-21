@@ -10,10 +10,16 @@ class TH1;
 class TFCSHitCellMappingWiggle : public TFCSHitCellMapping
 {
 public:
-  TFCSHitCellMappingWiggle(const char* name = nullptr,
-                           const char* title = nullptr,
-                           CaloGeo* geo = nullptr);
+  explicit TFCSHitCellMappingWiggle(const char* name = nullptr,
+                                    const char* title = nullptr,
+                                    CaloGeo* geo = nullptr);
   ~TFCSHitCellMappingWiggle() override;
+  TFCSHitCellMappingWiggle(const TFCSHitCellMappingWiggle&) = default;
+  TFCSHitCellMappingWiggle(TFCSHitCellMappingWiggle&&) = default;
+  auto operator=(const TFCSHitCellMappingWiggle&)
+      -> TFCSHitCellMappingWiggle& = default;
+  auto operator=(TFCSHitCellMappingWiggle&&)
+      -> TFCSHitCellMappingWiggle& = default;
 
   void initialize(TFCS1DFunction* func);
   void initialize(const std::vector<const TFCS1DFunction*>& functions,
@@ -24,6 +30,8 @@ public:
                   const std::vector<float>& bin_low_edges,
                   float xscale = 1);
 
+  // Deletes only the wiggle functions and bins
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   void clear();
 
   auto get_number_of_bins() const -> std::size_t { return m_functions.size(); }
@@ -63,6 +71,9 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
+  // Not virtual: compares only the members of this class, operator== combines
+  // the comparisons of the base classes
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:

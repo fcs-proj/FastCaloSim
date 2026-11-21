@@ -29,8 +29,8 @@ TFCSEnergyInterpolationSpline::TFCSEnergyInterpolationSpline(const char* name,
 }
 
 void TFCSEnergyInterpolationSpline::InitFromArrayInLogEkin(Int_t np,
-                                                           Double_t logEkin[],
-                                                           Double_t response[],
+                                                           Double_t* logEkin,
+                                                           Double_t* response,
                                                            const char* opt,
                                                            Double_t valbeg,
                                                            Double_t valend)
@@ -41,8 +41,8 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInLogEkin(Int_t np,
 }
 
 void TFCSEnergyInterpolationSpline::InitFromArrayInEkin(Int_t np,
-                                                        Double_t Ekin[],
-                                                        Double_t response[],
+                                                        Double_t* Ekin,
+                                                        Double_t* response,
                                                         const char* opt,
                                                         Double_t valbeg,
                                                         Double_t valend)
@@ -59,30 +59,25 @@ auto TFCSEnergyInterpolationSpline::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  double Emean;
-  double Einit;
   const double Ekin = truth->Ekin();
-  if (OnlyScaleEnergy()) {
-    Einit = simulstate.E();
-  } else {
-    Einit = Ekin;
-  }
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
   // catch very small values of Ekin (use 1 keV here) and fix the spline lookup
   // to the 1keV value
   const double logEkin =
       (Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV));
-  if (logEkin < m_spline.GetXmin()) {
-    Emean = m_spline.Eval(m_spline.GetXmin()) * Einit;
-  } else {
-    if (logEkin > m_spline.GetXmax()) {
-      Emean = (m_spline.Eval(m_spline.GetXmax())
-               + m_spline.Derivative(m_spline.GetXmax())
-                   * (logEkin - m_spline.GetXmax()))
-          * Einit;
-    } else {
-      Emean = m_spline.Eval(logEkin) * Einit;
+  const double Emean = [&] -> double
+  {
+    if (logEkin < m_spline.GetXmin()) {
+      return m_spline.Eval(m_spline.GetXmin()) * Einit;
     }
-  }
+    if (logEkin > m_spline.GetXmax()) {
+      return (m_spline.Eval(m_spline.GetXmax())
+              + m_spline.Derivative(m_spline.GetXmax())
+                  * (logEkin - m_spline.GetXmax()))
+          * Einit;
+    }
+    return m_spline.Eval(logEkin) * Einit;
+  }();
 
   if (OnlyScaleEnergy()) {
     FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin()

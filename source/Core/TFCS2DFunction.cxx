@@ -14,7 +14,7 @@
 //======= TFCS2DFunction =========
 //=============================================
 
-void TFCS2DFunction::rnd_to_fct(float value[], const float rnd[]) const
+void TFCS2DFunction::rnd_to_fct(float* value, const float* rnd) const
 {
   double valuex = 0;
   double valuey = 0;
@@ -86,16 +86,21 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
   return integral;
 }
 
-auto create_random_TH2(int nbinsx = 64, int nbinsy = 64) -> TH2*
+namespace
+{
+[[maybe_unused]] auto create_random_TH2(int nbinsx = 64, int nbinsy = 64)
+    -> TH2*
 {
   TH2* hist = new TH2F("test2D", "test2D", nbinsx, 0, 1, nbinsy, 0, 1);
   hist->Sumw2();
+  // integer division: half of nbinsy^2, rounded down
+  int const half_nbinsy_sq = nbinsy * nbinsy / 2;
   for (int ix = 1; ix <= nbinsx; ++ix) {
     for (int iy = 1; iy <= nbinsy; ++iy) {
-      hist->SetBinContent(ix,
-                          iy,
-                          (0.5 + gRandom->Rndm()) * (nbinsx + ix)
-                              * (nbinsy * nbinsy / 2 + iy * iy));
+      hist->SetBinContent(
+          ix,
+          iy,
+          (0.5 + gRandom->Rndm()) * (nbinsx + ix) * (half_nbinsy_sq + iy * iy));
       if (gRandom->Rndm() < 0.1) {
         hist->SetBinContent(ix, iy, 0);
       }
@@ -104,3 +109,4 @@ auto create_random_TH2(int nbinsx = 64, int nbinsy = 64) -> TH2*
   }
   return hist;
 }
+}  // namespace

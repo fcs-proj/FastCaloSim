@@ -306,7 +306,7 @@ auto TFCSONNXHandler::readBytesFromTTree(TTree& tree) -> std::vector<char>
 {
   FCS_MSG_DEBUG("TFCSONNXHandler reading bytes from tree.");
   std::vector<char> bytes;
-  char data;
+  char data = 0;
   tree.SetBranchAddress("serialized_m_session", &data);
   for (int i = 0; tree.LoadTree(i) >= 0; i++) {
     tree.GetEntry(i);
@@ -320,7 +320,7 @@ void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
                                         const std::vector<char>& bytes)
 {
   FCS_MSG_DEBUG("TFCSONNXHandler writing bytes to tree.");
-  char m_session_data;
+  char m_session_data = 0;
   tree.Branch(
       "serialized_m_session", &m_session_data, "serialized_m_session/B");
   for (Char_t const here : bytes) {
@@ -364,7 +364,6 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
   std::vector<Ort::Value> node_values;
   // Non const values that will be needed at each step.
   std::string node_name;
-  size_t first_digit;
   // Move along the list of node names gathered in the constructor
   // we need both the node name, and the dimension
   // so we cannot iterate directly on the vector.
@@ -387,14 +386,14 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
       FCS_MSG_DEBUG("Have input named " << inp.first);
     };
     // Get the node content and remove any common prefix from the elements
-    const std::map<std::string, double> node_inputs = inputs.at(node_name);
+    const std::map<std::string, double>& node_inputs = inputs.at(node_name);
     std::vector<Tin> node_elements(elements_in_node);
 
     FCS_MSG_DEBUG("Found node named " << node_name << " with "
                                       << elements_in_node << " elements.");
     // Then the rest should be numbers from 0 up
     for (const auto& element : node_inputs) {
-      first_digit = element.first.find_first_of("0123456789");
+      const std::size_t first_digit = element.first.find_first_of("0123456789");
       // if there is no digit, it's not an element
       if (first_digit < element.first.length()) {
         const auto key_number = static_cast<std::size_t>(
@@ -433,10 +432,10 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
   // as the output format is just a string to double map
   // the outputs will be keyed like "<node_name>_<part_n>"
   std::string output_name;
-  const Tout* output_node;
   for (size_t node_n = 0; node_n < m_outputNodeNames.size(); node_n++) {
     // get a pointer to the data
-    output_node = output_tensors[node_n].GetTensorMutableData<Tout>();
+    const Tout* const output_node =
+        output_tensors[node_n].GetTensorMutableData<Tout>();
     FCS_MSG_VERBOSE("output node " << output_node);
     const int64_t elements_in_node = m_outputNodeSize[node_n];
     node_name = m_outputNodeNames[node_n];

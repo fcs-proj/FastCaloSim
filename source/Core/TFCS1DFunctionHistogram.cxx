@@ -115,9 +115,9 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
 
   binborder.push_back(h_out1->GetXaxis()->GetXmin());
 
-  int merged = 0;
-  int skip = 0;
-  int secondlastbin_merge = 0;
+  bool merged = false;
+  bool skip = false;
+  bool secondlastbin_merge = false;
   for (int b = 1; b < h_out1->GetNbinsX() - 1; b++)  // never touch the last bin
   {
     double const thisBin = h_out1->GetBinContent(b);
@@ -129,16 +129,16 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
       binborder.push_back(h_out1->GetBinLowEdge(b + 1));
       content.push_back(thisBin);
     }
-    skip = 0;
+    skip = false;
     if (diff <= change && !merged) {
       double const sum = thisBin * width + nextBin * nextwidth;
       double const sumwidth = width + nextwidth;
       binborder.push_back(h_out1->GetBinLowEdge(b + 2));
       content.push_back(sum / sumwidth);
-      merged = 1;
-      skip = 1;
+      merged = true;
+      skip = true;
       if (b == (h_out1->GetNbinsX() - 2)) {
-        secondlastbin_merge = 1;
+        secondlastbin_merge = true;
       }
     }
   }  // for b
@@ -197,8 +197,7 @@ auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
     value = x;
   } else {
     // find the first HistoContent element that is larger than rnd:
-    auto larger_element =
-        std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), rnd);
+    auto larger_element = std::ranges::upper_bound(m_HistoContents, rnd);
     auto index = FastCaloSim::index_of(m_HistoContents, larger_element);
     if (index >= m_HistoContents.size()) {
       --index;

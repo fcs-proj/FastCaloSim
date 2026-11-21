@@ -3,19 +3,16 @@
 #include "FastCaloSim/Core/TFCS1DFunctionRegressionTF.h"
 
 #include "TFile.h"
-using namespace std;
 
 //=============================================
 //======= TFCS1DFunctionRegressionTF =========
 //=============================================
 
-using namespace std;
-
 TFCS1DFunctionRegressionTF::TFCS1DFunctionRegressionTF(float rangeval,
                                                        float startval)
+    : m_rangeval(rangeval)
+    , m_startval(startval)
 {
-  m_rangeval = rangeval;
-  m_startval = startval;
 }
 
 auto TFCS1DFunctionRegressionTF::retransform(double value) const -> double

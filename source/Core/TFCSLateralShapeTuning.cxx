@@ -61,7 +61,7 @@ auto TFCSLateralShapeTuning::initFromModelFile(
                                     intMaxEta,
                                     parameterName)
                             .c_str()));
-    if (modelParameterGraph) {
+    if (modelParameterGraph != nullptr) {
       // initialize the model interpolation and save in interpolation map
       linModelInterpol->InitFromArrayInEkin(modelParameterGraph->GetN(),
                                             modelParameterGraph->GetX(),

@@ -12,9 +12,17 @@ class TFCSFlatLateralShapeParametrization
     : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSFlatLateralShapeParametrization(const char* name = nullptr,
-                                      const char* title = nullptr);
+  explicit TFCSFlatLateralShapeParametrization(const char* name = nullptr,
+                                               const char* title = nullptr);
   ~TFCSFlatLateralShapeParametrization() override;
+  TFCSFlatLateralShapeParametrization(
+      const TFCSFlatLateralShapeParametrization&) = default;
+  TFCSFlatLateralShapeParametrization(TFCSFlatLateralShapeParametrization&&) =
+      default;
+  auto operator=(const TFCSFlatLateralShapeParametrization&)
+      -> TFCSFlatLateralShapeParametrization& = default;
+  auto operator=(TFCSFlatLateralShapeParametrization&&)
+      -> TFCSFlatLateralShapeParametrization& = default;
 
   /// set the integral of the histogram to the desired number of hits
   void set_number_of_hits(float nhits);

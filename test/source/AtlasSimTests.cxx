@@ -22,7 +22,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   AtlasSimTestConfig::set_output_dir(output_dir);
 
   // Retrieve the event to be transported
-  const TestHelpers::Event evt = GetParam();
+  const TestHelpers::Event& evt = GetParam();
 
   // Tell the action initialization to set the particles
   G4RunTests::actionInitialization->set_particle_container(
@@ -47,7 +47,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   model->setExtrapolationTool(BasicExtrapolTests::extrapolator);
 
   // Activate the simulation for this test
-  model->doSimulation(true);
+  model->doSimulation(/*doSimulation=*/true);
 
   // Set the param file path
   std::string const paramsObject {"SelPDGID"};
@@ -80,6 +80,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   std::string const sim_plot_exec =
       AtlasSimTestConfig::py_sim_exec(evt.get_label());
 
+  // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): plot script
   ASSERT_TRUE(system(sim_plot_exec.c_str()) == 0);
 
   // Now compare results with references with a tolerance of 0.1 percent

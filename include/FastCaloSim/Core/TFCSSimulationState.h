@@ -28,7 +28,7 @@ class FASTCALOSIM_EXPORT TFCSSimulationState
     , public FastCaloSim::MLogging
 {
 public:
-  TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine = nullptr);
+  explicit TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine = nullptr);
 
   auto randomEngine() -> CLHEP::HepRandomEngine* { return m_randomEngine; }
   void setRandomEngine(CLHEP::HepRandomEngine* engine)
@@ -81,7 +81,7 @@ public:
   // getAuxInfo<double>("SF"_FCShash) and setAuxInfo<double>("SF"_FCShash,mysf)
   // directly in the energy parametrization
   void set_SF(double mysf) { setAuxInfo<double>("SF"_FCShash, mysf); }
-  auto get_SF() -> double { return getAuxInfo<double>("SF"_FCShash); }
+  auto get_SF() const -> double { return getAuxInfo<double>("SF"_FCShash); }
 
   void clear();
 
@@ -89,7 +89,7 @@ private:
   CLHEP::HepRandomEngine* m_randomEngine;
 
   std::optional<std::size_t> m_Ebin;  //!
-  double m_Etot;
+  double m_Etot {0};
   // TO BE CLEANED UP! SHOULD ONLY STORE EITHER E OR EFRAC!!!
   std::unordered_map<std::size_t, double> m_E;
   std::unordered_map<std::size_t, double> m_Efrac;
@@ -115,12 +115,12 @@ public:
     void* p;
 
     // cast operators
-    operator bool() const { return b; }
-    operator char() const { return c; }
-    operator int() const { return i; }
-    operator float() const { return f; }
-    operator double() const { return d; }
-    operator void*() const { return p; }
+    explicit operator bool() const { return b; }
+    explicit operator char() const { return c; }
+    explicit operator int() const { return i; }
+    explicit operator float() const { return f; }
+    explicit operator double() const { return d; }
+    explicit operator void*() const { return p; }
 
     // template set method. No general implementation exist, only explicit
     // implementations are added after the class definition
@@ -134,7 +134,7 @@ public:
   static constexpr auto fnv1a_32(char const* s, std::size_t count)
       -> std::uint32_t
   {
-    return ((count ? fnv1a_32(s, count - 1) : 2166136261U)
+    return ((count != 0 ? fnv1a_32(s, count - 1) : 2166136261U)
             ^ static_cast<std::uint32_t>(s[count]))
         * 16777619U;
   }
@@ -151,7 +151,7 @@ public:
   // Get auxiliary info
   // Use as TFCSSimulationState::getAuxInfo<int>(index)
   template<class T>
-  auto getAuxInfo(std::uint32_t index) const -> const T
+  auto getAuxInfo(std::uint32_t index) const -> T
   {
     return static_cast<T>(m_AuxInfo.at(index));
   }

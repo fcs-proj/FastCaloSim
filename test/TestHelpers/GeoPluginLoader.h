@@ -13,34 +13,29 @@ class GeoPluginLoader
 {
 public:
   // Constructor:
-  GeoPluginLoader();
+  GeoPluginLoader() = default;
 
   // Destructor:
-  ~GeoPluginLoader();
+  ~GeoPluginLoader() = default;
 
-  // load G4Solid plugin
-  Plugin* load(const std::string& path) const;
-
-private:
   GeoPluginLoader(const GeoPluginLoader&) = delete;
   auto operator=(const GeoPluginLoader&) -> GeoPluginLoader& = delete;
+  GeoPluginLoader(GeoPluginLoader&&) = delete;
+  auto operator=(GeoPluginLoader&&) -> GeoPluginLoader& = delete;
+
+  // load G4Solid plugin
+  auto load(const std::string& pString) const -> Plugin*;
 };
 
 template<class Plugin>
-GeoPluginLoader<Plugin>::GeoPluginLoader() = default;
-
-template<class Plugin>
-GeoPluginLoader<Plugin>::~GeoPluginLoader() = default;
-
-template<class Plugin>
-Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
+auto GeoPluginLoader<Plugin>::load(const std::string& pString) const -> Plugin*
 {
   std::string bNameString = std::filesystem::path(pString)
                                 .filename()
                                 .string();  // Strip off the directory
   bNameString = bNameString.substr(3);  // Strip off leading "lib"
   bNameString =
-      bNameString.substr(0, bNameString.find("."));  // Strip off extensions
+      bNameString.substr(0, bNameString.find('.'));  // Strip off extensions
 
   std::string const createFunctionName = std::string("create") + bNameString;
 
@@ -48,7 +43,7 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   // Loads the library:
   //
   void* handle = dlopen(pString.c_str(), RTLD_NOW);
-  if (!handle) {
+  if (handle == nullptr) {
     std::cerr << dlerror() << '\n';
     return nullptr;
   }
@@ -57,7 +52,7 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   // Gets the function
   //
   void* f = dlsym(handle, createFunctionName.c_str());
-  if (!f) {
+  if (f == nullptr) {
     std::cerr << dlerror() << '\n';
     return nullptr;
   }

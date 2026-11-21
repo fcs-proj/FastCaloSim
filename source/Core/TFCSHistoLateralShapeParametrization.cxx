@@ -90,7 +90,7 @@ auto TFCSHistoLateralShapeParametrization::get_number_of_hits(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> int
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return -1;
   }
 
@@ -109,7 +109,7 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
@@ -128,33 +128,30 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  double alpha;
-  double r;
-  double rnd1;
-  double rnd2;
-  rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
-  rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  // Set by m_hist.rnd_to_fct()
+  double alpha = 0;
+  double r = 0;
+  const double rnd0 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  double rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
-    if (rnd2 >= 0.5) {  // Fill negative phi half of shape
-      rnd2 -= 0.5;
-      rnd2 *= 2;
-      m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
+    if (rnd1 >= 0.5) {  // Fill negative phi half of shape
+      rnd1 -= 0.5;
+      rnd1 *= 2;
+      m_hist.rnd_to_fct(alpha, r, rnd0, rnd1);
       alpha = -alpha;
     } else {  // Fill positive phi half of shape
-      rnd2 *= 2;
-      m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
+      rnd1 *= 2;
+      m_hist.rnd_to_fct(alpha, r, rnd0, rnd1);
     }
   } else {
-    m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
+    m_hist.rnd_to_fct(alpha, r, rnd0, rnd1);
   }
   if (std::isnan(alpha) || std::isnan(r)) {
     FCS_MSG_ERROR("  Histogram: "
                   << m_hist.get_HistoBordersx().size() - 1 << "*"
                   << m_hist.get_HistoBordersy().size() - 1
                   << " bins, #hits=" << m_nhits << " alpha=" << alpha
-                  << " r=" << r << " rnd1=" << rnd1 << " rnd2=" << rnd2);
-    alpha = 0;
-    r = 0.001;
+                  << " r=" << r << " rnd0=" << rnd0 << " rnd1=" << rnd1);
 
     FCS_MSG_ERROR("  This error could probably be retried");
     return FCSFatal;
@@ -197,7 +194,7 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
 
 auto TFCSHistoLateralShapeParametrization::Initialize(TH2* hist) -> bool
 {
-  if (!hist) {
+  if (hist == nullptr) {
     return false;
   }
   m_hist.Initialize(hist);

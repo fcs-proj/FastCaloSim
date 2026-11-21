@@ -24,6 +24,7 @@ TEST(ParamCreationTests, Barrel)
 
   // Run the executable
   std::string const command = EXECUTABLE_PATH + " > " + log_file + " 2>&1";
+  // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): runs the slicer
   int const returnCode = std::system(command.c_str());
   EXPECT_EQ(returnCode, 0) << "Executable failed to run. Check log: "
                            << log_file;

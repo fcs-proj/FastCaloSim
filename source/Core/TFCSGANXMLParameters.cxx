@@ -31,7 +31,7 @@ auto xml_string(const char* text) -> const xmlChar*
 auto getXmlAttr(xmlNodePtr node, const char* name) -> std::string
 {
   xmlChar* prop = xmlGetProp(node, xml_string(name));
-  if (!prop) {
+  if (prop == nullptr) {
     return {};
   }
   std::string value(reinterpret_cast<const char*>(prop));
@@ -82,12 +82,12 @@ void TFCSGANXMLParameters::InitialiseFromXML(
   for (xmlNodePtr nodeRoot = doc->children; nodeRoot != nullptr;
        nodeRoot = nodeRoot->next)
   {
-    if (xmlStrEqual(nodeRoot->name, xml_string("Bins"))) {
+    if (xmlStrEqual(nodeRoot->name, xml_string("Bins")) != 0) {
       for (xmlNodePtr nodeParticle = nodeRoot->children;
            nodeParticle != nullptr;
            nodeParticle = nodeParticle->next)
       {
-        if (xmlStrEqual(nodeParticle->name, xml_string("Particle"))) {
+        if (xmlStrEqual(nodeParticle->name, xml_string("Particle")) != 0) {
           int const nodePid = getXmlAttrInt(nodeParticle, "pid");
 
           if (nodePid == pid) {
@@ -95,7 +95,7 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                  nodeBin != nullptr;
                  nodeBin = nodeBin->next)
             {
-              if (xmlStrEqual(nodeBin->name, xml_string("Bin"))) {
+              if (xmlStrEqual(nodeBin->name, xml_string("Bin")) != 0) {
                 int const nodeEtaMin = getXmlAttrInt(nodeBin, "etaMin");
                 int const nodeEtaMax = getXmlAttrInt(nodeBin, "etaMax");
                 int const regionId = getXmlAttrInt(nodeBin, "regionId");
@@ -112,7 +112,8 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                        nodeLayer != nullptr;
                        nodeLayer = nodeLayer->next)
                   {
-                    if (xmlStrEqual(nodeLayer->name, xml_string("Layer"))) {
+                    if (xmlStrEqual(nodeLayer->name, xml_string("Layer")) != 0)
+                    {
                       std::vector<double> edges;
                       std::string const s(getXmlAttr(nodeLayer, "r_edges"));
 

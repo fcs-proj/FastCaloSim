@@ -35,6 +35,8 @@
  * Has various subclasses to cover differing network
  * libraries and save formats.
  **/
+// Custom copy constructor, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class VNetworkBase : public FastCaloSim::MLogging
 {
 public:
@@ -295,14 +297,14 @@ protected:
    *
    * @param outputs    The outputs, changed in place.
    **/
-  void removePrefixes(NetworkOutputs& outputs) const;
+  static void removePrefixes(NetworkOutputs& outputs);
 
   /**
    * @brief Remove any common prefix from the outputs.
    *
    * @param outputs    The output names, changed in place.
    **/
-  void removePrefixes(std::vector<std::string>& output_names) const;
+  static void removePrefixes(std::vector<std::string>& output_names);
 
 private:
   // Supplying a ClassDef for writing to file.

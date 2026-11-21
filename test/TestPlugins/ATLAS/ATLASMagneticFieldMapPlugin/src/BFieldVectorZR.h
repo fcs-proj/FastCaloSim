@@ -12,15 +12,17 @@
 #ifndef BFIELDVECTORZR_H
 #define BFIELDVECTORZR_H
 
+#include <array>
+#include <cstddef>
+
 class BFieldVectorZR
 {
 public:
   // constructor
-  BFieldVectorZR() { ; }
+  BFieldVectorZR() = default;
   BFieldVectorZR(float Bz, float Br)
+      : m_B {Bz, Br}
   {
-    m_B[0] = Bz;
-    m_B[1] = Br;
   }
   // setter
   void set(float Bz, float Br)
@@ -32,10 +34,10 @@ public:
   auto z() const -> float { return m_B[0]; }
   auto r() const -> float { return m_B[1]; }
   // array-like accessor
-  auto operator[](int i) const -> float { return m_B[i]; }
+  auto operator[](std::size_t i) const -> float { return m_B[i]; }
 
 private:
-  float m_B[2];
+  std::array<float, 2> m_B {};
 };
 
 #endif

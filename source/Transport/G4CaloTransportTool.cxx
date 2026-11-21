@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <string_view>
+
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
 
 // Geant4 includes for particle extrapolation
@@ -14,12 +16,13 @@
 #include "G4Navigator.hh"
 #include "G4PVPlacement.hh"
 #include "G4PropagatorInField.hh"
+#include "G4String.hh"
 #include "G4Track.hh"
 #include "G4TransportationManager.hh"
 
 G4CaloTransportTool::G4CaloTransportTool(G4VPhysicalVolume* world)
 {
-  if (!world) {
+  if (world == nullptr) {
     G4Exception("G4CaloTransportTool::G4CaloTransportTool",
                 "MissingWorldVolume",
                 FatalException,
@@ -42,7 +45,7 @@ auto G4CaloTransportTool::createSimplifiedWorld(
 {
   G4LogicalVolume* logVol =
       G4LogicalVolumeStore::GetInstance()->GetVolume(worldLogicalVolumeName);
-  if (!logVol) {
+  if (logVol == nullptr) {
     G4ExceptionDescription description;
     description << "G4CaloTransportTool: simplified world logical volume '"
                 << worldLogicalVolumeName
@@ -176,7 +179,9 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
                                                     &direction);
     if (volume != nullptr) {
       // We stop the track navigation once we have reached the provided volume
-      if (volume->GetName().find(m_transportLimitVolume) != std::string::npos) {
+      if (G4StrUtil::contains(volume->GetName(),
+                              std::string_view(m_transportLimitVolume)))
+      {
         break;
       }
     } else {

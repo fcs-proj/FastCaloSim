@@ -18,6 +18,7 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <print>
 #include <stdexcept>
 #include <string>
 
@@ -35,7 +36,8 @@ namespace
 auto env_int(const char* name, int fallback) -> int
 {
   const char* value = std::getenv(name);
-  return value != nullptr ? std::atoi(value) : fallback;
+  return value != nullptr ? static_cast<int>(std::strtol(value, nullptr, 10))
+                          : fallback;
 }
 
 // Single dump file shared by all configurations, opened on first use; null if
@@ -51,14 +53,17 @@ auto dump_file() -> FILE*
       throw std::runtime_error(std::string("Cannot open BENCH_DUMP file ")
                                + path + ": " + std::strerror(errno));
     }
-    return std::unique_ptr<FILE, int (*)(FILE*)>(f, &std::fclose);
+    return {f, &std::fclose};
   }();
   return file.get();
 }
 
+// The floats are written with printf's %a: its hexadecimal format (with the 0x
+// prefix) is the one of the reference dumps, while std::print's {:a} omits the
+// prefix. A failed write shows up when comparing the dumps.
 void dump(FILE* out, const std::string& label, FastSimModel& model)
 {
-  std::fprintf(out, "CONFIG %s\n", label.c_str());
+  std::println(out, "CONFIG {}", label);
 
   // The getters return copies: keep them alive while iterating
   const auto tracks = model.GetTransportTracks();
@@ -67,14 +72,16 @@ void dump(FILE* out, const std::string& label, FastSimModel& model)
 
   int itrack = 0;
   for (const auto& track : tracks.get()) {
-    std::fprintf(out, "TRACK %d\n", itrack++);
+    std::println(out, "TRACK {}", itrack++);
     for (const auto& pos : track) {
+      // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
       std::fprintf(out, "%a %a %a\n", pos.x(), pos.y(), pos.z());
     }
   }
 
   int iextrap = 0;
   for (const auto& ex : extrapolations.get()) {
+    // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
     std::fprintf(out,
                  "EXTRAP %d %a %a %a %a %a %a %a %a\n",
                  iextrap++,
@@ -87,9 +94,11 @@ void dump(FILE* out, const std::string& label, FastSimModel& model)
                  ex.IDCaloBoundary_AngleEta(),
                  ex.IDCaloBoundary_Angle3D());
     for (std::size_t layer = 0; layer <= 23; ++layer) {
-      for (const Cell::SubPos subpos :
-           {Cell::SubPos::MID, Cell::SubPos::ENT, Cell::SubPos::EXT})
+      for (const FastCaloSim::SubPos subpos : {FastCaloSim::SubPos::MID,
+                                               FastCaloSim::SubPos::ENT,
+                                               FastCaloSim::SubPos::EXT})
       {
+        // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
         std::fprintf(out,
                      "%zu %d %d %a %a %a %a %a %a\n",
                      layer,
@@ -109,30 +118,33 @@ void dump(FILE* out, const std::string& label, FastSimModel& model)
   for (const auto& state : states.get()) {
     // -1 for no energy bin, as in the reference dumps
     if (const auto ebin = state.Ebin()) {
+      // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
       std::fprintf(out, "STATE %d %zu %a\n", istate++, *ebin, state.E());
     } else {
+      // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
       std::fprintf(out, "STATE %d -1 %a\n", istate++, state.E());
     }
     for (std::size_t sample = 0; sample <= 23; ++sample) {
+      // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
       std::fprintf(
           out, "E %zu %a %a\n", sample, state.E(sample), state.Efrac(sample));
     }
     const std::map<unsigned long long, float> cells(state.cells().begin(),
                                                     state.cells().end());
     for (const auto& [id, energy] : cells) {
+      // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
       std::fprintf(out, "%llu %a\n", id, static_cast<double>(energy));
     }
   }
 }
-}  // namespace
-
 class AtlasBenchmark : public AtlasSimTests
 {
 };
+}  // namespace
 
 TEST_P(AtlasBenchmark, Throughput)
 {
-  const TestHelpers::Event evt = GetParam();
+  const TestHelpers::Event& evt = GetParam();
   const int n_particles = env_int("BENCH_N", 50);
   ASSERT_GT(n_particles, 0) << "BENCH_N must be a positive integer";
   // Open the dump before the run, so that a bad path fails without waiting
@@ -167,13 +179,13 @@ TEST_P(AtlasBenchmark, Throughput)
 
   BasicExtrapolTests::extrapolator.setLevel(FastCaloSim::MSG::Level::INFO);
   model->setExtrapolationTool(BasicExtrapolTests::extrapolator);
-  model->doSimulation(true);
+  model->doSimulation(/*doSimulation=*/true);
 
   auto* param = static_cast<TFCSParametrizationBase*>(
       BasicSimTests::param_files[evt.get_param_file_key()]->Get("SelPDGID"));
   ASSERT_NE(param, nullptr);
   param->set_geometry(AtlasGeoTests::geo);
-  param->setLevel(FastCaloSim::MSG::Level::INFO, true);
+  param->setLevel(FastCaloSim::MSG::Level::INFO, /*recursive=*/true);
   model->setParametrization(param);
 
   // Run initialization (physics tables on the first run) outside the timing
@@ -185,11 +197,11 @@ TEST_P(AtlasBenchmark, Throughput)
 
   const double ms =
       std::chrono::duration<double, std::milli>(stop - start).count();
-  std::printf("BENCH %-45s N=%d ms=%.1f ms/particle=%.3f\n",
-              evt.get_print_string().c_str(),
-              n_particles,
-              ms,
-              ms / n_particles);
+  std::println("BENCH {:<45} N={} ms={:.1f} ms/particle={:.3f}",
+               evt.get_print_string(),
+               n_particles,
+               ms,
+               ms / n_particles);
 
   if (out != nullptr) {
     dump(out, evt.get_print_string(), *model);

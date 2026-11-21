@@ -61,20 +61,20 @@ public:
   auto condVector() const -> const std::vector<BFieldCond>* { return &m_cond; }
   auto memSize() const -> int
   {
-    return static_cast<int>(
-        static_cast<std::size_t>(BFieldMesh<short>::memSize()) + sizeof(int)
-        + sizeof(BFieldCond) * m_cond.capacity());
+    return static_cast<int>(static_cast<std::size_t>(meshMemSize())
+                            + sizeof(int)
+                            + sizeof(BFieldCond) * m_cond.capacity());
   }
   // adjust the min/max edges to a new value
   void adjustMin(int i, double x)
   {
-    m_min[i] = x;
-    m_mesh[i].front() = x;
+    m_min[static_cast<std::size_t>(i)] = x;
+    m_mesh[static_cast<std::size_t>(i)].front() = x;
   }
   void adjustMax(int i, double x)
   {
-    m_max[i] = x;
-    m_mesh[i].back() = x;
+    m_max[static_cast<std::size_t>(i)] = x;
+    m_mesh[static_cast<std::size_t>(i)].back() = x;
   }
 
 private:

@@ -12,8 +12,8 @@
 class TFCSEnergyInterpolationPiecewiseLinear : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationPiecewiseLinear(const char* name = nullptr,
-                                         const char* title = nullptr);
+  explicit TFCSEnergyInterpolationPiecewiseLinear(const char* name = nullptr,
+                                                  const char* title = nullptr);
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
   {
@@ -36,11 +36,11 @@ public:
   }
 
   void InitFromArrayInLogEkin(Int_t np,
-                              const Double_t logEkin[],
-                              const Double_t response[]);
+                              const Double_t* logEkin,
+                              const Double_t* response);
   void InitFromArrayInEkin(Int_t np,
-                           const Double_t Ekin[],
-                           const Double_t response[]);
+                           const Double_t* Ekin,
+                           const Double_t* response);
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

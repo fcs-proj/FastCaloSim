@@ -8,10 +8,9 @@ class TFCSLateralShapeParametrizationFluctChain
     : public TFCSLateralShapeParametrizationHitChain
 {
 public:
-  TFCSLateralShapeParametrizationFluctChain(const char* name = nullptr,
-                                            const char* title = nullptr,
-                                            float RMS = 1.0);
-  TFCSLateralShapeParametrizationFluctChain(
+  explicit TFCSLateralShapeParametrizationFluctChain(
+      const char* name = nullptr, const char* title = nullptr, float RMS = 1.0);
+  explicit TFCSLateralShapeParametrizationFluctChain(
       TFCSLateralShapeParametrizationHitBase* hitsim);
 
   // set and get the amount of hit energy fluctation around E/n for n hits

@@ -23,6 +23,11 @@ public:
 
   TFCSGANXMLParameters();
   ~TFCSGANXMLParameters() override;
+  TFCSGANXMLParameters(const TFCSGANXMLParameters&) = default;
+  TFCSGANXMLParameters(TFCSGANXMLParameters&&) = default;
+  auto operator=(const TFCSGANXMLParameters&)
+      -> TFCSGANXMLParameters& = default;
+  auto operator=(TFCSGANXMLParameters&&) -> TFCSGANXMLParameters& = default;
 
   void InitialiseFromXML(int pid,
                          int etaMid,

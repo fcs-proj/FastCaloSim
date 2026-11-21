@@ -20,13 +20,16 @@ VNetworkBase::VNetworkBase()
 }
 
 // record the input file and provided it's not empty call SetUp
+// NOLINTNEXTLINE(modernize-pass-by-value): keep the public signature
 VNetworkBase::VNetworkBase(const std::string& inputFile)
     : m_inputFile(inputFile)
 {
   FCS_MSG_DEBUG("Constructor called with inputFile");
 }
 
-// No setupPersistedVariables or setupNet here!
+// No setupPersistedVariables or setupNet here! The logging settings are not
+// copied either.
+// NOLINTNEXTLINE(bugprone-copy-constructor-init): default logging settings
 VNetworkBase::VNetworkBase(const VNetworkBase& copy_from)
     : m_inputFile(copy_from.m_inputFile)
 {
@@ -127,7 +130,7 @@ auto VNetworkBase::isFile() const -> bool
 auto VNetworkBase::isFile(std::string const& inputFile) -> bool
 {
   if (FILE* file = std::fopen(inputFile.c_str(), "r")) {
-    std::fclose(file);
+    static_cast<void>(std::fclose(file));
     return true;
   }
   return false;
@@ -155,7 +158,7 @@ auto GetPrefixLength(const std::vector<std::string>& strings) -> std::size_t
 }
 }  // namespace
 
-void VNetworkBase::removePrefixes(std::vector<std::string>& output_names) const
+void VNetworkBase::removePrefixes(std::vector<std::string>& output_names)
 {
   const std::size_t length = GetPrefixLength(output_names);
   for (auto& output_name : output_names) {
@@ -163,7 +166,7 @@ void VNetworkBase::removePrefixes(std::vector<std::string>& output_names) const
   }
 }
 
-void VNetworkBase::removePrefixes(VNetworkBase::NetworkOutputs& outputs) const
+void VNetworkBase::removePrefixes(VNetworkBase::NetworkOutputs& outputs)
 {
   std::vector<std::string> output_layers;
   for (auto const& output : outputs) {

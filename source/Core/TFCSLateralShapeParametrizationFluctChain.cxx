@@ -139,7 +139,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
       ++ifail;
       ++itotalfail;
       retry = status - FCSRetry;
-      retry_warning = retry >> 1;
+      retry_warning = retry / 2;
       retry_warning = std::max(retry_warning, 1);
       break;
     }

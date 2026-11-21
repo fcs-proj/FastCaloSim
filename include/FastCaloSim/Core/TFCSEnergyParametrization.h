@@ -7,8 +7,8 @@
 class TFCSEnergyParametrization : public TFCSParametrization
 {
 public:
-  TFCSEnergyParametrization(const char* name = nullptr,
-                            const char* title = nullptr);
+  explicit TFCSEnergyParametrization(const char* name = nullptr,
+                                     const char* title = nullptr);
 
   auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {

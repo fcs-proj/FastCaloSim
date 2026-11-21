@@ -59,9 +59,10 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   std::size_t cs = calosample();
   int bin = 1;
 
+  // NOLINTNEXTLINE(misc-const-correctness): stored as non-const pointer
   TH2* temp = dynamic_cast<TH2*>(inputfile->Get(
       std::format("voxel_template_cs{}_pca{}", cs, bin).c_str()));
-  if (!temp) {
+  if (temp == nullptr) {
     FCS_MSG_ERROR("Template hist not found for cs " + std::to_string(cs));
     return false;
   }
@@ -128,12 +129,12 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
         // Naming of hists is hist_xy where x, y are indices of cells
         std::string const histname = std::format("hist_{}_{}{}", x, y, label);
         TH1 const* hist = static_cast<TH1*>(inputfile->Get(histname.c_str()));
-        if (!hist) {
+        if (hist == nullptr) {
           FCS_MSG_ERROR("Histogram " << histname << " not found");
           return false;
         }
         auto* func = new TFCS1DFunctionInt32Int32Histogram();
-        func->Initialize(hist, false);
+        func->Initialize(hist, /*doprint=*/false);
         transform[x][y] = func;
       }
     }
@@ -150,6 +151,7 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
     TFCSSimulationState& simulstate, TVectorD& genPars) const
 {
   // Only called for a valid Ebin, see simulate()
+  // NOLINTNEXTLINE(bugprone-unchecked-optional-access): value() throws
   const std::size_t ibin = simulstate.Ebin().value() - 1;
 
   int const nPars = m_parMeans[ibin].GetNrows();
@@ -178,7 +180,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
@@ -187,24 +189,21 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     simulstate.Print();
   }
 
-  weight_t* weightvec;
-  TH2* voxel_temp;
-
   const auto Ebin = simulstate.Ebin();
 
   for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
     if (simulstate.hasAuxInfo(layer_hash(ilayer))) {
-      weightvec = static_cast<weight_t*>(
+      auto* weightvec = static_cast<weight_t*>(
           simulstate.getAuxInfo<void*>(layer_hash(ilayer)));
-      if (weightvec) {
+      if (weightvec != nullptr) {
         delete weightvec;
         simulstate.setAuxInfo<void*>(layer_hash(ilayer), nullptr);
       }
     }
     if (simulstate.hasAuxInfo(layer_hash_geo(ilayer))) {
-      voxel_temp = static_cast<TH2*>(
+      auto* voxel_temp = static_cast<TH2*>(
           simulstate.getAuxInfo<void*>(layer_hash_geo(ilayer)));
-      if (voxel_temp) {
+      if (voxel_temp != nullptr) {
         delete voxel_temp;
         simulstate.setAuxInfo<void*>(layer_hash_geo(ilayer), nullptr);
       }
@@ -233,7 +232,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   const std::size_t ibin = *Ebin - 1;
   const auto n_x = static_cast<std::size_t>(m_nDim_x);
   const auto n_y = static_cast<std::size_t>(m_nDim_y);
-  weightvec = new weight_t(n_x);
+  auto* weightvec = new weight_t(n_x);
   for (std::size_t x = 0; x < n_x; ++x) {
     (*weightvec)[x].resize(n_y);
   }
@@ -263,7 +262,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     }
   }
 
-  voxel_temp = static_cast<TH2*>(m_voxel_template[0]->Clone());
+  auto* voxel_temp = static_cast<TH2*>(m_voxel_template[0]->Clone());
 
   // For now simulating only the layer calosample()
   const std::size_t cs = calosample();
@@ -297,7 +296,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
         static_cast<weight_t*>(simulstate.getAuxInfo<void*>(layer_hash(cs)));
   }
 
-  if (!weightvec) {
+  if (weightvec == nullptr) {
     FCS_MSG_ERROR("Weights not stored in simulstate for calosample=" << cs);
     return FCSFatal;
   }
@@ -308,7 +307,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
         static_cast<TH2*>(simulstate.getAuxInfo<void*>(layer_hash_geo(cs)));
   }
 
-  if (!voxel_template) {
+  if (voxel_template == nullptr) {
     FCS_MSG_ERROR(
         "Voxel geometry not stored in simulstate for calosample=" << cs);
     return FCSFatal;
@@ -337,13 +336,11 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
       std::sqrt(dphi_hit_minus_extrapol_mm * dphi_hit_minus_extrapol_mm
                 + deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
 
-  int ix;
   int const iy = voxel_template->GetYaxis()->FindBin(radius_mm) - 1;
 
   // Treat core as one bin for simulation
-  if (iy == 0) {
-    ix = 0;
-  } else {
+  int ix = 0;
+  if (iy != 0) {
     if (alpha_mm < 0) {
       ix = voxel_template->GetXaxis()->FindBin(2 * std::numbers::pi
                                                - std::fabs(alpha_mm))

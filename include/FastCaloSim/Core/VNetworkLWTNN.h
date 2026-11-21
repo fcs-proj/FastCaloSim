@@ -28,6 +28,8 @@
  * Has various subclasses to cover the various formats of lwtnn
  * networks.
  **/
+// Custom copy constructor, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class VNetworkLWTNN : public VNetworkBase
 {
 public:
@@ -126,7 +128,7 @@ private:
    *
    * @param tree   TTree with the json saved inside.
    **/
-  auto readStringFromTTree(TTree& tree) -> std::string;
+  static auto readStringFromTTree(TTree& tree) -> std::string;
 
   /**
    * @brief Get json string from TTree.
@@ -137,7 +139,7 @@ private:
    *
    * @param tree   TTree with the json saved inside.
    **/
-  void writeStringToTTree(TTree& tree, std::string json_string);
+  static void writeStringToTTree(TTree& tree, std::string json_string);
 
   /**
    * @brief Stores a printable identifier for the net. Not unique.

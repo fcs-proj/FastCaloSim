@@ -10,9 +10,9 @@ class CaloGeo;
 class TFCSHitCellMapping : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSHitCellMapping(const char* name = nullptr,
-                     const char* title = nullptr,
-                     CaloGeo* geo = nullptr);
+  explicit TFCSHitCellMapping(const char* name = nullptr,
+                              const char* title = nullptr,
+                              CaloGeo* geo = nullptr);
 
   void set_geometry(CaloGeo* geo) override { m_geo = geo; }
   auto get_geometry() -> CaloGeo* { return m_geo; }

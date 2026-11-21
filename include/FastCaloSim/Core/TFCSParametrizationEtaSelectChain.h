@@ -8,13 +8,20 @@ class TFCSParametrizationEtaSelectChain
     : public TFCSParametrizationFloatSelectChain
 {
 public:
-  TFCSParametrizationEtaSelectChain(const char* name = nullptr,
-                                    const char* title = nullptr)
+  explicit TFCSParametrizationEtaSelectChain(const char* name = nullptr,
+                                             const char* title = nullptr)
       : TFCSParametrizationFloatSelectChain(name, title)
   {
   }
   TFCSParametrizationEtaSelectChain(
       const TFCSParametrizationEtaSelectChain& ref) = default;
+  TFCSParametrizationEtaSelectChain(TFCSParametrizationEtaSelectChain&& ref) =
+      default;
+  auto operator=(const TFCSParametrizationEtaSelectChain& ref)
+      -> TFCSParametrizationEtaSelectChain& = default;
+  auto operator=(TFCSParametrizationEtaSelectChain&& ref)
+      -> TFCSParametrizationEtaSelectChain& = default;
+  ~TFCSParametrizationEtaSelectChain() override = default;
 
   using TFCSParametrizationFloatSelectChain::push_back_in_bin;
   virtual void push_back_in_bin(TFCSParametrizationBase* param);

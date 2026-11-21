@@ -10,6 +10,8 @@
 #include <ostream>
 #include <utility>
 
+#include "FastCaloSim/Geometry/SubPos.h"
+
 struct Position
 {
   double m_x, m_y, m_z;
@@ -46,24 +48,23 @@ static_assert(std::is_trivially_copyable_v<CellData>,
 class Cell
 {
 public:
-  enum SubPos
-  {
-    MID = 0,  // middle
-    ENT = 1,  // entrance
-    EXT = 2  // exit
-  };
-
   Cell()
+      : m_data {.m_id = static_cast<uint64_t>(-1),
+                .m_pos = {},
+                .m_layer = static_cast<uint32_t>(-1),
+                .m_isBarrel = false,
+                .m_isXYZ = false,
+                .m_isEtaPhiR = false,
+                .m_isEtaPhiZ = false,
+                .m_isRPhiZ = false,
+                .m_dx = 0,
+                .m_dy = 0,
+                .m_dz = 0,
+                .m_deta = 0,
+                .m_dphi = 0,
+                .m_dr = 0,
+                .m_is_valid = false}
   {
-    m_data.m_id = static_cast<uint64_t>(-1);
-    m_data.m_pos = {0, 0, 0, 0, 0, 0};
-    m_data.m_layer = static_cast<uint32_t>(-1);
-    m_data.m_isBarrel = false;
-    m_data.m_isXYZ = m_data.m_isEtaPhiR = m_data.m_isEtaPhiZ =
-        m_data.m_isRPhiZ = false;
-    m_data.m_dx = m_data.m_dy = m_data.m_dz = 0;
-    m_data.m_deta = m_data.m_dphi = m_data.m_dr = 0;
-    m_data.m_is_valid = false;
   }
 
   Cell(uint64_t id,
@@ -80,22 +81,22 @@ public:
        double deta,
        double dphi,
        double dr)
+      : m_data {.m_id = id,
+                .m_pos = pos,
+                .m_layer = layer,
+                .m_isBarrel = isBarrel,
+                .m_isXYZ = isXYZ,
+                .m_isEtaPhiR = isEtaPhiR,
+                .m_isEtaPhiZ = isEtaPhiZ,
+                .m_isRPhiZ = isRPhiZ,
+                .m_dx = dx,
+                .m_dy = dy,
+                .m_dz = dz,
+                .m_deta = deta,
+                .m_dphi = dphi,
+                .m_dr = dr,
+                .m_is_valid = true}
   {
-    m_data.m_id = id;
-    m_data.m_pos = pos;
-    m_data.m_layer = layer;
-    m_data.m_isBarrel = isBarrel;
-    m_data.m_isXYZ = isXYZ;
-    m_data.m_isEtaPhiR = isEtaPhiR;
-    m_data.m_isEtaPhiZ = isEtaPhiZ;
-    m_data.m_isRPhiZ = isRPhiZ;
-    m_data.m_dx = dx;
-    m_data.m_dy = dy;
-    m_data.m_dz = dz;
-    m_data.m_deta = deta;
-    m_data.m_dphi = dphi;
-    m_data.m_dr = dr;
-    m_data.m_is_valid = true;
   }
 
   auto id() const -> uint64_t { return m_data.m_id; }
@@ -144,27 +145,27 @@ public:
     return z() < 0 ? z() - m_data.m_dz * 0.5 : z() + m_data.m_dz * 0.5;
   }
 
-  auto r(SubPos subpos) const -> double
+  auto r(FastCaloSim::SubPos subpos) const -> double
   {
     switch (subpos) {
-      case SubPos::ENT:
+      case FastCaloSim::SubPos::ENT:
         return rent();
-      case SubPos::MID:
+      case FastCaloSim::SubPos::MID:
         return r();
-      case SubPos::EXT:
+      case FastCaloSim::SubPos::EXT:
         return rext();
     }
     std::unreachable();
   }
 
-  auto z(SubPos subpos) const -> double
+  auto z(FastCaloSim::SubPos subpos) const -> double
   {
     switch (subpos) {
-      case SubPos::ENT:
+      case FastCaloSim::SubPos::ENT:
         return zent();
-      case SubPos::MID:
+      case FastCaloSim::SubPos::MID:
         return z();
-      case SubPos::EXT:
+      case FastCaloSim::SubPos::EXT:
         return zext();
     }
     std::unreachable();

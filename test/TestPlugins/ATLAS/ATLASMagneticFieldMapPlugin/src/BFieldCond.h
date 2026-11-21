@@ -34,7 +34,7 @@ public:
 
   // compute magnetic field, plus derivatives if requested, and add
   inline void addBiotSavart(const double* xyz,
-                            double* B,
+                            double* B_in,
                             double* deriv = nullptr) const;
   // scale the current wrt the nominal current
   void scaleCurrent(double factor) { m_curr = factor * m_nomCurr; }
@@ -52,7 +52,7 @@ private:
    * m_p2: The other end of a finite conductor, or the direction vector of an
    * infinite conductor m_u : Direction vector (= m_p2 if infinite)
    */
-  const Eigen::Vector3d m_p1, m_p2, m_u;
+  Eigen::Vector3d m_p1, m_p2, m_u;
   double m_curr;  // current (in A) flowing through the conductor
   double m_nomCurr;  // nominal current (in A) read from the map file
 };
@@ -88,7 +88,7 @@ void BFieldCond::addBiotSavart(const double* xyz,
 
   B += f1 * v;
 
-  if (deriv) {
+  if (deriv != nullptr) {
     Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor>> D(deriv);
 
     D(0, 1) -= f1 * m_u(2);

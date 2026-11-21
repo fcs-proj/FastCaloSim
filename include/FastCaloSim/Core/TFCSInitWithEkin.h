@@ -7,7 +7,8 @@
 class TFCSInitWithEkin : public TFCSParametrization
 {
 public:
-  TFCSInitWithEkin(const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSInitWithEkin(const char* name = nullptr,
+                            const char* title = nullptr);
 
   auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {

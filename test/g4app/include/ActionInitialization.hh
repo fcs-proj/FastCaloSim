@@ -16,6 +16,10 @@ class ActionInitialization : public G4VUserActionInitialization
 public:
     ActionInitialization();
     ~ActionInitialization() override;
+    ActionInitialization(const ActionInitialization&) = delete;
+    auto operator=(const ActionInitialization&) -> ActionInitialization& = delete;
+    ActionInitialization(ActionInitialization&&) = delete;
+    auto operator=(ActionInitialization&&) -> ActionInitialization& = delete;
 
     void BuildForMaster() const override;
     void Build() const override;
@@ -25,7 +29,7 @@ public:
 
     private:
 
-    const TestHelpers::ParticleContainer *fParticleContainer;
+    const TestHelpers::ParticleContainer *fParticleContainer {nullptr};
 
 };
 

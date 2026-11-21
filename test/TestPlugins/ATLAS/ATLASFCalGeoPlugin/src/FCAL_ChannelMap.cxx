@@ -17,24 +17,23 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 
 #include "ATLASFCalGeoPlugin/FCAL_ChannelMap.h"
-
-#include <stdio.h>
 
 /* === Geometrical parameters === */
 // const double cm = 0.01;
 const double cm = 10.;
 // const double FCAL_ChannelMap::m_tubeSpacing[] = {0.75*CLHEP::cm,
 // 0.8179*CLHEP::cm, 0.90*CLHEP::cm};
-const double FCAL_ChannelMap::m_tubeSpacing[] = {
+const std::array<double, 3> FCAL_ChannelMap::m_tubeSpacing = {
     0.75 * cm, 0.8179 * cm, 0.90 * cm};
 
 FCAL_ChannelMap::FCAL_ChannelMap(int flag)
 {
   static const double root3_2 = std::numbers::sqrt3 / 2;
   /* === Initialize geometrical dimensions */
-  for (int i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; i++) {
     m_tubeDx[i] = m_tubeSpacing[i] / 2.;
     m_tubeDy[i] = m_tubeSpacing[i] * root3_2;
   }
@@ -51,8 +50,8 @@ FCAL_ChannelMap::FCAL_ChannelMap(int flag)
   m_tileDx[2] = 6. * m_tubeSpacing[2];
   m_tileDy[2] = 6. * m_tubeSpacing[2] * root3_2;
 
-  m_invert_x = flag & 1;
-  m_invert_xy = flag & 2;
+  m_invert_x = (static_cast<unsigned int>(flag) & 1U) != 0;
+  m_invert_xy = (static_cast<unsigned int>(flag) & 2U) != 0;
 }
 
 void FCAL_ChannelMap::finish()
@@ -94,7 +93,8 @@ void FCAL_ChannelMap::add_tube(const std::string& tileName,
     tileStream3 >> a3;
   }
 
-  auto const tilename = static_cast<tileName_t>((a3 << 16) + a2);
+  auto const tilename =
+      (static_cast<tileName_t>(a3) << 16U) + static_cast<tileName_t>(a2);
 
   TubePosition const tb(
       tilename, static_cast<float>(x * cm), static_cast<float>(y * cm), "");
@@ -103,10 +103,11 @@ void FCAL_ChannelMap::add_tube(const std::string& tileName,
   i = i + 200;
   j = j + 200;
   //  m_tubeMap[mod-1][(j <<  16) + i] = tb;
-  auto const ThisId = static_cast<unsigned int>((j << 16) + i);
-  auto const p = m_tubeMap[mod - 1].insert(m_tubeMap[mod - 1].end(),
-                                           std::make_pair(ThisId, tb));
-  m_tubeIndex[mod - 1].push_back(p);
+  auto const ThisId =
+      (static_cast<unsigned int>(j) << 16U) + static_cast<unsigned int>(i);
+  auto& tubeMap = m_tubeMap[sam_index(mod)];
+  auto const p = tubeMap.insert(tubeMap.end(), std::make_pair(ThisId, tb));
+  m_tubeIndex[sam_index(mod)].emplace_back(p);
 }
 
 // Gabe: new to include HV and LARFCALELECRTODES ID
@@ -136,7 +137,8 @@ void FCAL_ChannelMap::add_tube(const std::string& tileName,
     tileStream3 >> a3;
   }
 
-  auto const tilename = static_cast<tileName_t>((a3 << 16) + a2);
+  auto const tilename =
+      (static_cast<tileName_t>(a3) << 16U) + static_cast<tileName_t>(a2);
 
   TubePosition const tb(
       tilename, static_cast<float>(x * cm), static_cast<float>(y * cm), hvFT);
@@ -145,16 +147,17 @@ void FCAL_ChannelMap::add_tube(const std::string& tileName,
   i = i + 200;
   j = j + 200;
   //  m_tubeMap[mod-1][(j <<  16) + i] = tb;
-  auto const ThisId = static_cast<unsigned int>((j << 16) + i);
-  auto const p = m_tubeMap[mod - 1].insert(m_tubeMap[mod - 1].end(),
-                                           std::make_pair(ThisId, tb));
-  m_tubeIndex[mod - 1].push_back(p);
+  auto const ThisId =
+      (static_cast<unsigned int>(j) << 16U) + static_cast<unsigned int>(i);
+  auto& tubeMap = m_tubeMap[sam_index(mod)];
+  auto const p = tubeMap.insert(tubeMap.end(), std::make_pair(ThisId, tb));
+  m_tubeIndex[sam_index(mod)].emplace_back(p);
 }
 
 auto FCAL_ChannelMap::getTubeByCopyNumber(int isam, int copyNo) const
     -> FCAL_ChannelMap::tubemap_const_iterator
 {
-  return m_tubeIndex[isam - 1][static_cast<std::size_t>(copyNo)];
+  return m_tubeIndex[sam_index(isam)][static_cast<std::size_t>(copyNo)];
 }
 
 // *********************************************************************
@@ -165,26 +168,26 @@ auto FCAL_ChannelMap::getTubeByCopyNumber(int isam, int copyNo) const
 void FCAL_ChannelMap::create_tileMap(int isam)
 {
   tileMap_const_iterator tile;
-  auto first = m_tubeMap[isam - 1].begin();
-  auto const last = m_tubeMap[isam - 1].end();
+  auto first = m_tubeMap[sam_index(isam)].begin();
+  auto const last = m_tubeMap[sam_index(isam)].end();
 
   // Loop over tubes -> find unique tiles and fill the descriptors
   while (first != last) {
     tileName_t const tileName = (first->second).get_tileName();
-    tile = m_tileMap[isam - 1].find(tileName);
+    tile = m_tileMap[sam_index(isam)].find(tileName);
 
-    if (tile == m_tileMap[isam - 1].end()) {  // New tile found
+    if (tile == m_tileMap[sam_index(isam)].end()) {  // New tile found
       float const x = (first->second).x();
       float const y = (first->second).y();
       unsigned int const ntubes = 1;
       TilePosition const tp(x, y, ntubes);
-      m_tileMap[isam - 1][tileName] = tp;
+      m_tileMap[sam_index(isam)][tileName] = tp;
     } else {  // Existing tile
       float const x = (tile->second).x() + (first->second).x();
       float const y = (tile->second).y() + (first->second).y();
       unsigned int const ntubes = (tile->second).ntubes() + 1;
       TilePosition const tp(x, y, ntubes);
-      m_tileMap[isam - 1][tileName] = tp;
+      m_tileMap[sam_index(isam)][tileName] = tp;
     }
     ++first;
   }
@@ -202,8 +205,8 @@ void FCAL_ChannelMap::create_tileMap(int isam)
   //
   // loop over tiles and set (x,y) to average tile positions
   //
-  auto tilefirst = m_tileMap[isam - 1].begin();
-  auto const tilelast = m_tileMap[isam - 1].end();
+  auto tilefirst = m_tileMap[sam_index(isam)].begin();
+  auto const tilelast = m_tileMap[sam_index(isam)].end();
   while (tilefirst != tilelast) {
     tileName_t const tileName = tilefirst->first;
     unsigned int const ntubes = (tilefirst->second).ntubes();
@@ -211,7 +214,7 @@ void FCAL_ChannelMap::create_tileMap(int isam)
     float const x = (tilefirst->second).x() / xtubes;
     float const y = (tilefirst->second).y() / xtubes;
     TilePosition const tp(x, y, ntubes);
-    m_tileMap[isam - 1][tileName] = tp;
+    m_tileMap[sam_index(isam)][tileName] = tp;
     ++tilefirst;
   }
 }
@@ -257,8 +260,8 @@ auto FCAL_ChannelMap::getTileID(
   const auto yd = static_cast<double>(y);
 
   /* === Compute the tubeID */
-  int ktx = static_cast<int>(xd / m_tubeDx[isam - 1]);
-  int kty = static_cast<int>(yd / m_tubeDy[isam - 1]);
+  int ktx = static_cast<int>(xd / m_tubeDx[sam_index(isam)]);
+  int kty = static_cast<int>(yd / m_tubeDy[sam_index(isam)]);
   if (xd < 0.) {
     ktx--;
   }
@@ -285,28 +288,29 @@ auto FCAL_ChannelMap::getTileID(
   // relative x and y w.r.t to the original tube are used to assign a
   // tube according to the hexagonal pattern.
 
-  auto it = m_tubeMap[isam - 1].begin();
+  auto it = m_tubeMap[sam_index(isam)].begin();
   unsigned int const firstId = it->first;
 
   // take offset from actual map
   int ix = ktx
-      + (static_cast<int>((firstId & 0xffff)
+      + (static_cast<int>((firstId & 0xffffU)
                           - static_cast<double>(it->second.x())
-                              / m_tubeDx[isam - 1]))
+                              / m_tubeDx[sam_index(isam)]))
       + 1;
   int iy = kty
-      + (static_cast<int>((firstId >> 16)
+      + (static_cast<int>((firstId >> 16U)
                           - static_cast<double>(it->second.y())
-                              / m_tubeDy[isam - 1]))
+                              / m_tubeDy[sam_index(isam)]))
       + 1;
 
-  int const isOddEven = (((firstId >> 16) % 2) + (firstId % 2)) % 2;
+  auto const isOddEven =
+      static_cast<int>((((firstId >> 16U) % 2) + (firstId % 2)) % 2);
   bool movex = false;
 
   if ((iy % 2) != ((ix + isOddEven) % 2)) {
-    double const yc = yd / m_tubeDy[isam - 1] - kty - 0.5;
+    double const yc = yd / m_tubeDy[sam_index(isam)] - kty - 0.5;
     if (fabs(yc) > 0.5 / std::numbers::sqrt3) {
-      double xk = xd / m_tubeDx[isam - 1] - ktx;
+      double xk = xd / m_tubeDx[sam_index(isam)] - ktx;
       if (xk > 0.5) {
         xk = 1 - xk;
       }
@@ -324,7 +328,7 @@ auto FCAL_ChannelMap::getTileID(
       movex = true;
     }
     if (movex) {
-      if (xd / m_tubeDx[isam - 1] - ktx > 0.5) {
+      if (xd / m_tubeDx[sam_index(isam)] - ktx > 0.5) {
         ix++;
       } else {
         ix--;
@@ -332,13 +336,14 @@ auto FCAL_ChannelMap::getTileID(
     }
   }
 
-  auto const tubeID = static_cast<tubeID_t>((iy << 16) + ix);
+  auto const tubeID =
+      (static_cast<tubeID_t>(iy) << 16U) + static_cast<tubeID_t>(ix);
 
-  it = m_tubeMap[isam - 1].find(tubeID);
-  if (it != m_tubeMap[isam - 1].end()) {
+  it = m_tubeMap[sam_index(isam)].find(tubeID);
+  if (it != m_tubeMap[sam_index(isam)].end()) {
     tileName_t const tilename = (it->second).get_tileName();
-    phi = tilename & 0xffff;
-    eta = static_cast<int>(tilename >> 16);  // at most 16 bits, fits in int
+    phi = static_cast<int>(tilename & 0xffffU);
+    eta = static_cast<int>(tilename >> 16U);  // at most 16 bits, fits in int
     return true;
   }
   // reach here only if it failed the second time.
@@ -358,29 +363,21 @@ auto FCAL_ChannelMap::x(int isam, int eta, int phi) const -> float
     m_invert_xy = true;
     return y1;
   }
-  float x;
+  auto const tilename =
+      (static_cast<tileName_t>(eta) << 16U) + static_cast<tileName_t>(phi);
 
-  auto const tilename = static_cast<tileName_t>((eta << 16) + phi);
-
-  auto const it = m_tileMap[isam - 1].find(tilename);
-  if (it != m_tileMap[isam - 1].end()) {
-    x = (it->second).x();
-  } else {  // can't find the tile, throw exception.
-    char l_str[200];
-    snprintf(l_str,
-             sizeof(l_str),
-             "Error in FCAL_ChannelMap::x, wrong tile,phi= %d ,eta=: %d ",
-             phi,
-             eta);
-    std::string const errorMessage(l_str);
-    throw std::range_error(errorMessage.c_str());
+  auto const it = m_tileMap[sam_index(isam)].find(tilename);
+  if (it == m_tileMap[sam_index(isam)].end()) {
+    // can't find the tile, throw exception.
+    throw std::range_error("Error in FCAL_ChannelMap::x, wrong tile,phi= "
+                           + std::to_string(phi)
+                           + " ,eta=: " + std::to_string(eta) + " ");
   }
+  float const x = (it->second).x();
 
   if (m_invert_x) {
     return -x;
   }
-  return x;
-
   return x;
 }
 
@@ -397,25 +394,18 @@ auto FCAL_ChannelMap::y(int isam, int eta, int phi) const -> float
     return x1;
   }
 
-  float y;
+  auto const tilename =
+      (static_cast<tileName_t>(eta) << 16U) + static_cast<tileName_t>(phi);
 
-  auto const tilename = static_cast<tileName_t>((eta << 16) + phi);
-
-  auto const it = m_tileMap[isam - 1].find(tilename);
-  if (it != m_tileMap[isam - 1].end()) {
-    y = (it->second).y();
-  } else {  // can't find the tile, throw exception.
-    char l_str[200];
-    snprintf(l_str,
-             sizeof(l_str),
-             "Error in FCAL_ChannelMap::x, wrong tile,phi= %d ,eta=: %d",
-             phi,
-             eta);
-    std::string const errorMessage(l_str);
-    throw std::range_error(errorMessage.c_str());
+  auto const it = m_tileMap[sam_index(isam)].find(tilename);
+  if (it == m_tileMap[sam_index(isam)].end()) {
+    // can't find the tile, throw exception.
+    throw std::range_error("Error in FCAL_ChannelMap::x, wrong tile,phi= "
+                           + std::to_string(phi)
+                           + " ,eta=: " + std::to_string(eta));
   }
 
-  return y;
+  return (it->second).y();
 }
 
 /* ----------------------------------------------------------------------
@@ -424,8 +414,8 @@ auto FCAL_ChannelMap::y(int isam, int eta, int phi) const -> float
 
 void FCAL_ChannelMap::tileSize(int sam, int ntubes, float& dx, float& dy) const
 {
-  dx = static_cast<float>(m_tubeDx[sam - 1]);
-  dy = static_cast<float>(m_tubeDy[sam - 1]);
+  dx = static_cast<float>(m_tubeDx[sam_index(sam)]);
+  dy = static_cast<float>(m_tubeDy[sam_index(sam)]);
   //      float ntubes =  (it->second).ntubes();
   if (sam == 1 || sam == 3) {
     auto const scale = static_cast<float>(sqrt(ntubes));
@@ -461,28 +451,24 @@ void FCAL_ChannelMap::tileSize(int sam, int ntubes, float& dx, float& dy) const
 void FCAL_ChannelMap::tileSize(
     int sam, int eta, int phi, float& dx, float& dy) const
 {
-  auto const tilename = static_cast<tileName_t>((eta << 16) + phi);
+  auto const tilename =
+      (static_cast<tileName_t>(eta) << 16U) + static_cast<tileName_t>(phi);
 
-  auto const it = m_tileMap[sam - 1].find(tilename);
-  if (it != m_tileMap[sam - 1].end()) {
+  auto const it = m_tileMap[sam_index(sam)].find(tilename);
+  if (it != m_tileMap[sam_index(sam)].end()) {
     int const ntubes = static_cast<int>((it->second).ntubes());
     tileSize(sam, ntubes, dx, dy);
     return;
   }  // can't find the tile, throw exception.
-  char l_str[200];
-  snprintf(l_str,
-           sizeof(l_str),
-           "Error in FCAL_ChannelMap::tilesize, wrong tile,phi= %d ,eta=: %d ",
-           phi,
-           eta);
-  std::string const errorMessage(l_str);
-  throw std::range_error(errorMessage.c_str());
+  throw std::range_error("Error in FCAL_ChannelMap::tilesize, wrong tile,phi= "
+                         + std::to_string(phi)
+                         + " ,eta=: " + std::to_string(eta) + " ");
 }
 
 // ********************** print_tubemap *************************************
 void FCAL_ChannelMap::print_tubemap(int imap) const
 {
-  auto it = m_tubeMap[imap - 1].begin();
+  auto it = m_tubeMap[sam_index(imap)].begin();
 
   std::cout << "First 10 elements of the New FCAL tube map : " << imap << '\n';
   std::cout.precision(5);
@@ -497,19 +483,19 @@ void FCAL_ChannelMap::print_tubemap(int imap) const
 auto FCAL_ChannelMap::tubemap_begin(int imap) const
     -> FCAL_ChannelMap::tubemap_const_iterator
 {
-  return m_tubeMap[imap - 1].begin();
+  return m_tubeMap[sam_index(imap)].begin();
 }
 
 // ********************** tubemap_end ****************************************
 auto FCAL_ChannelMap::tubemap_end(int imap) const
     -> FCAL_ChannelMap::tubemap_const_iterator
 {
-  return m_tubeMap[imap - 1].end();
+  return m_tubeMap[sam_index(imap)].end();
 }
 
 // ********************** tubemap_size ***************************************
 auto FCAL_ChannelMap::tubemap_size(int imap) const
     -> FCAL_ChannelMap::tubemap_sizetype
 {
-  return m_tubeMap[imap - 1].size();
+  return m_tubeMap[sam_index(imap)].size();
 }

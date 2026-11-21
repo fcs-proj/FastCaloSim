@@ -31,14 +31,28 @@ const auto kEtaPhi = RTreeHelpers::CoordinateSystem::EtaPhiR;
 auto eta_phi_cell(uint64_t id, double eta, double phi, double deta, double dphi)
     -> Cell
 {
-  const Position center {0, 0, 0, eta, phi, 0};
-  return {
-      id, center, 0, true, false, true, false, false, 0, 0, 0, deta, dphi, 0};
+  const Position center {
+      .m_x = 0, .m_y = 0, .m_z = 0, .m_eta = eta, .m_phi = phi, .m_r = 0};
+  return {id,
+          center,
+          0,
+          /*isBarrel=*/true,
+          /*isXYZ=*/false,
+          /*isEtaPhiR=*/true,
+          /*isEtaPhiZ=*/false,
+          /*isRPhiZ=*/false,
+          0,
+          0,
+          0,
+          deta,
+          dphi,
+          0};
 }
 
 auto at_eta_phi(double eta, double phi) -> Position
 {
-  return Position {0, 0, 0, eta, phi, 0};
+  return Position {
+      .m_x = 0, .m_y = 0, .m_z = 0, .m_eta = eta, .m_phi = phi, .m_r = 0};
 }
 }  // namespace
 
@@ -202,7 +216,6 @@ struct Rect
     return du * du + dv * dv;
   }
 };
-}  // namespace
 
 class AtlasRTreeTests : public ::testing::Test
 {
@@ -213,8 +226,12 @@ protected:
   {
     ROOT::RDataFrame df(AtlasGeoTestsConfig::ATLAS_CALO_CELL_TREE_NAME,
                         AtlasGeoTestsConfig::ATLAS_CALO_CELL_PATH);
-    char tmpl[] = "/tmp/fastcalosimXXXXXX";
-    const std::string geo_dir = mkdtemp(tmpl);
+    std::string tmpl = "/tmp/fastcalosimXXXXXX";
+    const char* dir = mkdtemp(tmpl.data());
+    if (dir == nullptr) {
+      throw std::runtime_error("Cannot create a temporary directory");
+    }
+    const std::string geo_dir = dir;
     geo = new CaloGeo();
     geo->build(df, geo_dir);
     geo->load(geo_dir);
@@ -232,7 +249,11 @@ protected:
           : RTreeHelpers::build_eta_phi_boxes(
                 cell.eta(), cell.phi(), cell.deta(), cell.dphi());
       for (const auto& b : boxes) {
-        rects.push_back({b[0], b[1], b[2], b[3], cell.id()});
+        rects.push_back({.u_min = b[0],
+                         .v_min = b[1],
+                         .u_max = b[2],
+                         .v_max = b[3],
+                         .cell_id = cell.id()});
       }
     }
     return rects;
@@ -267,20 +288,23 @@ protected:
     for (const auto& r : rects) {
       min_distance2 = std::min(min_distance2, r.distance2(u, v));
     }
-    for (const auto& r : rects) {
-      if (r.cell_id == cell_id
-          && FastCaloSim::exactly_equal(r.distance2(u, v), min_distance2))
-      {
-        return true;
-      }
-    }
-    return false;
+    return std::ranges::any_of(rects,
+                               [&](const Rect& r) -> bool
+                               {
+                                 return r.cell_id == cell_id
+                                     && FastCaloSim::exactly_equal(
+                                            r.distance2(u, v), min_distance2);
+                               });
   }
 };
+}  // namespace
 
 TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
 {
+  // A fixed seed, for the same test positions in every run
+  // NOLINTBEGIN(bugprone-random-generator-seed,cert-msc32-c,cert-msc51-cpp)
   std::mt19937_64 rng(42);
+  // NOLINTEND(bugprone-random-generator-seed,cert-msc32-c,cert-msc51-cpp)
   std::normal_distribution<double> gauss(0., 1.);
   const double inf = std::numeric_limits<double>::infinity();
 
@@ -320,8 +344,15 @@ TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
     }
 
     for (const auto& [u, v] : points) {
-      const Position pos = geo->is_xyz(layer) ? Position {u, v, 0, 0, 0, 0}
-                                              : Position {0, 0, 0, u, v, 0};
+      const Position pos = geo->is_xyz(layer)
+          ? Position {.m_x = u,
+                      .m_y = v,
+                      .m_z = 0,
+                      .m_eta = 0,
+                      .m_phi = 0,
+                      .m_r = 0}
+          : Position {
+                .m_x = 0, .m_y = 0, .m_z = 0, .m_eta = u, .m_phi = v, .m_r = 0};
       const uint64_t cell_id = geo->get_cell(layer, pos).id();
 
       ASSERT_TRUE(is_expected_cell(cell_id, rects, u, v))

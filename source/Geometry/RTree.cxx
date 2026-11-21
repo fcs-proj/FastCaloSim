@@ -309,7 +309,7 @@ private:
   }
 
   template<typename F>
-  void for_each_bin_of(const std::vector<Entry>& entries, F&& f) const
+  void for_each_bin_of(const std::vector<Entry>& entries, const F& f) const
   {
     for (const auto& entry : entries) {
       const std::size_t ix0 = bin_x(entry.first.min_corner().get<0>());
@@ -367,8 +367,10 @@ RTree::RTree(RTreeHelpers::CoordinateSystem coord_sys,
   }
 
   // Constructing the tree from all rectangles at once packs it (bulk loading)
-  m_impl = std::make_unique<const Impl>(Impl {
-      Tree(entries.begin(), entries.end()), Grid(entries), std::move(ids)});
+  m_impl = std::make_unique<const Impl>(
+      Impl {.tree = Tree(entries.begin(), entries.end()),
+            .grid = Grid(entries),
+            .ids = std::move(ids)});
 }
 
 RTree::~RTree() = default;
@@ -423,11 +425,10 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
       [&point, &ids](const Entry& entry) -> std::pair<double, unsigned long>
   {
     const auto center = bg::return_centroid<Point>(entry.first);
-    return std::pair(bg::comparable_distance(point, center), ids[entry.second]);
+    return {bg::comparable_distance(point, center), ids[entry.second]};
   };
-  const auto best = std::min_element(
-      candidates.begin(),
-      candidates.end(),
+  const auto best = std::ranges::min_element(
+      candidates,
       [&](const Entry& a, const Entry& b) -> bool
       { return center_distance_and_id(a) < center_distance_and_id(b); });
   return best->second;

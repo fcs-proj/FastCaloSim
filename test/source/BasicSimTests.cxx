@@ -55,18 +55,18 @@ TEST_F(BasicSimTests, DoDummySimulation)
   for (std::size_t i = 0; i < 24; ++i) {
     // r and z increase by 10 mm per layer
     const double offset = 10.0 * static_cast<double>(i);
-    extrapol_state.set_eta(i, Cell::SubPos::ENT, truth_state.Eta());
-    extrapol_state.set_eta(i, Cell::SubPos::EXT, truth_state.Eta());
-    extrapol_state.set_eta(i, Cell::SubPos::MID, truth_state.Eta());
-    extrapol_state.set_phi(i, Cell::SubPos::ENT, truth_state.Phi());
-    extrapol_state.set_phi(i, Cell::SubPos::EXT, truth_state.Phi());
-    extrapol_state.set_phi(i, Cell::SubPos::MID, truth_state.Phi());
-    extrapol_state.set_r(i, Cell::SubPos::ENT, 1500 + offset);
-    extrapol_state.set_r(i, Cell::SubPos::EXT, 1510 + offset);
-    extrapol_state.set_r(i, Cell::SubPos::MID, 1505 + offset);
-    extrapol_state.set_z(i, Cell::SubPos::ENT, 3500 + offset);
-    extrapol_state.set_z(i, Cell::SubPos::EXT, 3510 + offset);
-    extrapol_state.set_z(i, Cell::SubPos::MID, 3505 + offset);
+    extrapol_state.set_eta(i, FastCaloSim::SubPos::ENT, truth_state.Eta());
+    extrapol_state.set_eta(i, FastCaloSim::SubPos::EXT, truth_state.Eta());
+    extrapol_state.set_eta(i, FastCaloSim::SubPos::MID, truth_state.Eta());
+    extrapol_state.set_phi(i, FastCaloSim::SubPos::ENT, truth_state.Phi());
+    extrapol_state.set_phi(i, FastCaloSim::SubPos::EXT, truth_state.Phi());
+    extrapol_state.set_phi(i, FastCaloSim::SubPos::MID, truth_state.Phi());
+    extrapol_state.set_r(i, FastCaloSim::SubPos::ENT, 1500 + offset);
+    extrapol_state.set_r(i, FastCaloSim::SubPos::EXT, 1510 + offset);
+    extrapol_state.set_r(i, FastCaloSim::SubPos::MID, 1505 + offset);
+    extrapol_state.set_z(i, FastCaloSim::SubPos::ENT, 3500 + offset);
+    extrapol_state.set_z(i, FastCaloSim::SubPos::EXT, 3510 + offset);
+    extrapol_state.set_z(i, FastCaloSim::SubPos::MID, 3505 + offset);
   }
 
   // Perform the simulation call

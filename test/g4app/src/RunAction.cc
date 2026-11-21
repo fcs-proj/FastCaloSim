@@ -4,10 +4,7 @@
 
 #include "RunAction.hh"
 
-RunAction::RunAction()
-     
-{
-}
+RunAction::RunAction() = default;
 
 RunAction::~RunAction()
 = default;

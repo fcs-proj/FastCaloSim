@@ -11,13 +11,19 @@ class TH2;
 class TFCS1DFunctionInt32Histogram : public TFCS1DFunction
 {
 public:
-  TFCS1DFunctionInt32Histogram(const TH1* hist = nullptr)
+  explicit TFCS1DFunctionInt32Histogram(const TH1* hist = nullptr)
   {
-    if (hist) {
+    if (hist != nullptr) {
       Initialize(hist);
     }
   }
   ~TFCS1DFunctionInt32Histogram() override = default;
+  TFCS1DFunctionInt32Histogram(const TFCS1DFunctionInt32Histogram&) = default;
+  TFCS1DFunctionInt32Histogram(TFCS1DFunctionInt32Histogram&&) = default;
+  auto operator=(const TFCS1DFunctionInt32Histogram&)
+      -> TFCS1DFunctionInt32Histogram& = default;
+  auto operator=(TFCS1DFunctionInt32Histogram&&)
+      -> TFCS1DFunctionInt32Histogram& = default;
 
   void Initialize(const TH1* hist);
 

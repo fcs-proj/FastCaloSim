@@ -30,6 +30,8 @@ public:
   CaloGeo() = default;
   // Base class of alternative geometry handlers (e.g. the FCal)
   virtual ~CaloGeo() = default;
+  CaloGeo(const CaloGeo&) = delete;
+  auto operator=(const CaloGeo&) -> CaloGeo& = delete;
   CaloGeo(CaloGeo&&) = default;
   auto operator=(CaloGeo&&) -> CaloGeo& = default;
 
@@ -40,7 +42,7 @@ public:
   // (rtree_cache_size is unused and only kept for compatibility: the R-trees
   // are built in memory)
   void load(const std::string& base_path,
-            size_t rtree_cache_size = 5 * 1024 * 1024);
+            size_t rtree_cache_size = std::size_t {5} * 1024 * 1024);
 
   // Retrieve the best matching cell for a given position
   // Alternative geo handlers need to override this method
@@ -72,11 +74,13 @@ public:
   auto is_eta_phi_z(std::size_t layer) const -> bool;
 
   /// @brief Get the z position of a cell in a layer at a given position
-  auto zpos(std::size_t layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto zpos(std::size_t layer,
+            const Position& pos,
+            FastCaloSim::SubPos subpos) const -> double;
   /// @brief Get the r position of a cell in a layer at a given position
-  auto rpos(std::size_t layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto rpos(std::size_t layer,
+            const Position& pos,
+            FastCaloSim::SubPos subpos) const -> double;
 
   /// @brief Get the min eta extent of a layer on a given detector side
   auto min_eta(std::size_t layer, DetectorSide side) const -> double;
@@ -89,7 +93,7 @@ public:
   /// @brief Set an alternative geometry handler for a range of layers
   void set_alt_geo_handler(std::size_t first_layer,
                            std::size_t last_layer,
-                           std::shared_ptr<CaloGeo> handler);
+                           const std::shared_ptr<CaloGeo>& handler);
 
 private:
   /// @brief The eta extent of a layer on a given detector side
@@ -112,8 +116,10 @@ private:
     // Define default values for the eta extensions of the layers
     LayerFlags()
     {
-      eta_extensions[DetectorSide::kEtaPositive] = EtaExtremes {1000, -1000};
-      eta_extensions[DetectorSide::kEtaNegative] = EtaExtremes {1000, -1000};
+      eta_extensions[DetectorSide::kEtaPositive] =
+          EtaExtremes {.eta_min = 1000, .eta_max = -1000};
+      eta_extensions[DetectorSide::kEtaNegative] =
+          EtaExtremes {.eta_min = 1000, .eta_max = -1000};
     }
   };
 

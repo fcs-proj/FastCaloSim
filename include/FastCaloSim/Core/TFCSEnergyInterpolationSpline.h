@@ -10,8 +10,8 @@ class TGraph;
 class TFCSEnergyInterpolationSpline : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationSpline(const char* name = nullptr,
-                                const char* title = nullptr);
+  explicit TFCSEnergyInterpolationSpline(const char* name = nullptr,
+                                         const char* title = nullptr);
 
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
@@ -42,8 +42,8 @@ public:
   /// response=<E(reco)/Ekin(true)> opt, valbeg and valend as defined for
   /// TSpline3
   void InitFromArrayInLogEkin(Int_t np,
-                              Double_t logEkin[],
-                              Double_t response[],
+                              Double_t* logEkin,
+                              Double_t* response,
                               const char* opt = nullptr,
                               Double_t valbeg = 0,
                               Double_t valend = 0);
@@ -52,8 +52,8 @@ public:
   /// response=<E(reco)/Ekin(true)> opt, valbeg and valend as defined for
   /// TSpline3
   void InitFromArrayInEkin(Int_t np,
-                           Double_t Ekin[],
-                           Double_t response[],
+                           Double_t* Ekin,
+                           Double_t* response,
                            const char* opt = nullptr,
                            Double_t valbeg = 0,
                            Double_t valend = 0);

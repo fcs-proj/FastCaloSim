@@ -12,6 +12,10 @@ class TFCSFunction
 public:
   TFCSFunction() = default;
   ~TFCSFunction() override = default;
+  TFCSFunction(const TFCSFunction&) = default;
+  TFCSFunction(TFCSFunction&&) = default;
+  auto operator=(const TFCSFunction&) -> TFCSFunction& = default;
+  auto operator=(TFCSFunction&&) -> TFCSFunction& = default;
 
   /// Gives the total memory size, including the size of additional memory
   /// allocated inside the class
@@ -23,7 +27,7 @@ public:
   /// Function gets array of random numbers rnd[] in the range [0,1) as
   /// arguments and returns function value in array value. For a n-dimensional
   /// function, value and rnd should both have n elements.
-  virtual void rnd_to_fct(float value[], const float rnd[]) const = 0;
+  virtual void rnd_to_fct(float* value, const float* rnd) const = 0;
 
 private:
   ClassDefOverride(TFCSFunction, 4)  // TFCSFunction

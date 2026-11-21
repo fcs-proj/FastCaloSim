@@ -33,32 +33,36 @@ class H8FieldSvc : public IMagFieldSvc
 {
 public:
   //** Constructor with parameters */
-  H8FieldSvc(const std::string& name /*, ISvcLocator* pSvcLocator*/);
+  explicit H8FieldSvc(const std::string& name /*, ISvcLocator* pSvcLocator*/);
 
   /** Destructor */
   ~H8FieldSvc() override;
+  H8FieldSvc(const H8FieldSvc&) = delete;
+  auto operator=(const H8FieldSvc&) -> H8FieldSvc& = delete;
+  H8FieldSvc(H8FieldSvc&&) = delete;
+  auto operator=(H8FieldSvc&&) -> H8FieldSvc& = delete;
 
   /** Athena algorithm's interface methods */
-  auto initialize() -> bool;
+  static auto initialize() -> bool;
   auto start() -> bool;
-  auto finalize() -> bool;
+  static auto finalize() -> bool;
 
   /** get B field value at given position */
   /** xyz[3] is in mm, bxyz[3] is in kT */
   /** if deriv[9] is given, field derivatives are returned in kT/mm */
   void getField(const double* xyz,
-                double* bxyz,
+                double* B,
                 double* deriv = nullptr) const override;
   /** getFieldZR simply calls getField **/
   void getFieldZR(const double* xyz,
-                  double* bxyz,
+                  double* B,
                   double* deriv = nullptr) const override;
 
 private:
   // initialize map
   auto initializeMap() -> bool;
   // read the field map
-  auto readMap(std::string mapFile) -> bool;
+  auto readMap(const std::string& mapFile) -> bool;
 
   /** Data members **/
 

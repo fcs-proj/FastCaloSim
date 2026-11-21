@@ -31,7 +31,7 @@ auto TFCSFlatLateralShapeParametrization::get_number_of_hits(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> int
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return -1;
   }
 
@@ -60,7 +60,7 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
@@ -76,12 +76,9 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  double alpha;
-  double r;
-
-  alpha =
+  const double alpha =
       2 * std::numbers::pi * CLHEP::RandFlat::shoot(simulstate.randomEngine());
-  r = static_cast<double>(m_dR)
+  const double r = static_cast<double>(m_dR)
       * CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
   double const delta_eta = r * std::cos(alpha);

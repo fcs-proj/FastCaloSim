@@ -37,7 +37,10 @@ public:
              std::string_view text) override
   {
     const std::scoped_lock lock(m_mutex);
-    m_records.push_back({lvl, std::string(file), line, std::string(text)});
+    m_records.push_back({.lvl = lvl,
+                         .file = std::string(file),
+                         .line = line,
+                         .text = std::string(text)});
   }
 
   auto records() -> std::vector<Record>
@@ -132,6 +135,8 @@ public:
   }
   ExitLogger(const ExitLogger&) = delete;
   auto operator=(const ExitLogger&) -> ExitLogger& = delete;
+  ExitLogger(ExitLogger&&) = delete;
+  auto operator=(ExitLogger&&) -> ExitLogger& = delete;
   ~ExitLogger() override
   {
     part("streamed at exit");
@@ -299,7 +304,7 @@ TEST_F(LoggingTest, ThreadsSharingAnObject)
     }
   }
   const auto records = m_sink->records();
-  ASSERT_EQ(records.size(), std::size_t {n_threads * n_lines});
+  ASSERT_EQ(records.size(), std::size_t {n_threads} * std::size_t {n_lines});
   for (const auto& record : records) {
     EXPECT_EQ(record.text, "items: 0 1 2 3 4");
   }
@@ -332,7 +337,7 @@ TEST(LoggingSinkTest, ReplaceWhileLogging)
   }
   FastCaloSim::set_log_sink(nullptr);
   EXPECT_EQ(first->records().size() + second->records().size(),
-            std::size_t {n_threads * n_messages});
+            std::size_t {n_threads} * std::size_t {n_messages});
 }
 
 // A failing sink neither throws at the call site nor loses the message

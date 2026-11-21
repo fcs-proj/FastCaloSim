@@ -7,7 +7,6 @@
 #include <G4ThreeVector.hh>
 
 #include "FastCaloSim/Definitions/FloatCompare.h"
-#include "G4ThreeVector.hh"
 #include "IDCaloBoundary.h"
 #include "ParticleContainer.h"
 
@@ -16,7 +15,7 @@ namespace TestHelpers
 
 struct IntersectionResult
 {
-  bool intersects;
+  bool intersects {false};
   G4ThreeVector intersection;
 };
 
@@ -26,6 +25,10 @@ class ParticleSampler
 public:
   ParticleSampler() = default;
   virtual ~ParticleSampler() = default;
+  ParticleSampler(const ParticleSampler&) = default;
+  ParticleSampler(ParticleSampler&&) = default;
+  auto operator=(const ParticleSampler&) -> ParticleSampler& = default;
+  auto operator=(ParticleSampler&&) -> ParticleSampler& = default;
 
   virtual auto generate(int pid, float ekin, float eta) -> Particle = 0;
   virtual auto discreteEtaSample(int pid, float ekin, std::vector<float> etas)
@@ -67,8 +70,10 @@ public:
 
       auto result = intersects(cylinder.second, direction);
       if (result.intersects) {
-        Particle particle =
-            Particle {pid, ekin, result.intersection, direction};
+        Particle particle = Particle {.pid = pid,
+                                      .ekin = ekin,
+                                      .pos = result.intersection,
+                                      .dir = direction};
         // Move particle slightly inside the boundary
         // This is currently a hack as particles do not seem
         // to be affected by magnetic field otherwise

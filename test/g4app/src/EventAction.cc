@@ -4,10 +4,7 @@
 
 #include "EventAction.hh"
 
-EventAction::EventAction()
-     
-{
-}
+EventAction::EventAction() = default;
 
 EventAction::~EventAction()
 = default;
@@ -19,7 +16,7 @@ void EventAction::BeginOfEventAction(const G4Event * /*anEvent*/)
 void EventAction::EndOfEventAction(const G4Event *anEvent)
 {
     auto *HCE = anEvent->GetHCofThisEvent();
-    if (!HCE) {
+    if (HCE == nullptr) {
         return;
 }
 }

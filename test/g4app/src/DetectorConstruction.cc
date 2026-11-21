@@ -17,10 +17,7 @@
 #include "TestHelpers/GeoPluginLoader.h"
 #include "TestHelpers/MagFieldPlugin.h"
 
-DetectorConstruction::DetectorConstruction()
-     
-{
-}
+DetectorConstruction::DetectorConstruction() = default;
 
 DetectorConstruction::~DetectorConstruction() = default;
 
@@ -43,6 +40,7 @@ auto DetectorConstruction::Construct() -> G4VPhysicalVolume*
   // Define the fast simulation trigger region
   // Particles that reach this region will be processed by the fast simulation
   // model
+  // Owned by the G4RegionStore, which the constructor registers it with
   auto *detectorRegion = new G4Region(fFastSimTriggerRegionName);
 
   // Add the cylinders of the ID-Calo boundary to the fast simulation trigger
@@ -55,6 +53,8 @@ auto DetectorConstruction::Construct() -> G4VPhysicalVolume*
 
   // World of the simplified geometry through which the fast simulation model
   // transports particles. It is shared by the models of all threads.
+  // The G4RegionStore owns detectorRegion (allocated above)
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
   fTransportWorld = G4CaloTransportTool::createSimplifiedWorld("WorldLog");
 
   return world_phys;
@@ -81,6 +81,7 @@ void DetectorConstruction::ConstructSDandField()
     // Load the ATLAS magnetic field
     GeoPluginLoader<MagFieldPlugin> const loader;
     MagFieldPlugin* plugin = loader.load(ATLASMagneticFieldMapPluginLib);
+    // NOLINTNEXTLINE(misc-const-correctness): G4Cache::Put needs non-const
     G4MagneticField* field = plugin->getField();
 
     if (field == nullptr) {

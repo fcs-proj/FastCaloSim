@@ -33,6 +33,9 @@
 #include <string>
 #include <vector>
 
+// The copy constructor rebuilds the graph, the unique_ptr member deletes the
+// copy assignment, and moves use the copy constructor
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSGANLWTNNHandler : public VNetworkLWTNN
 {
 public:

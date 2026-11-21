@@ -4,11 +4,13 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
 
+// Custom copy constructor, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationPDGIDSelectChain : public TFCSParametrizationChain
 {
 public:
-  TFCSParametrizationPDGIDSelectChain(const char* name = nullptr,
-                                      const char* title = nullptr)
+  explicit TFCSParametrizationPDGIDSelectChain(const char* name = nullptr,
+                                               const char* title = nullptr)
       : TFCSParametrizationChain(name, title)
   {
     reset_SimulateOnlyOnePDGID();

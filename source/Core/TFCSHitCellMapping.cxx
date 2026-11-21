@@ -28,7 +28,12 @@ auto TFCSHitCellMapping::simulate_hit(
                                   << " phi=" << hit.phi());
 
   // Position where we will perform the lookup
-  Position const lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
+  Position const lookup_pos {.m_x = 0,
+                             .m_y = 0,
+                             .m_z = 0,
+                             .m_eta = hit.eta(),
+                             .m_phi = hit.phi(),
+                             .m_r = 0};
 
   // Get the best matching cell
   const auto& cell = m_geo->get_cell(calosample(), lookup_pos);

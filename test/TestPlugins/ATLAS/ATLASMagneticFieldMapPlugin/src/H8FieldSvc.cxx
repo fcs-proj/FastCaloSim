@@ -8,6 +8,7 @@
 // Masahiro Morii, Harvard University
 //
 
+#include <array>
 #include <fstream>
 #include <iostream>
 
@@ -62,12 +63,12 @@ auto MagField::H8FieldSvc::finalize() -> bool
   return true;
 }
 
-auto MagField::H8FieldSvc::readMap(const std::string mapFile) -> bool
+auto MagField::H8FieldSvc::readMap(const std::string& mapFile) -> bool
 {
   // find the path to the map file
   // std::string resolvedMapFile = PathResolver::find_file( mapFile.c_str(),
   // "DATAPATH" );
-  std::string const resolvedMapFile = mapFile.c_str();
+  const std::string& resolvedMapFile = mapFile;
   if (resolvedMapFile.empty()) {
     // ATH_MSG_ERROR( "Field map file " << mapFile << " not found" );
     return false;
@@ -79,12 +80,12 @@ auto MagField::H8FieldSvc::readMap(const std::string mapFile) -> bool
     return false;
   }
   // skip the file header line
-  char line[256];
-  input.getline(line, 256);
+  std::array<char, 256> line {};
+  input.getline(line.data(), line.size());
   // read grids
   unsigned igrid(0);
-  double offset[3];
-  while (1) {
+  std::array<double, 3> offset {};
+  while (true) {
     // first determine offset
     if (igrid == 0) {
       // magnet #1
@@ -106,16 +107,16 @@ auto MagField::H8FieldSvc::readMap(const std::string mapFile) -> bool
     // then, read the map and shift it
     BFieldH8Grid grid;
     grid.readMap(input);
-    grid.setOffset(offset);
+    grid.setOffset(offset.data());
 
     if (grid.defined()) {
       // ATH_MSG_INFO("setting offset for magnet " << igrid << " to " <<
       // offset[0] << ", " << offset[1] << ", " << offset[2] << " mm");
       //  save grid
-      double its_min[3];
-      double its_max[3];
-      double its_d[3];
-      grid.getBounds(its_min, its_max, its_d);
+      std::array<double, 3> its_min {};
+      std::array<double, 3> its_max {};
+      std::array<double, 3> its_d {};
+      grid.getBounds(its_min.data(), its_max.data(), its_d.data());
       // ATH_MSG_INFO("new magnet grid #" << igrid << " found");
       // ATH_MSG_INFO("  - min    (mm) " << its_min[0] << ", " << its_min[1] <<
       // ", " << its_min[2]); ATH_MSG_INFO("  - max    (mm) " << its_max[0] <<

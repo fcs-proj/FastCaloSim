@@ -7,8 +7,8 @@
 class TFCSEnergyInterpolationLinear : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationLinear(const char* name = nullptr,
-                                const char* title = nullptr);
+  explicit TFCSEnergyInterpolationLinear(const char* name = nullptr,
+                                         const char* title = nullptr);
 
   auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {

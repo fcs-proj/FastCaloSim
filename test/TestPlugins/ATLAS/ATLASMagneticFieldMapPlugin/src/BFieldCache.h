@@ -14,7 +14,9 @@
 #ifndef BFIELDCACHE_H
 #define BFIELDCACHE_H
 
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 
 #include "BFieldVector.h"
@@ -23,7 +25,7 @@ class BFieldCache
 {
 public:
   // default constructor sets unphysical boundaries, so that inside() will fail
-  BFieldCache() { ; }
+  BFieldCache() = default;
   // make this cache invalid, so that inside() will fail
   void invalidate()
   {
@@ -49,15 +51,15 @@ public:
     m_invphi = static_cast<float>(1.0 / (phimax - phimin));
   }
   // set the field values at each corner
-  void setField(int i, const BFieldVector<double>& field)
+  void setField(std::size_t i, const BFieldVector<double>& field)
   {
-    for (int j = 0; j < 3; j++) {
+    for (std::size_t j = 0; j < 3; j++) {
       m_field[j][i] = static_cast<float>(field[j]);
     }
   }
-  void setField(int i, const BFieldVector<short>& field)
+  void setField(std::size_t i, const BFieldVector<short>& field)
   {
-    for (int j = 0; j < 3; j++) {
+    for (std::size_t j = 0; j < 3; j++) {
       m_field[j][i] = field[j];
     }
   }  // set the multiplicative factor for the field vectors
@@ -83,9 +85,10 @@ private:
   double m_zmin {0.0}, m_zmax {0.0};  // bin range in z
   double m_rmin {0.0}, m_rmax {0.0};  // bin range in r
   double m_phimin {0.0}, m_phimax {-1.0};  // bin range in phi
-  float m_invz, m_invr, m_invphi;  // 1/(bin size) in z, r, phi
-  float m_field[3][8];  // (Bz,Br,Bphi) at 8 corners of the bin
-  float m_scale;  // unit of m_field in kT
+  float m_invz {}, m_invr {}, m_invphi {};  // 1/(bin size) in z, r, phi
+  // (Bz,Br,Bphi) at 8 corners of the bin
+  std::array<std::array<float, 8>, 3> m_field {};
+  float m_scale {};  // unit of m_field in kT
 };
 
 // inline methods
@@ -113,9 +116,9 @@ void BFieldCache::getB(
       static_cast<float>((phi - m_phimin) * static_cast<double>(m_invphi));
   float const gphi = 1.0F - fphi;
   // interpolate field values in z, r, phi
-  float Bzrphi[3];
-  for (int i = 0; i < 3; i++) {  // z, r, phi components
-    const float* field = m_field[i];
+  std::array<float, 3> Bzrphi {};
+  for (std::size_t i = 0; i < 3; i++) {  // z, r, phi components
+    const auto& field = m_field[i];
     Bzrphi[i] = m_scale
         * (gz
                * (gr * (gphi * field[0] + fphi * field[1])
@@ -125,32 +128,27 @@ void BFieldCache::getB(
                   + fr * (gphi * field[6] + fphi * field[7])));
   }
   // convert (Bz,Br,Bphi) to (Bx,By,Bz)
-  float invr;
-  float c;
-  float es;
-  if (r > 0.0) {
-    invr = static_cast<float>(1.0 / r);
-    c = static_cast<float>(x * static_cast<double>(invr));
-    es = static_cast<float>(y * static_cast<double>(invr));
-  } else {
-    invr = 0.0;
-    c = static_cast<float>(cos(m_phimin));
-    es = static_cast<float>(sin(m_phimin));
-  }
+  const bool positive_r = r > 0.0;
+  const float invr = positive_r ? static_cast<float>(1.0 / r) : 0.0F;
+  const float c = positive_r ? static_cast<float>(x * static_cast<double>(invr))
+                             : static_cast<float>(cos(m_phimin));
+  const float es = positive_r
+      ? static_cast<float>(y * static_cast<double>(invr))
+      : static_cast<float>(sin(m_phimin));
   B[0] = static_cast<double>(Bzrphi[1] * c - Bzrphi[2] * es);
   B[1] = static_cast<double>(Bzrphi[1] * es + Bzrphi[2] * c);
   B[2] = static_cast<double>(Bzrphi[0]);
 
   // compute field derivatives if requested
-  if (deriv) {
+  if (deriv != nullptr) {
     float const sz = m_scale * m_invz;
     float const esr = m_scale * m_invr;
     float const sphi = m_scale * m_invphi;
-    float dBdz[3];
-    float dBdr[3];
-    float dBdphi[3];
-    for (int j = 0; j < 3; j++) {  // Bz, Br, Bphi components
-      const float* field = m_field[j];
+    std::array<float, 3> dBdz {};
+    std::array<float, 3> dBdr {};
+    std::array<float, 3> dBdphi {};
+    for (std::size_t j = 0; j < 3; j++) {  // Bz, Br, Bphi components
+      const auto& field = m_field[j];
       dBdz[j] = sz
           * (gr * (gphi * (field[4] - field[0]) + fphi * (field[5] - field[1]))
              + fr

@@ -53,6 +53,7 @@ struct SimStateContainerData
 class SimStateContainer
     : public Container<TFCSSimulationState, SimStateContainerData>
 {
+protected:
   auto flatten() const -> std::vector<SimStateContainerData> override
   {
     std::vector<SimStateContainerData> data;
@@ -71,28 +72,28 @@ class SimStateContainer
         // Get the cell
         const Cell cell = m_geo->get_cell(cell_id);
 
-        data.push_back({state_id,
-                        cell.id(),
-                        cell_energy,
+        data.push_back({.state_id = state_id,
+                        .cell_id = cell.id(),
+                        .cell_energy = cell_energy,
                         // The output column stays 32 bit
-                        static_cast<unsigned int>(cell.layer()),
-                        cell.eta(),
-                        cell.phi(),
-                        cell.r(),
-                        cell.x(),
-                        cell.y(),
-                        cell.z(),
-                        cell.deta(),
-                        cell.dphi(),
-                        cell.dr(),
-                        cell.dx(),
-                        cell.dy(),
-                        cell.dz(),
-                        cell.isBarrel(),
-                        cell.isXYZ(),
-                        cell.isEtaPhiR(),
-                        cell.isEtaPhiZ(),
-                        cell.isRPhiZ()});
+                        .layer = static_cast<unsigned int>(cell.layer()),
+                        .eta = cell.eta(),
+                        .phi = cell.phi(),
+                        .r = cell.r(),
+                        .x = cell.x(),
+                        .y = cell.y(),
+                        .z = cell.z(),
+                        .deta = cell.deta(),
+                        .dphi = cell.dphi(),
+                        .dr = cell.dr(),
+                        .dx = cell.dx(),
+                        .dy = cell.dy(),
+                        .dz = cell.dz(),
+                        .isBarrel = cell.isBarrel(),
+                        .isXYZ = cell.isXYZ(),
+                        .isEtaPhiR = cell.isEtaPhiR(),
+                        .isEtaPhiZ = cell.isEtaPhiZ(),
+                        .isRPhiZ = cell.isRPhiZ()});
 
         ++state_id;
       }

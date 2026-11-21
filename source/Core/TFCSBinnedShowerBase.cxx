@@ -41,30 +41,24 @@ auto TFCSBinnedShowerBase::simulate(
   delete_event(simulstate);
 
   // select a random event from the library
-  double eta_center;
-  double phi_center;
   // NOTE: This is ATLAS specific
   // layer 2 is EMB2
   std::size_t reference_layer = 2;
-  eta_center = extrapol->eta(reference_layer, Cell::SubPos::MID);
-  if (eta_center > 1.4) {  // Endcap becomes more relevant
+  if (extrapol->eta(reference_layer, FastCaloSim::SubPos::MID) > 1.4)
+  {  // Endcap becomes more relevant
     // NOTE: This is ATLAS specific
     // layer 6 is EME2
     reference_layer = 6;
   }
   // TODO: What about the endcap?
-  eta_center = extrapol->eta(reference_layer, Cell::SubPos::MID);
-  phi_center = extrapol->phi(reference_layer, Cell::SubPos::MID);
+  const double eta_center =
+      extrapol->eta(reference_layer, FastCaloSim::SubPos::MID);
+  const double phi_center =
+      extrapol->phi(reference_layer, FastCaloSim::SubPos::MID);
 
   // Fill the total energy and layer energies into simulstate
-  double Einit;
   const double Ekin = truth->Ekin();
-
-  if (OnlyScaleEnergy()) {
-    Einit = simulstate.E();
-  } else {
-    Einit = Ekin;
-  }
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
 
   // Reset the total energy
   simulstate.set_E(0);
@@ -113,10 +107,7 @@ auto TFCSBinnedShowerBase::simulate_hit(
   std::size_t const hit_index = hit.idx();
 
   // Get necessary the hit information
-  double r;
-  double alpha;
-  double E;
-  std::tie(r, alpha, E) =
+  const auto [r, alpha, E] =
       get_hit_position_and_energy(simulstate, layer_index, hit_index);
 
   hit.reset();

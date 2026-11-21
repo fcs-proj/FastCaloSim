@@ -11,13 +11,19 @@ class TH2;
 class TFCS2DFunctionHistogram : public TFCS2DFunction
 {
 public:
-  TFCS2DFunctionHistogram(TH2* hist = nullptr)
+  explicit TFCS2DFunctionHistogram(TH2* hist = nullptr)
   {
-    if (hist) {
+    if (hist != nullptr) {
       Initialize(hist);
     }
   }
   ~TFCS2DFunctionHistogram() override = default;
+  TFCS2DFunctionHistogram(const TFCS2DFunctionHistogram&) = default;
+  TFCS2DFunctionHistogram(TFCS2DFunctionHistogram&&) = default;
+  auto operator=(const TFCS2DFunctionHistogram&)
+      -> TFCS2DFunctionHistogram& = default;
+  auto operator=(TFCS2DFunctionHistogram&&)
+      -> TFCS2DFunctionHistogram& = default;
 
   void Initialize(TH2* hist);
 

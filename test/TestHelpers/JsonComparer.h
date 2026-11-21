@@ -27,7 +27,7 @@ using json = nlohmann::json;
 class JsonComparer
 {
 public:
-  JsonComparer(double tolerance = 0.0, int print_limit = 50)
+  explicit JsonComparer(double tolerance = 0.0, int print_limit = 50)
       : m_print_limit(print_limit)
       , m_tolerance(tolerance)
   {

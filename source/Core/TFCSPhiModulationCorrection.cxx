@@ -10,6 +10,7 @@
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 // External includes
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 
@@ -121,7 +122,7 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
   }
 
   TH2F* muon_corr_hist = dynamic_cast<TH2F*>(muon_corr->Get("hWt_Layer0"));
-  if (!muon_corr_hist) {
+  if (muon_corr_hist == nullptr) {
     FCS_MSG_ERROR("Failed to load hWt_Layer0 histogram from " << filename);
     return;
   }
@@ -142,7 +143,7 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
 
   auto const* param =
       dynamic_cast<TParameter<double>*>(muon_corr->Get("energy_shift"));
-  if (param) {
+  if (param != nullptr) {
     energy_shifts.at(eta_index) = static_cast<float>(param->GetVal());
     FCS_MSG_DEBUG("Energy shift: " << energy_shifts.at(eta_index));
   }
@@ -223,8 +224,7 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
   }
 
   // Find the phi bin of the hit
-  auto phi_it =
-      std::upper_bound(phi_mins.begin(), phi_mins.end(), phi_within_cell, less);
+  auto phi_it = std::ranges::upper_bound(phi_mins, phi_within_cell, less);
   const auto phi_index = FastCaloSim::index_of(phi_mins, phi_it) - 1;
 
   if (phi_index >= modulation.size()) {
@@ -295,10 +295,7 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
     return energy;
   }
 
-  std::size_t eta_index;
-  std::size_t phi_index;
-  int error_code;
-  std::tie(error_code, eta_index, phi_index) =
+  const auto [error_code, eta_index, phi_index] =
       get_eta_and_phi_index(phi, eta, layer_index);
 
   if (error_code != 0) {
@@ -367,10 +364,7 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
     return energy;
   }
 
-  std::size_t eta_index;
-  std::size_t phi_index;
-  int error_code;
-  std::tie(error_code, eta_index, phi_index) =
+  const auto [error_code, eta_index, phi_index] =
       get_eta_and_phi_index(phi, eta, layer_index);
 
   if (error_code != 0) {

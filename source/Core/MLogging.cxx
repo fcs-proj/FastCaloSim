@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <format>
@@ -20,7 +21,7 @@ namespace
 // their streamer info. Registering the old name as an alternate lets ROOT
 // resolve it to the renamed class so legacy files keep loading without
 // warnings.
-const ROOT::TClassAlt* dummy =
+const ROOT::TClassAlt* const dummy =
     ROOT::AddClassAlternate("FastCaloSim::MLogging", "ISF_FCS::MLogging");
 
 // Writes each message as one decorated line to std::cout. The mutex keeps
@@ -73,12 +74,12 @@ void send(FastCaloSim::MSG::Level lvl,
   }
   try {
     sink_slot().load()->write(lvl, file, line, text);
-    return;
   } catch (...) {
-  }
-  try {
-    default_sink()->write(lvl, file, line, text);
-  } catch (...) {
+    try {
+      default_sink()->write(lvl, file, line, text);
+      // NOLINTNEXTLINE(bugprone-empty-catch): nowhere left to report to
+    } catch (...) {
+    }
   }
 }
 
@@ -107,14 +108,19 @@ struct ThreadState
 // Plain thread_local values have no destructor and stay usable while the
 // thread exits, unlike a thread_local ThreadState: static destructors that log
 // run after the thread_local objects of the main thread are gone.
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables): per-thread
+// logging state, mutable by design
 thread_local ThreadState* t_state = nullptr;
 thread_local bool t_exiting = false;
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
 struct ThreadStateOwner
 {
   ThreadStateOwner() = default;
   ThreadStateOwner(const ThreadStateOwner&) = delete;
   auto operator=(const ThreadStateOwner&) -> ThreadStateOwner& = delete;
+  ThreadStateOwner(ThreadStateOwner&&) = delete;
+  auto operator=(ThreadStateOwner&&) -> ThreadStateOwner& = delete;
   ~ThreadStateOwner()
   {
     t_exiting = true;
@@ -144,7 +150,10 @@ namespace FastCaloSim
 
 void set_log_sink(std::shared_ptr<LogSink> sink)
 {
-  sink_slot().store(sink ? std::move(sink) : default_sink());
+  if (sink == nullptr) {
+    sink = default_sink();
+  }
+  sink_slot().store(std::move(sink));
 }
 
 LogMessage::LogMessage(MSG::Level lvl, const char* file, int line)
@@ -162,10 +171,8 @@ LogMessage::~LogMessage()
 /// Update outputlevel
 void MLogging::setLevel(int level)
 {
-  level = (level >= MSG::NUM_LEVELS) ? MSG::ALWAYS
-      : (level < MSG::NIL)           ? MSG::NIL
-                                     : level;
-  m_level = MSG::Level(level);
+  // levels at or above NUM_LEVELS become ALWAYS, those below NIL become NIL
+  m_level = MSG::Level(std::clamp(level, int {MSG::NIL}, int {MSG::ALWAYS}));
 }
 
 LineStream::LineStream(const MLogging* owner,

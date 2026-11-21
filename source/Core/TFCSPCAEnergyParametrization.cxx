@@ -34,8 +34,6 @@ TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char* name,
     : TFCSEnergyParametrization(name, title)
     , m_geo(geo)
 {
-  m_numberpcabins = 1;
-  do_rescale = 1;
 }
 
 auto TFCSPCAEnergyParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
@@ -70,6 +68,8 @@ void TFCSPCAEnergyParametrization::Print(Option_t* option) const
   }
 }
 
+namespace
+{
 auto interpolate_get_y(TH1* hist, double x) -> double
 {
   double m = 0;
@@ -106,6 +106,7 @@ auto interpolate_get_y(TH1* hist, double x) -> double
   n = y2 - m * x2;
   return m * x + n;
 }
+}  // namespace
 
 void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(
     std::size_t Ekin_bin, TH1* hist)
@@ -132,7 +133,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
@@ -198,7 +199,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     }
 
     double scalefactor = 1.0 / sum_fraction;
-    if (!do_rescale) {
+    if (do_rescale == 0) {
       scalefactor = 1.0;
     }
 
@@ -210,7 +211,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     // This needs to run before simulstate is modified, otherwise a clean retry
     // is not possible
     TH1* h_totalE_ratio = get_totalE_probability_ratio(*pcabin);
-    if (h_totalE_ratio) {
+    if (h_totalE_ratio != nullptr) {
       double pass_probability = 0;
       const double Etot = simdata[layerNr.size()];
       if (Etot > h_totalE_ratio->GetXaxis()->GetXmin()
@@ -307,12 +308,16 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 
     TMatrixDSym const* symCov =
         static_cast<TMatrixDSym*>(gDirectory->Get("symCov"));
+    // NOLINTNEXTLINE(misc-const-correctness): stored as non-const pointer
     TVectorD* MeanValues =
         static_cast<TVectorD*>(gDirectory->Get("MeanValues"));
+    // NOLINTNEXTLINE(misc-const-correctness): stored as non-const pointer
     TVectorD* SigmaValues =
         static_cast<TVectorD*>(gDirectory->Get("SigmaValues"));
+    // NOLINTNEXTLINE(misc-const-correctness): stored as non-const pointer
     TVectorD* Gauss_means =
         static_cast<TVectorD*>(gDirectory->Get("Gauss_means"));
+    // NOLINTNEXTLINE(misc-const-correctness): stored as non-const pointer
     TVectorD* Gauss_rms = static_cast<TVectorD*>(gDirectory->Get("Gauss_rms"));
 
     if (symCov == nullptr) {
@@ -368,14 +373,13 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     for (auto& l : layer) {
       file->cd(std::format("{}/bin{}/{}", folder, bin, l).c_str());
 
-      TFCS1DFunction* fct;
-      fct = static_cast<TFCS1DFunction*>(
+      auto* fct = static_cast<TFCS1DFunction*>(
           gDirectory->Get("TFCS1DFunctionRegression"));
-      if (!fct) {
+      if (fct == nullptr) {
         fct = static_cast<TFCS1DFunction*>(
             gDirectory->Get("TFCS1DFunctionRegressionTF"));
       }
-      if (!fct) {
+      if (fct == nullptr) {
         fct = static_cast<TFCS1DFunction*>(
             gDirectory->Get("TFCS1DFunctionHistogram"));
       }
@@ -397,19 +401,19 @@ void TFCSPCAEnergyParametrization::clean()
   }
 }
 
-void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
+void TFCSPCAEnergyParametrization::Streamer(TBuffer& buffer)
 {
   // Stream an object of class TFCSPCAEnergyParametrization
 
-  if (R__b.IsReading()) {
-    UInt_t R__s;
-    UInt_t R__c;
-    Version_t const R__v = R__b.ReadVersion(&R__s, &R__c);
-    R__b.SetBufferOffset(static_cast<Int_t>(R__s));
+  if (buffer.IsReading()) {
+    UInt_t start = 0;
+    UInt_t count = 0;
+    Version_t const version = buffer.ReadVersion(&start, &count);
+    buffer.SetBufferOffset(static_cast<Int_t>(start));
 
-    R__b.ReadClassBuffer(TFCSPCAEnergyParametrization::Class(), this);
+    buffer.ReadClassBuffer(TFCSPCAEnergyParametrization::Class(), this);
 
-    if (R__v == 1) {
+    if (version == 1) {
       set_total_energy_normalization(static_cast<float>(Ekin_nominal()));
       // Check if min and max range is a factor 2 within 1 MeV tolerance
       // If yes, the nominal to log-avergage
@@ -417,11 +421,11 @@ void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
         set_Ekin_nominal(Ekin_max() / std::numbers::sqrt2);
       }
     }
-    if (R__v <= 2) {
+    if (version <= 2) {
       m_totalE_probability_ratio.resize(
           static_cast<std::size_t>(m_numberpcabins - 1), nullptr);
     }
   } else {
-    R__b.WriteClassBuffer(TFCSPCAEnergyParametrization::Class(), this);
+    buffer.WriteClassBuffer(TFCSPCAEnergyParametrization::Class(), this);
   }
 }

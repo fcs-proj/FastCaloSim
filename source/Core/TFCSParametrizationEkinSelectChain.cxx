@@ -45,7 +45,7 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
     const TFCSExtrapolationState* /*unused*/) const
     -> std::optional<std::size_t>
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return std::nullopt;
   }
 
@@ -75,7 +75,7 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
 
   // if no parametrizations for this bin, return
   TFCSParametrizationBase const* first_in_bin = first_param_in(bin);
-  if (!first_in_bin) {
+  if (first_in_bin == nullptr) {
     return bin;
   }
 
@@ -86,7 +86,7 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
     const std::size_t prevbin = bin - 1;
     // if no parametrizations for previous bin, return
     TFCSParametrizationBase const* first_in_prevbin = first_param_in(prevbin);
-    if (!first_in_prevbin) {
+    if (first_in_prevbin == nullptr) {
       return bin;
     }
 
@@ -115,7 +115,7 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
     const std::size_t nextbin = bin + 1;
     // if no parametrizations for next bin, return
     TFCSParametrizationBase const* first_in_nextbin = first_param_in(nextbin);
-    if (!first_in_nextbin) {
+    if (first_in_nextbin == nullptr) {
       return bin;
     }
 

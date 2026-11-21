@@ -22,7 +22,12 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   // Position where we perform the lookup
   // The z position here is used to determine the side
   // in the custom FCAL geo handler
-  Position const lookup_pos {hit.x(), hit.y(), hit.z(), 0, 0, 0};
+  Position const lookup_pos {.m_x = hit.x(),
+                             .m_y = hit.y(),
+                             .m_z = hit.z(),
+                             .m_eta = 0,
+                             .m_phi = 0,
+                             .m_r = 0};
 
   /// No match possible, retry simulation
   if (FastCaloSim::exactly_equal(hit.x(), 0.0)

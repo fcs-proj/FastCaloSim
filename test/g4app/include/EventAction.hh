@@ -10,6 +10,10 @@ class EventAction : public G4UserEventAction
 public:
     EventAction();
     ~EventAction() override;
+    EventAction(const EventAction&) = delete;
+    auto operator=(const EventAction&) -> EventAction& = delete;
+    EventAction(EventAction&&) = delete;
+    auto operator=(EventAction&&) -> EventAction& = delete;
 
     void BeginOfEventAction(const G4Event * /*anEvent*/) override;
     void EndOfEventAction(const G4Event * /*anEvent*/) override;

@@ -7,9 +7,8 @@
 
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
-     
+    : fParticleGun(new G4ParticleGun(1))
 {
-  fParticleGun = new G4ParticleGun(1);
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
@@ -31,6 +30,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     if (fParticleContainer == nullptr)
     {
         G4Exception("PrimaryGeneratorAction::GeneratePrimaries()", "PrimaryGeneratorAction", FatalException, "Particle container not set");
+        return;
     }
 
     for(const auto &particle : fParticleContainer->get())

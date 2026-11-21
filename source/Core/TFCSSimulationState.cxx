@@ -45,6 +45,8 @@ void TFCSSimulationState::Print(Option_t* /*option*/) const
   if (!m_AuxInfo.empty()) {
     FCS_MSG_INFO("  AuxInfo has " << m_AuxInfo.size() << " elements");
     for (const auto& a : m_AuxInfo) {
+      // The stored type is not known here, print the possible interpretations
+      // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access): untyped store
       FCS_MSG_INFO("    " << a.first
                           << " : "
                           // Don't print as char/bool.
@@ -57,6 +59,7 @@ void TFCSSimulationState::Print(Option_t* /*option*/) const
                           << " int=" << a.second.i << " float=" << a.second.f
                           << " double=" << a.second.d
                           << " void*=" << a.second.p);
+      // NOLINTEND(cppcoreguidelines-pro-type-union-access)
     }
   }
 }

@@ -21,8 +21,8 @@
 TFCSEnergyBinParametrization::TFCSEnergyBinParametrization(const char* name,
                                                            const char* title)
     : TFCSEnergyParametrization(name, title)
+    , m_number_of_Ekin_bins(1)
 {
-  m_number_of_Ekin_bins = 1;
 }
 
 auto TFCSEnergyBinParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
@@ -102,7 +102,10 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
 }
 
 auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
-    int id, TFile* file, std::string prob_object_name) -> bool
+    int id,
+    TFile* file,
+    // NOLINTNEXTLINE(performance-unnecessary-value-param): public virtual API
+    std::string prob_object_name) -> bool
 {
   add_pdgid(id);
 
@@ -162,7 +165,7 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSEnergyParametrization::Print(option);
   if (longprint) {
-    for (int it : pdgid()) {
+    for (const int it : pdgid()) {
       FCS_MSG(INFO) << optprint << "  PDGID=" << it << " : ";
       float p = 0;
       for (std::size_t iEbin = 0; iEbin <= n_bins(); ++iEbin) {
@@ -185,7 +188,7 @@ auto TFCSEnergyBinParametrization::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 

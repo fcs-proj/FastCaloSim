@@ -4,14 +4,17 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+// The copy constructor copies only name, title and chain, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationChain : public TFCSParametrization
 {
 public:
-  TFCSParametrizationChain(const char* name = nullptr,
-                           const char* title = nullptr)
+  explicit TFCSParametrizationChain(const char* name = nullptr,
+                                    const char* title = nullptr)
       : TFCSParametrization(name, title)
   {
   }
+  // NOLINTNEXTLINE(bugprone-copy-constructor-init): copies only name, title
   TFCSParametrizationChain(const TFCSParametrizationChain& ref)
       : TFCSParametrization(ref.GetName(), ref.GetTitle())
       , m_chain(ref.chain())

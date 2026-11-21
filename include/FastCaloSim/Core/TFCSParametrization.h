@@ -8,7 +8,8 @@
 class TFCSParametrization : public ::TFCSParametrizationBase
 {
 public:
-  TFCSParametrization(const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSParametrization(const char* name = nullptr,
+                               const char* title = nullptr);
   void clear();
 
   auto is_match_pdgid(int id) const -> bool override
@@ -52,10 +53,10 @@ public:
   virtual void add_pdgid(int id);
   virtual void clear_pdgid();
 
-  virtual void set_Ekin_nominal(double min);
+  virtual void set_Ekin_nominal(double nominal);
   virtual void set_Ekin_min(double min);
   virtual void set_Ekin_max(double max);
-  virtual void set_eta_nominal(double min);
+  virtual void set_eta_nominal(double nominal);
   virtual void set_eta_min(double min);
   virtual void set_eta_max(double max);
 
@@ -65,6 +66,9 @@ public:
   virtual void set_pdgid_Ekin_eta(const TFCSParametrizationBase& ref);
 
 protected:
+  // Not virtual: compares only the members of this class, the derived classes
+  // call it qualified
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:

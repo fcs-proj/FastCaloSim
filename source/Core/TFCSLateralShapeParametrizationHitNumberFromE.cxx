@@ -80,7 +80,7 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> int
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return -1;
   }
 

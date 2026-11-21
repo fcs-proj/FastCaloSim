@@ -26,9 +26,9 @@ public:
     FCSRetryPCA = FCSRetry + 20
   };
 
-  TFCSPCAEnergyParametrization(const char* name = nullptr,
-                               const char* title = nullptr,
-                               CaloGeo* geo = nullptr);
+  explicit TFCSPCAEnergyParametrization(const char* name = nullptr,
+                                        const char* title = nullptr,
+                                        CaloGeo* geo = nullptr);
 
   void set_geometry(CaloGeo* geo) override { m_geo = geo; }
 
@@ -78,7 +78,7 @@ public:
   void set_totalE_probability_ratio(std::size_t Ekin_bin, TH1* hist);
   auto get_totalE_probability_ratio(std::size_t Ekin_bin) const -> TH1*;
 
-  int do_rescale;
+  int do_rescale {1};
 
 protected:
   CaloGeo* m_geo;  //! do not persistify
@@ -95,7 +95,7 @@ private:
 
   std::vector<TH1*> m_totalE_probability_ratio;
 
-  int m_numberpcabins;
+  int m_numberpcabins {1};
 
   float m_total_energy_normalization {1};
 

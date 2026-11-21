@@ -9,11 +9,13 @@
 #include "IMagFieldSvc.h"
 #include "MagFieldPlugin.h"
 
+namespace
+{
 class AtlasField : public G4MagneticField
 {
 public:
   // Construct the field object from the IMagFieldSvc
-  AtlasField(MagField::IMagFieldSvc* m);
+  explicit AtlasField(MagField::IMagFieldSvc* mfield);
 
   // Implementation of G4 method to retrieve field value
   void GetFieldValue(const double* point, double* field) const override
@@ -44,12 +46,18 @@ public:
   // Destructor
   ~ATLASMagneticFieldMapPlugin() override;
 
-protected:
+  ATLASMagneticFieldMapPlugin(const ATLASMagneticFieldMapPlugin&) = delete;
+  auto operator=(const ATLASMagneticFieldMapPlugin&)
+      -> ATLASMagneticFieldMapPlugin& = delete;
+  ATLASMagneticFieldMapPlugin(ATLASMagneticFieldMapPlugin&&) = delete;
+  auto operator=(ATLASMagneticFieldMapPlugin&&)
+      -> ATLASMagneticFieldMapPlugin& = delete;
+
   // Overriding virtual function
   auto getField() -> G4MagneticField* override;
 
 private:
-  MagField::IMagFieldSvc* m_magFieldSvc;
+  MagField::IMagFieldSvc* m_magFieldSvc {nullptr};
 };
 
 ATLASMagneticFieldMapPlugin::ATLASMagneticFieldMapPlugin()
@@ -65,10 +73,9 @@ ATLASMagneticFieldMapPlugin::~ATLASMagneticFieldMapPlugin()
 auto ATLASMagneticFieldMapPlugin::getField() -> G4MagneticField*
 {
   auto* atlasFieldSvs = new MagField::AtlasFieldSvc(
-      (TEST_BASE_DIR
-       + std::string("data/fieldmap/bmagatlas_09_fullAsym20400.data"))
-          .c_str(),
-      true);
+      TEST_BASE_DIR
+          + std::string("data/fieldmap/bmagatlas_09_fullAsym20400.data"),
+      /*isAscii=*/true);
   atlasFieldSvs->handle();
   m_magFieldSvc = atlasFieldSvs;
 
@@ -76,9 +83,9 @@ auto ATLASMagneticFieldMapPlugin::getField() -> G4MagneticField*
             << '\n';
   return new AtlasField(&*m_magFieldSvc);
 }
+}  // namespace
 
-extern "C" auto createATLASMagneticFieldMapPlugin()
-    -> ATLASMagneticFieldMapPlugin*
+extern "C" auto createATLASMagneticFieldMapPlugin() -> MagFieldPlugin*
 {
   return new ATLASMagneticFieldMapPlugin;
 }

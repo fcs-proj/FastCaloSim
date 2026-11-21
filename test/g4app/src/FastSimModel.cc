@@ -16,7 +16,7 @@
 
 class G4ParticleDefinition;
 
-FastSimModel::FastSimModel(G4String aModelName,
+FastSimModel::FastSimModel(const G4String& aModelName,
                            G4Region* aEnvelope,
                            G4VPhysicalVolume* transportWorld)
     : G4VFastSimulationModel(aModelName, aEnvelope)
@@ -89,7 +89,7 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
 
   // Do the simulation if requested
   if (fDoSimulation) {
-    if (!fParametrization) {
+    if (fParametrization == nullptr) {
       std::cerr << "[FastSimModel::DoIt] No parametrization set!" << '\n';
       return;
     }

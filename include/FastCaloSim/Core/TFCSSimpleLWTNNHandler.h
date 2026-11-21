@@ -32,6 +32,8 @@
 // For writing to a tree
 #include "TTree.h"
 
+// Custom copy constructor re-creating the network, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSSimpleLWTNNHandler : public VNetworkLWTNN
 {
 public:

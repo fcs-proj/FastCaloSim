@@ -91,11 +91,11 @@ void TFCS2DFunctionHistogram::rnd_to_fct(double& valuex,
   const auto border_y = [this](std::size_t bin) -> double
   { return static_cast<double>(m_HistoBordersy[bin]); };
 
-  const auto it = std::upper_bound(m_HistoContents.begin(),
-                                   m_HistoContents.end(),
-                                   rnd0,
-                                   [](double r, float c) -> bool
-                                   { return r < static_cast<double>(c); });
+  const auto it = std::ranges::upper_bound(m_HistoContents,
+                                           rnd0,
+                                           std::ranges::less {},
+                                           [](float c) -> double
+                                           { return static_cast<double>(c); });
   std::size_t ibin = FastCaloSim::index_of(m_HistoContents, it);
   if (ibin >= m_HistoContents.size()) {
     ibin = m_HistoContents.size() - 1;

@@ -61,10 +61,10 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   auto test_layer =
       [&](std::size_t layer, double eta, double phi, double r, double z) -> void
   {
-    ASSERT_NEAR(extrapol_state.eta(layer, Cell::SubPos::MID), eta, 1e-1);
-    ASSERT_NEAR(extrapol_state.phi(layer, Cell::SubPos::MID), phi, 1e-1);
-    ASSERT_NEAR(extrapol_state.r(layer, Cell::SubPos::MID), r, 1e-1);
-    ASSERT_NEAR(extrapol_state.z(layer, Cell::SubPos::MID), z, 1e-1);
+    ASSERT_NEAR(extrapol_state.eta(layer, FastCaloSim::SubPos::MID), eta, 1e-1);
+    ASSERT_NEAR(extrapol_state.phi(layer, FastCaloSim::SubPos::MID), phi, 1e-1);
+    ASSERT_NEAR(extrapol_state.r(layer, FastCaloSim::SubPos::MID), r, 1e-1);
+    ASSERT_NEAR(extrapol_state.z(layer, FastCaloSim::SubPos::MID), z, 1e-1);
   };
 
   // Test each layerß

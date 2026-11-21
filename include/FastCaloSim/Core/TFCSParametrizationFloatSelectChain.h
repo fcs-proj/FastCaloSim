@@ -4,12 +4,14 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 
+// Custom copy constructor, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationFloatSelectChain
     : public TFCSParametrizationBinnedChain
 {
 public:
-  TFCSParametrizationFloatSelectChain(const char* name = nullptr,
-                                      const char* title = nullptr)
+  explicit TFCSParametrizationFloatSelectChain(const char* name = nullptr,
+                                               const char* title = nullptr)
       : TFCSParametrizationBinnedChain(name, title)
       , m_bin_low_edge(1, 0)
   {

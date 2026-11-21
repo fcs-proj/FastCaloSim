@@ -42,7 +42,7 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
   TFCSSimulationState sim_state;
   // Define a new dummy cell
   Cell const cell(0,
-                  Position {0, 0, 0, 0, 0, 0},
+                  Position {},
                   0,
                   /*isBarrel=*/true,
                   /*isXYZ=*/false,
@@ -62,7 +62,7 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
   auto& cells = sim_state.cells();
 
   // Check that the cell is in the map
-  ASSERT_TRUE(cells.find(cell.id()) != cells.end());
+  ASSERT_TRUE(cells.contains(cell.id()));
   // Check that the energy deposited in the cell is correct
   EXPECT_FLOAT_EQ(cells[cell.id()], 10.0);
 }

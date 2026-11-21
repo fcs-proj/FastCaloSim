@@ -8,8 +8,8 @@
 class TFCSEnergyInterpolationHistogram : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationHistogram(const char* name = nullptr,
-                                   const char* title = nullptr);
+  explicit TFCSEnergyInterpolationHistogram(const char* name = nullptr,
+                                            const char* title = nullptr);
 
   enum FCSEnergyInitializationStatusBits
   {

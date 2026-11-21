@@ -9,9 +9,17 @@ class TH1;
 class TFCSHistoLateralShapeWeightHitAndMiss : public TFCSHistoLateralShapeWeight
 {
 public:
-  TFCSHistoLateralShapeWeightHitAndMiss(const char* name = nullptr,
-                                        const char* title = nullptr);
+  explicit TFCSHistoLateralShapeWeightHitAndMiss(const char* name = nullptr,
+                                                 const char* title = nullptr);
   ~TFCSHistoLateralShapeWeightHitAndMiss() override;
+  TFCSHistoLateralShapeWeightHitAndMiss(
+      const TFCSHistoLateralShapeWeightHitAndMiss&) = default;
+  TFCSHistoLateralShapeWeightHitAndMiss(
+      TFCSHistoLateralShapeWeightHitAndMiss&&) = default;
+  auto operator=(const TFCSHistoLateralShapeWeightHitAndMiss&)
+      -> TFCSHistoLateralShapeWeightHitAndMiss& = default;
+  auto operator=(TFCSHistoLateralShapeWeightHitAndMiss&&)
+      -> TFCSHistoLateralShapeWeightHitAndMiss& = default;
 
   /// weight the energy of one hit in order to generate fluctuations. If the hit
   /// energy is 0, discard the hit

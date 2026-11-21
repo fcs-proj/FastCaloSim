@@ -17,7 +17,6 @@ public:
   // Constructor with particle container
   explicit Event(ParticleContainer container)
       : m_ptcl_container(std::move(container))
-      , m_event_id(-1)
       , m_print_string("Event")
   {
   }
@@ -26,7 +25,6 @@ public:
   explicit Event(ParticleContainer container, std::string label)
       : m_ptcl_container(std::move(container))
       , m_label(std::move(label))
-      , m_event_id(-1)
   {
   }
 
@@ -66,7 +64,7 @@ private:
   // @brief Label of the event
   std::string m_label;
   // @brief Identifier of the event
-  int m_event_id;
+  int m_event_id {-1};
   // @brief String used by gtest to name event
   std::string m_print_string;
   // @brief Key of the param file used to simulate the event

@@ -145,7 +145,7 @@ public:
   }
 
   // String of the python command to plot simulation output
-  static auto py_sim_exec(std::string label) -> std::string
+  static auto py_sim_exec(const std::string& label) -> std::string
   {
     std::string command = "python3 " + PYTHON_SCRIPT + " --sim_input "
         + sim_output_path() + " --output_png " + plot_output_sim_path()

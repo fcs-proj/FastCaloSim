@@ -14,7 +14,9 @@
 #ifndef BFIELDCACHEZR_H
 #define BFIELDCACHEZR_H
 
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 
 #include "BFieldVectorZR.h"
@@ -23,7 +25,7 @@ class BFieldCacheZR
 {
 public:
   // default constructor sets unphysical boundaries, so that inside() will fail
-  BFieldCacheZR() { ; }
+  BFieldCacheZR() = default;
   // invalidate this cache, so that inside() will fail
   void invalidate()
   {
@@ -41,7 +43,7 @@ public:
     m_invr = static_cast<float>(1.0 / (rmax - rmin));
   }
   // set the field values at each corner
-  void setField(int i, const BFieldVectorZR& field)
+  void setField(std::size_t i, const BFieldVectorZR& field)
   {
     m_field[0][i] = field[0];
     m_field[1][i] = field[1];
@@ -62,8 +64,8 @@ public:
 private:
   double m_zmin {0.0}, m_zmax {-1.0};  // bin range in z
   double m_rmin {0.0}, m_rmax {-1.0};  // bin range in r
-  float m_invz, m_invr;  // 1/(bin size) in z, r
-  float m_field[2][4];  // (Bz,Br) at 4 corners of the bin
+  float m_invz {}, m_invr {};  // 1/(bin size) in z, r
+  std::array<std::array<float, 4>, 2> m_field {};  // (Bz,Br) at 4 corners
 };
 
 // inline methods
@@ -86,19 +88,14 @@ void BFieldCacheZR::getB(const double* xyz,
       static_cast<float>((r - m_rmin) * static_cast<double>(m_invr));
   float const gr = 1.0F - fr;
   // interpolate field values in z, r
-  float Bzr[2];
-  for (int i = 0; i < 2; i++) {  // z, r components
-    const float* field = m_field[i];
+  std::array<float, 2> Bzr {};
+  for (std::size_t i = 0; i < 2; i++) {  // z, r components
+    const auto& field = m_field[i];
     Bzr[i] = gz * (gr * field[0] + fr * field[1])
         + fz * (gr * field[2] + fr * field[3]);
   }
   // convert (Bz,Br) to (Bx,By,Bz)
-  float invr;
-  if (r > 0.0) {
-    invr = static_cast<float>(1.0 / r);
-  } else {
-    invr = 0.0;
-  }
+  const float invr = r > 0.0 ? static_cast<float>(1.0 / r) : 0.0F;
   auto const c = static_cast<float>(x * static_cast<double>(invr));
   auto const es = static_cast<float>(y * static_cast<double>(invr));
   B[0] = static_cast<double>(Bzr[1] * c);
@@ -106,11 +103,11 @@ void BFieldCacheZR::getB(const double* xyz,
   B[2] = static_cast<double>(Bzr[0]);
 
   // compute field derivatives if requested
-  if (deriv) {
-    float dBdz[2];
-    float dBdr[2];
-    for (int j = 0; j < 2; j++) {  // Bz, Br components
-      const float* field = m_field[j];
+  if (deriv != nullptr) {
+    std::array<float, 2> dBdz {};
+    std::array<float, 2> dBdr {};
+    for (std::size_t j = 0; j < 2; j++) {  // Bz, Br components
+      const auto& field = m_field[j];
       dBdz[j] =
           m_invz * (gr * (field[2] - field[0]) + fr * (field[3] - field[1]));
       dBdr[j] =

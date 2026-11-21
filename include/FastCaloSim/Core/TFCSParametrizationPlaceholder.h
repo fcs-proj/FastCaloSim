@@ -7,8 +7,8 @@
 class TFCSParametrizationPlaceholder : public TFCSParametrizationBase
 {
 public:
-  TFCSParametrizationPlaceholder(const char* name = nullptr,
-                                 const char* title = nullptr)
+  explicit TFCSParametrizationPlaceholder(const char* name = nullptr,
+                                          const char* title = nullptr)
       : TFCSParametrizationBase(name, title)
   {
   }

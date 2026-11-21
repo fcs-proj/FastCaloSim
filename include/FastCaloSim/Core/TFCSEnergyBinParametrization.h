@@ -11,8 +11,8 @@
 class TFCSEnergyBinParametrization : public TFCSEnergyParametrization
 {
 public:
-  TFCSEnergyBinParametrization(const char* name = nullptr,
-                               const char* title = nullptr);
+  explicit TFCSEnergyBinParametrization(const char* name = nullptr,
+                                        const char* title = nullptr);
 
   void set_pdgid(int id) override;
   void set_pdgid(const std::set<int>& ids) override;
@@ -53,6 +53,8 @@ public:
   void Print(Option_t* option = "") const override;
 
 private:
+  // Persistent member: initialized in the constructor
+  // NOLINTNEXTLINE(cppcoreguidelines-use-default-member-init,modernize-use-default-member-init)
   int m_number_of_Ekin_bins;
   std::map<int, std::vector<float>> m_pdgid_Ebin_probability;
 

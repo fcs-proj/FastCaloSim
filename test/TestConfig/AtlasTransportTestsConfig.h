@@ -131,7 +131,7 @@ public:
   }
 
   // String of the python command to plot transportation
-  static auto py_transport_exec(std::string label) -> std::string
+  static auto py_transport_exec(const std::string& label) -> std::string
   {
     std::string command = "python3 " + PYTHON_SCRIPT + " --input "
         + transport_output_path() + " --output " + plot_output_transport_path()
@@ -145,7 +145,7 @@ public:
   }
 
   // String of the python command to plot the extrapolation
-  static auto py_extrapol_exec(std::string label) -> std::string
+  static auto py_extrapol_exec(const std::string& label) -> std::string
   {
     std::string command = "python3 " + PYTHON_EXTRAP_SCRIPT + " --input "
         + extrapolation_output_path() + " --output "

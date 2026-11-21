@@ -12,9 +12,17 @@ class TFCSHistoLateralShapeParametrizationFCal
     : public TFCSHistoLateralShapeParametrization
 {
 public:
-  TFCSHistoLateralShapeParametrizationFCal(const char* name = nullptr,
-                                           const char* title = nullptr);
+  explicit TFCSHistoLateralShapeParametrizationFCal(
+      const char* name = nullptr, const char* title = nullptr);
   ~TFCSHistoLateralShapeParametrizationFCal() override;
+  TFCSHistoLateralShapeParametrizationFCal(
+      const TFCSHistoLateralShapeParametrizationFCal&) = default;
+  TFCSHistoLateralShapeParametrizationFCal(
+      TFCSHistoLateralShapeParametrizationFCal&&) = default;
+  auto operator=(const TFCSHistoLateralShapeParametrizationFCal&)
+      -> TFCSHistoLateralShapeParametrizationFCal& = default;
+  auto operator=(TFCSHistoLateralShapeParametrizationFCal&&)
+      -> TFCSHistoLateralShapeParametrizationFCal& = default;
 
   auto simulate_hit(Hit& hit,
                     TFCSSimulationState& simulstate,

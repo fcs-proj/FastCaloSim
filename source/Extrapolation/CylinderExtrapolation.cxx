@@ -81,7 +81,7 @@ auto circleIntersections(const Cylinder& cylinder,
   const double discriminant = qb * qb - 4 * qa * qc;
 
   const auto pointAt = [&](double t, double z) -> Vector3D
-  { return Vector3D(a.x() + t * dx, a.y() + t * dy, z); };
+  { return {a.x() + t * dx, a.y() + t * dy, z}; };
 
   Intersections result;
   if (qa <= 0.0000001 || discriminant < 0) {
@@ -171,7 +171,7 @@ auto closestPointToSurface(const Cylinder& cylinder,
   if (!beyondEndcaps) {
     // The point closest to the z axis if on the segment, else the end closer
     // to the surface
-    const Vector3D closestToAxis =
+    Vector3D closestToAxis =
         closestPointOfLines(a, ab.unit(), Vector3D(0, 0, 0), Vector3D(0, 0, 1));
     if (isOnSegment(closestToAxis, a, b)) {
       return closestToAxis;
@@ -224,8 +224,7 @@ auto closestPointToSurface(const Cylinder& cylinder,
   }
   // The line misses the circle: the point closest to the endcap center if on
   // the segment, else the end closer to it
-  const Vector3D closestToCenter =
-      a + ((endcapCenter - a).dot(ab) / ab.dot(ab)) * ab;
+  Vector3D closestToCenter = a + ((endcapCenter - a).dot(ab) / ab.dot(ab)) * ab;
   if (isOnSegment(closestToCenter, a, b)) {
     return closestToCenter;
   }
@@ -322,7 +321,8 @@ auto extrapolateWithIntersection(const std::vector<TrackPoint>& track,
     if (crossesSurface || isOnSegment(intersection, p1, p2)
         || (bothOutside && !isForward && nExtrapolations == 1) || isLast)
     {
-      return TrackPoint {intersection, closerDirection(cylinder, start, end)};
+      return TrackPoint {.position = intersection,
+                         .direction = closerDirection(cylinder, start, end)};
     }
   }
   return std::nullopt;
@@ -344,7 +344,8 @@ auto extrapolateWithClosestApproach(const std::vector<TrackPoint>& track,
     const double distance = (closest - onSurface).mag();
     if (distance < minDistance) {
       minDistance = distance;
-      result = TrackPoint {onSurface, closerDirection(cylinder, start, end)};
+      result = TrackPoint {.position = onSurface,
+                           .direction = closerDirection(cylinder, start, end)};
     }
   }
   return result;
@@ -357,7 +358,8 @@ auto extrapolateToCylinder(const std::vector<TrackPoint>& track,
     -> std::optional<TrackPoint>
 {
   if (track.size() == 1) {
-    return TrackPoint {cylinder.project(track[0].position), track[0].direction};
+    return TrackPoint {.position = cylinder.project(track[0].position),
+                       .direction = track[0].direction};
   }
   if (auto crossing = extrapolateWithIntersection(track, cylinder)) {
     return crossing;
