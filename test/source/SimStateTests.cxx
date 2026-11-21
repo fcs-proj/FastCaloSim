@@ -1,5 +1,10 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <set>
+
 #include "SimStateTests.h"
 
 #include <CLHEP/Random/RanluxEngine.h>
@@ -73,4 +78,55 @@ TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)
   uint32_t const hash = TFCSSimulationState::getAuxIndex("testInfo");
   sim_state.setAuxInfo<double>(hash, 123.456);
   EXPECT_DOUBLE_EQ(sim_state.getAuxInfo<double>(hash), 123.456);
+}
+
+TEST_F(TFCSSimulationStateTest, LayerAuxIndicesAreDistinct)
+{
+  // The per-layer entries of TFCSPredictExtrapWeights and
+  // TFCSVoxelHistoLateralCovarianceFluctuations can be in the same simulation
+  // state: their indices must differ from each other, from the bare layer
+  // numbers and from the other named entries
+  constexpr std::size_t n_layers = 24;
+  const std::array layer_names {"ExtrapWeight"_FCShash,
+                                "VoxelFluctWeights"_FCShash,
+                                "VoxelFluctGeo"_FCShash};
+  const std::array other_names {"BSEinit"_FCShash,
+                                "BSELayer"_FCShash,
+                                "BSEventData"_FCShash,
+                                "BSNHits"_FCShash,
+                                "EventNr"_FCShash,
+                                "FCSFixedHitChainEnergySum"_FCShash,
+                                "FCSHitChainEnergySum"_FCShash,
+                                "FCSHitChainNHits"_FCShash,
+                                "GANlayer"_FCShash,
+                                "SF"_FCShash};
+
+  std::set<std::uint32_t> indices(other_names.begin(), other_names.end());
+  for (std::size_t layer = 0; layer < n_layers; ++layer) {
+    indices.insert(static_cast<std::uint32_t>(layer));
+  }
+  for (const auto name : layer_names) {
+    for (std::size_t layer = 0; layer < n_layers; ++layer) {
+      indices.insert(TFCSSimulationState::layerAuxIndex(name, layer));
+    }
+  }
+  EXPECT_EQ(indices.size(),
+            other_names.size() + ((1 + layer_names.size()) * n_layers));
+
+  // Entries of different types for the same layer no longer overwrite each
+  // other
+  TFCSSimulationState sim_state;
+  int voxel_data = 0;
+  sim_state.setAuxInfo<double>(
+      TFCSSimulationState::layerAuxIndex("ExtrapWeight"_FCShash, 2), 0.25);
+  sim_state.setAuxInfo<void*>(
+      TFCSSimulationState::layerAuxIndex("VoxelFluctWeights"_FCShash, 2),
+      &voxel_data);
+  EXPECT_DOUBLE_EQ(
+      sim_state.getAuxInfo<double>(
+          TFCSSimulationState::layerAuxIndex("ExtrapWeight"_FCShash, 2)),
+      0.25);
+  EXPECT_EQ(sim_state.getAuxInfo<void*>(TFCSSimulationState::layerAuxIndex(
+                "VoxelFluctWeights"_FCShash, 2)),
+            &voxel_data);
 }

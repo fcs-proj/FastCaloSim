@@ -26,14 +26,14 @@
 
 namespace
 {
-// The layer numbers are small, so they are valid AuxInfo keys
+// AuxInfo indices of the weights and of the voxel histogram of a layer
 auto layer_hash(std::size_t layer) -> std::uint32_t
 {
-  return static_cast<std::uint32_t>(layer);
+  return TFCSSimulationState::layerAuxIndex("VoxelFluctWeights"_FCShash, layer);
 }
 auto layer_hash_geo(std::size_t layer) -> std::uint32_t
 {
-  return static_cast<std::uint32_t>(layer) | 0x80000000U;
+  return TFCSSimulationState::layerAuxIndex("VoxelFluctGeo"_FCShash, layer);
 }
 }  // namespace
 

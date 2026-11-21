@@ -33,6 +33,15 @@
 //======= TFCSPredictExtrapWeights =========
 //=============================================
 
+namespace
+{
+// AuxInfo index of the predicted extrapolation weight of a layer
+auto extrap_weight_index(std::size_t layer) -> std::uint32_t
+{
+  return TFCSSimulationState::layerAuxIndex("ExtrapWeight"_FCShash, layer);
+}
+}  // namespace
+
 TFCSPredictExtrapWeights::TFCSPredictExtrapWeights(const char* name,
                                                    const char* title,
                                                    CaloGeo* geo)
@@ -206,11 +215,11 @@ auto TFCSPredictExtrapWeights::simulate(
       } else if (weight > 1) {
         weight = 1;
       }
-      simulstate.setAuxInfo<double>(static_cast<std::uint32_t>(ilayer), weight);
+      simulstate.setAuxInfo<double>(extrap_weight_index(ilayer), weight);
     } else {  // use weight=0.5 for non-relevant layers
       FCS_MSG_DEBUG(
           "Setting weight=0.5 for layer = " << std::to_string(ilayer));
-      simulstate.setAuxInfo<double>(static_cast<std::uint32_t>(ilayer), 0.5);
+      simulstate.setAuxInfo<double>(extrap_weight_index(ilayer), 0.5);
     }
   }
   return FCSSuccess;
@@ -226,7 +235,7 @@ auto TFCSPredictExtrapWeights::simulate_hit(
   const std::size_t cs = calosample();
 
   // Get corresponding predicted extrapolation weight from simulstate
-  if (!simulstate.hasAuxInfo(static_cast<std::uint32_t>(cs))) {
+  if (!simulstate.hasAuxInfo(extrap_weight_index(cs))) {
     // missing AuxInfo
     FCS_MSG_FATAL(
         "Simulstate is not decorated with extrapolation weights for cs = "
@@ -234,7 +243,7 @@ auto TFCSPredictExtrapWeights::simulate_hit(
     return FCSFatal;
   }
   const auto extrapWeight =
-      simulstate.getAuxInfo<double>(static_cast<std::uint32_t>(cs));
+      simulstate.getAuxInfo<double>(extrap_weight_index(cs));
 
   double eta = (1. - extrapWeight) * extrapol->eta(cs, FastCaloSim::SubPos::ENT)
       + extrapWeight * extrapol->eta(cs, FastCaloSim::SubPos::EXT);

@@ -119,6 +119,15 @@ public:
             ^ static_cast<std::uint32_t>(s[count]))
         * 16777619U;
   }
+  // Index of an auxiliary information entry per calorimeter layer: the hash of
+  // a name continued with the layer number (one more FNV-1a step), so that
+  // every name has its own indices for all layers.
+  // Example: layerAuxIndex("ExtrapWeight"_FCShash, layer)
+  static constexpr auto layerAuxIndex(std::uint32_t name_hash,
+                                      std::size_t layer) -> std::uint32_t
+  {
+    return (name_hash ^ static_cast<std::uint32_t>(layer)) * 16777619U;
+  }
   // Run time call for hash function
   static auto getAuxIndex(const std::string& s) -> std::uint32_t;
   static auto getAuxIndex(const char* s) -> std::uint32_t;
