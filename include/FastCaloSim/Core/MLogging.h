@@ -4,6 +4,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <string>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TNamed.h>  //for ClassDef
@@ -99,13 +100,20 @@ public:
       -> std::string;
 
   /// Return a stream for sending messages directly (no decoration)
-  auto msg() const -> MsgStream& { return *m_msg; }
+  auto msg() const -> MsgStream& { return std::cout; }
   /// Return a stream for sending messages (incomplete decoration)
   auto msg(const MSG::Level lvl) const -> MsgStream&;
   /// Return a decorated starting stream for sending messages
   auto stream(MSG::Level lvl, std::string file, int line) const -> MsgStream&;
-  /// Check whether the logging system is active at the provided verbosity level
-  auto msgLvl(const MSG::Level lvl) const -> bool;
+  /// Check whether the logging system is active at the provided verbosity
+  /// level: VERBOSE and DEBUG depend on the output level, all other levels are
+  /// always printed
+  auto msgLvl(const MSG::Level lvl) const -> bool
+  {
+    if (lvl == MSG::VERBOSE || lvl == MSG::DEBUG)
+      return m_level <= lvl;
+    return true;
+  }
 
   /// Print a whole decorated log message and then end the line.
   void print(MSG::Level lvl,
@@ -125,10 +133,6 @@ private:
   auto streamerNeedStart(MSG::Level lvl, std::string file) const -> bool;
 
   MSG::Level m_level = MSG::INFO;  //! Do not persistify!
-
-  MsgStream* m_msg = &std::cout;  //! Do not persistify!
-  MsgStream m_null_msg = MsgStream(nullptr);  //! Do not persistify!
-  MsgStream* m_null_msg_ptr = &m_null_msg;  //! Do not persistify!
 
   mutable bool m_streamer_in_line = false;  //! Do not persistify!
   mutable MSG::Level m_streamer_has_lvl = MSG::NIL;  //! Do not persistify!

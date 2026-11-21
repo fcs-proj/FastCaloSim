@@ -1,5 +1,8 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <array>
+#include <format>
+
 #include "FastCaloSim/Core/MLogging.h"
 
 namespace
@@ -11,6 +14,14 @@ namespace
 // warnings.
 const ROOT::TClassAlt* dummy =
     ROOT::AddClassAlternate("FastCaloSim::MLogging", "ISF_FCS::MLogging");
+
+// Stream for messages below the output level: it has no buffer, so everything
+// written to it is discarded. One per thread, as writing sets its state flags.
+auto null_stream() -> std::ostream&
+{
+  thread_local std::ostream stream(nullptr);
+  return stream;
+}
 }  // namespace
 
 namespace FastCaloSim
@@ -43,7 +54,7 @@ auto MLogging::stream(MSG::Level lvl, std::string file, int line) const
 {
   // If we shouldn't print this just return a dummy stream.
   if (!this->msgLvl(lvl))
-    return *m_null_msg_ptr;
+    return null_stream();
   // This is different to the last stream.
   if (this->streamerNeedStart(lvl, file)) {
     // end the open stream
@@ -52,16 +63,7 @@ auto MLogging::stream(MSG::Level lvl, std::string file, int line) const
     this->msg() << this->startMsg(lvl, file, line);
     this->streamerInLine(true);
   }
-  return *m_msg;
-}
-
-/// Check whether the logging system is active at the provided verbosity level
-auto MLogging::msgLvl(const MSG::Level lvl) const -> bool
-{
-  if (lvl == MSG::VERBOSE || lvl == MSG::DEBUG)
-    return m_level <= lvl;
-  // All other messages print always
-  return true;
+  return this->msg();
 }
 
 /// Print a whole log message and then end the line.
@@ -80,7 +82,7 @@ auto MLogging::streamerEndLine(MSG::Level lvl) const -> std::string
 {
   if (this->msgLvl(lvl)) {
     m_streamer_in_line = false;
-    *m_msg << std::endl;
+    this->msg() << std::endl;
   }
   return "";
 }
@@ -109,25 +111,18 @@ auto MLogging::streamerNeedStart(MSG::Level lvl, std::string file) const -> bool
 auto MLogging::startMsg(MSG::Level lvl, const std::string& file, int line)
     -> std::string
 {
-  int col1_len = 20;
-  int col2_len = 5;
-  int col3_len = 10;
-  auto last_slash = file.find_last_of('/');
-  int path_len = last_slash == std::string::npos ? 0 : last_slash;
-  int trim_point = path_len;
-  int total_len = file.length();
-  if (total_len - path_len > col1_len)
-    trim_point = total_len - col1_len;
-  std::string trimmed_name = file.substr(trim_point);
-  const char* LevelNames[MSG::NUM_LEVELS] = {
+  static constexpr std::array<const char*, MSG::NUM_LEVELS> level_names = {
       "NIL", "VERBOSE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "ALWAYS"};
-  std::string level = LevelNames[lvl];
-  std::string level_string = std::string("(") + level + ") ";
-  std::stringstream output;
-  output << std::setw(col1_len) << std::right << trimmed_name << ":"
-         << std::setw(col2_len) << std::left << line << std::setw(col3_len)
-         << std::right << level_string;
-  return output.str();
+  // File name from the last '/', or its last 20 characters if longer
+  constexpr std::size_t name_len = 20;
+  const auto last_slash = file.find_last_of('/');
+  std::size_t trim_point = last_slash == std::string::npos ? 0 : last_slash;
+  if (file.length() - trim_point > name_len)
+    trim_point = file.length() - name_len;
+  return std::format("{:>20}:{:<5}{:>10}",
+                     file.substr(trim_point),
+                     line,
+                     std::format("({}) ", level_names[lvl]));
 }
 
 }  // namespace FastCaloSim
