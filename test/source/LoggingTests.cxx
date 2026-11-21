@@ -96,7 +96,7 @@ public:
     FCS_MSG(INFO) << END_FCS_MSG(INFO);
   }
   void part(const char* text) const { FCS_MSG(INFO) << text; }
-  void end() const { static_cast<void>(END_FCS_MSG(INFO)); }
+  void end() const { FCS_MSG(INFO) << END_FCS_MSG(INFO); }
   auto inner() const -> int
   {
     FCS_MSG_INFO("inner");
@@ -106,20 +106,37 @@ public:
   {
     FCS_MSG(INFO) << "before " << inner() << " after" << END_FCS_MSG(INFO);
   }
+  auto inner_line() const -> int
+  {
+    FCS_MSG(INFO) << "inner" << END_FCS_MSG(INFO);
+    return 42;
+  }
+  void nested_line(const Logger& other) const
+  {
+    FCS_MSG(INFO) << "before " << other.inner_line() << " after"
+                  << END_FCS_MSG(INFO);
+  }
 };
 
-// Streams a line from its destructor
+// Streams a line from its destructor, ended or not
 class ExitLogger : public Logger
 {
 public:
-  ExitLogger() = default;
+  explicit ExitLogger(bool end_line)
+      : m_end_line(end_line)
+  {
+  }
   ExitLogger(const ExitLogger&) = delete;
   auto operator=(const ExitLogger&) -> ExitLogger& = delete;
   ~ExitLogger() override
   {
     part("streamed at exit");
-    end();
+    if (m_end_line)
+      end();
   }
+
+private:
+  bool m_end_line;
 };
 
 class LoggingTest : public ::testing::Test
@@ -199,13 +216,28 @@ TEST_F(LoggingTest, NestedMessageKeepsStreamedText)
   EXPECT_EQ(records[1].text, "before 1 after");
 }
 
+// A line streamed in the expression of another one finishes first, from the
+// same object or from another one
+TEST_F(LoggingTest, NestedLinesKeepStreamedText)
+{
+  const Logger a;
+  const Logger b;
+  a.nested_line(a);
+  a.nested_line(b);
+  const auto records = m_sink->records();
+  ASSERT_EQ(records.size(), 4U);
+  EXPECT_EQ(records[0].text, "inner");
+  EXPECT_EQ(records[1].text, "before 42 after");
+  EXPECT_EQ(records[2].text, "inner");
+  EXPECT_EQ(records[3].text, "before 42 after");
+}
+
 // Lines of two objects on the same thread are passed on separately
 TEST_F(LoggingTest, ObjectsStreamSeparateLines)
 {
   const Logger a;
   const Logger b;
   a.part("A");
-  b.end();  // does not end the line of a
   EXPECT_TRUE(m_sink->records().empty());
   b.part("B");  // ends the line of a
   b.end();
@@ -284,7 +316,22 @@ TEST(LoggingDeathTest, StreamFromStaticDestructor)
         FastCaloSim::set_log_sink(std::make_shared<CerrSink>());
         const Logger log;
         log.streamed(1);
-        static const ExitLogger exit_logger;
+        static const ExitLogger exit_logger(true);
+        std::exit(0);
+      },
+      ::testing::ExitedWithCode(0),
+      "streamed at exit");
+}
+
+// Also when nothing ends the line
+TEST(LoggingDeathTest, UnfinishedLineFromStaticDestructor)
+{
+  EXPECT_EXIT(
+      {
+        FastCaloSim::set_log_sink(std::make_shared<CerrSink>());
+        const Logger log;
+        log.streamed(1);
+        static const ExitLogger exit_logger(false);
         std::exit(0);
       },
       ::testing::ExitedWithCode(0),

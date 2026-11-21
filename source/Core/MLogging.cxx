@@ -77,13 +77,10 @@ void send(FastCaloSim::MSG::Level lvl,
   }
 }
 
-// Logging state of one thread: the stream that discards messages below the
-// output level (one per thread, as writing sets its state flags), and the
-// line that FCS_MSG(lvl) << ... builds until END_FCS_MSG.
+// The line that the FCS_MSG(lvl) << ... statements of one thread build until
+// END_FCS_MSG.
 struct ThreadState
 {
-  std::ostream null_stream {nullptr};
-
   bool open = false;
   const FastCaloSim::MLogging* owner = nullptr;
   FastCaloSim::MSG::Level lvl = FastCaloSim::MSG::NIL;
@@ -165,37 +162,53 @@ void MLogging::setLevel(int level)
   m_level = MSG::Level(level);
 }
 
-/// Return the open line of this thread. Another object, level or file ends
-/// the line and starts a new one.
-auto MLogging::stream(MSG::Level lvl, const char* file, int line) const
-    -> MsgStream&
+LineStream::LineStream(const MLogging* owner,
+                       MSG::Level lvl,
+                       const char* file,
+                       int line,
+                       bool active)
+    : m_owner(owner)
+    , m_lvl(lvl)
+    , m_file(file)
+    , m_line(line)
 {
+  if (active)
+    m_text.emplace();
+}
+
+/// Add the text of the statement to the open line of this thread. Another
+/// object, level or file ends the line and starts a new one.
+LineStream::~LineStream()
+{
+  if (!m_text)
+    return;
   ThreadState& state = thread_state();
-  // If we shouldn't print this just return a dummy stream.
-  if (!this->msgLvl(lvl))
-    return state.null_stream;
   if (state.open
-      && (this != state.owner || lvl != state.lvl || file != state.file))
+      && (m_owner != state.owner || m_lvl != state.lvl
+          || std::string_view(m_file) != state.file))
     state.end_line();
   if (!state.open) {
     state.open = true;
-    state.owner = this;
-    state.lvl = lvl;
-    state.file = file;
-    state.line = line;
+    state.owner = m_owner;
+    state.lvl = m_lvl;
+    state.file = m_file;
+    state.line = m_line;
   }
-  return state.text;
+  state.text << m_text->view();
+  // While the thread exits, nothing would end the line later.
+  if (m_end || t_exiting)
+    state.end_line();
 }
 
-/// End the open line of this object if we print this level
-auto MLogging::streamerEndLine(MSG::Level lvl) const -> std::string
+auto MLogging::stream(MSG::Level lvl, const char* file, int line) const
+    -> LineStream
 {
-  if (this->msgLvl(lvl)) {
-    ThreadState& state = thread_state();
-    if (state.owner == this)
-      state.end_line();
-  }
-  return "";
+  return {this, lvl, file, line, this->msgLvl(lvl)};
+}
+
+auto MLogging::streamerEndLine(MSG::Level lvl) const -> LineStream::End
+{
+  return {this->msgLvl(lvl)};
 }
 
 /// Print a message for the start of logging
