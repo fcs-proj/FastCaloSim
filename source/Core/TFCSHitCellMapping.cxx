@@ -59,14 +59,13 @@ auto TFCSHitCellMapping::simulate_hit(
 auto TFCSHitCellMapping::operator==(const TFCSParametrizationBase& ref) const
     -> bool
 {
-  if (TFCSParametrizationBase::compare(ref))
+  if (TFCSParametrizationBase::compare(ref)) {
     return true;
-  if (!TFCSParametrization::compare(ref))
+  }
+  if (!TFCSParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrization::compare(ref))
-    return false;
-
-  return true;
+  }
+  return TFCSLateralShapeParametrization::compare(ref);
 }
 
 void TFCSHitCellMapping::Print(Option_t* option) const
@@ -74,6 +73,7 @@ void TFCSHitCellMapping::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  geo=" << m_geo);
+  }
 }

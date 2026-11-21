@@ -27,14 +27,10 @@ private:
 };
 
 template<class Plugin>
-GeoPluginLoader<Plugin>::GeoPluginLoader()
-{
-}
+GeoPluginLoader<Plugin>::GeoPluginLoader() = default;
 
 template<class Plugin>
-GeoPluginLoader<Plugin>::~GeoPluginLoader()
-{
-}
+GeoPluginLoader<Plugin>::~GeoPluginLoader() = default;
 
 template<class Plugin>
 Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
@@ -53,7 +49,7 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   //
   void* handle = dlopen(pString.c_str(), RTLD_NOW);
   if (!handle) {
-    std::cerr << dlerror() << std::endl;
+    std::cerr << dlerror() << '\n';
     return nullptr;
   }
 
@@ -62,11 +58,11 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   //
   void* f = dlsym(handle, createFunctionName.c_str());
   if (!f) {
-    std::cerr << dlerror() << std::endl;
+    std::cerr << dlerror() << '\n';
     return nullptr;
   }
 
-  typedef void* (*CreationMethod)();
+  using CreationMethod = void* (*)();
   auto F = reinterpret_cast<CreationMethod>(f);
 
   //

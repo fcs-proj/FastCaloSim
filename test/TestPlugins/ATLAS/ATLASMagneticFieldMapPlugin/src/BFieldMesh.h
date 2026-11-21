@@ -87,7 +87,7 @@ public:
                        double phi,
                        BFieldCache& cache) const;
   // get the B field
-  void getB(const double* xyz, double* B, double* deriv = 0) const;
+  void getB(const double* xyz, double* B, double* deriv = nullptr) const;
   // accessors
   double min(int i) const { return m_min[i]; }
   double max(int i) const { return m_max[i]; }
@@ -160,8 +160,9 @@ bool BFieldMesh<T>::inside(double z, double r, double phi) const
   // assume phi is in [-pi,pi].
   // phimax() is in [0,2pi], but phimin() may be < 0 if the range crosses phi =
   // 0. we have to test twice to get all possible cases.
-  if (phi < phimin())
+  if (phi < phimin()) {
     phi += 2.0 * M_PI;
+  }
   return (phi >= phimin() && phi <= phimax() && z >= zmin() && z <= zmax()
           && r >= rmin() && r <= rmax());
 }
@@ -176,25 +177,29 @@ void BFieldMesh<T>::getCache(double z,
                              BFieldCache& cache) const
 {
   // make sure phi is inside this zone
-  if (phi < phimin())
+  if (phi < phimin()) {
     phi += 2.0 * M_PI;
+  }
   // find the mesh, and relative location in the mesh
   // z
   const std::vector<double>& mz(m_mesh[0]);
   std::size_t iz = lutLookup(0, z - zmin());  // tentative mesh index from LUT
-  if (z > mz[iz + 1])
+  if (z > mz[iz + 1]) {
     iz++;
+  }
   // r
   const std::vector<double>& mr(m_mesh[1]);
   std::size_t ir = lutLookup(1, r - rmin());  // tentative mesh index from LUT
-  if (r > mr[ir + 1])
+  if (r > mr[ir + 1]) {
     ir++;
+  }
   // phi
   const std::vector<double>& mphi(m_mesh[2]);
   std::size_t iphi =
       lutLookup(2, phi - phimin());  // tentative mesh index from LUT
-  if (phi > mphi[iphi + 1])
+  if (phi > mphi[iphi + 1]) {
     iphi++;
+  }
   // store the bin edges
   cache.setRange(
       mz[iz], mz[iz + 1], mr[ir], mr[ir + 1], mphi[iphi], mphi[iphi + 1]);
@@ -212,7 +217,6 @@ void BFieldMesh<T>::getCache(double z,
   cache.setField(7, m_field[im0 + zoff + roff + 1]);
   // store the B scale
   cache.setBscale(m_scale);
-  return;
 }
 
 //
@@ -227,33 +231,39 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
   double z = xyz[2];
   double r = sqrt(x * x + y * y);
   double phi = atan2(y, x);
-  if (phi < phimin())
+  if (phi < phimin()) {
     phi += 2.0 * M_PI;
+  }
   // is it inside this map?
   if (!inside(z, r, phi)) {  // no
     B[0] = B[1] = B[2] = 0.0;
-    if (deriv)
-      for (int i = 0; i < 9; i++)
+    if (deriv) {
+      for (int i = 0; i < 9; i++) {
         deriv[i] = 0.0;
+      }
+    }
     return;
   }
   // find the bin
   // z
   const std::vector<double>& mz(m_mesh[0]);
   std::size_t iz = lutLookup(0, z - zmin());  // tentative mesh index from LUT
-  if (z > mz[iz + 1])
+  if (z > mz[iz + 1]) {
     iz++;
+  }
   // r
   const std::vector<double>& mr(m_mesh[1]);
   std::size_t ir = lutLookup(1, r - rmin());  // tentative mesh index from LUT
-  if (r > mr[ir + 1])
+  if (r > mr[ir + 1]) {
     ir++;
+  }
   // phi
   const std::vector<double>& mphi(m_mesh[2]);
   std::size_t iphi =
       lutLookup(2, phi - phimin());  // tentative mesh index from LUT
-  if (phi > mphi[iphi + 1])
+  if (phi > mphi[iphi + 1]) {
     iphi++;
+  }
   // get the B field at the 8 corners
   const auto roff = static_cast<std::size_t>(m_roff);
   const auto zoff = static_cast<std::size_t>(m_zoff);
@@ -297,7 +307,9 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
     double sz = m_scale / (mz[iz + 1] - mz[iz]);
     double esr = m_scale / (mr[ir + 1] - mr[ir]);
     double sphi = m_scale / (mphi[iphi + 1] - mphi[iphi]);
-    double dBdz[3], dBdr[3], dBdphi[3];
+    double dBdz[3];
+    double dBdr[3];
+    double dBdphi[3];
     for (int j = 0; j < 3; j++) {  // Bz, Br, Bphi components
       dBdz[j] = sz
           * (gr
@@ -337,7 +349,6 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
     deriv[7] = es * dBdr[1] + c * dBdphi[0] / r;
     deriv[8] = dBdz[0];
   }
-  return;
 }
 
 //
@@ -365,7 +376,9 @@ void BFieldMesh<T>::buildLUT()
     for (int i = 0; i < n; i++) {  // LUT index
       if (i * q + m_mesh[j].front()
           > m_mesh[j][static_cast<std::size_t>(m_number + 1)])
+      {
         m_number++;
+      }
       m_LUT[j].push_back(m_number);
     }
   }

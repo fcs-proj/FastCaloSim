@@ -99,7 +99,7 @@ public:
     {
     }
 
-    inline void setEtaPhiZE(double eta, double phi, double z, double E)
+    void setEtaPhiZE(double eta, double phi, double z, double E)
     {
       m_eta_x = eta;
       m_phi_y = phi;
@@ -107,7 +107,7 @@ public:
       m_E = E;
       m_useXYZ = false;
     }
-    inline void setXYZE(double x, double y, double z, double E)
+    void setXYZE(double x, double y, double z, double E)
     {
       m_eta_x = x;
       m_phi_y = y;
@@ -116,7 +116,7 @@ public:
       m_useXYZ = true;
     }
 
-    inline void reset_center()
+    void reset_center()
     {
       m_center_r = 0;
       m_center_z = 0;
@@ -124,7 +124,7 @@ public:
       m_center_phi = 0;
     }
 
-    inline void reset()
+    void reset()
     {
       m_eta_x = 0.;
       m_phi_y = 0.;
@@ -133,34 +133,34 @@ public:
       m_useXYZ = false;
     }
 
-    inline auto eta() const -> const auto& { return m_eta_x; }
-    inline auto phi() const -> const auto& { return m_phi_y; }
-    inline auto x() const -> const auto& { return m_eta_x; }
-    inline auto y() const -> const auto& { return m_phi_y; }
-    inline auto E() const -> const auto& { return m_E; }
-    inline auto z() const -> const auto& { return m_z; }
-    inline auto r() const
+    auto eta() const -> const auto& { return m_eta_x; }
+    auto phi() const -> const auto& { return m_phi_y; }
+    auto x() const -> const auto& { return m_eta_x; }
+    auto y() const -> const auto& { return m_phi_y; }
+    auto E() const -> const auto& { return m_E; }
+    auto z() const -> const auto& { return m_z; }
+    auto r() const
     {
-      if (m_useXYZ)
+      if (m_useXYZ) {
         return std::sqrt(m_eta_x * m_eta_x + m_phi_y * m_phi_y);
-      else
-        return m_z / std::sinh(m_eta_x);
+      }
+      return m_z / std::sinh(m_eta_x);
     }
-    inline auto center_r() const -> const auto& { return m_center_r; }
-    inline auto center_z() const -> const auto& { return m_center_z; }
-    inline auto center_eta() const -> const auto& { return m_center_eta; }
-    inline auto center_phi() const -> const auto& { return m_center_phi; }
-    inline auto idx() -> const auto& { return m_hit_index; }
+    auto center_r() const -> const auto& { return m_center_r; }
+    auto center_z() const -> const auto& { return m_center_z; }
+    auto center_eta() const -> const auto& { return m_center_eta; }
+    auto center_phi() const -> const auto& { return m_center_phi; }
+    auto idx() -> const auto& { return m_hit_index; }
 
-    inline void setCenter_r(double r) { m_center_r = r; }
-    inline void setCenter_z(double z) { m_center_z = z; }
-    inline void setCenter_eta(double eta) { m_center_eta = eta; }
-    inline void setCenter_phi(double phi) { m_center_phi = phi; }
-    inline void set_eta_x(double eta_x) { m_eta_x = eta_x; }
-    inline void set_phi_y(double phi_y) { m_phi_y = phi_y; }
-    inline void set_z(double z) { m_z = z; }
-    inline void set_E(double E) { m_E = E; }
-    inline void set_idx(std::size_t hit_index) { m_hit_index = hit_index; }
+    void setCenter_r(double r) { m_center_r = r; }
+    void setCenter_z(double z) { m_center_z = z; }
+    void setCenter_eta(double eta) { m_center_eta = eta; }
+    void setCenter_phi(double phi) { m_center_phi = phi; }
+    void set_eta_x(double eta_x) { m_eta_x = eta_x; }
+    void set_phi_y(double phi_y) { m_phi_y = phi_y; }
+    void set_z(double z) { m_z = z; }
+    void set_E(double E) { m_E = E; }
+    void set_idx(std::size_t hit_index) { m_hit_index = hit_index; }
 
   private:
     double m_eta_x;  // eta for barrel and end-cap, x for FCal

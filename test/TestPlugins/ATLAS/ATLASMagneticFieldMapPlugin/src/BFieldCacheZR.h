@@ -23,14 +23,7 @@ class BFieldCacheZR
 {
 public:
   // default constructor sets unphysical boundaries, so that inside() will fail
-  BFieldCacheZR()
-      : m_zmin(0.0)
-      , m_zmax(-1.0)
-      , m_rmin(0.0)
-      , m_rmax(-1.0)
-  {
-    ;
-  }
+  BFieldCacheZR() { ; }
   // invalidate this cache, so that inside() will fail
   void invalidate()
   {
@@ -64,11 +57,11 @@ public:
   inline void getB(const double* xyz,
                    double r,
                    double* B,
-                   double* deriv = 0) const;
+                   double* deriv = nullptr) const;
 
 private:
-  double m_zmin, m_zmax;  // bin range in z
-  double m_rmin, m_rmax;  // bin range in r
+  double m_zmin {0.0}, m_zmax {-1.0};  // bin range in z
+  double m_rmin {0.0}, m_rmax {-1.0};  // bin range in r
   float m_invz, m_invr;  // 1/(bin size) in z, r
   float m_field[2][4];  // (Bz,Br) at 4 corners of the bin
 };
@@ -112,7 +105,8 @@ void BFieldCacheZR::getB(const double* xyz,
 
   // compute field derivatives if requested
   if (deriv) {
-    float dBdz[2], dBdr[2];
+    float dBdz[2];
+    float dBdr[2];
     for (int j = 0; j < 2; j++) {  // Bz, Br components
       const float* field = m_field[j];
       dBdz[j] =

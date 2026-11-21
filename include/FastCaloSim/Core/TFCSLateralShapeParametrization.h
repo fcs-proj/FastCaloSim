@@ -29,8 +29,9 @@ public:
   /// The Ekin bin; no value for all bins
   auto Ekin_bin() const -> std::optional<std::size_t>
   {
-    if (m_Ekin_bin < 0)
+    if (m_Ekin_bin < 0) {
       return std::nullopt;
+    }
     return static_cast<std::size_t>(m_Ekin_bin);
   }
   void set_Ekin_bin(std::size_t bin);
@@ -53,9 +54,9 @@ protected:
 
 private:
   // Persistent as int, with -1 for all bins
-  int m_Ekin_bin;
+  int m_Ekin_bin {-1};
   // Persistent as int, with -1 for no layer
-  int m_calosample;
+  int m_calosample {-1};
 
   ClassDefOverride(TFCSLateralShapeParametrization,
                    1)  // TFCSLateralShapeParametrization

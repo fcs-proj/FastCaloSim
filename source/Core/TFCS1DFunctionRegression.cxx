@@ -14,8 +14,9 @@
 /// hidden neurons followed by the output bias.
 auto TFCS1DFunctionRegression::regression_value(double uniform) const -> double
 {
-  if (m_fWeightMatrix0to1.size() <= 1)
+  if (m_fWeightMatrix0to1.size() <= 1) {
     return -1;
+  }
   const std::size_t n_neurons = m_fWeightMatrix0to1.size() - 1;
 
   const std::vector<double>& output_weights = m_fWeightMatrix1to2[0];
@@ -43,8 +44,9 @@ void TFCS1DFunctionRegression::set_weights(
 
 auto TFCS1DFunctionRegression::sigmoid(double x) -> double
 {
-  if (x >= 0)
+  if (x >= 0) {
     return 1 / (1 + std::exp(-x));
+  }
   const double e = std::exp(x);
   return e / (1 + e);
 }

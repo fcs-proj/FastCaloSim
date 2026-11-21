@@ -55,7 +55,7 @@ public:
                 bool toroidsOFF = false);
 
   /** Destructor */
-  virtual ~AtlasFieldSvc();
+  ~AtlasFieldSvc() override;
 
   /** Athena algorithm's interface methods */
   //      virtual bool  initialize() override;
@@ -78,12 +78,12 @@ public:
   /** get B field value at given position */
   /** xyz[3] is in mm, bxyz[3] is in kT */
   /** if deriv[9] is given, field derivatives are returned in kT/mm */
-  virtual void getField(const double* xyz,
-                        double* bxyz,
-                        double* deriv = nullptr) const override final;
-  virtual void getFieldZR(const double* xyz,
-                          double* bxyz,
-                          double* deriv = nullptr) const override final;
+  void getField(const double* xyz,
+                double* bxyz,
+                double* deriv = nullptr) const final;
+  void getFieldZR(const double* xyz,
+                  double* bxyz,
+                  double* deriv = nullptr) const final;
 
   double GetUseSolenoidCurrent() { return m_useSoleCurrent; }
   void SetUseSolenoidCurrent(double current) { m_useSoleCurrent = current; }
@@ -240,8 +240,9 @@ const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
     // tentative index from LUT
     auto iz =
         static_cast<std::size_t>(m_edgeLUT[0][static_cast<std::size_t>(lz)]);
-    if (z > edgez[iz + 1])
+    if (z > edgez[iz + 1]) {
       iz++;
+    }
     // r
     const std::vector<double>& edger(m_edge[1]);
     // index to LUT - note minimum r is always 0
@@ -249,8 +250,9 @@ const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
     // tentative index from LUT
     auto ir =
         static_cast<std::size_t>(m_edgeLUT[1][static_cast<std::size_t>(lr)]);
-    if (r > edger[ir + 1])
+    if (r > edger[ir + 1]) {
       ir++;
+    }
     // phi
     const std::vector<double>& edgephi(m_edge[2]);
     // index to LUT - minimum phi is -pi
@@ -258,17 +260,16 @@ const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
     // tentative index from LUT
     auto iphi =
         static_cast<std::size_t>(m_edgeLUT[2][static_cast<std::size_t>(lphi)]);
-    if (phi > edgephi[iphi + 1])
+    if (phi > edgephi[iphi + 1]) {
       iphi++;
+    }
     // use LUT to get the zone
     return m_zoneLUT[(iz * static_cast<std::size_t>(m_nr) + ir)
                          * static_cast<std::size_t>(m_nphi)
                      + iphi];
-  } else {
-    // std::cout<<"z is :"<<z<<" and should be >= "<<m_zmin<<"  && z <=
-    // "<<m_zmax<< "  && r is "<<r <<" and should be <= "<<m_rmax<<std::endl;
-    return 0;
-  }
+  }  // std::cout<<"z is :"<<z<<" and should be >= "<<m_zmin<<"  && z <=
+  // "<<m_zmax<< "  && r is "<<r <<" and should be <= "<<m_rmax<<std::endl;
+  return 0;
 }
 
 /** fill given magnetic field zone */
@@ -279,7 +280,7 @@ bool MagField::AtlasFieldSvc::fillFieldCache(double z,
 {
   // search for the zone
   const BFieldZone* zone = findZone(z, r, phi);
-  if (zone == 0) {
+  if (zone == nullptr) {
     // outsize all zones
     return false;
   }

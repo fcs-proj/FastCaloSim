@@ -16,7 +16,7 @@ class CaloGeo;
 namespace lwt
 {
 class LightweightGraph;
-}
+}  // namespace lwt
 
 class TFCSEnergyAndHitGANV2 : public TFCSParametrizationBinnedChain
 {
@@ -117,7 +117,7 @@ protected:
                                 std::string FastCaloGANInputFolderName);
 
 private:
-  static auto GetBinsInFours(double const bins) -> int;
+  static auto GetBinsInFours(double bins) -> int;
   auto GetAlphaBinsForRBin(const TAxis* x, int ix, int yBinNum) const -> int;
 
   std::vector<int> m_bin_ninit;

@@ -31,40 +31,34 @@ public:
   }
 
   // Event label setter and getter
-  inline auto set_label(std::string label) -> void
-  {
-    m_label = std::move(label);
-  }
-  inline auto get_label() const -> std::string { return m_label; }
+  auto set_label(std::string label) -> void { m_label = std::move(label); }
+  auto get_label() const -> std::string { return m_label; }
 
   // Print string setter and getter
-  inline auto set_print_string(std::string print_string) -> void
+  auto set_print_string(std::string print_string) -> void
   {
     m_print_string = std::move(print_string);
   }
-  inline auto get_print_string() const -> std::string { return m_print_string; }
+  auto get_print_string() const -> std::string { return m_print_string; }
 
   // Event ID setter and getter
-  inline auto set_event_id(int event_id) -> void { m_event_id = event_id; }
-  inline auto get_event_id() const -> int { return m_event_id; }
+  auto set_event_id(int event_id) -> void { m_event_id = event_id; }
+  auto get_event_id() const -> int { return m_event_id; }
 
   // Retrieve particle container associated to event
-  inline auto get_container() const -> const ParticleContainer&
+  auto get_container() const -> const ParticleContainer&
   {
     return m_ptcl_container;
   }
 
   // Set the param file name used to simulate the event
-  inline auto set_param_file_key(const std::string& param_file_key) -> void
+  auto set_param_file_key(const std::string& param_file_key) -> void
   {
     m_param_file_key = param_file_key;
   }
 
   // Get the param file name used to simulate the event
-  inline auto get_param_file_key() const -> std::string
-  {
-    return m_param_file_key;
-  }
+  auto get_param_file_key() const -> std::string { return m_param_file_key; }
 
 private:
   // @brief Container holding the particles

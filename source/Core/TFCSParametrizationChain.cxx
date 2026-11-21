@@ -47,15 +47,19 @@ auto combined_range(const TFCSParametrizationChain::Chain_t& chain,
   { return range.nominal < range.min || range.nominal > range.max; };
   for (const auto* param : chain) {
     const Range other = range_of(*param);
-    if (intersect ? other.min > range.min : other.min < range.min)
+    if (intersect ? other.min > range.min : other.min < range.min) {
       range.min = other.min;
-    if (intersect ? other.max < range.max : other.max > range.max)
+    }
+    if (intersect ? other.max < range.max : other.max > range.max) {
       range.max = other.max;
-    if (nominal_outside())
+    }
+    if (nominal_outside()) {
       range.nominal = other.nominal;
+    }
   }
-  if (nominal_outside())
+  if (nominal_outside()) {
     range.nominal = 0.5 * (range.min + range.max);
+  }
   return range;
 }
 
@@ -80,12 +84,13 @@ auto combined_pdgids(const TFCSParametrizationChain::Chain_t& chain,
   std::set<int> pdgids = chain[0]->pdgid();
   for (const auto* param : chain) {
     std::set<int> combined;
-    if (intersect)
+    if (intersect) {
       std::ranges::set_intersection(
           pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
-    else
+    } else {
       std::ranges::set_union(
           pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
+    }
     pdgids = std::move(combined);
   }
   return pdgids;
@@ -137,8 +142,9 @@ void TFCSParametrizationChain::recalc_Ekin_eta_union()
 void TFCSParametrizationChain::recalc()
 {
   clear();
-  if (m_chain.empty())
+  if (m_chain.empty()) {
     return;
+  }
 
   recalc_pdgid_intersect();
   recalc_Ekin_eta_intersect();
@@ -149,18 +155,22 @@ void TFCSParametrizationChain::recalc()
 auto TFCSParametrizationChain::is_match_Ekin_bin(std::size_t Ekin_bin) const
     -> bool
 {
-  for (const auto& param : m_chain)
-    if (!param->is_match_Ekin_bin(Ekin_bin))
+  for (const auto& param : m_chain) {
+    if (!param->is_match_Ekin_bin(Ekin_bin)) {
       return false;
+    }
+  }
   return true;
 }
 
 auto TFCSParametrizationChain::is_match_calosample(std::size_t calosample) const
     -> bool
 {
-  for (const auto& param : m_chain)
-    if (!param->is_match_calosample(calosample))
+  for (const auto& param : m_chain) {
+    if (!param->is_match_calosample(calosample)) {
       return false;
+    }
+  }
   return true;
 }
 
@@ -176,8 +186,9 @@ auto TFCSParametrizationChain::simulate(
                                     const FCSReturnCode status =
                                         simulate_and_retry(
                                             param, simulstate, truth, extrapol);
-                                    if (status != FCSSuccess)
+                                    if (status != FCSSuccess) {
                                       return status;
+                                    }
                                   }
                                   return FCSSuccess;
                                 });
@@ -199,7 +210,8 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
 {
   // Stream an object of class TFCSParametrizationChain.
 
-  UInt_t R__s, R__c;
+  UInt_t R__s;
+  UInt_t R__c;
   TDirectory* dir = nullptr;
 
   if (R__b.IsReading()) {
@@ -225,7 +237,8 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
               "Missing the TClass object for class TFCSParametrizationBase *!");
         return;
       }
-      int R__i, R__n;
+      int R__i;
+      int R__n;
       R__b >> R__n;
       R__stl.reserve(static_cast<std::size_t>(R__n));
       for (R__i = 0; R__i < R__n; R__i++) {

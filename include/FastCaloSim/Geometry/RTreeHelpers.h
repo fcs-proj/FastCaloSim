@@ -22,8 +22,9 @@ enum class CoordinateSystem
 inline auto norm_phi(double angle) -> double
 {
   angle = std::fmod(angle + M_PI, 2.0 * M_PI);
-  if (angle < 0)
+  if (angle < 0) {
     angle += 2.0 * M_PI;
+  }
   return angle - M_PI;
 }
 

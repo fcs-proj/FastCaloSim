@@ -23,16 +23,7 @@ class BFieldCache
 {
 public:
   // default constructor sets unphysical boundaries, so that inside() will fail
-  BFieldCache()
-      : m_zmin(0.0)
-      , m_zmax(0.0)
-      , m_rmin(0.0)
-      , m_rmax(0.0)
-      , m_phimin(0.0)
-      , m_phimax(-1.0)
-  {
-    ;
-  }
+  BFieldCache() { ; }
   // make this cache invalid, so that inside() will fail
   void invalidate()
   {
@@ -60,20 +51,23 @@ public:
   // set the field values at each corner
   void setField(int i, const BFieldVector<double>& field)
   {
-    for (int j = 0; j < 3; j++)
+    for (int j = 0; j < 3; j++) {
       m_field[j][i] = static_cast<float>(field[j]);
+    }
   }
   void setField(int i, const BFieldVector<short>& field)
   {
-    for (int j = 0; j < 3; j++)
+    for (int j = 0; j < 3; j++) {
       m_field[j][i] = field[j];
+    }
   }  // set the multiplicative factor for the field vectors
   void setBscale(double bscale) { m_scale = static_cast<float>(bscale); }
   // test if (z, r, phi) is inside this bin
   bool inside(double z, double r, double phi) const
   {
-    if (phi < m_phimin)
+    if (phi < m_phimin) {
       phi += 2.0 * M_PI;
+    }
     return (phi >= m_phimin && phi <= m_phimax && z >= m_zmin && z <= m_zmax
             && r >= m_rmin && r <= m_rmax);
   }
@@ -83,12 +77,12 @@ public:
                    double r,
                    double phi,
                    double* B,
-                   double* deriv = 0) const;
+                   double* deriv = nullptr) const;
 
 private:
-  double m_zmin, m_zmax;  // bin range in z
-  double m_rmin, m_rmax;  // bin range in r
-  double m_phimin, m_phimax;  // bin range in phi
+  double m_zmin {0.0}, m_zmax {0.0};  // bin range in z
+  double m_rmin {0.0}, m_rmax {0.0};  // bin range in r
+  double m_phimin {0.0}, m_phimax {-1.0};  // bin range in phi
   float m_invz, m_invr, m_invphi;  // 1/(bin size) in z, r, phi
   float m_field[3][8];  // (Bz,Br,Bphi) at 8 corners of the bin
   float m_scale;  // unit of m_field in kT
@@ -103,8 +97,9 @@ void BFieldCache::getB(
   const double& y(xyz[1]);
   const double& z(xyz[2]);
   // make sure phi is inside [m_phimin,m_phimax]
-  if (phi < m_phimin)
+  if (phi < m_phimin) {
     phi += 2 * M_PI;
+  }
   // fractional position inside this bin
   // computed in double and rounded to float; 1.0F - f is identical to
   // float(1.0 - double(f)) (double has more than 2*24+2 mantissa bits)
@@ -128,7 +123,9 @@ void BFieldCache::getB(
                   + fr * (gphi * field[6] + fphi * field[7])));
   }
   // convert (Bz,Br,Bphi) to (Bx,By,Bz)
-  float invr, c, es;
+  float invr;
+  float c;
+  float es;
   if (r > 0.0) {
     invr = static_cast<float>(1.0 / r);
     c = static_cast<float>(x * static_cast<double>(invr));
@@ -147,7 +144,9 @@ void BFieldCache::getB(
     float sz = m_scale * m_invz;
     float esr = m_scale * m_invr;
     float sphi = m_scale * m_invphi;
-    float dBdz[3], dBdr[3], dBdphi[3];
+    float dBdz[3];
+    float dBdr[3];
+    float dBdphi[3];
     for (int j = 0; j < 3; j++) {  // Bz, Br, Bphi components
       const float* field = m_field[j];
       dBdz[j] = sz

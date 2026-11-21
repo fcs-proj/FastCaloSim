@@ -15,10 +15,10 @@ class ActionInitialization : public G4VUserActionInitialization
 
 public:
     ActionInitialization();
-    virtual ~ActionInitialization() override;
+    ~ActionInitialization() override;
 
-    virtual void BuildForMaster() const override;
-    virtual void Build() const override;
+    void BuildForMaster() const override;
+    void Build() const override;
 
     // @brief Set the container of particles you want to use
     void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;}

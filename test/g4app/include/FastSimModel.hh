@@ -32,11 +32,11 @@ class FastSimModel : public G4VFastSimulationModel
   // The model transports particles through transportWorld, which is shared by
   // the models of all threads
   FastSimModel(G4String, G4Region*, G4VPhysicalVolume* transportWorld);
-  ~FastSimModel();
+  ~FastSimModel() override;
 
-  virtual G4bool ModelTrigger(const G4FastTrack&) final;
-  virtual G4bool IsApplicable(const G4ParticleDefinition&) final;
-  virtual void DoIt(const G4FastTrack&, G4FastStep&) final;
+  G4bool ModelTrigger(const G4FastTrack&) final;
+  G4bool IsApplicable(const G4ParticleDefinition&) final;
+  void DoIt(const G4FastTrack&, G4FastStep&) final;
   void DoStep(G4FieldTrack&, G4Navigator*);
 
   // Get the current track container
@@ -75,15 +75,15 @@ class FastSimModel : public G4VFastSimulationModel
   // Current vector of simulation states
   TestHelpers::SimStateContainer fSimulationStates;
   // Core FastCaloSim API
-  TFCSParametrizationBase* fParametrization;
+  TFCSParametrizationBase* fParametrization{nullptr};
 
   // Boolean flag whether to do the simulation
-  G4bool fDoSimulation;
+  G4bool fDoSimulation{true};
 
   // Random engine
   CLHEP::RanluxEngine m_random_engine;
   // Boolean flag to enable debug output
-  bool m_debug;
+  bool m_debug{false};
 
 };
 #endif /* FASTSIMMODEL_HH */

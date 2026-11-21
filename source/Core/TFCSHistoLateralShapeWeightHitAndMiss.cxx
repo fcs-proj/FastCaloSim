@@ -52,10 +52,12 @@ auto TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
   // TODO: delta_r_mm should perhaps be cached in hit
 
   Int_t bin = m_hist->FindBin(delta_r_mm);
-  if (bin < 1)
+  if (bin < 1) {
     bin = 1;
-  if (bin > m_hist->GetNbinsX())
+  }
+  if (bin > m_hist->GetNbinsX()) {
     bin = m_hist->GetNbinsX();
+  }
   double meanweight = m_hist->GetBinContent(bin);
   double weight = meanweight;
   double RMS = m_hist->GetBinError(bin);
@@ -86,8 +88,9 @@ auto TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
   } else if (meanweight > static_cast<double>(m_minWeight)) {
     double prob = static_cast<double>(m_minWeight) / meanweight;
     double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
-    if (rnd >= prob)
+    if (rnd >= prob) {
       weight = 0.;
+    }
   }
 
   hit.set_E(weight * hit.E());

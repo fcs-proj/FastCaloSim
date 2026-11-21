@@ -46,8 +46,9 @@ void TFCSHitCellMappingWiggle::clear()
 
 void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction* func)
 {
-  if (!func)
+  if (!func) {
     return;
+  }
   clear();
 
   m_functions.resize(1);
@@ -75,13 +76,15 @@ void TFCSHitCellMappingWiggle::initialize(
 
 void TFCSHitCellMappingWiggle::initialize(TH1* histogram, float xscale)
 {
-  if (!histogram)
+  if (!histogram) {
     return;
+  }
   TFCS1DFunctionInt32Histogram* func =
       new TFCS1DFunctionInt32Histogram(histogram);
   if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
-    for (auto& ele : func->get_HistoBordersx())
+    for (auto& ele : func->get_HistoBordersx()) {
       ele *= xscale;
+    }
   }
   initialize(func);
 }
@@ -103,8 +106,9 @@ void TFCSHitCellMappingWiggle::initialize(
       TFCS1DFunctionInt32Histogram* func =
           new TFCS1DFunctionInt32Histogram(histograms[i]);
       if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
-        for (auto& ele : func->get_HistoBordersx())
+        for (auto& ele : func->get_HistoBordersx()) {
           ele *= xscale;
+        }
       }
       functions[i] = func;
     } else {
@@ -163,16 +167,16 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
 auto TFCSHitCellMappingWiggle::operator==(
     const TFCSParametrizationBase& ref) const -> bool
 {
-  if (TFCSParametrizationBase::compare(ref))
+  if (TFCSParametrizationBase::compare(ref)) {
     return true;
-  if (!TFCSParametrization::compare(ref))
+  }
+  if (!TFCSParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrization::compare(ref))
+  }
+  if (!TFCSLateralShapeParametrization::compare(ref)) {
     return false;
-  if (!TFCSHitCellMappingWiggle::compare(ref))
-    return false;
-
-  return true;
+  }
+  return TFCSHitCellMappingWiggle::compare(ref);
 }
 
 void TFCSHitCellMappingWiggle::Print(Option_t* option) const
@@ -183,9 +187,10 @@ void TFCSHitCellMappingWiggle::Print(Option_t* option) const
   if (longprint) {
     FCS_MSG(INFO) << optprint << "  " << get_number_of_bins()
                   << " functions : ";
-    for (std::size_t i = 0; i < get_number_of_bins(); ++i)
+    for (std::size_t i = 0; i < get_number_of_bins(); ++i) {
       FCS_MSG(INFO) << get_bin_low_edge(i) << " < (" << get_function(i)
                     << ") < ";
+    }
     FCS_MSG(INFO) << get_bin_up_edge(get_number_of_bins() - 1)
                   << END_FCS_MSG(INFO);
   }
@@ -210,8 +215,9 @@ auto TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
   for (std::size_t i = 0; i < get_number_of_bins(); ++i) {
     const TFCS1DFunction* f1 = get_function(i);
     const TFCS1DFunction* f2 = ref_typed.get_function(i);
-    if (!f1 && !f2)
+    if (!f1 && !f2) {
       continue;
+    }
     if ((f1 && !f2) || (!f1 && f2)) {
       FCS_MSG_DEBUG(
           "compare(): different only one function pointer is nullptr");

@@ -32,8 +32,8 @@ public:
   void Print(Option_t* option = "") const override;
 
 private:
-  float m_slope;
-  float m_offset;
+  float m_slope {1};
+  float m_offset {0};
 
   ClassDefOverride(TFCSEnergyInterpolationLinear,
                    1)  // TFCSEnergyInterpolationLinear

@@ -26,7 +26,7 @@ public:
   FCal() = default;
 
   // Virtual destructor to ensure proper cleanup
-  virtual ~FCal() = default;
+  ~FCal() override = default;
 
   /// @brief Set the geo pointer
   auto set_geo(CaloGeo* geo) { m_geo = geo; }
@@ -60,7 +60,7 @@ public:
       std::unique_ptr<std::ifstream> directStream =
           std::make_unique<std::ifstream>(file);
       if (!directStream->is_open()) {
-        std::cout << "Error: Could not open " << file << std::endl;
+        std::cout << "Error: Could not open " << file << '\n';
         throw std::runtime_error("Could not open file");
       }
       electrodes.push_back(std::move(directStream));
@@ -87,8 +87,9 @@ public:
           *electrodes[static_cast<std::size_t>(imodule - 1)];
       while (1) {
         electrode >> tubeName;
-        if (electrode.eof())
+        if (electrode.eof()) {
           break;
+        }
         electrode >> thisTubeId;  // ?????
         electrode >> thisTubeI;
         electrode >> thisTubeJ;
@@ -104,13 +105,18 @@ public:
         std::istringstream tileStream1(std::string(tubeNamestring, 1, 1));
         std::istringstream tileStream2(std::string(tubeNamestring, 3, 2));
         std::istringstream tileStream3(std::string(tubeNamestring, 6, 3));
-        int a1 = 0, a2 = 0, a3 = 0;
-        if (tileStream1)
+        int a1 = 0;
+        int a2 = 0;
+        int a3 = 0;
+        if (tileStream1) {
           tileStream1 >> a1;
-        if (tileStream2)
+        }
+        if (tileStream2) {
           tileStream2 >> a2;
-        if (tileStream3)
+        }
+        if (tileStream3) {
           tileStream3 >> a3;
+        }
 
         std::stringstream s;
 
@@ -139,8 +145,10 @@ public:
     m_FCal_rmin.resize(3, static_cast<double>(FLT_MAX));
     m_FCal_rmax.resize(3, 0.);
 
-    double x(0.), y(0.), r(0.);
-    for (int imap = 1; imap <= 3; imap++)
+    double x(0.);
+    double y(0.);
+    double r(0.);
+    for (int imap = 1; imap <= 3; imap++) {
       for (auto it = m_FCal_ChannelMap.begin(imap);
            it != m_FCal_ChannelMap.end(imap);
            it++)
@@ -149,11 +157,14 @@ public:
         x = static_cast<double>(it->second.x());
         y = static_cast<double>(it->second.y());
         r = std::sqrt(x * x + y * y);
-        if (r < m_FCal_rmin[idx])
+        if (r < m_FCal_rmin[idx]) {
           m_FCal_rmin[idx] = r;
-        if (r > m_FCal_rmax[idx])
+        }
+        if (r > m_FCal_rmax[idx]) {
           m_FCal_rmax[idx] = r;
+        }
       }
+    }
   }
 
   auto getClosestFCalCellIndex(
@@ -170,8 +181,9 @@ public:
 
     // x * x + y * y is evaluated in float, the square root in double
     const double r = sqrt(static_cast<double>(x * x + y * y));
-    if (FastCaloSim::exactly_equal(r, 0.))
+    if (FastCaloSim::exactly_equal(r, 0.)) {
       return false;
+    }
     const double r_inverse = 1. / r;
 
     // Scale a float coordinate in double precision, round back to float
@@ -199,8 +211,9 @@ public:
         i++;
       }
     }
-    if (steps)
+    if (steps) {
       *steps = i + 1;
+    }
     return i < nmax;
   }
 
@@ -209,41 +222,44 @@ public:
                         double x,
                         double y,
                         double z,
-                        int* steps = 0) const -> unsigned long long
+                        int* steps = nullptr) const -> unsigned long long
   {
     // The FCal modules are the layers 21, 22 and 23
     int isam = layer - 20;
     if (isam < 1 || isam > 3) {
-      std::cout << "Error: Layer " << layer << " is not an FCal layer!"
-                << std::endl;
+      std::cout << "Error: Layer " << layer << " is not an FCal layer!" << '\n';
       return static_cast<unsigned long long>(-1);
     }
-    int iphi(-100000), ieta(-100000);
+    int iphi(-100000);
+    int ieta(-100000);
     Long64_t mask1[] {0x34, 0x34, 0x35};
     Long64_t mask2[] {0x36, 0x36, 0x37};
     // The channel map works in single precision
     const auto xf = static_cast<float>(x);
     const auto yf = static_cast<float>(y);
     bool found = m_FCal_ChannelMap.getTileID(isam, xf, yf, ieta, iphi);
-    if (steps && found)
+    if (steps && found) {
       *steps = 0;
+    }
     if (!found) {
       // Hit is not matched with any FCal cell! Looking for
       // the closest cell
       found = getClosestFCalCellIndex(layer, xf, yf, ieta, iphi, steps);
     }
     if (!found) {
-      std::cout << "Error: Unable to find the closest FCal cell!" << std::endl;
+      std::cout << "Error: Unable to find the closest FCal cell!" << '\n';
       return static_cast<unsigned long long>(-1);
     }
     Long64_t id = (ieta << 5) + 2 * iphi;
-    if (isam == 2)
+    if (isam == 2) {
       id += (8 << 8);
+    }
 
-    if (z > 0)
+    if (z > 0) {
       id += (mask2[isam - 1] << 12);
-    else
+    } else {
       id += (mask1[isam - 1] << 12);
+    }
 
     id = id << 44;
 

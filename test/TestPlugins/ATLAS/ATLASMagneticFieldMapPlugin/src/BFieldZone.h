@@ -39,7 +39,7 @@ public:
   // compute Biot-Savart magnetic field and add to B[3]
   inline void addBiotSavart(const double* xyz,
                             double* B,
-                            double* deriv = 0) const;
+                            double* deriv = nullptr) const;
   // scale B field by a multiplicative factor
   void scaleField(double factor)
   {

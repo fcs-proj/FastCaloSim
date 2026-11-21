@@ -64,8 +64,8 @@ public:
 
 protected:
   /// Histogram to be used for the shape simulation
-  TFCS2DFunction* m_function;
-  float m_nhits;
+  TFCS2DFunction* m_function {nullptr};
+  float m_nhits {0};
 
 private:
   ClassDefOverride(TFCS2DFunctionLateralShapeParametrization,

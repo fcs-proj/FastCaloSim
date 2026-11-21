@@ -37,9 +37,7 @@ TFCSEnergyAndHitGANV2::TFCSEnergyAndHitGANV2(const char* name,
 
 TFCSEnergyAndHitGANV2::~TFCSEnergyAndHitGANV2()
 {
-  if (m_slice != nullptr) {
-    delete m_slice;
-  }
+  delete m_slice;
 }
 
 auto TFCSEnergyAndHitGANV2::is_match_calosample(std::size_t calosample) const
@@ -53,8 +51,9 @@ auto TFCSEnergyAndHitGANV2::is_match_calosample(std::size_t calosample) const
 auto TFCSEnergyAndHitGANV2::get_nr_of_init(std::size_t bin) const
     -> unsigned int
 {
-  if (bin >= m_bin_ninit.size())
+  if (bin >= m_bin_ninit.size()) {
     return 0;
+  }
   return static_cast<unsigned int>(m_bin_ninit[bin]);
 }
 
@@ -83,10 +82,12 @@ auto TFCSEnergyAndHitGANV2::initializeNetwork(
 
   reset_match_all_pdgid();
   set_pdgid(pid);
-  if (pid == 11)
+  if (pid == 11) {
     add_pdgid(-pid);
-  if (pid == 211)
+  }
+  if (pid == 211) {
     add_pdgid(-pid);
+  }
   set_eta_min(etaMin / 100.0);
   set_eta_max(etaMax / 100.0);
   set_eta_nominal((etaMin + etaMax) / 200.0);
@@ -133,10 +134,11 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
   double Einit;
   const double Ekin = truth->Ekin();
-  if (OnlyScaleEnergy())
+  if (OnlyScaleEnergy()) {
     Einit = simulstate.E();
-  else
+  } else {
     Einit = Ekin;
+  }
 
   FCS_MSG_VERBOSE("Momentum " << truth->P() << " pdgId " << truth->pdgid());
   // check that the network exists
@@ -323,8 +325,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           // maximum 10 MeV per hit, equally distributed in alpha and r
           int maxHitsInVoxel =
               static_cast<int>(energyInVoxel * truth->Ekin() / 10);
-          if (maxHitsInVoxel < 1)
+          if (maxHitsInVoxel < 1) {
             maxHitsInVoxel = 1;
+          }
           nHitsAlpha = static_cast<int>(std::sqrt(maxHitsInVoxel));
           nHitsR = static_cast<int>(std::sqrt(maxHitsInVoxel));
         } else {
@@ -428,14 +431,16 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               // Particles with negative eta are expected to have the same shape
               // as those with positive eta after transformation: delta_eta -->
               // -delta_eta
-              if (center_eta < 0.)
+              if (center_eta < 0.) {
                 delta_eta_mm = -delta_eta_mm;
+              }
               // We derive the shower shapes for electrons and positively
               // charged hadrons. Particle with the opposite charge are expected
               // to have the same shower shape after the transformation:
               // delta_phi --> -delta_phi
-              if ((charge < 0. && pdgId != 11) || pdgId == -11)
+              if ((charge < 0. && pdgId != 11) || pdgId == -11) {
                 delta_phi_mm = -delta_phi_mm;
+              }
 
               const double delta_eta = delta_eta_mm / eta_jakobi / dist000;
               const double delta_phi = delta_phi_mm / center_r;
@@ -452,8 +457,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               // charged hadrons. Particle with the opposite charge are expected
               // to have the same shower shape after the transformation:
               // delta_phi --> -delta_phi
-              if ((charge < 0. && pdgId != 11) || pdgId == -11)
+              if ((charge < 0. && pdgId != 11) || pdgId == -11) {
                 delta_phi = -delta_phi;
+              }
               const double hit_phi =
                   TVector2::Phi_mpi_pi(center_phi + delta_phi);
               hit.set_eta_x(hit_r * std::cos(hit_phi));
@@ -557,9 +563,10 @@ auto TFCSEnergyAndHitGANV2::simulate(
 
 auto TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins) -> int
 {
-  if (bins < 4)
+  if (bins < 4) {
     return 4;
-  else if (bins < 8)
+  }
+  if (bins < 8)
     return 8;
   else if (bins < 16)
     return 16;

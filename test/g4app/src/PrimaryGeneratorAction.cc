@@ -7,7 +7,7 @@
 
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
-    : G4VUserPrimaryGeneratorAction()
+     
 {
   fParticleGun = new G4ParticleGun(1);
 }

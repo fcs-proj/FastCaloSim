@@ -146,8 +146,6 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
     energy_shifts.at(eta_index) = static_cast<float>(param->GetVal());
     FCS_MSG_DEBUG("Energy shift: " << energy_shifts.at(eta_index));
   }
-
-  return;
 }
 
 // TODO: Use FCSReturnCode
@@ -212,14 +210,15 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
 
   phi_within_cell = std::fmod(phi_within_cell, phi_cell_size);
 
-  if (phi_within_cell < 0)
+  if (phi_within_cell < 0) {
     phi_within_cell += phi_cell_size;
+  }
 
   const std::vector<float>& phi_mins = m_min_phi.at(layer_index).at(eta_index);
   const std::vector<float>& modulation =
       m_modulation.at(layer_index).at(eta_index);
 
-  if (phi_mins.size() == 0) {
+  if (phi_mins.empty()) {
     return std::make_tuple(-1, 0, 0);  // Empty phi boundaries -> nothing to do
   }
 
@@ -261,7 +260,7 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
     return hit.E();
   }
 
-  if (m_min_eta.at(layer_index).size() == 0) {
+  if (m_min_eta.at(layer_index).empty()) {
     return hit.E();
   }
 
@@ -288,7 +287,7 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
     return energy;
   }
 
-  if (m_min_eta.at(layer_index).size() == 0) {
+  if (m_min_eta.at(layer_index).empty()) {
     return energy;
   }
 
@@ -333,7 +332,7 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
     return hit.E();
   }
 
-  if (m_min_eta.at(layer_index).size() == 0) {
+  if (m_min_eta.at(layer_index).empty()) {
     return hit.E();
   }
 
@@ -360,7 +359,7 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
     return energy;
   }
 
-  if (m_min_eta.at(layer_index).size() == 0) {
+  if (m_min_eta.at(layer_index).empty()) {
     return energy;
   }
 

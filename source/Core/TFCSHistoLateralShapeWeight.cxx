@@ -24,8 +24,9 @@ TFCSHistoLateralShapeWeight::TFCSHistoLateralShapeWeight(const char* name,
 
 TFCSHistoLateralShapeWeight::~TFCSHistoLateralShapeWeight()
 {
-  if (m_hist)
+  {
     delete m_hist;
+  }
 }
 
 auto TFCSHistoLateralShapeWeight::getMinWeight() const -> double
@@ -66,10 +67,12 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
   // TODO: delta_r_mm should perhaps be cached in hit
 
   Int_t bin = m_hist->FindBin(delta_r_mm);
-  if (bin < 1)
+  if (bin < 1) {
     bin = 1;
-  if (bin > m_hist->GetNbinsX())
+  }
+  if (bin > m_hist->GetNbinsX()) {
     bin = m_hist->GetNbinsX();
+  }
   double weight = m_hist->GetBinContent(bin);
   double RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
@@ -85,10 +88,12 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
 
 auto TFCSHistoLateralShapeWeight::Initialize(TH1* hist) -> bool
 {
-  if (!hist)
+  if (!hist) {
     return false;
-  if (m_hist)
+  }
+  {
     delete m_hist;
+  }
   m_hist = static_cast<TH1*>(hist->Clone(
       (std::string("TFCSHistoLateralShapeWeight_") + hist->GetName()).c_str()));
   m_hist->SetDirectory(nullptr);
@@ -102,14 +107,15 @@ void TFCSHistoLateralShapeWeight::Print(Option_t* option) const
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
-    if (m_hist)
+    if (m_hist) {
       FCS_MSG_INFO(optprint
                    << "  Histogram: " << m_hist->GetNbinsX() << " bins ["
                    << std::as_const(m_hist)->GetXaxis()->GetXmin() << ","
                    << std::as_const(m_hist)->GetXaxis()->GetXmax() << "]"
                    << " min weight: " << m_minWeight
                    << " max weight: " << m_maxWeight);
-    else
+    } else {
       FCS_MSG_INFO(optprint << "  no Histogram");
+    }
   }
 }

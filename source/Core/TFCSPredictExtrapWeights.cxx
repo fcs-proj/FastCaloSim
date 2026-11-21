@@ -45,21 +45,15 @@ TFCSPredictExtrapWeights::TFCSPredictExtrapWeights(const char* name,
 // Destructor
 TFCSPredictExtrapWeights::~TFCSPredictExtrapWeights()
 {
-  if (m_input != nullptr) {
-    delete m_input;
-  }
-  if (m_relevantLayers != nullptr) {
-    delete m_relevantLayers;
-  }
-  if (m_normLayers != nullptr) {
-    delete m_normLayers;
-  }
-  if (m_normMeans != nullptr) {
-    delete m_normMeans;
-  }
-  if (m_normStdDevs != nullptr) {
-    delete m_normStdDevs;
-  }
+  delete m_input;
+
+  delete m_relevantLayers;
+
+  delete m_normLayers;
+
+  delete m_normMeans;
+
+  delete m_normStdDevs;
 }
 
 auto TFCSPredictExtrapWeights::operator==(
@@ -73,12 +67,15 @@ auto TFCSPredictExtrapWeights::operator==(
   const TFCSPredictExtrapWeights& ref_typed =
       static_cast<const TFCSPredictExtrapWeights&>(ref);
 
-  if (TFCSParametrizationBase::compare(ref))
+  if (TFCSParametrizationBase::compare(ref)) {
     return true;
-  if (!TFCSParametrization::compare(ref))
+  }
+  if (!TFCSParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrization::compare(ref))
+  }
+  if (!TFCSLateralShapeParametrization::compare(ref)) {
     return false;
+  }
 
   return (m_input->compare(*ref_typed.m_input) == 0);
 }
@@ -326,9 +323,9 @@ auto TFCSPredictExtrapWeights::initializeNetwork(
     auto config = lwt::parse_json(sin);
     m_nn = std::make_unique<lwt::LightweightNeuralNetwork>(
         config.inputs, config.layers, config.outputs);
-    if (m_input != nullptr) {
-      delete m_input;
-    }
+
+    delete m_input;
+
     m_input = new std::string(sin.str());
     // Extract relevant layers from the outputs
     m_relevantLayers = new std::vector<int>();
@@ -374,10 +371,12 @@ void TFCSPredictExtrapWeights::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  m_input (TFCSPredictExtrapWeights): "
                           << m_input);
-  if (longprint)
+  }
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  Address of m_nn: "
                           << static_cast<const void*>(m_nn.get()));
+  }
 }

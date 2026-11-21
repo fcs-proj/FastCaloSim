@@ -56,18 +56,21 @@ void TFCS2DFunctionHistogram::Initialize(TH2* hist)
     return;
   }
 
-  for (std::size_t ix = 0; ix < size_x; ix++)
+  for (std::size_t ix = 0; ix < size_x; ix++) {
     m_HistoBorders[ix] = static_cast<float>(
         hist->GetXaxis()->GetBinLowEdge(static_cast<int>(ix) + 1));
+  }
   m_HistoBorders[size_x] = static_cast<float>(hist->GetXaxis()->GetXmax());
 
-  for (std::size_t iy = 0; iy < size_y; iy++)
+  for (std::size_t iy = 0; iy < size_y; iy++) {
     m_HistoBordersy[iy] = static_cast<float>(
         hist->GetYaxis()->GetBinLowEdge(static_cast<int>(iy) + 1));
+  }
   m_HistoBordersy[size_y] = static_cast<float>(hist->GetYaxis()->GetXmax());
 
-  for (float& content : m_HistoContents)
+  for (float& content : m_HistoContents) {
     content = static_cast<float>(static_cast<double>(content) / integral);
+  }
 }
 
 void TFCS2DFunctionHistogram::rnd_to_fct(double& valuex,
@@ -94,8 +97,9 @@ void TFCS2DFunctionHistogram::rnd_to_fct(double& valuex,
                                    [](double r, float c)
                                    { return r < static_cast<double>(c); });
   std::size_t ibin = FastCaloSim::index_of(m_HistoContents, it);
-  if (ibin >= m_HistoContents.size())
+  if (ibin >= m_HistoContents.size()) {
     ibin = m_HistoContents.size() - 1;
+  }
   const std::size_t nbinsx = m_HistoBorders.size() - 1;
   const std::size_t biny = ibin / nbinsx;
   const std::size_t binx = ibin - nbinsx * biny;

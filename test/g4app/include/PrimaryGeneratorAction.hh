@@ -14,9 +14,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
     PrimaryGeneratorAction();
-    virtual ~PrimaryGeneratorAction() override;
+    ~PrimaryGeneratorAction() override;
 
-    virtual void GeneratePrimaries(G4Event *) override;
+    void GeneratePrimaries(G4Event *) override;
 
     void configure_gun(const TestHelpers::Particle* particle);
     void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;}

@@ -94,8 +94,9 @@ public:
   void streamed(int n) const
   {
     FCS_MSG(INFO) << "items:";
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
       FCS_MSG(INFO) << " " << i;
+    }
     FCS_MSG(INFO) << END_FCS_MSG(INFO);
   }
   void part(const char* text) const { FCS_MSG(INFO) << text; }
@@ -134,8 +135,9 @@ public:
   ~ExitLogger() override
   {
     part("streamed at exit");
-    if (m_end_line)
+    if (m_end_line) {
       end();
+    }
   }
 
 private:
@@ -285,18 +287,21 @@ TEST_F(LoggingTest, ThreadsSharingAnObject)
   constexpr int n_lines = 200;
   {
     std::vector<std::jthread> threads;
-    for (int t = 0; t < n_threads; ++t)
+    for (int t = 0; t < n_threads; ++t) {
       threads.emplace_back(
           [&log]
           {
-            for (int i = 0; i < n_lines; ++i)
+            for (int i = 0; i < n_lines; ++i) {
               log.streamed(5);
+            }
           });
+    }
   }
   const auto records = m_sink->records();
   ASSERT_EQ(records.size(), std::size_t {n_threads * n_lines});
-  for (const auto& record : records)
+  for (const auto& record : records) {
     EXPECT_EQ(record.text, "items: 0 1 2 3 4");
+  }
 }
 
 // Sinks can be replaced while other threads log, and no message is lost
@@ -310,15 +315,18 @@ TEST(LoggingSinkTest, ReplaceWhileLogging)
   constexpr int n_messages = 2000;
   {
     std::vector<std::jthread> threads;
-    for (int t = 0; t < n_threads; ++t)
+    for (int t = 0; t < n_threads; ++t) {
       threads.emplace_back(
           [&log]
           {
-            for (int i = 0; i < n_messages; ++i)
+            for (int i = 0; i < n_messages; ++i) {
               log.info(i);
+            }
           });
-    for (int i = 0; i < 1000; ++i)
+    }
+    for (int i = 0; i < 1000; ++i) {
       FastCaloSim::set_log_sink(i % 2 == 0 ? second : first);
+    }
   }
   FastCaloSim::set_log_sink(nullptr);
   EXPECT_EQ(first->records().size() + second->records().size(),

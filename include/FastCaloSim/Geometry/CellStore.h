@@ -177,7 +177,8 @@ private:
       size_t mid = left + (right - left) / 2;
       if (pairs[mid].id == id) {
         return pairs[mid].offset;
-      } else if (pairs[mid].id < id) {
+      }
+      if (pairs[mid].id < id) {
         left = mid + 1;
       } else {
         right = mid;
@@ -219,7 +220,6 @@ private:
     return tmp_cell;
   }
 
-private:
   /// @brief Pointer to the memory-mapped data file containing serialized
   /// CellData
   void* m_data = nullptr;

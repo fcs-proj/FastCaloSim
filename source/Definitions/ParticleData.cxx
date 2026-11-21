@@ -20,13 +20,17 @@ class DefaultProvider final : public Provider
 public:
   auto charge(int pdgID) const -> double override
   {
-    if (pdgID == 11 || pdgID == 211 || pdgID == 321 || pdgID == 2212)
+    if (pdgID == 11 || pdgID == 211 || pdgID == 321 || pdgID == 2212) {
       return 1.;
-    if (pdgID == -11 || pdgID == -211 || pdgID == -321 || pdgID == -2212)
+    }
+    if (pdgID == -11 || pdgID == -211 || pdgID == -321 || pdgID == -2212) {
       return -1.;
+    }
     if (pdgID == 22 || std::abs(pdgID) == 2112 || pdgID == 111 || pdgID == 130
         || pdgID == 310)
+    {
       return 0.;
+    }
 
     throw std::runtime_error("ParticleData: unsupported pdgID: "
                              + std::to_string(pdgID));

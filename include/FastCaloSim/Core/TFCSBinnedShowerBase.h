@@ -78,8 +78,9 @@ public:
       -> int override
   {
     const std::size_t nhits = get_n_hits(simulstate, calosample());
-    if (nhits == 0)
+    if (nhits == 0) {
       return -1;
+    }
     return static_cast<int>(nhits);
   }
 

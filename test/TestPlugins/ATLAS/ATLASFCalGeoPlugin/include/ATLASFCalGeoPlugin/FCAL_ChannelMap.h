@@ -26,8 +26,8 @@ public:
   //
   //	 Typedefs:
   //
-  typedef unsigned int tileName_t;
-  typedef unsigned int tubeID_t;
+  using tileName_t = unsigned int;
+  using tubeID_t = unsigned int;
 
   //------------ TubePosition:  X,Y Position of an FCAL Tube---- //
   //                                                             //
@@ -54,10 +54,10 @@ public:
   /**  Constructors: */
   FCAL_ChannelMap(int itemp);
 
-  typedef std::map<tubeID_t, TubePosition> tubeMap_t;
-  typedef tubeMap_t::size_type tubemap_sizetype;
-  typedef tubeMap_t::value_type tubemap_valuetype;
-  typedef tubeMap_t::const_iterator tubemap_const_iterator;
+  using tubeMap_t = std::map<tubeID_t, TubePosition>;
+  using tubemap_sizetype = tubeMap_t::size_type;
+  using tubemap_valuetype = tubeMap_t::value_type;
+  using tubemap_const_iterator = tubeMap_t::const_iterator;
 
   /** tubeMap access functions */
   tubemap_const_iterator tubemap_begin(int isam) const;
@@ -127,10 +127,10 @@ public:
   };
 
   /** TileMap */
-  typedef std::map<tileName_t, TilePosition> tileMap_t;
-  typedef tileMap_t::size_type tileMap_sizetype;
-  typedef tileMap_t::value_type tileMap_valuetype;
-  typedef tileMap_t::const_iterator tileMap_const_iterator;
+  using tileMap_t = std::map<tileName_t, TilePosition>;
+  using tileMap_sizetype = tileMap_t::size_type;
+  using tileMap_valuetype = tileMap_t::value_type;
+  using tileMap_const_iterator = tileMap_t::const_iterator;
 
   // Methods to iterate over the tile map:
   tileMap_const_iterator begin(int isam) const
@@ -167,7 +167,7 @@ inline FCAL_ChannelMap::TubePosition::TubePosition()
     : m_tileName(0)
     , m_x(0)
     , m_y(0)
-    , m_hvFT("")
+
 {
 }
 
@@ -249,13 +249,11 @@ inline bool FCAL_ChannelMap::invert_xy() const
 inline void FCAL_ChannelMap::set_invert_x(bool flag)
 {
   m_invert_x = flag;
-  return;
 }
 
 inline void FCAL_ChannelMap::set_invert_xy(bool flag)
 {
   m_invert_xy = flag;
-  return;
 }
 
 // #include "CLIDSvc/CLASS_DEF.h"

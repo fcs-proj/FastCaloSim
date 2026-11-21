@@ -47,8 +47,9 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInEkin(Int_t np,
                                                         Double_t valend)
 {
   std::vector<Double_t> logEkin(static_cast<std::size_t>(np));
-  for (std::size_t i = 0; i < logEkin.size(); ++i)
+  for (std::size_t i = 0; i < logEkin.size(); ++i) {
     logEkin[i] = std::log(Ekin[i]);
+  }
   InitFromArrayInLogEkin(np, logEkin.data(), response, opt, valbeg, valend);
 }
 
@@ -60,10 +61,11 @@ auto TFCSEnergyInterpolationSpline::simulate(
   double Emean;
   double Einit;
   const double Ekin = truth->Ekin();
-  if (OnlyScaleEnergy())
+  if (OnlyScaleEnergy()) {
     Einit = simulstate.E();
-  else
+  } else {
     Einit = Ekin;
+  }
   // catch very small values of Ekin (use 1 keV here) and fix the spline lookup
   // to the 1keV value
   const double logEkin =
@@ -97,11 +99,12 @@ void TFCSEnergyInterpolationSpline::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
                           << "Spline N=" << m_spline.GetNp() << " "
                           << m_spline.GetXmin()
                           << "<=log(Ekin)<=" << m_spline.GetXmax() << " "
                           << std::exp(m_spline.GetXmin())
                           << "<=Ekin<=" << std::exp(m_spline.GetXmax()));
+  }
 }

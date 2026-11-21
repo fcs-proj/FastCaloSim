@@ -11,8 +11,7 @@
 TFCSLateralShapeParametrization::TFCSLateralShapeParametrization(
     const char* name, const char* title)
     : TFCSParametrization(name, title)
-    , m_Ekin_bin(-1)
-    , m_calosample(-1)
+
 {
 }
 
@@ -61,10 +60,11 @@ void TFCSLateralShapeParametrization::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
   if (longprint) {
-    if (!Ekin_bin())
+    if (!Ekin_bin()) {
       FCS_MSG_INFO(optprint << "  Ekin_bin=all ; calosample=" << m_calosample);
-    else
+    } else {
       FCS_MSG_INFO(optprint << "  Ekin_bin=" << m_Ekin_bin
                             << " ; calosample=" << m_calosample);
+    }
   }
 }

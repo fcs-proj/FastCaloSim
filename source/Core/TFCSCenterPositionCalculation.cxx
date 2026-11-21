@@ -13,7 +13,7 @@
 TFCSCenterPositionCalculation::TFCSCenterPositionCalculation(const char* name,
                                                              const char* title)
     : TFCSLateralShapeParametrizationHitBase(name, title)
-    , m_extrapWeight(0.5)
+
 {
 }
 
@@ -76,7 +76,8 @@ void TFCSCenterPositionCalculation::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  Weight for extrapolated position: "
                           << m_extrapWeight);
+  }
 }

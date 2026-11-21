@@ -18,7 +18,7 @@ class TFCSParametrizationBase;
 namespace CLHEP
 {
 class HepRandomEngine;
-}
+}  // namespace CLHEP
 
 constexpr auto operator""_FCShash(char const* s, std::size_t count)
     -> std::uint32_t;
@@ -73,7 +73,7 @@ public:
   auto cells() -> cellmap& { return m_cells; }
   auto cells() const -> const cellmap& { return m_cells; }
 
-  void deposit(const unsigned long long cell_id, float E);
+  void deposit(unsigned long long cell_id, float E);
 
   void Print(Option_t* option = "") const override;
 
@@ -134,9 +134,9 @@ public:
   static constexpr auto fnv1a_32(char const* s, std::size_t count)
       -> std::uint32_t
   {
-    return ((count ? fnv1a_32(s, count - 1) : 2166136261u)
+    return ((count ? fnv1a_32(s, count - 1) : 2166136261U)
             ^ static_cast<std::uint32_t>(s[count]))
-        * 16777619u;
+        * 16777619U;
   }
   // Run time call for hash function
   static auto getAuxIndex(const std::string& s) -> std::uint32_t;
@@ -145,13 +145,13 @@ public:
   // Check if some auxiliary information is stored
   auto hasAuxInfo(std::uint32_t index) const -> bool
   {
-    return m_AuxInfo.find(index) != m_AuxInfo.end();
+    return m_AuxInfo.contains(index);
   }
 
   // Get auxiliary info
   // Use as TFCSSimulationState::getAuxInfo<int>(index)
   template<class T>
-  inline auto getAuxInfo(std::uint32_t index) const -> const T
+  auto getAuxInfo(std::uint32_t index) const -> const T
   {
     return static_cast<T>(m_AuxInfo.at(index));
   }
@@ -160,7 +160,7 @@ public:
   // Use as TFCSSimulationState::setAuxInfo<double>(7,2.0f)
   //     or TFCSSimulationState::setAuxInfo(7,2.0)
   template<class T>
-  inline void setAuxInfo(std::uint32_t index, const T& val)
+  void setAuxInfo(std::uint32_t index, const T& val)
   {
     m_AuxInfo[index].set<T>(val);
   }

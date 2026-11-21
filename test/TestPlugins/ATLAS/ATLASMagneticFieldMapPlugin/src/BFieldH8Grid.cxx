@@ -28,16 +28,20 @@ void BFieldH8Grid::readMap(std::istream& input)
   double cor;
   m_n[0] = 0;
   input >> name;
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++) {
     input >> m_n[i];
-  for (int i = 0; i < 3; i++)
+  }
+  for (int i = 0; i < 3; i++) {
     input >> m_min[i] >> m_max[i];
-  for (int i = 0; i < 3; i++)
+  }
+  for (int i = 0; i < 3; i++) {
     input >> m_d[i];
+  }
   input >> cor;
   // anything read?
-  if (m_n[0] == 0)
+  if (m_n[0] == 0) {
     return;
+  }
   // convert unit to mm
   const double meter(1000.);  // m in mm
   for (int i = 0; i < 3; i++) {
@@ -47,8 +51,9 @@ void BFieldH8Grid::readMap(std::istream& input)
   }
   // prepare space for the field data
   int nxyz = m_n[0] * m_n[1] * m_n[2];
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++) {
     m_B[i].resize(static_cast<std::size_t>(nxyz));
+  }
   // read the field data
   double xyz[3];
   double B[3];
@@ -85,9 +90,10 @@ void BFieldH8Grid::getB(const double* xyz, double* B, double* deriv) const
 {
   if (!defined() || !inside(xyz)) {
     B[0] = B[1] = B[2] = 0.0;
-    if (deriv != 0) {
-      for (int j = 0; j < 9; j++)
+    if (deriv != nullptr) {
+      for (int j = 0; j < 9; j++) {
         deriv[j] = 0.0;
+      }
     }
     return;
   }
@@ -125,7 +131,7 @@ void BFieldH8Grid::getB(const double* xyz, double* B, double* deriv) const
                + f[1] * (g[0] * m_B[i][ixyz[6]] + f[0] * m_B[i][ixyz[7]]));
   }
   // derivatives
-  if (deriv != 0) {
+  if (deriv != nullptr) {
     for (int i = 0; i < 3; i++) {  // Bx, By, Bz
       deriv[i * 3] = (g[2]
                           * (g[1] * (m_B[i][ixyz[1]] - m_B[i][ixyz[0]])

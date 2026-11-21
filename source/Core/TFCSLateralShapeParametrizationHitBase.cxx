@@ -38,8 +38,9 @@ auto TFCSLateralShapeParametrizationHitBase::get_E_hit(
     const TFCSExtrapolationState* extrapol) const -> double
 {
   const int nhits = get_number_of_hits(simulstate, truth, extrapol);
-  if (nhits <= 0 || !has_calosample())
+  if (nhits <= 0 || !has_calosample()) {
     return -1.;
+  }
   return simulstate.E(calosample()) / nhits;
 }
 

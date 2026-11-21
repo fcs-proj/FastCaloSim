@@ -35,12 +35,7 @@ public:
   // DeclareInterfaceID(IMagFieldSvc, 1, 0);
 
   /** constructor */
-  IMagFieldSvc()
-      : m_solenoidCurrent(0.0)
-      , m_toroidsCurrent(0.0)
-  {
-    ;
-  }
+  IMagFieldSvc() { ; }
   virtual ~IMagFieldSvc() = default;
   IMagFieldSvc(const IMagFieldSvc&) = default;
   IMagFieldSvc(IMagFieldSvc&&) = default;
@@ -82,8 +77,8 @@ public:
   void setToroidsCurrent(float current) { m_toroidsCurrent = current; }
 
 private:
-  float m_solenoidCurrent;  // solenoid current in ampere
-  float m_toroidsCurrent;  // toroid current in ampere
+  float m_solenoidCurrent {0.0};  // solenoid current in ampere
+  float m_toroidsCurrent {0.0};  // toroid current in ampere
 };
 }  // namespace MagField
 

@@ -88,8 +88,6 @@ void TFCSBinnedShowerONNX::load_meta_data(const std::string& filename,
     // Load the bin boundaries for this layer
     load_bin_boundaries(filename, layer_index);
   }
-
-  return;
 }
 
 auto TFCSBinnedShowerONNX::load_hdf5_dataset(const std::string& filename,
@@ -385,8 +383,9 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
   const auto set_probabilities =
       [&probabilities](const std::vector<float>& sub_bin_probabilities)
   {
-    for (std::size_t i = 0; i < probabilities.size(); ++i)
+    for (std::size_t i = 0; i < probabilities.size(); ++i) {
       probabilities[i] = static_cast<double>(sub_bin_probabilities[i]);
+    }
   };
 
   if (available_energies.size() > 1) {
@@ -447,10 +446,9 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
     if (p > p_r) {
       R_min = (R_min + R_max) / 2.;
       return;
-    } else {
-      R_max = (R_min + R_max) / 2.;
-      return;
     }
+    R_max = (R_min + R_max) / 2.;
+    return;
   }
 
   // Use linear interpolation for layer 2
@@ -517,7 +515,8 @@ auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
         - hits_per_layer_ptr->at(layer_index).at(energy_index - 1);
   }
 
-  double r, alpha;
+  double r;
+  double alpha;
 
   TFCSMLCalorimeterSimulator::layer_t& layer =
       event->event_data.at(layer_index);
@@ -603,8 +602,9 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
   for (const auto& [energy, layer_map] : temp_storage) {
     energies.push_back(energy);
     int max_layer = 0;
-    for (const auto& [l, _] : layer_map)
+    for (const auto& [l, _] : layer_map) {
       max_layer = std::max(max_layer, l);
+    }
 
     std::vector<std::vector<std::vector<float>>> layer_vec(
         static_cast<std::size_t>(max_layer) + 1);

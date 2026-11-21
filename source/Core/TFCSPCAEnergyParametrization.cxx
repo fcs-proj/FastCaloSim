@@ -41,9 +41,7 @@ TFCSPCAEnergyParametrization::TFCSPCAEnergyParametrization(const char* name,
 auto TFCSPCAEnergyParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
     -> bool
 {
-  if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
-    return true;
-  return false;
+  return Ekin_bin >= 1 && Ekin_bin <= n_bins();
 }
 
 auto TFCSPCAEnergyParametrization::is_match_calosample(
@@ -63,8 +61,9 @@ void TFCSPCAEnergyParametrization::Print(Option_t* option) const
     FCS_MSG(INFO) << optprint << "  #bins=" << m_numberpcabins
                   << ", Enorm=" << m_total_energy_normalization << ", layers=";
     for (std::size_t i = 0; i < m_RelevantLayers.size(); ++i) {
-      if (i > 0)
+      if (i > 0) {
         FCS_MSG(INFO) << ", ";
+      }
       FCS_MSG(INFO) << m_RelevantLayers[i];
     }
     FCS_MSG(INFO) << END_FCS_MSG(INFO);
@@ -79,10 +78,12 @@ auto interpolate_get_y(TH1* hist, double x) -> double
   double x2 = 0;
   double y1 = 0;
   double y2 = 0;
-  if (x <= hist->GetBinCenter(1))
+  if (x <= hist->GetBinCenter(1)) {
     return hist->GetBinContent(1);
-  if (x >= hist->GetBinCenter(hist->GetNbinsX()))
+  }
+  if (x >= hist->GetBinCenter(hist->GetNbinsX())) {
     return hist->GetBinContent(hist->GetNbinsX());
+  }
 
   int bin = hist->FindBin(x);
   // is x above the bin center -> interpolate with next bin
@@ -110,8 +111,9 @@ void TFCSPCAEnergyParametrization::set_totalE_probability_ratio(
     std::size_t Ekin_bin, TH1* hist)
 {
   // The Ekin bins start at 1
-  if (Ekin_bin < 1 || Ekin_bin > m_totalE_probability_ratio.size())
+  if (Ekin_bin < 1 || Ekin_bin > m_totalE_probability_ratio.size()) {
     return;
+  }
   m_totalE_probability_ratio[Ekin_bin - 1] = hist;
 }
 
@@ -119,8 +121,9 @@ auto TFCSPCAEnergyParametrization::get_totalE_probability_ratio(
     std::size_t Ekin_bin) const -> TH1*
 {
   // The Ekin bins start at 1
-  if (Ekin_bin < 1 || Ekin_bin > m_totalE_probability_ratio.size())
+  if (Ekin_bin < 1 || Ekin_bin > m_totalE_probability_ratio.size()) {
     return nullptr;
+  }
   return m_totalE_probability_ratio[Ekin_bin - 1];
 }
 
@@ -189,13 +192,15 @@ auto TFCSPCAEnergyParametrization::simulate(
 
       simdata[l] = cumulative[l]->rnd_to_fct(simdata_uniform);
 
-      if (l != layerNr.size())  // sum up the fractions, but not the totalE
+      if (l != layerNr.size()) {  // sum up the fractions, but not the totalE
         sum_fraction += simdata[l];
+      }
     }
 
     double scalefactor = 1.0 / sum_fraction;
-    if (!do_rescale)
+    if (!do_rescale) {
       scalefactor = 1.0;
+    }
 
     for (std::size_t l = 0; l < layerNr.size(); l++) {
       simdata[l] *= scalefactor;
@@ -227,8 +232,9 @@ auto TFCSPCAEnergyParametrization::simulate(
     for (std::size_t s = 0; s < m_geo->n_layers(); ++s) {
       double energyfrac = 0.0;
       for (std::size_t l = 0; l < layerNr.size(); ++l) {
-        if (std::cmp_equal(layerNr[l], s))
+        if (std::cmp_equal(layerNr[l], s)) {
           energyfrac = simdata[l];
+        }
       }
       simulstate.set_Efrac(s, energyfrac);
       simulstate.set_E(s, energyfrac * total_energy);
@@ -287,12 +293,14 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     load_ok = false;
   }
 
-  if (!load_ok)
+  if (!load_ok) {
     return false;
+  }
 
   m_RelevantLayers.reserve(static_cast<std::size_t>(RelevantLayers->GetSize()));
-  for (int i = 0; i < RelevantLayers->GetSize(); i++)
+  for (int i = 0; i < RelevantLayers->GetSize(); i++) {
     m_RelevantLayers.push_back(static_cast<int>(RelevantLayers->GetAt(i)));
+  }
 
   for (int bin = 1; bin <= m_numberpcabins; bin++) {
     file->cd(std::format("{}{}/pca", x, bin).c_str());
@@ -332,8 +340,9 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
       load_ok = false;
     }
 
-    if (!load_ok)
+    if (!load_ok) {
       return false;
+    }
 
     TMatrixDSymEigen cov_eigen(*symCov);
     TMatrixD* EV = new TMatrixD(cov_eigen.GetEigenVectors());
@@ -360,12 +369,14 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
       TFCS1DFunction* fct;
       fct = static_cast<TFCS1DFunction*>(
           gDirectory->Get("TFCS1DFunctionRegression"));
-      if (!fct)
+      if (!fct) {
         fct = static_cast<TFCS1DFunction*>(
             gDirectory->Get("TFCS1DFunctionRegressionTF"));
-      if (!fct)
+      }
+      if (!fct) {
         fct = static_cast<TFCS1DFunction*>(
             gDirectory->Get("TFCS1DFunctionHistogram"));
+      }
       cumulative.push_back(fct);
     }
 
@@ -379,8 +390,9 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 
 void TFCSPCAEnergyParametrization::clean()
 {
-  for (std::size_t i = 0; i < m_EV.size(); ++i)
+  for (std::size_t i = 0; i < m_EV.size(); ++i) {
     delete m_EV[i];
+  }
 }
 
 void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
@@ -388,7 +400,8 @@ void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
   // Stream an object of class TFCSPCAEnergyParametrization
 
   if (R__b.IsReading()) {
-    UInt_t R__s, R__c;
+    UInt_t R__s;
+    UInt_t R__c;
     Version_t R__v = R__b.ReadVersion(&R__s, &R__c);
     R__b.SetBufferOffset(static_cast<Int_t>(R__s));
 

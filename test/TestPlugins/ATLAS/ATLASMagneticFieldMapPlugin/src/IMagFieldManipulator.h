@@ -60,7 +60,7 @@ public:
   /** correct B field value at a position xyz */
   /** bxyz[3] is in kT */
   /** if deriv[9] is given, field derivatives are returned in kT/mm */
-  virtual void modifyField(double* bxyz, double* deriv = 0) = 0;
+  virtual void modifyField(double* bxyz, double* deriv = nullptr) = 0;
 };
 }  // namespace MagField
 

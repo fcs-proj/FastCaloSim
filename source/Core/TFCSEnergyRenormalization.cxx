@@ -56,21 +56,26 @@ auto TFCSEnergyRenormalization::simulate(
       if (simulstate.E(layer)
               > 8.0 * static_cast<double>(approxLayerNoise.at(layer))
           && layer != 5 && layer != 6 && layer != 7)
+      {
         FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
             << " simulated: " << energies[layer]);
+      }
       if (simulstate.E(layer) > 1500.0
           && (layer == 5 || layer == 6 || layer == 7))
+      {
         FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
             << " simulated: " << energies[layer]);
+      }
     }
-    if (!FastCaloSim::exactly_equal(energies[layer], 0.0))
+    if (!FastCaloSim::exactly_equal(energies[layer], 0.0)) {
       scalefactor[layer] = simulstate.E(layer) / energies[layer];
+    }
   }
 
   // Loop over all cells and apply the scalefactor

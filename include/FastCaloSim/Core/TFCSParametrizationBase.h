@@ -201,10 +201,13 @@ public:
   virtual void setLevel(int level, bool recursive)
   {
     this->setLevel(level);
-    if (recursive)
-      for (std::size_t i = 0; i < size(); ++i)
-        if (TFCSParametrizationBase* param = (*this)[i])
+    if (recursive) {
+      for (std::size_t i = 0; i < size(); ++i) {
+        if (TFCSParametrizationBase* param = (*this)[i]) {
           param->setLevel(level, recursive);
+        }
+      }
+    }
   }
 
 private:

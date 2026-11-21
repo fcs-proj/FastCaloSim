@@ -47,8 +47,9 @@ auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
                               h_approx->FindBin(h_input->GetBinCenter(i)))
                           - h_input->GetBinContent(i))
         / ymax;
-    if (val > maxdev)
+    if (val > maxdev) {
       maxdev = val;
+    }
   }
 
   return maxdev * 100.0;
@@ -82,14 +83,20 @@ auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
     integral_vec[static_cast<std::size_t>(ix - 1)] = integral;
   }
 
-  for (first = 0; first < nbins; first++)
+  for (first = 0; first < nbins; first++) {
     if (!FastCaloSim::exactly_equal(
             integral_vec[static_cast<std::size_t>(first)], 0.0))
+    {
       break;
-  for (last = nbins - 1; last > 0; last--)
+    }
+  }
+  for (last = nbins - 1; last > 0; last--) {
     if (!FastCaloSim::exactly_equal(
             integral_vec[static_cast<std::size_t>(last)], integral))
+    {
       break;
+    }
+  }
   last++;
 
   if (integral <= 0) {
@@ -108,8 +115,9 @@ auto TFCS1DFunction::generate_histogram_random_slope(
   hist->Sumw2();
   for (int ix = 1; ix <= nbinsx; ++ix) {
     double val = (0.5 + gRandom->Rndm()) * (nbinsx + ix);
-    if (gRandom->Rndm() < zerothreshold)
+    if (gRandom->Rndm() < zerothreshold) {
       val = 0;
+    }
     hist->SetBinContent(ix, val);
     hist->SetBinError(ix, 0);
   }
@@ -124,8 +132,9 @@ auto TFCS1DFunction::generate_histogram_random_gauss(
   hist->Sumw2();
   for (int i = 1; i <= ntoy; ++i) {
     double x = gRandom->Gaus(xpeak, sigma);
-    if (x >= xmin && x < xmax)
+    if (x >= xmin && x < xmax) {
       hist->Fill(x);
+    }
   }
   return hist;
 }

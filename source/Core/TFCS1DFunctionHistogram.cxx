@@ -43,10 +43,11 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
     maxdev = get_maxdev(hist, h_out.get());
     maxdev *= 100.0;
 
-    if (i % 100 == 0)
+    if (i % 100 == 0) {
       FCS_MSG_INFO("Iteration nr. " << i << " -----> change " << change
                                     << " bins " << h_out->GetNbinsX()
                                     << " -> maxdev=" << maxdev);
+    }
 
     if (maxdev < cut_maxdev && h_out->GetNbinsX() > 5 && i < 1000) {
       h_input = std::move(h_out);
@@ -63,12 +64,14 @@ void TFCS1DFunctionHistogram::smart_rebin_loop(TH1* hist, double cut_maxdev)
 
   // store:
 
-  for (int b = 1; b <= h_input->GetNbinsX(); b++)
+  for (int b = 1; b <= h_input->GetNbinsX(); b++) {
     m_HistoBorders.push_back(static_cast<float>(h_input->GetBinLowEdge(b)));
+  }
   m_HistoBorders.push_back(static_cast<float>(h_input->GetXaxis()->GetXmax()));
 
-  for (int b = 1; b < h_input->GetNbinsX(); b++)
+  for (int b = 1; b < h_input->GetNbinsX(); b++) {
     m_HistoContents.push_back(static_cast<float>(h_input->GetBinContent(b)));
+  }
   m_HistoContents.push_back(1);
 }
 
@@ -78,8 +81,9 @@ auto TFCS1DFunctionHistogram::get_maxdev(TH1* h_in, TH1D* h_out) -> double
   for (int i = 1; i <= h_in->GetNbinsX(); i++) {
     int bin = h_out->FindBin(h_in->GetBinCenter(i));
     double val = std::fabs(h_out->GetBinContent(bin) - h_in->GetBinContent(i));
-    if (val > maxdev)
+    if (val > maxdev) {
       maxdev = val;
+    }
   }
   return maxdev;
 }
@@ -91,8 +95,9 @@ auto TFCS1DFunctionHistogram::get_change(TH1* histo) -> double
   double minchange = 100.0;
   for (int b = 2; b < histo->GetNbinsX(); b++) {
     double diff = histo->GetBinContent(b) - histo->GetBinContent(b - 1);
-    if (diff < minchange && diff > 0)
+    if (diff < minchange && diff > 0) {
       minchange = diff;
+    }
   }
 
   return minchange;
@@ -133,8 +138,9 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
       content.push_back(sum / sumwidth);
       merged = 1;
       skip = 1;
-      if (b == (h_out1->GetNbinsX() - 2))
+      if (b == (h_out1->GetNbinsX() - 2)) {
         secondlastbin_merge = 1;
+      }
     }
   }  // for b
   if (!secondlastbin_merge) {
@@ -146,8 +152,9 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
 
   auto h_out2 = std::make_unique<TH1D>(
       "h_out2", "h_out2", content.size(), binborder.data());
-  for (unsigned int b = 1; b <= content.size(); b++)
+  for (unsigned int b = 1; b <= content.size(); b++) {
     h_out2->SetBinContent(static_cast<Int_t>(b), content[b - 1]);
+  }
 
   return h_out2;
 }
@@ -162,9 +169,9 @@ auto TFCS1DFunctionHistogram::non_linear(
 {
   double x = -1;
   double eps = 0.0000000001;
-  if ((y2 - y1) < eps)
+  if ((y2 - y1) < eps) {
     x = x1;
-  else {
+  } else {
     double b = (x1 - x2) / (std::sqrt(y1) - std::sqrt(y2));
     double a = x1 - b * std::sqrt(y1);
     x = a + b * std::sqrt(y);

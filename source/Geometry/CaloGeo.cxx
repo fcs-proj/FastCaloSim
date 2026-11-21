@@ -232,7 +232,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
     unsigned int layer_id = layer->at(i);
 
     // Only update layer flags once per layer
-    if (processed_layer_flags.find(layer_id) == processed_layer_flags.end()) {
+    if (!processed_layer_flags.contains(layer_id)) {
       auto& flags = m_layer_flags[layer_id];
       flags.is_barrel = isBarrel->at(i);
       // Set coordinate system based on the boolean flags
@@ -336,7 +336,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     m_n_total_cells++;
 
     // Rebuild layer flags if not already done
-    if (m_layer_flags.find(layer_id) == m_layer_flags.end()) {
+    if (!m_layer_flags.contains(layer_id)) {
       m_layer_flags[layer_id] = LayerFlags {};
       m_layer_flags[layer_id].is_barrel = cell.isBarrel();
 

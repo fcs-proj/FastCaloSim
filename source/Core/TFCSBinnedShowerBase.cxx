@@ -41,7 +41,8 @@ auto TFCSBinnedShowerBase::simulate(
   delete_event(simulstate);
 
   // select a random event from the library
-  double eta_center, phi_center;
+  double eta_center;
+  double phi_center;
   // NOTE: This is ATLAS specific
   // layer 2 is EMB2
   std::size_t reference_layer = 2;
@@ -59,10 +60,11 @@ auto TFCSBinnedShowerBase::simulate(
   double Einit;
   const double Ekin = truth->Ekin();
 
-  if (OnlyScaleEnergy())
+  if (OnlyScaleEnergy()) {
     Einit = simulstate.E();
-  else
+  } else {
     Einit = Ekin;
+  }
 
   // Reset the total energy
   simulstate.set_E(0);
@@ -111,7 +113,9 @@ auto TFCSBinnedShowerBase::simulate_hit(
   std::size_t hit_index = hit.idx();
 
   // Get necessary the hit information
-  double r, alpha, E;
+  double r;
+  double alpha;
+  double E;
   std::tie(r, alpha, E) =
       get_hit_position_and_energy(simulstate, layer_index, hit_index);
 
@@ -135,8 +139,9 @@ auto TFCSBinnedShowerBase::simulate_hit(
     // hadrons. Particle with the opposite charge are expected to have the
     // same shower shape after the transformation: delta_phi -->
     // -delta_phi
-    if ((charge < 0. && pdgId != 11) || pdgId == -11)
+    if ((charge < 0. && pdgId != 11) || pdgId == -11) {
       delta_phi_mm = -delta_phi_mm;
+    }
 
     const double delta_eta = delta_eta_mm / eta_jakobi / dist000;
     const double delta_phi = delta_phi_mm / center_r;
@@ -154,8 +159,9 @@ auto TFCSBinnedShowerBase::simulate_hit(
     // hadrons. Particle with the opposite charge are expected to have the
     // same shower shape after the transformation: delta_phi -->
     // -delta_phi
-    if ((charge < 0. && pdgId != 11) || pdgId == -11)
+    if ((charge < 0. && pdgId != 11) || pdgId == -11) {
       delta_phi = -delta_phi;
+    }
     const double hit_phi = TVector2::Phi_mpi_pi(center_phi + delta_phi);
     hit.set_eta_x(hit_r * std::cos(hit_phi));
     hit.set_phi_y(hit_r * std::sin(hit_phi));

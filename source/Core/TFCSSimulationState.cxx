@@ -37,10 +37,11 @@ void TFCSSimulationState::Print(Option_t*) const
 {
   FCS_MSG_INFO("Ebin=" << (m_Ebin ? std::to_string(*m_Ebin) : "none")
                        << " E=" << E() << " #cells=" << m_cells.size());
-  for (std::size_t i = 0; i < m_E.size(); ++i)
+  for (std::size_t i = 0; i < m_E.size(); ++i) {
     if (!FastCaloSim::exactly_equal(E(i), 0.0)) {
       FCS_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
     }
+  }
   if (!m_AuxInfo.empty()) {
     FCS_MSG_INFO("  AuxInfo has " << m_AuxInfo.size() << " elements");
     for (const auto& a : m_AuxInfo) {

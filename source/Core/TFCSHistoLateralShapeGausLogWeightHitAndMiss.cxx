@@ -53,10 +53,12 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
   // TODO: delta_r_mm should perhaps be cached in hit
 
   Int_t bin = m_hist->FindBin(delta_r_mm);
-  if (bin < 1)
+  if (bin < 1) {
     bin = 1;
-  if (bin > m_hist->GetNbinsX())
+  }
+  if (bin > m_hist->GetNbinsX()) {
     bin = m_hist->GetNbinsX();
+  }
   double meanweight = m_hist->GetBinContent(bin);
   double weight = meanweight;
   double RMS = m_hist->GetBinError(bin);
@@ -76,10 +78,11 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
     // keeping the shape unchanged.
     double prob = 1.0 / meanweight;
     double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
-    if (rnd < prob)
+    if (rnd < prob) {
       hit.set_E(weight * hit.E());
-    else
+    } else {
       hit.set_E(0);
+    }
   }
 
   FCS_MSG_DEBUG("HIT: E=" << hit.E() << " dR_mm=" << delta_r_mm

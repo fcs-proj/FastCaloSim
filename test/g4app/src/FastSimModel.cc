@@ -21,14 +21,12 @@ FastSimModel::FastSimModel(G4String aModelName,
                            G4VPhysicalVolume* transportWorld)
     : G4VFastSimulationModel(aModelName, aEnvelope)
     , fTransportTool(transportWorld)
-    , fParametrization(nullptr)
-    , fDoSimulation(true)
-    , m_debug(false)
+     
 {
   m_random_engine.setSeed(42);
 }
 
-FastSimModel::~FastSimModel() {}
+FastSimModel::~FastSimModel() = default;
 
 G4bool FastSimModel::IsApplicable(const G4ParticleDefinition& /*aParticleType*/)
 {
@@ -62,19 +60,19 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
 
   if (m_debug) {
     std::cout << "[FastSimModel::DoIt] Received particle with pid="
-              << truth.pdgid() << std::endl;
+              << truth.pdgid() << '\n';
 
     std::cout << "[FastSimModel::DoIt] Particle has position x=" << truth.X()
               << " y=" << truth.Y() << " z=" << truth.Z()
               << " eta=" << truth.Eta() << " phi=" << truth.Phi()
-              << " r=" << truth.Perp() << " ekin=" << truth.Ekin() << std::endl;
+              << " r=" << truth.Perp() << " ekin=" << truth.Ekin() << '\n';
 
     std::cout << "[FastSimModel::DoIt] Particle has momentum px="
               << track->GetMomentum().x() << " py=" << track->GetMomentum().y()
               << " pz=" << track->GetMomentum().z()
               << " p=" << track->GetMomentum().mag()
               << " pt=" << track->GetMomentum().perp()
-              << " eta=" << track->GetMomentum().eta() << std::endl;
+              << " eta=" << track->GetMomentum().eta() << '\n';
   }
 
   // Perform the FastCaloSim transportation
@@ -92,7 +90,7 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
   // Do the simulation if requested
   if (fDoSimulation) {
     if (!fParametrization) {
-      std::cerr << "[FastSimModel::DoIt] No parametrization set!" << std::endl;
+      std::cerr << "[FastSimModel::DoIt] No parametrization set!" << '\n';
       return;
     }
     // set the random engine

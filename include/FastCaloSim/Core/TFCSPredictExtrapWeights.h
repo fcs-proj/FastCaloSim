@@ -12,7 +12,7 @@
 namespace lwt
 {
 class LightweightNeuralNetwork;
-}
+}  // namespace lwt
 
 class TFCSPredictExtrapWeights : public TFCSLateralShapeParametrizationHitBase
 {
@@ -59,7 +59,7 @@ public:
                      const std::string& FastCaloTXTInputFolderName) -> bool;
 
   // Prepare inputs to the Neural Network
-  auto prepareInputs(TFCSSimulationState& simulstate, const double truthE) const
+  auto prepareInputs(TFCSSimulationState& simulstate, double truthE) const
       -> std::map<std::string, double>;
 
   // Print()

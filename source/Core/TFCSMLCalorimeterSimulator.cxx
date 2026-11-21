@@ -114,8 +114,9 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
   auto has_nan = [](const VNetworkBase::NetworkOutputs& out)
   {
     for (const auto& kv : out) {
-      if (std::isnan(kv.second))
+      if (std::isnan(kv.second)) {
         return true;
+      }
     }
     return false;
   };

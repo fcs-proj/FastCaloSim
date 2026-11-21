@@ -69,7 +69,8 @@ public:
   {
     if (layer <= 3) {
       return 2 * std::numbers::pi / 1024;
-    } else if (std::abs(eta) < 2.5) {
+    }
+    if (std::abs(eta) < 2.5) {
       return 2 * std::numbers::pi / 768;
     } else {
       return 2 * std::numbers::pi / 256;

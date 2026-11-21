@@ -64,8 +64,8 @@ private:
     std::string grep_filter = buildGrepFilterCommand();
 
     std::cout << "Comparing " << ref_log_file << " and " << new_log_file
-              << std::endl;
-    std::cout << "Grep filter: " << grep_filter << std::endl;
+              << '\n';
+    std::cout << "Grep filter: " << grep_filter << '\n';
 
     // We'll replace memory addresses and timing info, then pipe both logs
     // through the same sed+grep filter, then compare with diff -u.

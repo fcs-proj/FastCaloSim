@@ -43,7 +43,7 @@ public:
                + "/data/param/barrel_ml/"
                  "TFCSParam_pid22_pid211_Mom64_4194304_eta_20_25.root"}};
 
-  inline static auto param_file_path(const std::string& region) -> std::string
+  static auto param_file_path(const std::string& region) -> std::string
   {
     return PARAM_FILE_PATHS.at(region);
   }

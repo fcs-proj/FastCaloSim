@@ -22,9 +22,9 @@ int BFieldSolenoid::readMap(istream& input)
   const double meter(1000.0);  // meter in mm
   const double gauss(1.0e-7);  // gauss in kT
   const string myname("BFieldSolenoid::readMap()");
-  if (m_orig == m_tilt)
+  if (m_orig == m_tilt) {
     delete m_orig;
-  else {
+  } else {
     delete m_orig;
     delete m_tilt;
   }
@@ -34,11 +34,13 @@ int BFieldSolenoid::readMap(istream& input)
   input >> version;
   if (version != 4) {
     cerr << myname << ": version number is " << version << " instead of 4"
-         << endl;
+         << '\n';
     return 1;
   }
   // second line contains number of bins
-  int nz, nr, nphi;
+  int nz;
+  int nr;
+  int nphi;
   double unused;
   input >> nz >> nr >> nphi >> unused >> unused >> unused;
   m_orig->reserve(nz, nr, nphi + 1);  // extra phi at 2pi
@@ -69,7 +71,9 @@ int BFieldSolenoid::readMap(istream& input)
   // read field values
   // the index order is opposite to the toroid - have to reorder
   // also convert from gauss to Tesla here.
-  vector<double> Bz, Br, Bphi;
+  vector<double> Bz;
+  vector<double> Br;
+  vector<double> Bphi;
   double b;
   for (int k = 0; k < nphi; k++) {
     for (int j = 0; j < nr; j++) {
@@ -277,9 +281,11 @@ void BFieldSolenoid::getB(const double* xyz, double* B, double* deriv) const
     m_tilt->getB(xyz, B, deriv);
   } else {
     B[0] = B[1] = B[2] = 0.0;
-    if (deriv)
-      for (int i = 0; i < 9; i++)
+    if (deriv) {
+      for (int i = 0; i < 9; i++) {
         deriv[i] = 0.0;
+      }
+    }
   }
 }
 
@@ -290,13 +296,14 @@ void BFieldSolenoid::getB(const double* xyz, double* B, double* deriv) const
 void BFieldSolenoid::moveMap(
     double dx, double dy, double dz, double ax, double ay)
 {
-  if (m_orig == 0) {
+  if (m_orig == nullptr) {
     cerr << "BFieldSolenoid::moveMap() : original map has not been read"
-         << endl;
+         << '\n';
     return;
   }
-  if (m_tilt != m_orig)
+  if (m_tilt != m_orig) {
     delete m_tilt;
+  }
   //
   // copy the mesh and make it a bit smaller
   //
@@ -307,15 +314,17 @@ void BFieldSolenoid::moveMap(
   m_tilt->appendMesh(0, -zlim);
   for (unsigned i = 0; i < m_orig->nmesh(0); i++) {
     const double zi = m_orig->mesh(0, static_cast<int>(i));
-    if (abs(zi) < zlim)
+    if (abs(zi) < zlim) {
       m_tilt->appendMesh(0, zi);
+    }
   }
   m_tilt->appendMesh(0, zlim);
   // r
   for (unsigned i = 0; i < m_orig->nmesh(1); i++) {
     const double ri = m_orig->mesh(1, static_cast<int>(i));
-    if (ri < rlim)
+    if (ri < rlim) {
       m_tilt->appendMesh(1, ri);
+    }
   }
   m_tilt->appendMesh(1, rlim);
   // phi (no change)

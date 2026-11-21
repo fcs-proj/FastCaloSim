@@ -22,8 +22,9 @@ void TFCSParametrizationBinnedChain::push_before_first_bin(
     Chain_t::iterator it(&chain()[m_bin_start[0]]);
     chain().insert(it, param);
   }
-  for (auto& ele : m_bin_start)
+  for (auto& ele : m_bin_start) {
     ele++;
+  }
   recalc();
 }
 
@@ -40,8 +41,9 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
     Chain_t::iterator it(&chain()[m_bin_start[bin + 1]]);
     chain().insert(it, param);
   }
-  for (std::size_t ibin = bin + 1; ibin < m_bin_start.size(); ++ibin)
+  for (std::size_t ibin = bin + 1; ibin < m_bin_start.size(); ++ibin) {
     m_bin_start[ibin]++;
+  }
   recalc();
 }
 
@@ -59,8 +61,9 @@ auto TFCSParametrizationBinnedChain::find_bin(
     const TFCSExtrapolationState* extrapol) const -> std::optional<std::size_t>
 {
   const auto bin = get_bin(simulstate, truth, extrapol);
-  if (bin && *bin < get_number_of_bins())
+  if (bin && *bin < get_number_of_bins()) {
     return bin;
+  }
   return std::nullopt;
 }
 
@@ -98,8 +101,9 @@ auto TFCSParametrizationBinnedChain::simulate(
           FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
           const FCSReturnCode status =
               simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
-          if (status != FCSSuccess)
+          if (status != FCSSuccess) {
             return status;
+          }
         }
 
         // Parametrizations of the bin of this particle
@@ -116,8 +120,9 @@ auto TFCSParametrizationBinnedChain::simulate(
                             << chain()[ichain]->GetName());
               const FCSReturnCode status = simulate_and_retry(
                   chain()[ichain], simulstate, truth, extrapol);
-              if (status != FCSSuccess)
+              if (status != FCSSuccess) {
                 return status;
+              }
             }
           } else {
             FCS_MSG_WARNING(
@@ -134,8 +139,9 @@ auto TFCSParametrizationBinnedChain::simulate(
           FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
           const FCSReturnCode status =
               simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
-          if (status != FCSSuccess)
+          if (status != FCSSuccess) {
             return status;
+          }
         }
         return FCSSuccess;
       });
@@ -151,23 +157,28 @@ void TFCSParametrizationBinnedChain::Print(Option_t* option) const
   for (std::size_t ichain = 0; ichain < size(); ++ichain) {
     if (ichain == 0 && ichain != m_bin_start.front()) {
       prefix = "> ";
-      if (longprint)
+      if (longprint) {
         FCS_MSG_INFO(optprint << prefix << "Run for all bins");
+      }
     }
     for (std::size_t ibin = 0; ibin < get_number_of_bins(); ++ibin) {
       if (ichain == m_bin_start[ibin]) {
-        if (ibin < get_number_of_bins() - 1)
-          if (ichain == m_bin_start[ibin + 1])
+        if (ibin < get_number_of_bins() - 1) {
+          if (ichain == m_bin_start[ibin + 1]) {
             continue;
+          }
+        }
         prefix = std::format("{:<2}", ibin);
-        if (longprint)
+        if (longprint) {
           FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
+        }
       }
     }
     if (ichain == m_bin_start.back()) {
       prefix = "< ";
-      if (longprint)
+      if (longprint) {
         FCS_MSG_INFO(optprint << prefix << "Run for all bins");
+      }
     }
     chain()[ichain]->Print((opt + prefix).c_str());
   }

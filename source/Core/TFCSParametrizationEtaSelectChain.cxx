@@ -15,8 +15,9 @@
 void TFCSParametrizationEtaSelectChain::recalc()
 {
   clear();
-  if (size() == 0)
+  if (size() == 0) {
     return;
+  }
 
   recalc_pdgid_intersect();
   recalc_Ekin_intersect();

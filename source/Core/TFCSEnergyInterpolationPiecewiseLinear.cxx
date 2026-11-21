@@ -44,8 +44,9 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
     Int_t np, const Double_t Ekin[], const Double_t response[])
 {
   std::vector<Double_t> logEkin(static_cast<std::size_t>(np));
-  for (std::size_t i = 0; i < logEkin.size(); ++i)
+  for (std::size_t i = 0; i < logEkin.size(); ++i) {
     logEkin[i] = std::log(Ekin[i]);
+  }
   InitFromArrayInLogEkin(np, logEkin.data(), response);
 }
 
@@ -74,11 +75,12 @@ auto TFCSEnergyInterpolationPiecewiseLinear::simulate(
     Emean = m_linInterpol.Eval(logEkin) * Einit;
   }
 
-  if (OnlyScaleEnergy())
+  if (OnlyScaleEnergy()) {
     FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << Ekin
                            << " and E=" << Einit);
-  else
+  } else {
     FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << Ekin);
+  }
 
   // set mean energy of simulstate
   simulstate.set_E(Emean);
@@ -100,9 +102,10 @@ auto TFCSEnergyInterpolationPiecewiseLinear::evaluate(const double& Ekin) const
   const double logEkin =
       Ekin > Gaudi::Units::keV ? std::log(Ekin) : std::log(Gaudi::Units::keV);
 
-  if (logEkin < m_MinMaxlogEkin.first)
+  if (logEkin < m_MinMaxlogEkin.first) {
     return m_linInterpol.Eval(m_MinMaxlogEkin.first);
-  else if (logEkin > m_MinMaxlogEkin.second)
+  }
+  if (logEkin > m_MinMaxlogEkin.second)
     return m_linInterpol.Eval(m_MinMaxlogEkin.second);
   else
     return m_linInterpol.Eval(logEkin);
@@ -113,13 +116,14 @@ void TFCSEnergyInterpolationPiecewiseLinear::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
                           << "linInterpol N=" << m_logEkin.size() << " "
                           << m_MinMaxlogEkin.first
                           << "<=log(Ekin)<=" << m_MinMaxlogEkin.second << " "
                           << std::exp(m_MinMaxlogEkin.first)
                           << "<=Ekin<=" << std::exp(m_MinMaxlogEkin.second));
+  }
 }
 
 void TFCSEnergyInterpolationPiecewiseLinear::Streamer(TBuffer& R__b)

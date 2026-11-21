@@ -28,8 +28,7 @@ VNetworkBase::VNetworkBase(const std::string& inputFile)
 
 // No setupPersistedVariables or setupNet here!
 VNetworkBase::VNetworkBase(const VNetworkBase& copy_from)
-    : MLogging()
-    , m_inputFile(copy_from.m_inputFile)
+    : m_inputFile(copy_from.m_inputFile)
 {
 }
 
@@ -49,11 +48,13 @@ auto VNetworkBase::representNetworkInputs(
     for (const auto& inner : outer.second) {
       representation += inner.first + "=" + std::to_string(inner.second) + ", ";
       ++valuesIncluded;
-      if (valuesIncluded > maxValues)
+      if (valuesIncluded > maxValues) {
         break;
+      }
     };
-    if (valuesIncluded > maxValues)
+    if (valuesIncluded > maxValues) {
       break;
+    }
   };
   representation += "\n";
   return representation;
@@ -68,8 +69,9 @@ auto VNetworkBase::representNetworkOutputs(
   for (const auto& item : outputs) {
     representation += item.first + "=" + std::to_string(item.second) + ", ";
     ++valuesIncluded;
-    if (valuesIncluded > maxValues)
+    if (valuesIncluded > maxValues) {
       break;
+    }
   };
   representation += "\n";
   return representation;
@@ -110,7 +112,7 @@ void VNetworkBase::writeNetToTTree(std::string const& root_name,
 auto VNetworkBase::isRootFile(std::string const& filename) const -> bool
 {
   const std::string* to_check = &filename;
-  if (filename.length() == 0) {
+  if (filename.empty()) {
     to_check = &this->m_inputFile;
     FCS_MSG_DEBUG("No file name given, so using m_inputFile, " << m_inputFile);
   };
@@ -127,9 +129,9 @@ auto VNetworkBase::isFile(std::string const& inputFile) -> bool
   if (FILE* file = std::fopen(inputFile.c_str(), "r")) {
     std::fclose(file);
     return true;
-  } else {
-    return false;
-  };
+  }
+  return false;
+  ;
 }
 
 namespace
@@ -156,15 +158,17 @@ auto GetPrefixLength(const std::vector<std::string>& strings) -> std::size_t
 void VNetworkBase::removePrefixes(std::vector<std::string>& output_names) const
 {
   const std::size_t length = GetPrefixLength(output_names);
-  for (std::size_t i = 0; i < output_names.size(); ++i)
+  for (std::size_t i = 0; i < output_names.size(); ++i) {
     output_names[i] = output_names[i].substr(length);
+  }
 }
 
 void VNetworkBase::removePrefixes(VNetworkBase::NetworkOutputs& outputs) const
 {
   std::vector<std::string> output_layers;
-  for (auto const& output : outputs)
+  for (auto const& output : outputs) {
     output_layers.push_back(output.first);
+  }
   const std::size_t length = GetPrefixLength(output_layers);
   for (std::string layer_name : output_layers) {
     // remove this output

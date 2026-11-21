@@ -20,9 +20,7 @@
 TFCSHistoLateralShapeParametrization::TFCSHistoLateralShapeParametrization(
     const char* name, const char* title)
     : TFCSLateralShapeParametrizationHitBase(name, title)
-    , m_nhits(0)
-    , m_r_offset(0)
-    , m_r_scale(1.0)
+
 {
   TFCSHistoLateralShapeParametrization::reset_phi_symmetric();
 }
@@ -45,8 +43,9 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
         first_fix_bin = i;
       }
     }
-    if (!first_fix_bin)
+    if (!first_fix_bin) {
       return;
+    }
 
     if (*first_fix_bin == 0) {
       FCS_MSG_WARNING("nan in histo content for "
@@ -79,8 +78,9 @@ auto TFCSHistoLateralShapeParametrization::get_sigma2_fluctuation(
 {
   // Limit to factor 1000 fluctuations
   const auto nhits = static_cast<double>(m_nhits);
-  if (nhits < 0.001)
+  if (nhits < 0.001) {
     return 1000;
+  }
   return 1.0 / nhits;
 }
 
@@ -127,7 +127,10 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  double alpha, r, rnd1, rnd2;
+  double alpha;
+  double r;
+  double rnd1;
+  double rnd2;
   rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
@@ -158,21 +161,24 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
 
   r *= static_cast<double>(m_r_scale);
   r += static_cast<double>(m_r_offset);
-  if (r < 0)
+  if (r < 0) {
     r = 0;
+  }
 
   double delta_eta_mm = r * std::cos(alpha);
   double delta_phi_mm = r * std::sin(alpha);
 
   // Particles with negative eta are expected to have the same shape as those
   // with positive eta after transformation: delta_eta --> -delta_eta
-  if (center_eta < 0.)
+  if (center_eta < 0.) {
     delta_eta_mm = -delta_eta_mm;
+  }
   // We derive the shower shapes for electrons and positively charged hadrons.
   // Particle with the opposite charge are expected to have the same shower
   // shape after the transformation: delta_phi --> -delta_phi
-  if ((charge < 0. && pdgId != 11) || pdgId == -11)
+  if ((charge < 0. && pdgId != 11) || pdgId == -11) {
     delta_phi_mm = -delta_phi_mm;
+  }
 
   const double dist000 = FastCaloSim::dist000(center_r, center_z);
   const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
@@ -192,11 +198,13 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
 
 auto TFCSHistoLateralShapeParametrization::Initialize(TH2* hist) -> bool
 {
-  if (!hist)
+  if (!hist) {
     return false;
+  }
   m_hist.Initialize(hist);
-  if (m_hist.get_HistoContents().empty())
+  if (m_hist.get_HistoContents().empty()) {
     return false;
+  }
 
   set_number_of_hits(static_cast<float>(hist->Integral()));
 
@@ -209,13 +217,15 @@ auto TFCSHistoLateralShapeParametrization::Initialize(const char* filepath,
 {
   // input file with histogram to fit
   std::unique_ptr<TFile> inputfile(TFile::Open(filepath, "READ"));
-  if (inputfile == nullptr)
+  if (inputfile == nullptr) {
     return false;
+  }
 
   // histogram with hit pattern
   TH2* inputShape = static_cast<TH2*>(inputfile->Get(histname));
-  if (inputShape == nullptr)
+  if (inputShape == nullptr) {
     return false;
+  }
 
   bool OK = Initialize(inputShape);
 

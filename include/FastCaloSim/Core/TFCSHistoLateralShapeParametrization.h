@@ -79,9 +79,9 @@ public:
 protected:
   /// Histogram to be used for the shape simulation
   TFCS2DFunctionHistogram m_hist;
-  float m_nhits;
-  float m_r_offset;
-  float m_r_scale;
+  float m_nhits {0};
+  float m_r_offset {0};
+  float m_r_scale {1.0};
 
 private:
   ClassDefOverride(TFCSHistoLateralShapeParametrization,

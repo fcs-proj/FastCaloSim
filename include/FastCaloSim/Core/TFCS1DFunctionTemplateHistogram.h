@@ -20,8 +20,9 @@ public:
 
   TFCS1DFunctionTemplateHistogram(TH1* hist = nullptr, bool doprint = true)
   {
-    if (hist)
+    if (hist) {
       Initialize(hist, doprint);
+    }
   }
   ~TFCS1DFunctionTemplateHistogram() override = default;
 
@@ -51,7 +52,8 @@ public:
     const auto nbins = static_cast<size_t>(hist->GetNbinsX());
 
     std::vector<double> temp_HistoContents;
-    int first, last;
+    int first;
+    int last;
     double integral =
         CheckAndIntegrate1DHistogram(hist, temp_HistoContents, first, last);
     if (integral <= 0) {
@@ -77,15 +79,17 @@ public:
           && FastCaloSim::exactly_equal(m_HistoBorders.GetBinLowEdge(ihist - 1),
                                         m_HistoBorders.GetBinLowEdge(ihist)))
       {
-        if (doprint)
+        if (doprint) {
           FCS_MSG_INFO("Skip bin="
                        << ibin + 1 << " x=" << axis->GetBinLowEdge(ibin + 1)
                        << " fx=" << m_HistoBorders.GetBinLowEdge(ihist));
+        }
         --ihist;
-        if (doprint)
+        if (doprint) {
           FCS_MSG_INFO("     bin=" << ibin << " x=" << axis->GetBinLowEdge(ibin)
                                    << " fx="
                                    << m_HistoBorders.GetBinLowEdge(ihist));
+        }
       }
       const double fraction =
           temp_HistoContents[static_cast<std::size_t>(ibin)] / integral;
@@ -94,18 +98,20 @@ public:
           && FastCaloSim::exactly_equal(m_HistoContents.get_fraction(ihist - 1),
                                         m_HistoContents.get_fraction(ihist)))
       {
-        if (doprint)
+        if (doprint) {
           FCS_MSG_INFO("Skip fbin="
                        << ihist << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
                        << " frac=" << m_HistoContents.get_fraction(ihist));
+        }
         --ihist;
-        if (doprint)
+        if (doprint) {
           FCS_MSG_INFO("     fbin="
                        << ihist << " fx=" << m_HistoBorders.GetBinLowEdge(ihist)
                        << " frac=" << m_HistoContents.get_fraction(ihist));
+        }
       }
 
-      if (doprint)
+      if (doprint) {
         FCS_MSG_INFO("bin=" << ibin + 1 << " fbin=" << ihist << "/"
                             << m_HistoBorders.get_nbins() << " x=["
                             << axis->GetBinLowEdge(ibin + 1) << ","
@@ -113,6 +119,7 @@ public:
                             << "] fx=" << m_HistoBorders.GetBinLowEdge(ihist)
                             << " int=" << fraction
                             << " frac=" << m_HistoContents.get_fraction(ihist));
+      }
 
       ++ihist;
     }
@@ -128,8 +135,9 @@ public:
   /// and returns function value according to a histogram distribution
   auto rnd_to_fct(double rnd) const -> double override
   {
-    if (m_HistoContents.get_nbins() == 0)
+    if (m_HistoContents.get_nbins() == 0) {
       return 0;
+    }
     Trandom residual_rnd;
     size_t ibin =
         m_HistoContents.get_bin(static_cast<Trandom>(rnd), residual_rnd);

@@ -16,7 +16,7 @@ public:
                        static_cast<double>(phi),
                        static_cast<double>(eta));
   }
-  inline auto get() const -> const G4ThreeVector& { return m_dir; }
+  auto get() const -> const G4ThreeVector& { return m_dir; }
 
 private:
   G4ThreeVector m_dir;
@@ -31,7 +31,7 @@ public:
                      static_cast<double>(phi),
                      static_cast<double>(z));
   }
-  inline auto get() const -> const G4ThreeVector& { return m_dir; }
+  auto get() const -> const G4ThreeVector& { return m_dir; }
 
 private:
   G4ThreeVector m_dir;

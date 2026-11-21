@@ -7,13 +7,12 @@
 
 
 ActionInitialization::ActionInitialization()
-    : G4VUserActionInitialization()
+     
 {
 }
 
 ActionInitialization::~ActionInitialization()
-{
-}
+= default;
 
 void ActionInitialization::BuildForMaster() const
 {

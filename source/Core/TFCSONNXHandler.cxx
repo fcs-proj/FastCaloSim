@@ -147,8 +147,9 @@ void TFCSONNXHandler::setupNet()
     // For some reason unless auto is used as the return type
     // this causes a segfault once the loop ends....
     auto tensor_info = type_info.GetTensorTypeAndShapeInfo();
-    if (i == 0)
+    if (i == 0) {
       first_input_type = tensor_info.GetElementType();
+    }
     // Check the type has not changed
     if (tensor_info.GetElementType() != first_input_type) {
       FCS_MSG_ERROR("First type was " << first_input_type << ". In node " << i
@@ -206,8 +207,9 @@ void TFCSONNXHandler::setupNet()
 
     const Ort::TypeInfo type_info = m_session->GetOutputTypeInfo(i);
     auto tensor_info = type_info.GetTensorTypeAndShapeInfo();
-    if (i == 0)
+    if (i == 0) {
       first_output_type = tensor_info.GetElementType();
+    }
 
     // Check the type has not changed
     if (tensor_info.GetElementType() != first_output_type) {
@@ -287,18 +289,17 @@ auto TFCSONNXHandler::getSerializedSession(const std::string& tree_name)
     std::vector<char> bytes = this->readBytesFromTTree(*tree);
     FCS_MSG_DEBUG("Found bytes size " << bytes.size());
     return bytes;
-  } else {
-    FCS_MSG_INFO("Reading bytes from text file.");
-    // see https://stackoverflow.com/a/50317432
-    std::ifstream input(this->m_inputFile, std::ios::binary);
-
-    std::vector<char> bytes((std::istreambuf_iterator<char>(input)),
-                            (std::istreambuf_iterator<char>()));
-
-    input.close();
-    FCS_MSG_DEBUG("Found bytes size " << bytes.size());
-    return bytes;
   }
+  FCS_MSG_INFO("Reading bytes from text file.");
+  // see https://stackoverflow.com/a/50317432
+  std::ifstream input(this->m_inputFile, std::ios::binary);
+
+  std::vector<char> bytes((std::istreambuf_iterator<char>(input)),
+                          (std::istreambuf_iterator<char>()));
+
+  input.close();
+  FCS_MSG_DEBUG("Found bytes size " << bytes.size());
+  return bytes;
 }
 
 auto TFCSONNXHandler::readBytesFromTTree(TTree& tree) -> std::vector<char>

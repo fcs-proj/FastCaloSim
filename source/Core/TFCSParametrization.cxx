@@ -12,12 +12,7 @@
 
 TFCSParametrization::TFCSParametrization(const char* name, const char* title)
     : TFCSParametrizationBase(name, title)
-    , m_Ekin_nominal(init_Ekin_nominal)
-    , m_Ekin_min(init_Ekin_min)
-    , m_Ekin_max(init_Ekin_max)
-    , m_eta_nominal(init_eta_nominal)
-    , m_eta_min(init_eta_min)
-    , m_eta_max(init_eta_max)
+
 {
 }
 

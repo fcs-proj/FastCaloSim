@@ -62,10 +62,12 @@ auto TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) -> double
 
   // Define cell size in phi
   // TODO: Should come from geometry!
-  if (layer == 1)
+  if (layer == 1) {
     cell_dphi = 0.0981748;
-  if (layer == 2 || layer == 3)
+  }
+  if (layer == 2 || layer == 3) {
     cell_dphi = 0.0245437;
+  }
   if (layer == 0 || layer > 3) {
     return 0.0;
   }
@@ -108,8 +110,9 @@ auto TFCSHitCellMappingWiggleEMB::simulate_hit(
   std::size_t cs = calosample();
 
   double wiggle = 0.0;
-  if (cs < 4 && cs > 0)
+  if (cs < 4 && cs > 0) {
     wiggle = doWiggle(CLHEP::RandFlat::shoot(simulstate.randomEngine()));
+  }
 
   FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
                           << " phi=" << hit.phi() << " wiggle=" << wiggle);

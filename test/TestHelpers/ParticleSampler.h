@@ -41,14 +41,14 @@ class IDCaloBoundarySampler : public ParticleSampler
 {
 public:
   IDCaloBoundarySampler()
-      : m_IDCaloBoundary()
+
   {
     // We set the thickness of the boundary to zero for the intersection
     // calculation
     m_IDCaloBoundary.setThickness(0);
   }
 
-  inline auto generate(int pid, float ekin, float eta) -> Particle
+  auto generate(int pid, float ekin, float eta) -> Particle override
   {
     // Detector assumed to be phi-symmetric, so pick random phi
     float phi = 0;
@@ -83,8 +83,8 @@ public:
     throw std::runtime_error("No intersection found with ID-Calo boundary");
   }
 
-  inline auto discreteEtaSample(int pid, float ekin, std::vector<float> etas)
-      -> ParticleContainer
+  auto discreteEtaSample(int pid, float ekin, std::vector<float> etas)
+      -> ParticleContainer override
   {
     ParticleContainer particles;
     for (const auto& eta : etas) {
@@ -94,11 +94,11 @@ public:
     return particles;
   }
 
-  inline auto uniformEtaSample(int pid,
-                               float ekin,
-                               float min_eta,
-                               float max_eta,
-                               float step_size) -> ParticleContainer
+  auto uniformEtaSample(int pid,
+                        float ekin,
+                        float min_eta,
+                        float max_eta,
+                        float step_size) -> ParticleContainer override
   {
     if (min_eta > max_eta) {
       throw std::runtime_error("min_eta must be less than or equal to max_eta");
@@ -130,7 +130,7 @@ public:
 private:
   IDCaloBoundary m_IDCaloBoundary;
 
-  static inline auto intersects(Cylinder& cylinder, const G4ThreeVector& dir)
+  static auto intersects(Cylinder& cylinder, const G4ThreeVector& dir)
       -> IntersectionResult
   {
     IntersectionResult result;
@@ -180,10 +180,11 @@ private:
     return result;
   }
 
-  static inline auto small_move_to_ID(
-      Particle& particle,
-      Cylinder& cylinder,
-      float epsilon = static_cast<float>(0.01 * CLHEP::mm)) -> void
+  static auto small_move_to_ID(Particle& particle,
+                               Cylinder& cylinder,
+                               float epsilon = static_cast<float>(0.01
+                                                                  * CLHEP::mm))
+      -> void
   {
     // The shifted coordinate is computed in double and rounded to float
     const auto eps = static_cast<double>(epsilon);

@@ -29,13 +29,7 @@
 MagField::H8FieldSvc::H8FieldSvc(const std::string& /* name,ISvcLocator* svc */)
     :  // base_class(name,svc),
     m_H8MapFilename("MagneticFieldMaps/mbps1-all-id-800-mbps2-muons-800x4.data")
-    , m_dx1(0)
-    , m_dy1(0)
-    , m_dz1(0)
-    , m_dx2(43830)
-    ,  // default H8MS2 x offset
-    m_dy2(0)
-    , m_dz2(0)
+
 {
   //    declareProperty("H8MapFile", m_H8MapFilename, "File storing the H8
   //    magnetic field map"); declareProperty("dx1", m_dx1, "x component of
@@ -47,7 +41,7 @@ MagField::H8FieldSvc::H8FieldSvc(const std::string& /* name,ISvcLocator* svc */)
   //    magnet #2 shift (in mm)");
 }
 
-MagField::H8FieldSvc::~H8FieldSvc() {}
+MagField::H8FieldSvc::~H8FieldSvc() = default;
 
 /** framework methods */
 bool MagField::H8FieldSvc::initialize()
@@ -74,7 +68,7 @@ bool MagField::H8FieldSvc::readMap(const std::string mapFile)
   // std::string resolvedMapFile = PathResolver::find_file( mapFile.c_str(),
   // "DATAPATH" );
   std::string resolvedMapFile = mapFile.c_str();
-  if (resolvedMapFile == "") {
+  if (resolvedMapFile.empty()) {
     // ATH_MSG_ERROR( "Field map file " << mapFile << " not found" );
     return false;
   }
@@ -150,11 +144,11 @@ void MagField::H8FieldSvc::getField(const double* xyz,
   }
   // xyz is outside all grids
   B[0] = B[1] = B[2] = 0.0;
-  if (deriv != 0) {
-    for (int j = 0; j < 9; j++)
+  if (deriv != nullptr) {
+    for (int j = 0; j < 9; j++) {
       deriv[j] = 0.0;
+    }
   }
-  return;
 }
 
 void MagField::H8FieldSvc::getFieldZR(const double* xyz,
@@ -162,5 +156,4 @@ void MagField::H8FieldSvc::getFieldZR(const double* xyz,
                                       double* deriv) const
 {
   getField(xyz, B, deriv);
-  return;
 }

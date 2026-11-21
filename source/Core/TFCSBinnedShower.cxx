@@ -130,8 +130,9 @@ auto TFCSBinnedShower::find_best_match(double eta_center,
     phi_within_cell = phi_center - phi_cell;
 
     phi_within_cell = std::fmod(phi_within_cell, phi_cell_size);
-    if (phi_within_cell < 0)
+    if (phi_within_cell < 0) {
       phi_within_cell += phi_cell_size;
+    }
   }
 
   // Find the event with the closest eta_center and phi_mod (L2 distance)
@@ -386,7 +387,9 @@ auto TFCSBinnedShower::get_coordinates(TFCSSimulationState& simulstate,
   double R = R_min;  // If the range is too small, just use the minimum value
   if (std::abs(R_max - R_min)
       > static_cast<double>(std::numeric_limits<float>::epsilon()))
+  {
     R = CLHEP::RandFlat::shoot(simulstate.randomEngine(), R_min, R_max);
+  }
   const double alpha =
       CLHEP::RandFlat::shoot(simulstate.randomEngine(), alpha_min, alpha_max);
 
@@ -418,8 +421,9 @@ void TFCSBinnedShower::upscale(TFCSSimulationState& simulstate,
   const auto set_probabilities =
       [&probabilities](const std::vector<float>& sub_bin_probabilities)
   {
-    for (std::size_t i = 0; i < probabilities.size(); ++i)
+    for (std::size_t i = 0; i < probabilities.size(); ++i) {
       probabilities[i] = static_cast<double>(sub_bin_probabilities[i]);
+    }
   };
 
   if (available_energies.size() > 1) {
@@ -480,10 +484,9 @@ void TFCSBinnedShower::upscale(TFCSSimulationState& simulstate,
     if (p > p_r) {
       R_min = (R_min + R_max) / 2.;
       return;
-    } else {
-      R_max = (R_min + R_max) / 2.;
-      return;
     }
+    R_max = (R_min + R_max) / 2.;
+    return;
   }
 
   // Use linear interpolation for layer 2
@@ -512,8 +515,6 @@ void TFCSBinnedShower::upscale(TFCSSimulationState& simulstate,
 
   R_min = R_min + r / 2 * (R_max - R_min);
   R_max = R_min;
-
-  return;
 }
 
 auto TFCSBinnedShower::get_hit_position_and_energy(
@@ -551,7 +552,8 @@ auto TFCSBinnedShower::get_hit_position_and_energy(
         - hits_per_layer_ptr->at(layer_index).at(energy_index - 1);
   }
 
-  double r, alpha;
+  double r;
+  double alpha;
 
   layer_t& layer = event->event_data.at(layer_index);
 
@@ -618,8 +620,6 @@ void TFCSBinnedShower::load_event_library(const std::string& filename,
   {
     load_shower_center_information(filename);
   }
-
-  return;
 }
 
 auto TFCSBinnedShower::load_hdf5_dataset(const std::string& filename,
@@ -767,13 +767,12 @@ void TFCSBinnedShower::load_shower_center_information(
         // We do not necessarily need the phi_mod for eta matching, so we can
         // just skip this dataset
         continue;
-      } else {
-        FCS_MSG_ERROR(
-            "Error while extracting the shower center information from "
-            << filename << "."
-            << "Specifically, the key " << datasetname
-            << " could not be loaded.");
       }
+      FCS_MSG_ERROR("Error while extracting the shower center information from "
+                    << filename << "."
+                    << "Specifically, the key " << datasetname
+                    << " could not be loaded.");
+
       return;
     }
 
@@ -876,8 +875,9 @@ void TFCSBinnedShower::load_sub_bin_distribution(const std::string& filename)
   for (const auto& [energy, layer_map] : temp_storage) {
     energies.push_back(energy);
     int max_layer = 0;
-    for (const auto& [l, _] : layer_map)
+    for (const auto& [l, _] : layer_map) {
       max_layer = std::max(max_layer, l);
+    }
 
     std::vector<std::vector<std::vector<float>>> layer_vec(
         static_cast<std::size_t>(max_layer) + 1);

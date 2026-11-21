@@ -35,7 +35,7 @@ public:
   // compute magnetic field, plus derivatives if requested, and add
   inline void addBiotSavart(const double* xyz,
                             double* B,
-                            double* deriv = 0) const;
+                            double* deriv = nullptr) const;
   // scale the current wrt the nominal current
   void scaleCurrent(double factor) { m_curr = factor * m_nomCurr; }
   // accessors
@@ -77,8 +77,10 @@ void BFieldCond::addBiotSavart(const double* xyz,
   const Eigen::Vector3d v = m_u.cross(r1);
   const double vsq = std::max(v.squaredNorm(), minvsq);
 
-  const double r1u = r1.dot(m_u), r2u = r2.dot(m_u);
-  const double r1n = r1.norm(), r2n = r2.norm();
+  const double r1u = r1.dot(m_u);
+  const double r2u = r2.dot(m_u);
+  const double r1n = r1.norm();
+  const double r2n = r2.norm();
 
   const double f0 = mu04pi * m_curr / vsq;
   const double f1 = f0 * (m_finite ? r1u / r1n - r2u / r2n : 2.0);

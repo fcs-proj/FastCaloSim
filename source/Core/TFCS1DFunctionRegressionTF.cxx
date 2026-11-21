@@ -27,7 +27,8 @@ auto TFCS1DFunctionRegressionTF::retransform(double value) const -> double
 auto TFCS1DFunctionRegressionTF::rnd_to_fct(double rnd) const -> double
 {
   double value = regression_value(rnd);
-  if (m_rangeval > 0)
+  if (m_rangeval > 0) {
     value = retransform(value);
+  }
   return value;
 }

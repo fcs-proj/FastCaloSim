@@ -20,8 +20,7 @@ TFCS2DFunctionLateralShapeParametrization::
     TFCS2DFunctionLateralShapeParametrization(const char* name,
                                               const char* title)
     : TFCSLateralShapeParametrizationHitBase(name, title)
-    , m_function(nullptr)
-    , m_nhits(0)
+
 {
   TFCS2DFunctionLateralShapeParametrization::reset_phi_symmetric();
 }
@@ -29,8 +28,9 @@ TFCS2DFunctionLateralShapeParametrization::
 TFCS2DFunctionLateralShapeParametrization::
     ~TFCS2DFunctionLateralShapeParametrization()
 {
-  if (m_function)
+  {
     delete m_function;
+  }
   m_function = nullptr;
 }
 
@@ -88,7 +88,10 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  double alpha, r, rnd1, rnd2;
+  double alpha;
+  double r;
+  double rnd1;
+  double rnd2;
   rnd1 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   rnd2 = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   if (is_phi_symmetric()) {
@@ -120,13 +123,15 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
 
   // Particles with negative eta are expected to have the same shape as those
   // with positive eta after transformation: delta_eta --> -delta_eta
-  if (center_eta < 0.)
+  if (center_eta < 0.) {
     delta_eta_mm = -delta_eta_mm;
+  }
   // We derive the shower shapes for electrons and positively charged hadrons.
   // Particle with the opposite charge are expected to have the same shower
   // shape after the transformation: delta_phi --> -delta_phi
-  if ((charge < 0. && pdgId != 11) || pdgId == -11)
+  if ((charge < 0. && pdgId != 11) || pdgId == -11) {
     delta_phi_mm = -delta_phi_mm;
+  }
 
   const double dist000 = FastCaloSim::dist000(center_r, center_z);
   const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
@@ -147,14 +152,17 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
 auto TFCS2DFunctionLateralShapeParametrization::Initialize(TFCS2DFunction* func,
                                                            float nhits) -> bool
 {
-  if (!func)
+  if (!func) {
     return false;
-  if (m_function)
+  }
+  {
     delete m_function;
+  }
   m_function = func;
 
-  if (nhits > 0)
+  if (nhits > 0) {
     set_number_of_hits(nhits);
+  }
 
   return true;
 }

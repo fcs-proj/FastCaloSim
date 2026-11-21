@@ -49,7 +49,8 @@ public:
     m_x0 = m_y0 = std::numeric_limits<double>::max();
     double x1 = std::numeric_limits<double>::lowest();
     double y1 = std::numeric_limits<double>::lowest();
-    std::vector<double> widths, heights;
+    std::vector<double> widths;
+    std::vector<double> heights;
     widths.reserve(entries.size());
     heights.reserve(entries.size());
     for (const auto& [box, pos] : entries) {
@@ -134,7 +135,7 @@ public:
     const double x = point.get<0>();
     const double y = point.get<1>();
     // Outside the extent of all rectangles (or NaN): no rectangle contains it
-    if (!(x >= m_x0 && x <= m_x1 && y >= m_y0 && y <= m_y1)) {
+    if (x < m_x0 || x > m_x1 || y < m_y0 || y > m_y1) {
       return;
     }
     const std::size_t bin = bin_y(y) * m_nx + bin_x(x);

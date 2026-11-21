@@ -62,20 +62,20 @@ auto TFCSNetworkFactory::create(std::string input)
                     "Creating ONNX network from file ..."
                         << input.substr(input.length() - 10));
     return std::make_unique<TFCSONNXHandler>(input);
-  } else {
-    try {
-      auto created = std::make_unique<TFCSSimpleLWTNNHandler>(input);
-      FCS_MSG_NOCLASS(logger,
-                      "Succeeded in creating LWTNN nn from string starting "
-                          << input.substr(0, 10));
-      return created;
-    } catch (const boost::property_tree::ptree_bad_path& e) {
-      // If we get this error, it was actually a graph, not a NeuralNetwork
-      auto created = std::make_unique<TFCSGANLWTNNHandler>(input);
-      FCS_MSG_NOCLASS(logger, "Succeeded in creating LWTNN graph from string");
-      return created;
-    };
+  }
+  try {
+    auto created = std::make_unique<TFCSSimpleLWTNNHandler>(input);
+    FCS_MSG_NOCLASS(logger,
+                    "Succeeded in creating LWTNN nn from string starting "
+                        << input.substr(0, 10));
+    return created;
+  } catch (const boost::property_tree::ptree_bad_path& e) {
+    // If we get this error, it was actually a graph, not a NeuralNetwork
+    auto created = std::make_unique<TFCSGANLWTNNHandler>(input);
+    FCS_MSG_NOCLASS(logger, "Succeeded in creating LWTNN graph from string");
+    return created;
   };
+  ;
 }
 
 auto TFCSNetworkFactory::create(std::string input, bool graph_form)
@@ -88,7 +88,8 @@ auto TFCSNetworkFactory::create(std::string input, bool graph_form)
                     "Creating ONNX network from file ..."
                         << input.substr(input.length() - 10));
     return std::make_unique<TFCSONNXHandler>(input);
-  } else if (graph_form) {
+  }
+  if (graph_form) {
     FCS_MSG_NOCLASS(logger, "Creating LWTNN graph from string");
     return std::make_unique<TFCSGANLWTNNHandler>(input);
   } else {
@@ -105,12 +106,13 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
   FastCaloSim::MLogging logger;
   FCS_MSG_NOCLASS(logger, "Given both bytes and a string to create an nn.");
   resolveGlobs(string_input);
-  if (vector_input.size() > 0) {
+  if (!vector_input.empty()) {
     FCS_MSG_NOCLASS(logger,
                     "Bytes contains data, size=" << vector_input.size()
                                                  << ", creating from bytes.");
     return create(vector_input);
-  } else if (string_input.length() > 0) {
+  }
+  if (string_input.length() > 0) {
     FCS_MSG_NOCLASS(
         logger,
         "No data in bytes, string contains data, " << "creating from string.");
@@ -131,12 +133,13 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
       logger,
       "Given both bytes, a string and graph form specified to create an nn.");
   resolveGlobs(string_input);
-  if (vector_input.size() > 0) {
+  if (!vector_input.empty()) {
     FCS_MSG_NOCLASS(logger,
                     "Bytes contains data, size=" << vector_input.size()
                                                  << ", creating from bytes.");
     return create(vector_input);
-  } else if (string_input.length() > 0) {
+  }
+  if (string_input.length() > 0) {
     FCS_MSG_NOCLASS(
         logger,
         "No data in bytes, string contains data, " << "creating from string.");

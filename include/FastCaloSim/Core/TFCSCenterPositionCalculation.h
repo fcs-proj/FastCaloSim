@@ -17,12 +17,12 @@ public:
                     const TFCSTruthState* truth,
                     const TFCSExtrapolationState* extrapol)
       -> FCSReturnCode override;
-  inline void setExtrapWeight(const float weight) { m_extrapWeight = weight; }
-  inline auto getExtrapWeight() -> float { return m_extrapWeight; }
+  void setExtrapWeight(const float weight) { m_extrapWeight = weight; }
+  auto getExtrapWeight() -> float { return m_extrapWeight; }
   void Print(Option_t* option = "") const override;
 
 private:
-  float m_extrapWeight;
+  float m_extrapWeight {0.5};
   ClassDefOverride(TFCSCenterPositionCalculation,
                    1)  // TFCSCenterPositionCalculation
 };

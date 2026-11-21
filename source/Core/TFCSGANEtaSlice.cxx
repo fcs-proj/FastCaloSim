@@ -43,20 +43,23 @@ TFCSGANEtaSlice::~TFCSGANEtaSlice()
 
 auto TFCSGANEtaSlice::GetNetAll() const -> VNetworkBase*
 {
-  if (m_net_all != nullptr)
+  if (m_net_all != nullptr) {
     return m_net_all.get();
+  }
   return m_gan_all;
 }
 auto TFCSGANEtaSlice::GetNetLow() const -> VNetworkBase*
 {
-  if (m_net_low != nullptr)
+  if (m_net_low != nullptr) {
     return m_net_low.get();
+  }
   return m_gan_low;
 }
 auto TFCSGANEtaSlice::GetNetHigh() const -> VNetworkBase*
 {
-  if (m_net_high != nullptr)
+  if (m_net_high != nullptr) {
     return m_net_high.get();
+  }
   return m_gan_high;
 }
 
@@ -90,31 +93,35 @@ auto TFCSGANEtaSlice::LoadGAN() -> bool
         + std::to_string(m_etaMax) + "_All.*";
     FCS_MSG_DEBUG("Gan input file name " << inputFileName);
     m_net_all = TFCSNetworkFactory::create(std::move(inputFileName));
-    if (m_net_all == nullptr)
+    if (m_net_all == nullptr) {
       success = false;
+    }
   } else if (m_pid == 2212) {
     inputFileName = m_param.GetInputFolder() + "/neural_net_"
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_High10.*";
     FCS_MSG_DEBUG("Gan input file name " << inputFileName);
     m_net_all = TFCSNetworkFactory::create(std::move(inputFileName));
-    if (m_net_all == nullptr)
+    if (m_net_all == nullptr) {
       success = false;
+    }
   } else {
     inputFileName = m_param.GetInputFolder() + "/neural_net_"
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_High12.*";
     FCS_MSG_DEBUG("Gan input file name " << inputFileName);
     m_net_high = TFCSNetworkFactory::create(std::move(inputFileName));
-    if (m_net_high == nullptr)
+    if (m_net_high == nullptr) {
       success = false;
+    }
 
     inputFileName = m_param.GetInputFolder() + "/neural_net_"
         + std::to_string(m_pid) + "_eta_" + std::to_string(m_etaMin) + "_"
         + std::to_string(m_etaMax) + "_UltraLow12.*";
     m_net_low = TFCSNetworkFactory::create(std::move(inputFileName));
-    if (m_net_low == nullptr)
+    if (m_net_low == nullptr) {
       success = false;
+    }
   }
   return success;
 }
@@ -178,8 +185,9 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
                              + rootFileName);
   }
   auto* tree = file->Get<TTree>("rootTree");
-  if (!tree)
+  if (!tree) {
     throw std::runtime_error("No rootTree in " + rootFileName);
+  }
   for (int layer : m_param.GetRelevantLayers()) {
     std::string branchName = "extrapWeight_" + std::to_string(layer);
     // TTree::Draw fills the histogram that it finds by name in the current
@@ -201,7 +209,8 @@ auto TFCSGANEtaSlice::GetNetworkOutputs(
   double randUniformZ = 0.;
   NetworkInputs inputs;
 
-  int maxExp = 0, minExp = 0;
+  int maxExp = 0;
+  int minExp = 0;
   if (m_pid == 22 || std::abs(m_pid) == 11) {
     if (truth->P() > 4096)
     {  // This is the momentum, not the energy, because the split is

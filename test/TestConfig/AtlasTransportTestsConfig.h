@@ -94,43 +94,43 @@ public:
       "particle_extrapolation.png";
 
   // Path to the serialized transport data
-  inline static auto transport_output_path() -> std::string
+  static auto transport_output_path() -> std::string
   {
     return output_dir + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the reference transport data
-  inline static auto transport_output_ref_path() -> std::string
+  static auto transport_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the serialized extrapolation data
-  inline static auto extrapolation_output_path() -> std::string
+  static auto extrapolation_output_path() -> std::string
   {
     return output_dir + EXTRAPOLATION_DATA_FILE_NAME;
   }
 
   // Path to the reference extrapolation data
-  inline static auto extrapolation_output_ref_path() -> std::string
+  static auto extrapolation_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + EXTRAPOLATION_DATA_FILE_NAME;
   }
 
   // Path to the output plot of the transport
-  inline static auto plot_output_transport_path() -> std::string
+  static auto plot_output_transport_path() -> std::string
   {
     return output_dir + TRANSPORT_PLOT_NAME;
   }
 
   // Path to the output plot of the extrapolation
-  inline static auto plot_output_extrapol_path() -> std::string
+  static auto plot_output_extrapol_path() -> std::string
   {
     return output_dir + EXTRAPOLATION_PLOT_NAME;
   }
 
   // String of the python command to plot transportation
-  inline static auto py_transport_exec(std::string label) -> std::string
+  static auto py_transport_exec(std::string label) -> std::string
   {
     std::string command = "python3 " + PYTHON_SCRIPT + " --input "
         + transport_output_path() + " --output " + plot_output_transport_path()
@@ -144,7 +144,7 @@ public:
   }
 
   // String of the python command to plot the extrapolation
-  inline static auto py_extrapol_exec(std::string label) -> std::string
+  static auto py_extrapol_exec(std::string label) -> std::string
   {
     std::string command = "python3 " + PYTHON_EXTRAP_SCRIPT + " --input "
         + extrapolation_output_path() + " --output "
@@ -154,10 +154,7 @@ public:
   }
 
   // Method to set the output directory for the test
-  inline static void set_output_dir(const std::string& dir)
-  {
-    output_dir = dir;
-  }
+  static void set_output_dir(const std::string& dir) { output_dir = dir; }
 
 private:
   inline static std::string output_dir;

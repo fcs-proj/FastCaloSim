@@ -35,15 +35,16 @@ auto TFCSLateralShapeParametrizationFluctChain::get_E_hit(
     const TFCSExtrapolationState* extrapol) const -> double
 {
   const double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
-  if (sigma2 <= 0 || !has_calosample())
+  if (sigma2 <= 0 || !has_calosample()) {
     return -1.;
+  }
   const std::size_t sample = calosample();
   const double maxWeight = getMaxWeight();
 
-  if (maxWeight > 0)
+  if (maxWeight > 0) {
     return simulstate.E(sample) * sigma2 / maxWeight;
-  else
-    return simulstate.E(sample) * sigma2;
+  }
+  return simulstate.E(sample) * sigma2;
 }
 
 auto TFCSLateralShapeParametrizationFluctChain::simulate(
@@ -81,8 +82,9 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
 
   // Limit to relative precision of 10^-4=0.01%. ATLAS calorimeter is ~0.1% at
   // best
-  if (sigma2 < 1e-8)
+  if (sigma2 < 1e-8) {
     sigma2 = 1e-8;
+  }
 
   // Make a good guess of the needed hit energy, assuming all hits would have
   // the same energy
@@ -113,22 +115,25 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
                                       static_cast<double>(m_RMS) * Eavghit));
     } while (std::abs(hit.E()) < absEavghit_tenth);
     bool failed = false;
-    if (debug)
+    if (debug) {
       if (ihit == 2) {
         // Switch debug output back to INFO to avoid huge logs
         PropagateMSGLevel(FastCaloSim::MSG::INFO);
       }
+    }
     for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
       TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
 
       FCSReturnCode status =
           hitsim->simulate_hit(hit, simulstate, truth, extrapol);
 
-      if (status == FCSSuccess)
+      if (status == FCSSuccess) {
         continue;
+      }
       if (status == FCSFatal) {
-        if (debug)
+        if (debug) {
           PropagateMSGLevel(old_level);
+        }
         return FCSFatal;
       }
       failed = true;
@@ -136,8 +141,9 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
       ++itotalfail;
       retry = status - FCSRetry;
       retry_warning = retry >> 1;
-      if (retry_warning < 1)
+      if (retry_warning < 1) {
         retry_warning = 1;
+      }
       break;
     }
     if (!failed) {
@@ -147,16 +153,18 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
       sumEhit += Ehit;
       double sumEhit2 = sumEhit * sumEhit;
       error2_sumEhit += Ehit * Ehit;
-      if (sumEhit2 > 0)
+      if (sumEhit2 > 0) {
         error2 = error2_sumEhit / sumEhit2;
+      }
     } else {
       if (ifail >= retry) {
         FCS_MSG_ERROR(
             "TFCSLateralShapeParametrizationFluctChain::simulate(): "
             "simulate_hit call failed after "
             << ifail << "/" << retry << "retries, total fails=" << itotalfail);
-        if (debug)
+        if (debug) {
           PropagateMSGLevel(old_level);
+        }
         return FCSFatal;
       }
       if (ifail >= retry_warning) {
@@ -186,6 +194,7 @@ void TFCSLateralShapeParametrizationFluctChain::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitChain::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  hit energy fluctuation RMS=" << m_RMS);
+  }
 }

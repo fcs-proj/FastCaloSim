@@ -40,7 +40,7 @@ struct CellData
   bool m_is_valid;
 };
 
-static_assert(std::is_trivially_copyable<CellData>::value,
+static_assert(std::is_trivially_copyable_v<CellData>,
               "CellData must be trivially copiable");
 
 class Cell
@@ -144,7 +144,7 @@ public:
     return z() < 0 ? z() - m_data.m_dz * 0.5 : z() + m_data.m_dz * 0.5;
   }
 
-  auto inline r(SubPos subpos) const -> double
+  auto r(SubPos subpos) const -> double
   {
     switch (subpos) {
       case SubPos::ENT:
@@ -157,7 +157,7 @@ public:
     std::unreachable();
   }
 
-  auto inline z(SubPos subpos) const -> double
+  auto z(SubPos subpos) const -> double
   {
     switch (subpos) {
       case SubPos::ENT:
@@ -179,7 +179,7 @@ public:
     // subtraction is exact (Sterbenz lemma), so the result is identical.
     if (angle >= two_pi && angle < 2 * two_pi) {
       angle -= two_pi;
-    } else if (!(angle > -two_pi && angle < two_pi)) {
+    } else if (angle <= -two_pi || angle >= two_pi) {
       angle = std::fmod(angle, two_pi);
     }
     if (angle < 0) {

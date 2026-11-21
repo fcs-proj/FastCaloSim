@@ -23,7 +23,7 @@ public:
   // read map data from a text file
   void readMap(std::istream& input);
   // compute magnetic field + derivatives
-  void getB(const double* xyz, double* B, double* deriv = 0) const;
+  void getB(const double* xyz, double* B, double* deriv = nullptr) const;
   // true if the grid has been defined
   bool defined() const { return (m_n[0] > 0); }
   // true if xyz[3] is inside this grid
@@ -42,7 +42,6 @@ public:
       out_max[i] = m_max[i];
       out_d[i] = m_d[i];
     }
-    return;
   }
 
 private:

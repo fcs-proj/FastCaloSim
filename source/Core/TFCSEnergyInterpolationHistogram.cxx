@@ -28,10 +28,11 @@ auto TFCSEnergyInterpolationHistogram::simulate(
   double Emean;
   double Einit;
   const double Ekin = truth->Ekin();
-  if (OnlyScaleEnergy())
+  if (OnlyScaleEnergy()) {
     Einit = simulstate.E();
-  else
+  } else {
     Einit = Ekin;
+  }
   if (Einit < m_hist.GetXaxis()->GetBinLowEdge(1)) {
     Emean = m_hist.GetBinContent(1) * Einit;
   } else {
@@ -58,10 +59,11 @@ void TFCSEnergyInterpolationHistogram::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(
         optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
                  << "histNbins=" << m_hist.GetNbinsX() << " "
                  << m_hist.GetXaxis()->GetBinLowEdge(1) << "<=Ekin<="
                  << m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX()));
+  }
 }

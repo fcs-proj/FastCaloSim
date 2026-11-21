@@ -19,8 +19,9 @@
 void TFCSParametrizationEkinSelectChain::recalc()
 {
   clear();
-  if (size() == 0)
+  if (size() == 0) {
     return;
+  }
 
   recalc_pdgid_intersect();
   recalc_Ekin_union();
@@ -51,47 +52,55 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
   // The bin edges are single precision, so is the binning variable
   const auto found = val_to_bin(static_cast<float>(Ekin));
 
-  if (!DoRandomInterpolation())
+  if (!DoRandomInterpolation()) {
     return found;
+  }
   // Drawn also when no bin is found, to keep the random number sequence
   const double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
-  if (!found)
+  if (!found) {
     return found;
+  }
   std::size_t bin = *found;
 
   // First parametrization in a bin, nullptr if the bin is empty
   const auto first_param_in =
       [this](std::size_t ibin) -> TFCSParametrizationBase*
   {
-    if (m_bin_start[ibin + 1] == m_bin_start[ibin])
+    if (m_bin_start[ibin + 1] == m_bin_start[ibin]) {
       return nullptr;
+    }
     return chain()[m_bin_start[ibin]];
   };
 
   // if no parametrizations for this bin, return
   TFCSParametrizationBase* first_in_bin = first_param_in(bin);
-  if (!first_in_bin)
+  if (!first_in_bin) {
     return bin;
+  }
 
   if (Ekin < first_in_bin->Ekin_nominal()) {
-    if (bin == 0)
+    if (bin == 0) {
       return bin;
+    }
     const std::size_t prevbin = bin - 1;
     // if no parametrizations for previous bin, return
     TFCSParametrizationBase* first_in_prevbin = first_param_in(prevbin);
-    if (!first_in_prevbin)
+    if (!first_in_prevbin) {
       return bin;
+    }
 
     const double logEkin = std::log(Ekin);
     const double logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
     const double logEkin_previous = std::log(first_in_prevbin->Ekin_nominal());
     const double numerator = logEkin - logEkin_previous;
     const double denominator = logEkin_nominal - logEkin_previous;
-    if (denominator <= 0)
+    if (denominator <= 0) {
       return bin;
+    }
 
-    if (numerator / denominator < rnd)
+    if (numerator / denominator < rnd) {
       bin = prevbin;
+    }
     FCS_MSG_DEBUG("logEkin="
                   << logEkin << " logEkin_previous=" << logEkin_previous
                   << " logEkin_nominal=" << logEkin_nominal
@@ -99,24 +108,28 @@ auto TFCSParametrizationEkinSelectChain::get_bin(
                   << " < p(previous)=" << (1 - numerator / denominator)
                   << ")? => orgbin=" << prevbin + 1 << " selbin=" << bin);
   } else {
-    if (bin + 1 == get_number_of_bins())
+    if (bin + 1 == get_number_of_bins()) {
       return bin;
+    }
     const std::size_t nextbin = bin + 1;
     // if no parametrizations for next bin, return
     TFCSParametrizationBase* first_in_nextbin = first_param_in(nextbin);
-    if (!first_in_nextbin)
+    if (!first_in_nextbin) {
       return bin;
+    }
 
     const double logEkin = std::log(Ekin);
     const double logEkin_nominal = std::log(first_in_bin->Ekin_nominal());
     const double logEkin_next = std::log(first_in_nextbin->Ekin_nominal());
     const double numerator = logEkin - logEkin_nominal;
     const double denominator = logEkin_next - logEkin_nominal;
-    if (denominator <= 0)
+    if (denominator <= 0) {
       return bin;
+    }
 
-    if (rnd < numerator / denominator)
+    if (rnd < numerator / denominator) {
       bin = nextbin;
+    }
     FCS_MSG_DEBUG("logEkin="
                   << logEkin << " logEkin_nominal=" << logEkin_nominal
                   << " logEkin_next=" << logEkin_next << " (rnd=" << rnd

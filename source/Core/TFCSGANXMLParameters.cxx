@@ -31,8 +31,9 @@ auto xml_string(const char* text) -> const xmlChar*
 auto getXmlAttr(xmlNodePtr node, const char* name) -> std::string
 {
   xmlChar* prop = xmlGetProp(node, xml_string(name));
-  if (!prop)
+  if (!prop) {
     return {};
+  }
   std::string value(reinterpret_cast<const char*>(prop));
   xmlFree(prop);
   return value;
@@ -118,8 +119,9 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                       std::string token;
 
                       while (std::getline(ss, token, ',')) {
-                        if (token.empty())
+                        if (token.empty()) {
                           continue;
+                        }
                         edges.push_back(std::stod(token));
                       }
 
@@ -136,8 +138,9 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                             << layer
                             << ", setting to 1 bin to avoid empty histogram");
                         xBins = 1;
-                        if (edges.empty())
+                        if (edges.empty()) {
                           edges.push_back(0);
+                        }
                         edges.push_back(edges.back() + 1);
                       } else {
                         m_relevantlayers.push_back(layer);

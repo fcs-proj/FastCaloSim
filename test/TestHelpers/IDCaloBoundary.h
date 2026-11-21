@@ -22,11 +22,7 @@ struct Cylinder
 class IDCaloBoundary
 {
 public:
-  IDCaloBoundary()
-      : cylinderThickness(10 * CLHEP::mm)
-  {
-    recalculate();
-  }
+  IDCaloBoundary() { recalculate(); }
 
   void setThickness(float thickness)
   {
@@ -42,7 +38,7 @@ public:
   }
 
 private:
-  float cylinderThickness;
+  float cylinderThickness {10 * CLHEP::mm};
 
   std::map<std::string, Cylinder> m_cylinders;
 

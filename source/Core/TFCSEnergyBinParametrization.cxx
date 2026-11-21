@@ -28,9 +28,7 @@ TFCSEnergyBinParametrization::TFCSEnergyBinParametrization(const char* name,
 auto TFCSEnergyBinParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
     -> bool
 {
-  if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
-    return true;
-  return false;
+  return Ekin_bin >= 1 && Ekin_bin <= n_bins();
 }
 
 void TFCSEnergyBinParametrization::resize()
@@ -87,8 +85,9 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
   }
   const auto n_probabilities = n_bins() + 1;
   double ptot = 0;
-  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
     ptot += static_cast<double>(prob[iEbin]);
+  }
   if (FastCaloSim::exactly_equal(ptot, 0.)) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(): "
@@ -140,8 +139,9 @@ auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
 
   const auto n_probabilities = n_bins() + 1;
   double ptot = 0;
-  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin)
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
     ptot += static_cast<double>(prob[iEbin]);
+  }
   if (FastCaloSim::exactly_equal(ptot, 0.)) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_"
@@ -168,8 +168,9 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
       FCS_MSG(INFO) << optprint << "  PDGID=" << *it << " : ";
       float p = 0;
       for (std::size_t iEbin = 0; iEbin <= n_bins(); ++iEbin) {
-        if (iEbin > 0)
+        if (iEbin > 0) {
           FCS_MSG(INFO) << ", ";
+        }
         auto mapit = m_pdgid_Ebin_probability.find(*it);
         FCS_MSG(INFO) << "b" << iEbin << "="
                       << (mapit->second[iEbin] - p) / mapit->second.back() * 100
@@ -193,11 +194,11 @@ auto TFCSEnergyBinParametrization::simulate(
   const int truth_pdgid = truth->pdgid();
   int pdgid = -99;
 
-  if (is_match_pdgid(truth_pdgid))
+  if (is_match_pdgid(truth_pdgid)) {
     pdgid = truth_pdgid;
-  else if (is_match_pdgid(0))
+  } else if (is_match_pdgid(0)) {
     pdgid = 0;
-  else {
+  } else {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::simulate(): cannot simulate pdgid="
         << truth_pdgid);
@@ -217,7 +218,7 @@ auto TFCSEnergyBinParametrization::simulate(
     FCS_MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): "
         "chosenBin>n_bins() (will use chosenBin=n_bins())");
-    std::string array = "";
+    std::string array;
     for (const auto& prob : Ebin_probability) {
       array += std::format("{} ", prob);
     }

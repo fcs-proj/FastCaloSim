@@ -5,13 +5,12 @@
 #include "RunAction.hh"
 
 RunAction::RunAction()
-    : G4UserRunAction()
+     
 {
 }
 
 RunAction::~RunAction()
-{
-}
+= default;
 
 void RunAction::BeginOfRunAction(const G4Run *)
 {

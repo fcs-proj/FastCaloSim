@@ -68,8 +68,9 @@ void send(FastCaloSim::MSG::Level lvl,
           int line,
           std::string_view text) noexcept
 {
-  while (text.ends_with('\n'))
+  while (text.ends_with('\n')) {
     text.remove_suffix(1);
+  }
   try {
     sink_slot().load()->write(lvl, file, line, text);
     return;
@@ -94,8 +95,9 @@ struct ThreadState
 
   void end_line()
   {
-    if (!open)
+    if (!open) {
       return;
+    }
     open = false;
     send(lvl, file, line, text.view());
     text.str({});
@@ -176,21 +178,25 @@ LineStream::LineStream(const MLogging* owner,
     , m_file(file)
     , m_line(line)
 {
-  if (active)
+  if (active) {
     m_text.emplace();
+  }
 }
 
 /// Add the text of the statement to the open line of this thread. Another
 /// object, level or file ends the line and starts a new one.
 LineStream::~LineStream()
 {
-  if (!m_text)
+  if (!m_text) {
     return;
+  }
   ThreadState& state = thread_state();
   if (state.open
       && (m_owner != state.owner || m_lvl != state.lvl
           || std::string_view(m_file) != state.file))
+  {
     state.end_line();
+  }
   if (!state.open) {
     state.open = true;
     state.owner = m_owner;
@@ -200,8 +206,9 @@ LineStream::~LineStream()
   }
   state.text << m_text->view();
   // While the thread exits, nothing would end the line later.
-  if (m_end || t_exiting)
+  if (m_end || t_exiting) {
     state.end_line();
+  }
 }
 
 auto MLogging::stream(MSG::Level lvl, const char* file, int line) const
@@ -226,8 +233,9 @@ auto MLogging::startMsg(MSG::Level lvl, std::string_view file, int line)
   const auto last_slash = file.find_last_of('/');
   std::size_t trim_point =
       last_slash == std::string_view::npos ? 0 : last_slash;
-  if (file.length() - trim_point > name_len)
+  if (file.length() - trim_point > name_len) {
     trim_point = file.length() - name_len;
+  }
   return std::format("{:>20}:{:<5}{:>10}",
                      file.substr(trim_point),
                      line,

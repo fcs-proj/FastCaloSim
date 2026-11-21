@@ -54,9 +54,10 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
   }
 
   // The bin borders are stored in single precision
-  for (std::size_t i = 0; i < nbins; i++)
+  for (std::size_t i = 0; i < nbins; i++) {
     m_HistoBorders[i] = static_cast<float>(
         hist->GetXaxis()->GetBinLowEdge(static_cast<int>(i) + 1));
+  }
   m_HistoBorders[nbins] = static_cast<float>(hist->GetXaxis()->GetXmax());
 
   for (ibin = 0; ibin < nbins; ++ibin) {
@@ -74,12 +75,14 @@ auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
   auto it =
       std::upper_bound(m_HistoContents.begin(), m_HistoContents.end(), int_rnd);
   auto ibin = FastCaloSim::index_of(m_HistoContents, it);
-  if (ibin >= m_HistoContents.size())
+  if (ibin >= m_HistoContents.size()) {
     ibin = m_HistoContents.size() - 1;
+  }
 
   HistoContent_t basecont = 0;
-  if (ibin > 0)
+  if (ibin > 0) {
     basecont = m_HistoContents[ibin - 1];
+  }
 
   const auto low_edge = static_cast<double>(m_HistoBorders[ibin]);
   const auto bin_width =
@@ -89,22 +92,21 @@ auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
     return low_edge
         + bin_width * static_cast<double>(int_rnd - basecont)
         / static_cast<double>(dcont);
-  } else {
-    return low_edge + bin_width / 2;
   }
+  return low_edge + bin_width / 2;
 }
 
 auto TFCS1DFunctionInt32Histogram::operator==(const TFCS1DFunction& ref) const
     -> bool
 {
-  if (IsA() != ref.IsA())
+  if (IsA() != ref.IsA()) {
     return false;
+  }
   const TFCS1DFunctionInt32Histogram& ref_typed =
       static_cast<const TFCS1DFunctionInt32Histogram&>(ref);
 
-  if (m_HistoBorders != ref_typed.m_HistoBorders)
+  if (m_HistoBorders != ref_typed.m_HistoBorders) {
     return false;
-  if (m_HistoContents != ref_typed.m_HistoContents)
-    return false;
-  return true;
+  }
+  return m_HistoContents == ref_typed.m_HistoContents;
 }

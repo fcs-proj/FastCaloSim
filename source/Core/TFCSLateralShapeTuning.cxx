@@ -42,10 +42,11 @@ auto TFCSLateralShapeTuning::initFromModelFile(
 
   // set parameter model names depending on layer
   std::vector<std::string> parameterModelNames;
-  if (layer == 1 || layer == 5)
+  if (layer == 1 || layer == 5) {
     parameterModelNames = {"a0", "a1", "a2", "a3"};
-  else if (layer == 2 || layer == 6)
+  } else if (layer == 2 || layer == 6) {
     parameterModelNames = {"eta_s", "phi_s"};
+  }
 
   for (auto& parameterName : parameterModelNames) {
     // interpolate the model parameters
@@ -100,8 +101,9 @@ auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
   // do not do anything if the parameter interpolation map is empty
   // this means we are in an pseudorapidity region, where no tuning to data is
   // available
-  if (m_parameterInterpol.empty())
+  if (m_parameterInterpol.empty()) {
     return FCSSuccess;
+  }
 
   // set maximum scaling factor
   const double maxScaling = 500;

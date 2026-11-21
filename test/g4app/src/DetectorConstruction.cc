@@ -18,11 +18,11 @@
 #include "TestHelpers/MagFieldPlugin.h"
 
 DetectorConstruction::DetectorConstruction()
-    : G4VUserDetectorConstruction()
+     
 {
 }
 
-DetectorConstruction::~DetectorConstruction() {}
+DetectorConstruction::~DetectorConstruction() = default;
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
@@ -38,7 +38,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* world_log =
       new G4LogicalVolume(solidWorld, worldMat, "World");
   G4VPhysicalVolume* world_phys = new G4PVPlacement(
-      0, G4ThreeVector(), world_log, "World", 0, false, 999, true);
+      nullptr, G4ThreeVector(), world_log, "World", nullptr, false, 999, true);
 
   // Define the fast simulation trigger region
   // Particles that reach this region will be processed by the fast simulation

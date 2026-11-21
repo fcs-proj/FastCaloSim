@@ -36,7 +36,7 @@ public:
   H8FieldSvc(const std::string& name /*, ISvcLocator* pSvcLocator*/);
 
   /** Destructor */
-  virtual ~H8FieldSvc();
+  ~H8FieldSvc() override;
 
   /** Athena algorithm's interface methods */
   bool initialize();
@@ -46,19 +46,19 @@ public:
   /** get B field value at given position */
   /** xyz[3] is in mm, bxyz[3] is in kT */
   /** if deriv[9] is given, field derivatives are returned in kT/mm */
-  virtual void getField(const double* xyz,
-                        double* bxyz,
-                        double* deriv = nullptr) const;
+  void getField(const double* xyz,
+                double* bxyz,
+                double* deriv = nullptr) const override;
   /** getFieldZR simply calls getField **/
-  virtual void getFieldZR(const double* xyz,
-                          double* bxyz,
-                          double* deriv = nullptr) const;
+  void getFieldZR(const double* xyz,
+                  double* bxyz,
+                  double* deriv = nullptr) const override;
 
 private:
   // initialize map
   bool initializeMap();
   // read the field map
-  bool readMap(const std::string mapFile);
+  bool readMap(std::string mapFile);
 
   /** Data members **/
 
@@ -69,13 +69,13 @@ private:
   std::vector<BFieldH8Grid> m_grid;
 
   // first magnet offset
-  double m_dx1;
-  double m_dy1;
-  double m_dz1;
+  double m_dx1 {0};
+  double m_dy1 {0};
+  double m_dz1 {0};
   // second magnet offset
-  double m_dx2;
-  double m_dy2;
-  double m_dz2;
+  double m_dx2 {43830};
+  double m_dy2 {0};
+  double m_dz2 {0};
 };
 }  // namespace MagField
 

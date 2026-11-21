@@ -43,7 +43,7 @@ public:
   // build LUT
   void buildLUT();
   // test if a point is inside this zone
-  inline bool inside(double z, double r) const
+  bool inside(double z, double r) const
   {
     return (z >= zmin() && z <= zmax() && r >= rmin() && r <= rmax());
   }
@@ -99,13 +99,15 @@ inline void BFieldMeshZR::getCache(double z,
   // z
   const std::vector<double>& mz(m_mesh[0]);
   std::size_t iz = lutLookup(0, z - zmin());  // tentative mesh index from LUT
-  if (z > mz[iz + 1])
+  if (z > mz[iz + 1]) {
     iz++;
+  }
   // r
   const std::vector<double>& mr(m_mesh[1]);
   std::size_t ir = lutLookup(1, r - rmin());  // tentative mesh index from LUT
-  if (r > mr[ir + 1])
+  if (r > mr[ir + 1]) {
     ir++;
+  }
   // store the bin edges
   cache.setRange(mz[iz], mz[iz + 1], mr[ir], mr[ir + 1]);
   // store the B field at the 8 corners
@@ -115,7 +117,6 @@ inline void BFieldMeshZR::getCache(double z,
   cache.setField(1, m_field[im0 + 1]);
   cache.setField(2, m_field[im0 + zoff]);
   cache.setField(3, m_field[im0 + zoff + 1]);
-  return;
 }
 
 #endif

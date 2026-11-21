@@ -33,7 +33,9 @@ void BFieldMeshZR::buildLUT()
     for (int i = 0; i < n; i++) {  // LUT index
       if (i * q + m_mesh[j].front()
           > m_mesh[j][static_cast<std::size_t>(m + 1)])
+      {
         m++;
+      }
       m_LUT[j].push_back(m);
     }
   }

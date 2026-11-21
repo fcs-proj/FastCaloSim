@@ -96,15 +96,16 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
 auto TFCSLateralShapeParametrizationHitNumberFromE::operator==(
     const TFCSParametrizationBase& ref) const -> bool
 {
-  if (TFCSParametrizationBase::compare(ref))
+  if (TFCSParametrizationBase::compare(ref)) {
     return true;
-  if (!TFCSParametrization::compare(ref))
+  }
+  if (!TFCSParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrization::compare(ref))
+  }
+  if (!TFCSLateralShapeParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrizationHitNumberFromE::compare(ref))
-    return false;
-  return true;
+  }
+  return TFCSLateralShapeParametrizationHitNumberFromE::compare(ref);
 }
 
 auto TFCSLateralShapeParametrizationHitNumberFromE::compare(
@@ -140,8 +141,9 @@ void TFCSLateralShapeParametrizationHitNumberFromE::Print(
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  sigma^2=[" << m_stochastic
                           << "/sqrt(E/GeV)]^2 + [" << m_constant << " + "
                           << m_stochastic_hadron << "/sqrt(E/GeV)]^2");
+  }
 }

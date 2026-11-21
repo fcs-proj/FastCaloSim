@@ -13,8 +13,9 @@ class TFCS1DFunctionInt32Histogram : public TFCS1DFunction
 public:
   TFCS1DFunctionInt32Histogram(const TH1* hist = nullptr)
   {
-    if (hist)
+    if (hist) {
       Initialize(hist);
+    }
   }
   ~TFCS1DFunctionInt32Histogram() override = default;
 

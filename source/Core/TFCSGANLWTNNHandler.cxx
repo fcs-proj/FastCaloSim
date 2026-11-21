@@ -33,7 +33,7 @@ TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler& copy_from)
 void TFCSGANLWTNNHandler::setupNet()
 {
   // Backcompatability, previous versions stored this in m_input
-  if (m_json.length() == 0 && m_input != nullptr) {
+  if (m_json.empty() && m_input != nullptr) {
     m_json = *m_input;
     delete m_input;
     m_input = nullptr;
@@ -74,7 +74,7 @@ auto TFCSGANLWTNNHandler::compute(
 {
   FCS_MSG_DEBUG("Running computation on LWTNN graph network");
   NetworkInputs local_copy = inputs;
-  if (inputs.find("Noise") != inputs.end()) {
+  if (inputs.contains("Noise")) {
     // Graphs from EnergyAndHitsGANV2 have the local_copy encoded as Noise =
     // node_0 and mycond = node_1
     auto noiseNode = local_copy.extract("Noise");

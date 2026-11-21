@@ -9,8 +9,7 @@
 //=============================================
 
 TFCSTruthState::TFCSTruthState()
-    : TLorentzVector()
-    , m_pdgid(0)
+    : m_pdgid(0)
     , m_vertex(0, 0, 0, 0)
 {
 }

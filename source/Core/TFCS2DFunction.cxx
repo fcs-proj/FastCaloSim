@@ -64,12 +64,16 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
 
   const auto integral_at = [&integral_vec](int bin)
   { return integral_vec[static_cast<std::size_t>(bin)]; };
-  for (first = 0; first < nbins; first++)
-    if (!FastCaloSim::exactly_equal(integral_at(first), 0.0))
+  for (first = 0; first < nbins; first++) {
+    if (!FastCaloSim::exactly_equal(integral_at(first), 0.0)) {
       break;
-  for (last = nbins - 1; last > 0; last--)
-    if (!FastCaloSim::exactly_equal(integral_at(last), integral))
+    }
+  }
+  for (last = nbins - 1; last > 0; last--) {
+    if (!FastCaloSim::exactly_equal(integral_at(last), integral)) {
       break;
+    }
+  }
   last++;
 
   if (integral <= 0) {
@@ -92,8 +96,9 @@ auto create_random_TH2(int nbinsx = 64, int nbinsy = 64) -> TH2*
                           iy,
                           (0.5 + gRandom->Rndm()) * (nbinsx + ix)
                               * (nbinsy * nbinsy / 2 + iy * iy));
-      if (gRandom->Rndm() < 0.1)
+      if (gRandom->Rndm() < 0.1) {
         hist->SetBinContent(ix, iy, 0);
+      }
       hist->SetBinError(ix, iy, 0);
     }
   }

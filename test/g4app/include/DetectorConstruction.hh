@@ -19,10 +19,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
   DetectorConstruction();
-  virtual ~DetectorConstruction() override;
+  ~DetectorConstruction() override;
 
-  virtual G4VPhysicalVolume* Construct() override;
-  virtual void ConstructSDandField() override;
+  G4VPhysicalVolume* Construct() override;
+  void ConstructSDandField() override;
 
   // Interface to access the name of the fast simulation trigger region
   auto getFastSimTriggerRegionName() const -> std::string

@@ -19,7 +19,6 @@
 TFCSFlatLateralShapeParametrization::TFCSFlatLateralShapeParametrization(
     const char* name, const char* title)
     : TFCSLateralShapeParametrizationHitBase(name, title)
-    , m_nhits(0)
     , m_scale(1)
 {
 }
@@ -77,7 +76,8 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  double alpha, r;
+  double alpha;
+  double r;
 
   alpha =
       2 * std::numbers::pi * CLHEP::RandFlat::shoot(simulstate.randomEngine());

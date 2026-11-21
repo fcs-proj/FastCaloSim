@@ -16,7 +16,7 @@ public:
   AtlasField(MagField::IMagFieldSvc* m);
 
   // Implementation of G4 method to retrieve field value
-  void GetFieldValue(const double* point, double* field) const
+  void GetFieldValue(const double* point, double* field) const override
   {
     m_magFieldSvc_AtlasField->getField(point, field);
   }
@@ -31,7 +31,7 @@ AtlasField::AtlasField(MagField::IMagFieldSvc* mfield)
     : m_magFieldSvc_AtlasField(mfield)
 {
   std::cout << "New instance of AtlasField, setting m_magFieldSvc_AtlasField: "
-            << m_magFieldSvc_AtlasField << " to " << mfield << std::endl;
+            << m_magFieldSvc_AtlasField << " to " << mfield << '\n';
 }
 
 class ATLASMagneticFieldMapPlugin : public MagFieldPlugin
@@ -42,11 +42,11 @@ public:
   ATLASMagneticFieldMapPlugin();
 
   // Destructor
-  ~ATLASMagneticFieldMapPlugin();
+  ~ATLASMagneticFieldMapPlugin() override;
 
 protected:
   // Overriding virtual function
-  G4MagneticField* getField();
+  G4MagneticField* getField() override;
 
 private:
   MagField::IMagFieldSvc* m_magFieldSvc;
@@ -54,12 +54,12 @@ private:
 
 ATLASMagneticFieldMapPlugin::ATLASMagneticFieldMapPlugin()
 {
-  std::cout << "HELLO from Atlas Magnetic Field Plugin" << std::endl;
+  std::cout << "HELLO from Atlas Magnetic Field Plugin" << '\n';
 }
 
 ATLASMagneticFieldMapPlugin::~ATLASMagneticFieldMapPlugin()
 {
-  std::cout << "GOODBYE from Atlas Magnetic Field Plugin" << std::endl;
+  std::cout << "GOODBYE from Atlas Magnetic Field Plugin" << '\n';
 }
 
 G4MagneticField* ATLASMagneticFieldMapPlugin::getField()
@@ -73,7 +73,7 @@ G4MagneticField* ATLASMagneticFieldMapPlugin::getField()
   m_magFieldSvc = atlasFieldSvs;
 
   std::cout << "AtlasFieldSvc::makeField with m_magFieldSvc " << m_magFieldSvc
-            << std::endl;
+            << '\n';
   return new AtlasField(&*m_magFieldSvc);
 }
 

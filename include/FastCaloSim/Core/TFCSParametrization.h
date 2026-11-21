@@ -13,7 +13,7 @@ public:
 
   auto is_match_pdgid(int id) const -> bool override
   {
-    return TestBit(kMatchAllPDGID) || m_pdgid.find(id) != m_pdgid.end();
+    return TestBit(kMatchAllPDGID) || m_pdgid.contains(id);
   }
   auto is_match_Ekin(float Ekin) const -> bool override
   {
@@ -69,8 +69,10 @@ protected:
 
 private:
   std::set<int> m_pdgid;
-  double m_Ekin_nominal, m_Ekin_min, m_Ekin_max;
-  double m_eta_nominal, m_eta_min, m_eta_max;
+  double m_Ekin_nominal {init_Ekin_nominal}, m_Ekin_min {init_Ekin_min},
+      m_Ekin_max {init_Ekin_max};
+  double m_eta_nominal {init_eta_nominal}, m_eta_min {init_eta_min},
+      m_eta_max {init_eta_max};
 
   ClassDefOverride(TFCSParametrization, 1)  // TFCSParametrization
 };

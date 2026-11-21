@@ -81,13 +81,18 @@ void FCAL_ChannelMap::add_tube(const std::string& tileName,
   std::istringstream tileStream1(std::string(tileName, 1, 1));
   std::istringstream tileStream2(std::string(tileName, 3, 2));
   std::istringstream tileStream3(std::string(tileName, 6, 3));
-  int a1 = 0, a2 = 0, a3 = 0;
-  if (tileStream1)
+  int a1 = 0;
+  int a2 = 0;
+  int a3 = 0;
+  if (tileStream1) {
     tileStream1 >> a1;
-  if (tileStream2)
+  }
+  if (tileStream2) {
     tileStream2 >> a2;
-  if (tileStream3)
+  }
+  if (tileStream3) {
     tileStream3 >> a3;
+  }
 
   tileName_t tilename = static_cast<tileName_t>((a3 << 16) + a2);
 
@@ -118,13 +123,18 @@ void FCAL_ChannelMap::add_tube(const std::string& tileName,
   std::istringstream tileStream1(std::string(tileName, 1, 1));
   std::istringstream tileStream2(std::string(tileName, 3, 2));
   std::istringstream tileStream3(std::string(tileName, 6, 3));
-  int a1 = 0, a2 = 0, a3 = 0;
-  if (tileStream1)
+  int a1 = 0;
+  int a2 = 0;
+  int a3 = 0;
+  if (tileStream1) {
     tileStream1 >> a1;
-  if (tileStream2)
+  }
+  if (tileStream2) {
     tileStream2 >> a2;
-  if (tileStream3)
+  }
+  if (tileStream3) {
     tileStream3 >> a3;
+  }
 
   tileName_t tilename = static_cast<tileName_t>((a3 << 16) + a2);
 
@@ -238,8 +248,9 @@ bool FCAL_ChannelMap::getTileID(
     y = x_orig;
   }
 
-  if (m_invert_x)
+  if (m_invert_x) {
     x = -x;
+  }
 
   // x and y enter all computations below in double precision
   const auto xd = static_cast<double>(x);
@@ -248,10 +259,12 @@ bool FCAL_ChannelMap::getTileID(
   /* === Compute the tubeID */
   int ktx = static_cast<int>(xd / m_tubeDx[isam - 1]);
   int kty = static_cast<int>(yd / m_tubeDy[isam - 1]);
-  if (xd < 0.)
+  if (xd < 0.) {
     ktx--;
-  if (yd < 0.)
+  }
+  if (yd < 0.) {
     kty--;
+  }
 
   // S.M.: in case we lookup real positions inside the Tile (not only
   // integer grids for the tubes) half of the time we are outside a
@@ -299,19 +312,23 @@ bool FCAL_ChannelMap::getTileID(
       }
       double yn = 0.5 - xk / 3;
       if (fabs(yc) > fabs(yn)) {
-        if (yc > 0)
+        if (yc > 0) {
           iy++;
-        else
+        } else {
           iy--;
-      } else
+        }
+      } else {
         movex = true;
-    } else
+      }
+    } else {
       movex = true;
+    }
     if (movex) {
-      if (xd / m_tubeDx[isam - 1] - ktx > 0.5)
+      if (xd / m_tubeDx[isam - 1] - ktx > 0.5) {
         ix++;
-      else
+      } else {
         ix--;
+      }
     }
   }
 
@@ -361,9 +378,8 @@ float FCAL_ChannelMap::x(int isam, int eta, int phi) const
 
   if (m_invert_x) {
     return -x;
-  } else {
-    return x;
   }
+  return x;
 
   return x;
 }
@@ -452,18 +468,15 @@ void FCAL_ChannelMap::tileSize(
     int ntubes = static_cast<int>((it->second).ntubes());
     tileSize(sam, ntubes, dx, dy);
     return;
-  } else {
-    // can't find the tile, throw exception.
-    char l_str[200];
-    snprintf(
-        l_str,
-        sizeof(l_str),
-        "Error in FCAL_ChannelMap::tilesize, wrong tile,phi= %d ,eta=: %d ",
-        phi,
-        eta);
-    std::string errorMessage(l_str);
-    throw std::range_error(errorMessage.c_str());
-  }
+  }  // can't find the tile, throw exception.
+  char l_str[200];
+  snprintf(l_str,
+           sizeof(l_str),
+           "Error in FCAL_ChannelMap::tilesize, wrong tile,phi= %d ,eta=: %d ",
+           phi,
+           eta);
+  std::string errorMessage(l_str);
+  throw std::range_error(errorMessage.c_str());
 }
 
 // ********************** print_tubemap *************************************
@@ -471,13 +484,13 @@ void FCAL_ChannelMap::print_tubemap(int imap) const
 {
   FCAL_ChannelMap::tubemap_const_iterator it = m_tubeMap[imap - 1].begin();
 
-  std::cout << "First 10 elements of the New FCAL tube map : " << imap
-            << std::endl;
+  std::cout << "First 10 elements of the New FCAL tube map : " << imap << '\n';
   std::cout.precision(5);
-  for (int i = 0; i < 10; ++i, ++it)
+  for (int i = 0; i < 10; ++i, ++it) {
     std::cout << std::hex << it->first << "\t" << (it->second).get_tileName()
               << std::dec << "\t" << (it->second).x() << "\t"
-              << (it->second).y() << std::endl;
+              << (it->second).y() << '\n';
+  }
 }
 
 // ********************** tubemap_begin **************************************

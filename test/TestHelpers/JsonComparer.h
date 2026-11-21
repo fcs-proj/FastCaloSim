@@ -37,7 +37,8 @@ public:
   {
     m_print_count = 0, m_output_suppressed = false;
 
-    json json1, json2;
+    json json1;
+    json json2;
 
     if (!read_json(file1, json1) || !read_json(file2, json2)) {
       return false;

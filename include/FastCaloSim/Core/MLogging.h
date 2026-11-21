@@ -98,14 +98,16 @@ public:
   template<typename T>
   auto operator<<(const T& value) -> LineStream&
   {
-    if (m_text)
+    if (m_text) {
       *m_text << value;
+    }
     return *this;
   }
   auto operator<<(std::ostream& (*manipulator)(std::ostream&)) -> LineStream&
   {
-    if (m_text)
+    if (m_text) {
       *m_text << manipulator;
+    }
     return *this;
   }
   auto operator<<(End end) -> LineStream&

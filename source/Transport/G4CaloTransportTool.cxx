@@ -141,9 +141,11 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
                             inputParticleDef->GetPDGSpin());
   // Without a magnetic field there is no equation of motion to update
   if (G4EquationOfMotion* equation = m_propagator->GetCurrentEquationOfMotion())
+  {
     equation->SetChargeMomentumMass(chargeState,
                                     inputDynamicParticle->GetTotalMomentum(),
                                     inputDynamicParticle->GetMass());
+  }
 
   // The chord finder lives on the (thread-local) field manager, not on the
   // propagator. Clear its cached last step-size estimate so field propagation

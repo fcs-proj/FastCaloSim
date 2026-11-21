@@ -13,8 +13,9 @@ class TFCS2DFunctionHistogram : public TFCS2DFunction
 public:
   TFCS2DFunctionHistogram(TH2* hist = nullptr)
   {
-    if (hist)
+    if (hist) {
       Initialize(hist);
+    }
   }
   ~TFCS2DFunctionHistogram() override = default;
 

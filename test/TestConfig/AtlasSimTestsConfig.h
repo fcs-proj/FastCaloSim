@@ -108,43 +108,43 @@ public:
       "simulated_cell_energy.gif";
 
   // Path to the serialized transportation data
-  inline static auto transport_output_path() -> std::string
+  static auto transport_output_path() -> std::string
   {
     return output_dir + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the reference transportation data
-  inline static auto transport_output_ref_path() -> std::string
+  static auto transport_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the serialized simulation data
-  inline static auto sim_output_path() -> std::string
+  static auto sim_output_path() -> std::string
   {
     return output_dir + SIM_DATA_FILE_NAME;
   }
 
   // Path to the reference simulation data
-  inline static auto sim_output_ref_path() -> std::string
+  static auto sim_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + SIM_DATA_FILE_NAME;
   }
 
   // Path to the output plot of the simulation plot
-  inline static auto plot_output_sim_path() -> std::string
+  static auto plot_output_sim_path() -> std::string
   {
     return output_dir + SIM_PLOT_FILE_NAME;
   }
 
   // Path to the output simulation animation
-  inline static auto plot_output_sim_animation() -> std::string
+  static auto plot_output_sim_animation() -> std::string
   {
     return output_dir + SIM_GIF_FILE_NAME;
   }
 
   // String of the python command to plot simulation output
-  inline static auto py_sim_exec(std::string label) -> std::string
+  static auto py_sim_exec(std::string label) -> std::string
   {
     std::string command = "python3 " + PYTHON_SCRIPT + " --sim_input "
         + sim_output_path() + " --output_png " + plot_output_sim_path()
@@ -155,10 +155,7 @@ public:
   }
 
   // Method to set the output directory for the test
-  inline static void set_output_dir(const std::string& dir)
-  {
-    output_dir = dir;
-  }
+  static void set_output_dir(const std::string& dir) { output_dir = dir; }
 
 private:
   inline static std::string output_dir;
