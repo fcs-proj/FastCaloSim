@@ -71,13 +71,28 @@ class SimStateContainer
         // Get the cell
         const Cell cell = m_geo->get_cell(cell_id);
 
-        data.push_back({state_id,         cell.id(),        cell_energy,
-                        cell.layer(),     cell.eta(),       cell.phi(),
-                        cell.r(),         cell.x(),         cell.y(),
-                        cell.z(),         cell.deta(),      cell.dphi(),
-                        cell.dr(),        cell.dx(),        cell.dy(),
-                        cell.dz(),        cell.isBarrel(),  cell.isXYZ(),
-                        cell.isEtaPhiR(), cell.isEtaPhiZ(), cell.isRPhiZ()});
+        data.push_back({state_id,
+                        cell.id(),
+                        cell_energy,
+                        // The output column stays 32 bit
+                        static_cast<unsigned int>(cell.layer()),
+                        cell.eta(),
+                        cell.phi(),
+                        cell.r(),
+                        cell.x(),
+                        cell.y(),
+                        cell.z(),
+                        cell.deta(),
+                        cell.dphi(),
+                        cell.dr(),
+                        cell.dx(),
+                        cell.dy(),
+                        cell.dz(),
+                        cell.isBarrel(),
+                        cell.isXYZ(),
+                        cell.isEtaPhiR(),
+                        cell.isEtaPhiZ(),
+                        cell.isRPhiZ()});
 
         ++state_id;
       }

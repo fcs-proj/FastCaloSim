@@ -52,19 +52,21 @@ TEST_F(BasicSimTests, DoDummySimulation)
   // Set up a dummy extrapolation state
   TFCSExtrapolationState extrapol_state;
   extrapol_state.set_IDCaloBoundary_eta(truth_state.Eta());
-  for (int i = 0; i < 24; ++i) {
+  for (std::size_t i = 0; i < 24; ++i) {
+    // r and z increase by 10 mm per layer
+    const double offset = 10.0 * static_cast<double>(i);
     extrapol_state.set_eta(i, Cell::SubPos::ENT, truth_state.Eta());
     extrapol_state.set_eta(i, Cell::SubPos::EXT, truth_state.Eta());
     extrapol_state.set_eta(i, Cell::SubPos::MID, truth_state.Eta());
     extrapol_state.set_phi(i, Cell::SubPos::ENT, truth_state.Phi());
     extrapol_state.set_phi(i, Cell::SubPos::EXT, truth_state.Phi());
     extrapol_state.set_phi(i, Cell::SubPos::MID, truth_state.Phi());
-    extrapol_state.set_r(i, Cell::SubPos::ENT, 1500 + i * 10);
-    extrapol_state.set_r(i, Cell::SubPos::EXT, 1510 + i * 10);
-    extrapol_state.set_r(i, Cell::SubPos::MID, 1505 + i * 10);
-    extrapol_state.set_z(i, Cell::SubPos::ENT, 3500 + i * 10);
-    extrapol_state.set_z(i, Cell::SubPos::EXT, 3510 + i * 10);
-    extrapol_state.set_z(i, Cell::SubPos::MID, 3505 + i * 10);
+    extrapol_state.set_r(i, Cell::SubPos::ENT, 1500 + offset);
+    extrapol_state.set_r(i, Cell::SubPos::EXT, 1510 + offset);
+    extrapol_state.set_r(i, Cell::SubPos::MID, 1505 + offset);
+    extrapol_state.set_z(i, Cell::SubPos::ENT, 3500 + offset);
+    extrapol_state.set_z(i, Cell::SubPos::EXT, 3510 + offset);
+    extrapol_state.set_z(i, Cell::SubPos::MID, 3505 + offset);
   }
 
   // Perform the simulation call

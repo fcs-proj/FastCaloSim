@@ -16,9 +16,10 @@ public:
       return true;
     return bin == Ekin_bin();
   }
-  auto is_match_calosample(int calosample) const -> bool override
+  auto is_match_calosample(std::size_t calosample) const -> bool override
   {
-    return calosample == m_calosample;
+    return m_calosample >= 0
+        && static_cast<std::size_t>(m_calosample) == calosample;
   }
 
   auto is_match_all_Ekin_bin() const -> bool override
@@ -32,8 +33,13 @@ public:
   auto Ekin_bin() const -> int { return m_Ekin_bin; }
   void set_Ekin_bin(int bin);
 
-  auto calosample() const -> int { return m_calosample; }
-  void set_calosample(int cs);
+  /// The calorimeter layer; only valid if has_calosample()
+  auto calosample() const -> std::size_t
+  {
+    return static_cast<std::size_t>(m_calosample);
+  }
+  auto has_calosample() const -> bool { return m_calosample >= 0; }
+  void set_calosample(std::size_t cs);
 
   virtual void set_pdgid_Ekin_eta_Ekin_bin_calosample(
       const TFCSLateralShapeParametrization& ref);
@@ -45,6 +51,7 @@ protected:
 
 private:
   int m_Ekin_bin;
+  // Persistent as int, with -1 for no layer
   int m_calosample;
 
   ClassDefOverride(TFCSLateralShapeParametrization,

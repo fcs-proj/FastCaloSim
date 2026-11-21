@@ -32,7 +32,8 @@ public:
   auto set_geo(CaloGeo* geo) { m_geo = geo; }
 
   /// @brief Get the cell at a specific position
-  auto get_cell(unsigned int layer, const Position& pos) const -> const Cell&
+  auto get_cell(std::size_t layer, const Position& pos) const
+      -> const Cell& override
   {
     unsigned long long cell_id = this->get_fcal_cell_id(
         static_cast<int>(layer), pos.x(), pos.y(), pos.z());

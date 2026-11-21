@@ -150,7 +150,7 @@ TEST(RTreeTests, LargeLayerIds)
         : m_cell(eta_phi_cell(id, 0.0, 0.0, 1.0, 1.0))
     {
     }
-    auto get_cell(unsigned int /*layer*/, const Position& /*pos*/) const
+    auto get_cell(std::size_t /*layer*/, const Position& /*pos*/) const
         -> const Cell& override
     {
       return m_cell;
@@ -161,7 +161,7 @@ TEST(RTreeTests, LargeLayerIds)
   };
 
   CaloGeo geo;
-  const unsigned int max_layer = std::numeric_limits<unsigned int>::max();
+  const std::size_t max_layer = std::numeric_limits<std::size_t>::max();
   geo.set_alt_geo_handler(7, std::make_shared<FixedCellGeo>(1));
   geo.set_alt_geo_handler(100000000, std::make_shared<FixedCellGeo>(2));
   geo.set_alt_geo_handler(max_layer, std::make_shared<FixedCellGeo>(3));
@@ -221,10 +221,10 @@ protected:
   }
 
   // The rectangles of all cells of a layer
-  static auto cell_rects(unsigned int layer) -> std::vector<Rect>
+  static auto cell_rects(std::size_t layer) -> std::vector<Rect>
   {
     std::vector<Rect> rects;
-    for (unsigned int i = 0; i < geo->n_cells(layer); ++i) {
+    for (std::size_t i = 0; i < geo->n_cells(layer); ++i) {
       const Cell cell = geo->get_cell_at_idx(layer, i);
       const auto boxes = geo->is_xyz(layer)
           ? std::vector {RTreeHelpers::build_xy_box(
@@ -284,7 +284,7 @@ TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
   std::normal_distribution<double> gauss(0., 1.);
   const double inf = std::numeric_limits<double>::infinity();
 
-  for (unsigned int layer = 0; layer < geo->n_layers(); ++layer) {
+  for (std::size_t layer = 0; layer < geo->n_layers(); ++layer) {
     const auto rects = cell_rects(layer);
 
     // Positions around 300 random cells: scattered inside and around the

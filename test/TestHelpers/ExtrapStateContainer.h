@@ -49,10 +49,11 @@ class ExtrapStateContainer
           {"EXT", Cell::SubPos::EXT}};
 
       // Serialize each layer for each subposition
-      for (int layer = 0; layer <= 23; ++layer) {
+      for (std::size_t layer = 0; layer <= 23; ++layer) {
         for (const auto& [subpos_name, subpos] : subpositions) {
           data.push_back({state_id,
-                          layer,
+                          // The output column stays int
+                          static_cast<int>(layer),
                           subpos_name,
                           state.eta(layer, subpos),
                           state.phi(layer, subpos),

@@ -26,11 +26,12 @@
 
 namespace
 {
-auto layer_hash(unsigned int layer) -> std::uint32_t
+// The layer numbers are small, so they are valid AuxInfo keys
+auto layer_hash(std::size_t layer) -> std::uint32_t
 {
   return static_cast<std::uint32_t>(layer);
 }
-auto layer_hash_geo(unsigned int layer) -> std::uint32_t
+auto layer_hash_geo(std::size_t layer) -> std::uint32_t
 {
   return static_cast<std::uint32_t>(layer) | 0x80000000u;
 }
@@ -55,7 +56,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   // where hist is the 1D histogram from which a CDF was calculated
 
   inputfile->cd(folder.c_str());
-  int cs = calosample();
+  std::size_t cs = calosample();
   int bin = 1;
 
   TH2* temp = dynamic_cast<TH2*>(inputfile->Get(
@@ -190,7 +191,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
 
   int Ebin = simulstate.Ebin();
 
-  for (unsigned int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+  for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
     if (simulstate.hasAuxInfo(layer_hash(ilayer))) {
       weightvec = static_cast<weight_t*>(
           simulstate.getAuxInfo<void*>(layer_hash(ilayer)));
@@ -263,7 +264,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   voxel_temp = static_cast<TH2*>(m_voxel_template[0]->Clone());
 
   // For now simulating only the layer calosample()
-  const auto cs = static_cast<unsigned int>(calosample());
+  const std::size_t cs = calosample();
   simulstate.setAuxInfo<void*>(layer_hash(cs), weightvec);
   simulstate.setAuxInfo<void*>(layer_hash_geo(cs), voxel_temp);
 
@@ -287,7 +288,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  const auto cs = static_cast<unsigned int>(calosample());
+  const std::size_t cs = calosample();
   weight_t* weightvec = nullptr;
   if (simulstate.hasAuxInfo(layer_hash(cs)))
     weightvec =

@@ -150,7 +150,7 @@ auto TFCSLateralShapeParametrizationHitChain::get_E_hit(
   // called once per event
   simulstate.setAuxInfo<int>("FCSHitChainNHits"_FCShash, nhits);
 
-  const int sample = calosample();
+  const std::size_t sample = calosample();
   if (sample < 0)
     return 0;
   if (nhits <= 0)
@@ -240,7 +240,7 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
     return FCSFatal;
   }
 
-  int cs = calosample();
+  std::size_t cs = calosample();
   // Initialize hit energy only now, as init loop above might change the layer
   // energy
   const double Elayer = simulstate.E(cs);

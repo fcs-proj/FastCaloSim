@@ -41,8 +41,8 @@ TFCSBinnedShower::TFCSBinnedShower(const char* name, const char* title)
 TFCSBinnedShower::~TFCSBinnedShower() = default;
 
 void TFCSBinnedShower::set_layer_energy(
-    long unsigned int event_index,
-    long unsigned int layer_index,
+    std::size_t event_index,
+    std::size_t layer_index,
     const std::vector<unsigned int>& bin_index_vector,
     const std::vector<float>& E_vector)
 {
@@ -62,7 +62,7 @@ void TFCSBinnedShower::set_layer_energy(
   layer.E_vector = E_vector;
 }
 
-void TFCSBinnedShower::set_bin_boundaries(long unsigned int layer_index,
+void TFCSBinnedShower::set_bin_boundaries(std::size_t layer_index,
                                           const std::vector<float>& R_lower,
                                           const std::vector<float>& R_size,
                                           const std::vector<float>& alpha_lower,
@@ -78,8 +78,8 @@ void TFCSBinnedShower::set_bin_boundaries(long unsigned int layer_index,
 }
 
 void TFCSBinnedShower::set_shower_center_information(
-    long unsigned int event_index,
-    long unsigned int reference_layer_index,
+    std::size_t event_index,
+    std::size_t reference_layer_index,
     double eta_center,
     double phi_center)
 {
@@ -89,9 +89,7 @@ void TFCSBinnedShower::set_shower_center_information(
   Position pos {};
   pos.m_eta = eta_center;
   pos.m_phi = phi_center;
-  const double phi_cell =
-      m_geo->get_cell(static_cast<unsigned int>(reference_layer_index), pos)
-          .phi();
+  const double phi_cell = m_geo->get_cell(reference_layer_index, pos).phi();
   double phi_within_cell = std::fmod(phi_center - phi_cell, phi_cell_size);
   if (phi_within_cell < 0) {
     phi_within_cell += phi_cell_size;
@@ -112,9 +110,9 @@ void TFCSBinnedShower::set_shower_center_information(
 auto TFCSBinnedShower::find_best_match(double eta_center,
                                        double phi_center,
                                        double e_init,
-                                       long unsigned int reference_layer_index,
+                                       std::size_t reference_layer_index,
                                        bool phi_mod_matching) const
-    -> long unsigned int
+    -> std::size_t
 {
   double phi_cell_size = 0;
   double phi_within_cell = 0;
@@ -123,8 +121,7 @@ auto TFCSBinnedShower::find_best_match(double eta_center,
     Position pos {};
     pos.m_eta = eta_center;
     pos.m_phi = phi_center;
-    const auto& cell =
-        m_geo->get_cell(static_cast<unsigned int>(reference_layer_index), pos);
+    const auto& cell = m_geo->get_cell(reference_layer_index, pos);
     phi_cell_size = TFCSPhiModulationCorrection::get_phi_cell_size(
         reference_layer_index, eta_center);
 
@@ -138,9 +135,9 @@ auto TFCSBinnedShower::find_best_match(double eta_center,
 
   // Find the event with the closest eta_center and phi_mod (L2 distance)
   double best_distance = std::numeric_limits<double>::max();
-  long unsigned int best_match = m_eventlibrary.size() + 1;
+  std::size_t best_match = m_eventlibrary.size() + 1;
 
-  for (long unsigned int event_index = 0; event_index < m_eventlibrary.size();
+  for (std::size_t event_index = 0; event_index < m_eventlibrary.size();
        ++event_index)
   {
     // Absolute eta difference. Normalized by the (usual) eta range of 0.05...
@@ -184,7 +181,7 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
                                  double eta_center,
                                  double phi_center,
                                  double e_init,
-                                 long unsigned int reference_layer_index) const
+                                 std::size_t reference_layer_index) const
 {
   if (m_eventlibrary.empty()) {
     FCS_MSG_ERROR(
@@ -198,17 +195,17 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
   // Uniformly distributed index into the event library
   const auto random_event_index = [&]
   {
-    return static_cast<long unsigned int>(std::floor(
+    return static_cast<std::size_t>(std::floor(
         CLHEP::RandFlat::shoot(simulstate.randomEngine(),
                                0,
                                static_cast<double>(m_eventlibrary.size()))));
   };
 
-  long unsigned int event_index;
+  std::size_t event_index;
   if (simulstate.hasAuxInfo("EventNr"_FCShash) && m_use_event_matching) {
     int requested = simulstate.getAuxInfo<int>("EventNr"_FCShash);
     if (requested < 0
-        || static_cast<long unsigned int>(requested) >= m_eventlibrary.size())
+        || static_cast<std::size_t>(requested) >= m_eventlibrary.size())
     {
       FCS_MSG_WARNING("EventNr "
                       << requested
@@ -216,7 +213,7 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
                       << m_eventlibrary.size() << " — falling back to random");
       event_index = random_event_index();
     } else {
-      event_index = static_cast<long unsigned int>(requested);
+      event_index = static_cast<std::size_t>(requested);
     }
   } else if (m_use_event_cherry_picking || m_use_eta_matching) {
     // dphi/deta
@@ -258,23 +255,22 @@ void TFCSBinnedShower::compute_n_hits_and_elayer(
   const auto e_init = simulstate.getAuxInfo<double>("BSEinit"_FCShash);
 
   // Loop over all layers
-  long unsigned int n_layers = event->event_data.size();
-  std::vector<std::vector<long unsigned int>> hits_per_layer;
+  std::size_t n_layers = event->event_data.size();
+  std::vector<std::vector<std::size_t>> hits_per_layer;
   std::vector<double> elayer;
   hits_per_layer.resize(n_layers);
   elayer.resize(n_layers, 0.0);
 
-  for (long unsigned int layer_index = 0; layer_index < n_layers; ++layer_index)
-  {
+  for (std::size_t layer_index = 0; layer_index < n_layers; ++layer_index) {
     layer_t& layer = event->event_data.at(layer_index);
 
     // Loop over all voxels in the layer
-    long unsigned int n_hits = 0;
+    std::size_t n_hits = 0;
     for (float e_voxel : layer.E_vector) {
-      long unsigned int hits_per_bin;
+      std::size_t hits_per_bin;
       if (e_voxel > std::numeric_limits<float>::epsilon()) {
         const double e_hits = static_cast<double>(e_voxel) * e_init;
-        hits_per_bin = static_cast<long unsigned int>(std::min(
+        hits_per_bin = static_cast<std::size_t>(std::min(
             std::max(static_cast<int>(
                          e_hits / static_cast<double>(m_default_hit_energy)),
                      1),
@@ -289,9 +285,8 @@ void TFCSBinnedShower::compute_n_hits_and_elayer(
     }
   }
   // Store the hits per layer vector
-  std::vector<std::vector<long unsigned int>>* hits_per_layer_ptr =
-      new std::vector<std::vector<long unsigned int>>(
-          std::move(hits_per_layer));
+  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+      new std::vector<std::vector<std::size_t>>(std::move(hits_per_layer));
   simulstate.setAuxInfo<void*>("BSNHits"_FCShash, hits_per_layer_ptr);
 
   // Store the energy per layer
@@ -300,11 +295,10 @@ void TFCSBinnedShower::compute_n_hits_and_elayer(
 }
 
 auto TFCSBinnedShower::get_n_hits(TFCSSimulationState& simulstate,
-                                  long unsigned int layer_index) const
-    -> long unsigned int
+                                  std::size_t layer_index) const -> std::size_t
 {
-  std::vector<std::vector<long unsigned int>>* hits_per_layer_ptr =
-      static_cast<std::vector<std::vector<long unsigned int>>*>(
+  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+      static_cast<std::vector<std::vector<std::size_t>>*>(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
 
   if (!hits_per_layer_ptr) {
@@ -316,8 +310,7 @@ auto TFCSBinnedShower::get_n_hits(TFCSSimulationState& simulstate,
 }
 
 auto TFCSBinnedShower::get_layer_energy(TFCSSimulationState& simulstate,
-                                        long unsigned int layer_index) const
-    -> double
+                                        std::size_t layer_index) const -> double
 {
   auto* elayer_ptr = static_cast<std::vector<double>*>(
       simulstate.getAuxInfo<void*>("BSELayer"_FCShash));
@@ -332,12 +325,12 @@ auto TFCSBinnedShower::get_layer_energy(TFCSSimulationState& simulstate,
 }
 
 auto TFCSBinnedShower::get_energy_index(TFCSSimulationState& simulstate,
-                                        long unsigned int layer_index,
-                                        long unsigned int hit_index) const
-    -> long unsigned int
+                                        std::size_t layer_index,
+                                        std::size_t hit_index) const
+    -> std::size_t
 {
-  std::vector<std::vector<long unsigned int>>* hits_per_layer_ptr =
-      static_cast<std::vector<std::vector<long unsigned int>>*>(
+  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+      static_cast<std::vector<std::vector<std::size_t>>*>(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
   if (!hits_per_layer_ptr) {
     FCS_MSG_ERROR("Invalid hits per layer information");
@@ -351,11 +344,10 @@ auto TFCSBinnedShower::get_energy_index(TFCSSimulationState& simulstate,
   }
 
   // Find the hit index in the hit vector for the given layer
-  const std::vector<long unsigned int>& hits =
-      hits_per_layer_ptr->at(layer_index);
+  const std::vector<std::size_t>& hits = hits_per_layer_ptr->at(layer_index);
   auto it = std::upper_bound(hits.begin(), hits.end(), hit_index);
   const auto energy_index =
-      static_cast<long unsigned int>(std::distance(hits.begin(), it));
+      static_cast<std::size_t>(std::distance(hits.begin(), it));
 
   if (energy_index >= hits.size()) {
     FCS_MSG_ERROR("Energy index out of bounds: " << energy_index
@@ -372,7 +364,7 @@ auto TFCSBinnedShower::get_energy_index(TFCSSimulationState& simulstate,
 }
 
 auto TFCSBinnedShower::get_coordinates(TFCSSimulationState& simulstate,
-                                       long unsigned int layer_index,
+                                       std::size_t layer_index,
                                        unsigned int bin_index) const
     -> std::tuple<double, double>
 {
@@ -406,7 +398,7 @@ void TFCSBinnedShower::upscale(TFCSSimulationState& simulstate,
                                double& R_max,
                                double& alpha_min,
                                double& alpha_max,
-                               long unsigned int layer_index,
+                               std::size_t layer_index,
                                unsigned int bin_index) const
 {
   double p = CLHEP::RandFlat::shoot(simulstate.randomEngine(), 0, 1);
@@ -527,8 +519,8 @@ void TFCSBinnedShower::upscale(TFCSSimulationState& simulstate,
 
 auto TFCSBinnedShower::get_hit_position_and_energy(
     TFCSSimulationState& simulstate,
-    long unsigned int layer_index,
-    long unsigned int hit_index) const -> std::tuple<double, double, double>
+    std::size_t layer_index,
+    std::size_t hit_index) const -> std::tuple<double, double, double>
 {
   event_t* event = static_cast<event_t*>(
       simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
@@ -545,14 +537,14 @@ auto TFCSBinnedShower::get_hit_position_and_energy(
     return std::make_tuple(0.0, 0.0, 0.0);
   }
 
-  long unsigned int energy_index = get_energy_index(
+  std::size_t energy_index = get_energy_index(
       simulstate, layer_index, hit_index);  // Get the bin index for the hit
 
-  std::vector<std::vector<long unsigned int>>* hits_per_layer_ptr =
-      static_cast<std::vector<std::vector<long unsigned int>>*>(
+  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+      static_cast<std::vector<std::vector<std::size_t>>*>(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
 
-  long unsigned int hits_per_bin;
+  std::size_t hits_per_bin;
   if (energy_index == 0) {
     hits_per_bin = hits_per_layer_ptr->at(layer_index).at(energy_index);
   } else {
@@ -584,8 +576,7 @@ void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
 
   void* n_hits_ptr = simulstate.getAuxInfo<void*>("BSNHits"_FCShash);
   if (n_hits_ptr) {
-    delete static_cast<std::vector<std::vector<long unsigned int>>*>(
-        n_hits_ptr);
+    delete static_cast<std::vector<std::vector<std::size_t>>*>(n_hits_ptr);
     simulstate.setAuxInfo<void*>("BSNHits"_FCShash, nullptr);
   }
 
@@ -596,10 +587,9 @@ void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
   }
 }
 
-void TFCSBinnedShower::load_event_library(
-    const std::string& filename,
-    std::vector<long unsigned int>& layers,
-    bool only_load_meta_data)
+void TFCSBinnedShower::load_event_library(const std::string& filename,
+                                          std::vector<std::size_t>& layers,
+                                          bool only_load_meta_data)
 {
   if (!only_load_meta_data) {
     m_eventlibrary.clear();
@@ -612,7 +602,7 @@ void TFCSBinnedShower::load_event_library(
   }
 
   // layer dependent variables
-  for (long unsigned int layer_index : layers) {
+  for (std::size_t layer_index : layers) {
     FCS_MSG_INFO("Loading layer " << layer_index << " from file: " << filename);
 
     // Load the bin boundaries for this layer
@@ -670,7 +660,7 @@ auto TFCSBinnedShower::load_hdf5_dataset(const std::string& filename,
 }
 
 void TFCSBinnedShower::load_layer_energy(const std::string& filename,
-                                         long unsigned int layer_index)
+                                         std::size_t layer_index)
 {
   std::string datasetname = "energy_layer_" + std::to_string(layer_index);
 
@@ -689,7 +679,7 @@ void TFCSBinnedShower::load_layer_energy(const std::string& filename,
   std::vector<float> E_vector;
 
   for (size_t i = 0; i < data.size(); ++i) {
-    long unsigned int event_index = i / dims.at(1);
+    std::size_t event_index = i / dims.at(1);
     const hsize_t bin_index = i % dims.at(1);
 
     if (bin_index == 0) {
@@ -712,7 +702,7 @@ void TFCSBinnedShower::load_layer_energy(const std::string& filename,
 }
 
 void TFCSBinnedShower::load_bin_boundaries(const std::string& filename,
-                                           long unsigned int layer_index)
+                                           std::size_t layer_index)
 {
   // Assert that the layer index is valid
   if (layer_index >= m_coordinates.size()) {
@@ -724,7 +714,7 @@ void TFCSBinnedShower::load_bin_boundaries(const std::string& filename,
                                            "binstart_alpha_layer_",
                                            "binsize_alpha_layer_"};
 
-  for (long unsigned int i = 0; i < datasetnames.size(); i++) {
+  for (std::size_t i = 0; i < datasetnames.size(); i++) {
     std::string datasetname = datasetnames.at(i) + std::to_string(layer_index);
     std::vector<float> data;
     std::vector<hsize_t> dims;
@@ -767,7 +757,7 @@ void TFCSBinnedShower::load_shower_center_information(
   std::vector<std::string> datasetnames = {
       "phi_mod", "center_eta", "incident_energy"};
 
-  for (long unsigned int i = 0; i < datasetnames.size(); i++) {
+  for (std::size_t i = 0; i < datasetnames.size(); i++) {
     std::string datasetname = datasetnames.at(i);
     std::vector<float> data;
     std::vector<hsize_t> dims;
@@ -788,8 +778,7 @@ void TFCSBinnedShower::load_shower_center_information(
       return;
     }
 
-    for (long unsigned int event_index = 0; event_index < data.size();
-         ++event_index)
+    for (std::size_t event_index = 0; event_index < data.size(); ++event_index)
     {
       switch (i) {
         case 0:
@@ -815,8 +804,8 @@ void TFCSBinnedShower::Streamer(TBuffer& R__b)
 
     // Load the event library from file
     if (!m_hdf5_file.empty()) {
-      std::vector<long unsigned int> layers;
-      for (long unsigned int i = 0; i < m_geo->n_layers(); ++i) {
+      std::vector<std::size_t> layers;
+      for (std::size_t i = 0; i < m_geo->n_layers(); ++i) {
         layers.push_back(i);
       }
       FCS_MSG_INFO("Loading event library from " << m_hdf5_file);

@@ -30,7 +30,7 @@ public:
   {
     return true;
   }
-  auto is_match_calosample(int /*calosample*/) const -> bool override
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override
   {
     return true;
   }

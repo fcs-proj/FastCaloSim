@@ -74,7 +74,7 @@ public:
   {
     return false;
   }
-  virtual auto is_match_calosample(int /*calosample*/) const -> bool
+  virtual auto is_match_calosample(std::size_t /*calosample*/) const -> bool
   {
     return false;
   }

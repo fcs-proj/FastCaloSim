@@ -44,7 +44,7 @@ auto TFCSBinnedShowerBase::simulate(
   double eta_center, phi_center;
   // NOTE: This is ATLAS specific
   // layer 2 is EMB2
-  int reference_layer = 2;
+  std::size_t reference_layer = 2;
   eta_center = extrapol->eta(reference_layer, Cell::SubPos::MID);
   if (eta_center > 1.4) {  // Endcap becomes more relevant
     // NOTE: This is ATLAS specific
@@ -67,17 +67,12 @@ auto TFCSBinnedShowerBase::simulate(
   // Reset the total energy
   simulstate.set_E(0);
 
-  get_event(simulstate,
-            eta_center,
-            phi_center,
-            Einit,
-            static_cast<long unsigned int>(reference_layer));
+  get_event(simulstate, eta_center, phi_center, Einit, reference_layer);
 
-  for (int layer_index = 0; layer_index < static_cast<int>(m_geo->n_layers());
+  for (std::size_t layer_index = 0; layer_index < m_geo->n_layers();
        ++layer_index)
   {
-    const double layer_energy = get_layer_energy(
-        simulstate, static_cast<long unsigned int>(layer_index));
+    const double layer_energy = get_layer_energy(simulstate, layer_index);
 
     // Reset and set the layer energy
     simulstate.set_E(layer_index, 0);
@@ -85,8 +80,7 @@ auto TFCSBinnedShowerBase::simulate(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer)
-    {
+    for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }
@@ -101,7 +95,7 @@ auto TFCSBinnedShowerBase::simulate_hit(
 {
   const int pdgId = truth->pdgid();
   const double charge = ParticleData::charge(pdgId);
-  const auto layer_index = static_cast<long unsigned int>(calosample());
+  const std::size_t layer_index = calosample();
 
   const double center_eta = hit.center_eta();
   const double center_phi = hit.center_phi();
@@ -114,7 +108,7 @@ auto TFCSBinnedShowerBase::simulate_hit(
   const double dist000 = FastCaloSim::dist000(center_r, center_z);
   const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  long unsigned int hit_index = hit.idx();
+  std::size_t hit_index = hit.idx();
 
   // Get necessary the hit information
   double r, alpha, E;

@@ -31,7 +31,7 @@ TFCSPhiModulationCorrection::~TFCSPhiModulationCorrection() = default;
 
 void TFCSPhiModulationCorrection::load_phi_modulation(
     const std::string& filename,
-    long unsigned int layer_index,
+    std::size_t layer_index,
     float eta_min,
     float eta_max,
     float energy_shift)
@@ -73,7 +73,7 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
   auto eta_it = std::upper_bound(m_min_eta.at(layer_index).begin(),
                                  m_min_eta.at(layer_index).end(),
                                  eta_min);
-  auto eta_index = static_cast<long unsigned int>(
+  auto eta_index = static_cast<std::size_t>(
       std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1);
   // Iterator to the element after eta_index
   const auto after_eta_index = [&eta_index](auto& vec)
@@ -152,8 +152,8 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
 
 // TODO: Use FCSReturnCode
 auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
-    double phi, double eta, long unsigned int layer_index) const
-    -> std::tuple<int, long unsigned int, long unsigned int>
+    double phi, double eta, std::size_t layer_index) const
+    -> std::tuple<int, std::size_t, std::size_t>
 {
   // The bin boundaries are stored in single precision
   const auto less = [](double value, float boundary)
@@ -165,7 +165,7 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
                                  m_min_eta.at(layer_index).end(),
                                  eta_abs,
                                  less);
-  const auto eta_index = static_cast<long unsigned int>(
+  const auto eta_index = static_cast<std::size_t>(
       std::distance(m_min_eta.at(layer_index).begin(), eta_it) - 1);
 
   if (eta_index >= m_min_eta.at(layer_index).size() - 1) {
@@ -202,8 +202,7 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
   Position pos {};
   pos.m_eta = eta;
   pos.m_phi = phi;
-  const auto& cell =
-      m_geo->get_cell(static_cast<unsigned int>(layer_index), pos);
+  const auto& cell = m_geo->get_cell(layer_index, pos);
 
   const double cell_phi = cell.phi();
 
@@ -227,8 +226,8 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
   // Find the phi bin of the hit
   auto phi_it =
       std::upper_bound(phi_mins.begin(), phi_mins.end(), phi_within_cell, less);
-  const auto phi_index = static_cast<long unsigned int>(
-      std::distance(phi_mins.begin(), phi_it) - 1);
+  const auto phi_index =
+      static_cast<std::size_t>(std::distance(phi_mins.begin(), phi_it) - 1);
 
   if (phi_index >= modulation.size()) {
     FCS_MSG_ERROR("Found bin "
@@ -252,12 +251,12 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
 auto TFCSPhiModulationCorrection::add_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> double
 {
-  return add_phi_modulation(hit, static_cast<long unsigned int>(calosample()));
+  return add_phi_modulation(hit, calosample());
 }
 
 auto TFCSPhiModulationCorrection::add_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
-    long unsigned int layer_index) const -> double
+    std::size_t layer_index) const -> double
 {
   if (layer_index >= m_min_eta.size()) {
     return hit.E();
@@ -283,7 +282,7 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
 }
 
 auto TFCSPhiModulationCorrection::add_phi_modulation(
-    double energy, double phi, double eta, long unsigned int layer_index) const
+    double energy, double phi, double eta, std::size_t layer_index) const
     -> double
 {
   if (layer_index >= m_min_eta.size()) {
@@ -298,8 +297,8 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
     return energy;
   }
 
-  long unsigned int eta_index;
-  long unsigned int phi_index;
+  std::size_t eta_index;
+  std::size_t phi_index;
   int error_code;
   std::tie(error_code, eta_index, phi_index) =
       get_eta_and_phi_index(phi, eta, layer_index);
@@ -324,13 +323,12 @@ auto TFCSPhiModulationCorrection::add_phi_modulation(
 auto TFCSPhiModulationCorrection::remove_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit) const -> double
 {
-  return remove_phi_modulation(hit,
-                               static_cast<long unsigned int>(calosample()));
+  return remove_phi_modulation(hit, calosample());
 }
 
 auto TFCSPhiModulationCorrection::remove_phi_modulation(
     TFCSLateralShapeParametrizationHitBase::Hit& hit,
-    long unsigned int layer_index) const -> double
+    std::size_t layer_index) const -> double
 {
   if (layer_index >= m_min_eta.size()) {
     return hit.E();
@@ -356,7 +354,7 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
 }
 
 auto TFCSPhiModulationCorrection::remove_phi_modulation(
-    double energy, double phi, double eta, long unsigned int layer_index) const
+    double energy, double phi, double eta, std::size_t layer_index) const
     -> double
 {
   if (layer_index >= m_min_eta.size()) {
@@ -371,8 +369,8 @@ auto TFCSPhiModulationCorrection::remove_phi_modulation(
     return energy;
   }
 
-  long unsigned int eta_index;
-  long unsigned int phi_index;
+  std::size_t eta_index;
+  std::size_t phi_index;
   int error_code;
   std::tie(error_code, eta_index, phi_index) =
       get_eta_and_phi_index(phi, eta, layer_index);

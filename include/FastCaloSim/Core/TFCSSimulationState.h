@@ -38,12 +38,12 @@ public:
   auto E() const -> double { return m_Etot; }
   // NOTE: layers without energy are not stored in the maps; as for the
   // original array-based implementation, such layers read as 0 energy.
-  auto E(int sample) const -> double
+  auto E(std::size_t sample) const -> double
   {
     auto it = m_E.find(sample);
     return it != m_E.end() ? it->second : 0.;
   }
-  auto Efrac(int sample) const -> double
+  auto Efrac(std::size_t sample) const -> double
   {
     auto it = m_Efrac.find(sample);
     return it != m_Efrac.end() ? it->second : 0.;
@@ -51,13 +51,13 @@ public:
   auto Ebin() const -> int { return m_Ebin; }
 
   void set_Ebin(int bin) { m_Ebin = bin; }
-  void set_E(int sample, double Esample) { m_E[sample] = Esample; }
-  void set_Efrac(int sample, double Efracsample)
+  void set_E(std::size_t sample, double Esample) { m_E[sample] = Esample; }
+  void set_Efrac(std::size_t sample, double Efracsample)
   {
     m_Efrac[sample] = Efracsample;
   }
   void set_E(double E) { m_Etot = E; }
-  void add_E(int sample, double Esample)
+  void add_E(std::size_t sample, double Esample)
   {
     m_E[sample] += Esample;
     m_Etot += Esample;
@@ -87,8 +87,8 @@ private:
   int m_Ebin;
   double m_Etot;
   // TO BE CLEANED UP! SHOULD ONLY STORE EITHER E OR EFRAC!!!
-  std::unordered_map<int, double> m_E;
-  std::unordered_map<int, double> m_Efrac;
+  std::unordered_map<std::size_t, double> m_E;
+  std::unordered_map<std::size_t, double> m_Efrac;
 
   cellmap m_cells;
 

@@ -37,7 +37,7 @@ auto TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
   const int pdgId = truth->pdgid();
   const double charge = ParticleData::charge(pdgId);
 
-  const int cs = calosample();
+  const std::size_t cs = calosample();
   const double center_phi = hit.center_phi();
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();

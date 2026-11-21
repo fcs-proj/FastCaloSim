@@ -33,7 +33,7 @@ auto TFCSLateralShapeTuning::initFromModelFile(
     -> FCSReturnCode
 {
   // get current calo layer
-  int layer = TFCSLateralShapeParametrization::calosample();
+  std::size_t layer = TFCSLateralShapeParametrization::calosample();
 
   // load file containing model parameters
   std::unique_ptr<TFile> modelParametersFile = std::unique_ptr<TFile>(
@@ -117,7 +117,7 @@ auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
   // retrieve truth kinetic energy for interpolation
   const double Ekin = truth->Ekin();
   // retrieve calo sample
-  int layer = TFCSLateralShapeParametrization::calosample();
+  std::size_t layer = TFCSLateralShapeParametrization::calosample();
 
   FCS_MSG_DEBUG("[TFCSLateralShapeTuning] Initializing with pdgId="
                 << pdgId << ", charge=" << charge << ", Ekin=" << Ekin

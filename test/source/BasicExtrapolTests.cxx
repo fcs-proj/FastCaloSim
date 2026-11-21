@@ -58,7 +58,8 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   ASSERT_NEAR(extrapol_state.IDCaloBoundary_r(), 1148, 1e-1);
 
   // Helper lambda to test layer values
-  auto test_layer = [&](int layer, double eta, double phi, double r, double z)
+  auto test_layer =
+      [&](std::size_t layer, double eta, double phi, double r, double z)
   {
     ASSERT_NEAR(extrapol_state.eta(layer, Cell::SubPos::MID), eta, 1e-1);
     ASSERT_NEAR(extrapol_state.phi(layer, Cell::SubPos::MID), phi, 1e-1);

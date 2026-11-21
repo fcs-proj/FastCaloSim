@@ -23,7 +23,7 @@ auto TFCSCenterPositionCalculation::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
-  const int cs = calosample();
+  const std::size_t cs = calosample();
 
   const auto weight = static_cast<double>(m_extrapWeight);
   double r = (1. - weight) * extrapol->r(cs, Cell::SubPos::ENT)

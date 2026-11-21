@@ -1,10 +1,12 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <format>
 #include <memory>
 #include <numbers>
+#include <utility>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCSPCAEnergyParametrization.h"
@@ -43,14 +45,12 @@ auto TFCSPCAEnergyParametrization::is_match_Ekin_bin(int Ekin_bin) const -> bool
   return false;
 }
 
-auto TFCSPCAEnergyParametrization::is_match_calosample(int calosample) const
-    -> bool
+auto TFCSPCAEnergyParametrization::is_match_calosample(
+    std::size_t calosample) const -> bool
 {
-  for (unsigned int i = 0; i < m_RelevantLayers.size(); i++) {
-    if (m_RelevantLayers[i] == calosample)
-      return true;
-  }
-  return false;
+  return std::ranges::any_of(m_RelevantLayers,
+                             [calosample](int layer)
+                             { return std::cmp_equal(layer, calosample); });
 }
 
 void TFCSPCAEnergyParametrization::Print(Option_t* option) const
@@ -138,7 +138,7 @@ auto TFCSPCAEnergyParametrization::simulate(
 
   if (pcabin == 0) {
     simulstate.set_E(0);
-    for (int s = 0; s < static_cast<int>(m_geo->n_layers()); s++) {
+    for (std::size_t s = 0; s < m_geo->n_layers(); ++s) {
       simulstate.set_E(s, 0.0);
       simulstate.set_Efrac(s, 0.0);
     }
@@ -221,10 +221,10 @@ auto TFCSPCAEnergyParametrization::simulate(
     simulstate.set_E(total_energy);
     FCS_MSG_DEBUG("set E to total_energy=" << total_energy);
 
-    for (int s = 0; s < static_cast<int>(m_geo->n_layers()); s++) {
+    for (std::size_t s = 0; s < m_geo->n_layers(); ++s) {
       double energyfrac = 0.0;
       for (unsigned int l = 0; l < layerNr.size(); l++) {
-        if (layerNr[l] == s)
+        if (std::cmp_equal(layerNr[l], s))
           energyfrac = simdata[l];
       }
       simulstate.set_Efrac(s, energyfrac);

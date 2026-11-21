@@ -154,7 +154,8 @@ auto TFCSParametrizationChain::is_match_Ekin_bin(int Ekin_bin) const -> bool
   return true;
 }
 
-auto TFCSParametrizationChain::is_match_calosample(int calosample) const -> bool
+auto TFCSParametrizationChain::is_match_calosample(std::size_t calosample) const
+    -> bool
 {
   for (const auto& param : m_chain)
     if (!param->is_match_calosample(calosample))

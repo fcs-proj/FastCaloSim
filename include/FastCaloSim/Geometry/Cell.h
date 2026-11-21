@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <ostream>
@@ -104,7 +105,7 @@ public:
   auto eta() const -> double { return m_data.m_pos.m_eta; }
   auto phi() const -> double { return m_data.m_pos.m_phi; }
   auto r() const -> double { return m_data.m_pos.m_r; }
-  auto layer() const -> uint32_t { return m_data.m_layer; }
+  auto layer() const -> std::size_t { return m_data.m_layer; }
   auto isBarrel() const -> bool { return m_data.m_isBarrel; }
   auto isXYZ() const -> bool { return m_data.m_isXYZ; }
   auto isEtaPhiR() const -> bool { return m_data.m_isEtaPhiR; }

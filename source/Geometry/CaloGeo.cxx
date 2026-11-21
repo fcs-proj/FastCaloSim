@@ -13,7 +13,7 @@
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Geometry/CellStoreBuilder.h"
 
-auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
+auto CaloGeo::get_cell(std::size_t layer, const Position& pos) const
     -> const Cell&
 {
   auto found = m_layer_lookup.find(layer);
@@ -42,28 +42,28 @@ auto CaloGeo::get_cell(unsigned int layer, const Position& pos) const
                            + std::to_string(layer));
 }
 
-auto CaloGeo::get_cell_id(unsigned int layer, const Position& pos) const
+auto CaloGeo::get_cell_id(std::size_t layer, const Position& pos) const
     -> unsigned long long
 {
   const Cell& cell = get_cell(layer, pos);
   return cell.id();
 }
 
-auto CaloGeo::n_cells() const -> unsigned int
+auto CaloGeo::n_cells() const -> std::size_t
 {
   return m_n_total_cells;
 }
 
-auto CaloGeo::n_cells(unsigned int layer) const -> unsigned int
+auto CaloGeo::n_cells(std::size_t layer) const -> std::size_t
 {
   auto it = m_layer_cell_ids.find(layer);
   if (it != m_layer_cell_ids.end()) {
-    return static_cast<unsigned int>(it->second.size());
+    return it->second.size();
   }
   return 0;
 }
 
-auto CaloGeo::n_layers() const -> unsigned int
+auto CaloGeo::n_layers() const -> std::size_t
 {
   return m_n_layers;
 }
@@ -73,7 +73,7 @@ auto CaloGeo::get_cell(unsigned long long id) const -> const Cell&
   return m_cell_store.get(id);
 }
 
-auto CaloGeo::get_cell_at_idx(unsigned int layer, size_t idx) const
+auto CaloGeo::get_cell_at_idx(std::size_t layer, size_t idx) const
     -> const Cell&
 {
   auto layer_it = m_layer_cell_ids.find(layer);
@@ -85,30 +85,30 @@ auto CaloGeo::get_cell_at_idx(unsigned int layer, size_t idx) const
   return m_cell_store.get(cell_id);
 }
 
-auto CaloGeo::is_barrel(unsigned int layer) const -> bool
+auto CaloGeo::is_barrel(std::size_t layer) const -> bool
 {
   return m_layer_flags.at(layer).is_barrel;
 }
 
-auto CaloGeo::is_xyz(unsigned int layer) const -> bool
+auto CaloGeo::is_xyz(std::size_t layer) const -> bool
 {
   return m_layer_flags.at(layer).coordinate_system
       == RTreeHelpers::CoordinateSystem::XYZ;
 }
 
-auto CaloGeo::is_eta_phi_r(unsigned int layer) const -> bool
+auto CaloGeo::is_eta_phi_r(std::size_t layer) const -> bool
 {
   return m_layer_flags.at(layer).coordinate_system
       == RTreeHelpers::CoordinateSystem::EtaPhiR;
 }
 
-auto CaloGeo::is_eta_phi_z(unsigned int layer) const -> bool
+auto CaloGeo::is_eta_phi_z(std::size_t layer) const -> bool
 {
   return m_layer_flags.at(layer).coordinate_system
       == RTreeHelpers::CoordinateSystem::EtaPhiZ;
 }
 
-auto CaloGeo::zpos(unsigned int layer,
+auto CaloGeo::zpos(std::size_t layer,
                    const Position& pos,
                    Cell::SubPos subpos) const -> double
 {
@@ -116,7 +116,7 @@ auto CaloGeo::zpos(unsigned int layer,
   return cell.z(subpos);
 }
 
-auto CaloGeo::rpos(unsigned int layer,
+auto CaloGeo::rpos(std::size_t layer,
                    const Position& pos,
                    Cell::SubPos subpos) const -> double
 {
@@ -124,34 +124,34 @@ auto CaloGeo::rpos(unsigned int layer,
   return cell.r(subpos);
 }
 
-auto CaloGeo::min_eta(unsigned int layer, DetectorSide side) const -> double
+auto CaloGeo::min_eta(std::size_t layer, DetectorSide side) const -> double
 {
   return m_layer_flags.at(layer).eta_extensions.at(side).eta_min;
 }
 
-auto CaloGeo::max_eta(unsigned int layer, DetectorSide side) const -> double
+auto CaloGeo::max_eta(std::size_t layer, DetectorSide side) const -> double
 {
   return m_layer_flags.at(layer).eta_extensions.at(side).eta_max;
 }
 
-void CaloGeo::set_alt_geo_handler(unsigned int layer,
+void CaloGeo::set_alt_geo_handler(std::size_t layer,
                                   std::shared_ptr<CaloGeo> handler)
 {
   m_layer_lookup[layer].alt_geo_handler = handler.get();
   m_alt_geo_handlers[layer] = std::move(handler);
 }
 
-void CaloGeo::set_alt_geo_handler(unsigned int ilayer,
-                                  unsigned int llayer,
+void CaloGeo::set_alt_geo_handler(std::size_t ilayer,
+                                  std::size_t llayer,
                                   std::shared_ptr<CaloGeo> handler)
 {
-  for (unsigned int i = ilayer; i <= llayer; ++i) {
+  for (std::size_t i = ilayer; i <= llayer; ++i) {
     m_layer_lookup[i].alt_geo_handler = handler.get();
     m_alt_geo_handlers[i] = handler;
   }
 }
 
-void CaloGeo::update_eta_extremes(unsigned int layer, const Cell& cell)
+void CaloGeo::update_eta_extremes(std::size_t layer, const Cell& cell)
 {
   DetectorSide side = cell.eta() > 0 ? kEtaPositive : kEtaNegative;
   double half_width = cell.deta() / 2;
@@ -197,14 +197,14 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   auto isRPhiZ = df.Take<bool>("isRPhiZ");
 
   // Count total cells
-  m_n_total_cells = static_cast<unsigned int>(layer->size());
+  m_n_total_cells = layer->size();
 
   // Find unique layers efficiently
-  std::unordered_set<unsigned int> unique_layers;
+  std::unordered_set<std::size_t> unique_layers;
   for (const auto& layer_id : *layer) {
     unique_layers.insert(layer_id);
   }
-  m_n_layers = static_cast<unsigned int>(unique_layers.size());
+  m_n_layers = unique_layers.size();
 
   // Pre-allocate layer flags with proper initialization for actual layer IDs
   for (const auto& layer_id : unique_layers) {
@@ -222,7 +222,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   }
 
   // Track which layers we've already set flags for to avoid redundant
-  std::unordered_set<unsigned int> processed_layer_flags;
+  std::unordered_set<std::size_t> processed_layer_flags;
   // This will be used to build our memory-mapped cell store
   CellStoreBuilder cell_store_builder;
 
@@ -319,9 +319,9 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   // Rebuild the layer cell ID map
   m_layer_cell_ids.clear();
   m_n_total_cells = 0;
-  std::unordered_set<unsigned int> unique_layers;
+  std::unordered_set<std::size_t> unique_layers;
   // Cell store index of each cell of a layer, in the order of m_layer_cell_ids
-  std::map<unsigned int, std::vector<std::uint32_t>> layer_store_index;
+  std::map<std::size_t, std::vector<std::uint32_t>> layer_store_index;
 
   // Iterate through all cells to rebuild the layer-to-cell mapping
   for (size_t i = 0; i < m_cell_store.size(); ++i) {
@@ -329,7 +329,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     if (!cell.is_valid()) {
       throw std::runtime_error("Invalid cell found in cell store");
     }
-    unsigned int layer_id = cell.layer();
+    std::size_t layer_id = cell.layer();
     unique_layers.insert(layer_id);
     m_layer_cell_ids[layer_id].push_back(cell.id());
     layer_store_index[layer_id].push_back(static_cast<std::uint32_t>(i));
@@ -373,7 +373,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     update_eta_extremes(layer_id, cell);
   }
 
-  m_n_layers = static_cast<unsigned int>(unique_layers.size());
+  m_n_layers = unique_layers.size();
 
   // Build the RTree of each layer from its cells
   for (const auto& [layer_id, store_index] : layer_store_index) {

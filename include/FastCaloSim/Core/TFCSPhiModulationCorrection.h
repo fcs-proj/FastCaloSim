@@ -26,7 +26,7 @@ public:
   ~TFCSPhiModulationCorrection() override;
 
   void load_phi_modulation(const std::string& filename,
-                           long unsigned int layer_index,
+                           std::size_t layer_index,
                            float eta_min,
                            float eta_max,
                            float energy_shift = 1.0);
@@ -65,7 +65,7 @@ public:
 
   auto get_phi_modulation_scale() const -> float { return m_modulation_scale; }
 
-  static auto get_phi_cell_size(long unsigned int layer, double eta) -> double
+  static auto get_phi_cell_size(std::size_t layer, double eta) -> double
   {
     if (layer <= 3) {
       return 2 * std::numbers::pi / 1024;
@@ -80,35 +80,33 @@ public:
   auto add_phi_modulation(Hit& hit) const -> double;
 
   // Adds adds the phi-modulation in the energy to the given hit
-  auto add_phi_modulation(Hit& hit, long unsigned int layer_index) const
-      -> double;
+  auto add_phi_modulation(Hit& hit, std::size_t layer_index) const -> double;
 
   // Adds adds the phi-modulation in the energy to the given hit
   auto add_phi_modulation(double energy,
                           double phi,
                           double eta,
-                          long unsigned int layer_index) const -> double;
+                          std::size_t layer_index) const -> double;
 
   // Removes the phi-modulation in the energy from the given hit
   auto remove_phi_modulation(Hit& hit) const -> double;
 
   // Removes the phi-modulation in the energy from the given hit
-  auto remove_phi_modulation(Hit& hit, long unsigned int layer_index) const
-      -> double;
+  auto remove_phi_modulation(Hit& hit, std::size_t layer_index) const -> double;
 
   // Removes the phi-modulation in the energy from the given hit
   auto remove_phi_modulation(double energy,
                              double phi,
                              double eta,
-                             long unsigned int layer_index) const -> double;
+                             std::size_t layer_index) const -> double;
 
   // Returns the correct eta and phi index for the position of the hit.
   // Used to extract the correct modulation factor from the stored modulation
   // curves.
   auto get_eta_and_phi_index(double phi,
                              double eta,
-                             long unsigned int layer_index) const
-      -> std::tuple<int, long unsigned int, long unsigned int>;
+                             std::size_t layer_index) const
+      -> std::tuple<int, std::size_t, std::size_t>;
 
   void set_geometry(CaloGeo* geo) override
   {

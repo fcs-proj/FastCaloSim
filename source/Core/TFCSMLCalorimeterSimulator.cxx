@@ -143,12 +143,10 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
 
   event_t event;
 
-  long unsigned int layer_index = 0;
-  long unsigned int layer = m_used_layers.at(layer_index);
+  std::size_t layer_index = 0;
+  std::size_t layer = m_used_layers.at(layer_index);
 
-  for (long unsigned int voxel_index = 0; voxel_index < m_nVoxels;
-       ++voxel_index)
-  {
+  for (std::size_t voxel_index = 0; voxel_index < m_nVoxels; ++voxel_index) {
     if (voxel_index == m_layer_boundaries[layer_index + 1]) {
       layer_index = layer_index + 1;
       layer = m_used_layers.at(layer_index);

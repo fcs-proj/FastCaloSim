@@ -70,7 +70,7 @@ public:
   }
 
   auto is_match_Ekin_bin(int Ekin_bin) const -> bool override;
-  auto is_match_calosample(int calosample) const -> bool override;
+  auto is_match_calosample(std::size_t calosample) const -> bool override;
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

@@ -55,7 +55,7 @@ TFCSHitCellMappingWiggleEMB::TFCSHitCellMappingWiggleEMB(const char* name,
 
 auto TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) -> double
 {
-  int layer = calosample();
+  std::size_t layer = calosample();
 
   double wiggle = 0.0;
   double cell_dphi = 0.0;
@@ -105,7 +105,7 @@ auto TFCSHitCellMappingWiggleEMB::simulate_hit(
     return FCSFatal;
   }
 
-  int cs = calosample();
+  std::size_t cs = calosample();
 
   double wiggle = 0.0;
   if (cs < 4 && cs > 0)

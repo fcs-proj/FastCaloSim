@@ -95,7 +95,7 @@ public:
   }
 
   /// The cylinders of the layer, indexed by Cell::SubPos
-  auto of(unsigned int layer) -> std::array<Cylinder, 3>
+  auto of(std::size_t layer) -> std::array<Cylinder, 3>
   {
     const Cell cell = m_geo.get_cell(layer, m_boundary);
 
@@ -254,7 +254,7 @@ void FastCaloSimCaloExtrapolation::extrapolate(
 
   // Calorimeter layers
   LayerCylinders layerCylinders(*m_geo, position);
-  for (unsigned int layer = 0; layer < m_geo->n_layers(); ++layer) {
+  for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
     const bool isBarrel = m_geo->is_barrel(layer);
     const std::array<Cylinder, 3> cylinders = layerCylinders.of(layer);
     for (const auto subpos :
@@ -270,12 +270,11 @@ void FastCaloSimCaloExtrapolation::extrapolate(
       }
       const Vector3D onLayer =
           scaleOntoLayer(point->position, cylinder, isBarrel);
-      const auto ilayer = static_cast<int>(layer);
-      result.set_OK(ilayer, subpos, true);
-      result.set_eta(ilayer, subpos, onLayer.eta());
-      result.set_phi(ilayer, subpos, onLayer.phi());
-      result.set_r(ilayer, subpos, onLayer.perp());
-      result.set_z(ilayer, subpos, onLayer.z());
+      result.set_OK(layer, subpos, true);
+      result.set_eta(layer, subpos, onLayer.eta());
+      result.set_phi(layer, subpos, onLayer.phi());
+      result.set_r(layer, subpos, onLayer.perp());
+      result.set_z(layer, subpos, onLayer.z());
       FCS_MSG_DEBUG("Layer "
                     << layer << " subpos " << subpos
                     << " at eta=" << onLayer.eta() << " phi=" << onLayer.phi()

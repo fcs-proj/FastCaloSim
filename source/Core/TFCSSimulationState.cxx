@@ -37,7 +37,7 @@ void TFCSSimulationState::Print(Option_t*) const
 {
   FCS_MSG_INFO("Ebin=" << m_Ebin << " E=" << E()
                        << " #cells=" << m_cells.size());
-  for (int i = 0; i < static_cast<int>(m_E.size()); ++i)
+  for (std::size_t i = 0; i < m_E.size(); ++i)
     if (!FastCaloSim::exactly_equal(E(i), 0.0)) {
       FCS_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
     }

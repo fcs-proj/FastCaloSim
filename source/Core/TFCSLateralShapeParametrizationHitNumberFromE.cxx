@@ -46,7 +46,7 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
-  int cs = calosample();
+  std::size_t cs = calosample();
   const double energy = simulstate.E(cs);
 
   if (energy < 0) {

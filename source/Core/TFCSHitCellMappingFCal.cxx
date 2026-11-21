@@ -31,8 +31,7 @@ auto TFCSHitCellMappingFCal::simulate_hit(
     return static_cast<FCSReturnCode>(FCSRetry + 5);
   }
   // Get the best matching cell
-  const auto& cell =
-      m_geo->get_cell(static_cast<unsigned int>(calosample()), lookup_pos);
+  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
   FCS_MSG_DEBUG(cell);
 
   /// Could not find a cell, retry simulation up to 5 times

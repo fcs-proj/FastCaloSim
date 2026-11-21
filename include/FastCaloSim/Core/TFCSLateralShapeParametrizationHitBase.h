@@ -160,10 +160,7 @@ public:
     inline void set_phi_y(double phi_y) { m_phi_y = phi_y; }
     inline void set_z(double z) { m_z = z; }
     inline void set_E(double E) { m_E = E; }
-    inline void set_idx(long unsigned int hit_index)
-    {
-      m_hit_index = hit_index;
-    }
+    inline void set_idx(std::size_t hit_index) { m_hit_index = hit_index; }
 
   private:
     double m_eta_x;  // eta for barrel and end-cap, x for FCal
@@ -176,7 +173,7 @@ public:
     double m_center_z;
     double m_center_eta;
     double m_center_phi;
-    long unsigned int m_hit_index {};
+    std::size_t m_hit_index {};
   };
 
   /// simulated one hit position with some energy. As last step in

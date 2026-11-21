@@ -42,13 +42,12 @@ TFCSEnergyAndHitGANV2::~TFCSEnergyAndHitGANV2()
   }
 }
 
-auto TFCSEnergyAndHitGANV2::is_match_calosample(int calosample) const -> bool
+auto TFCSEnergyAndHitGANV2::is_match_calosample(std::size_t calosample) const
+    -> bool
 {
-  if (get_Binning().find(calosample) == get_Binning().cend())
-    return false;
-  if (get_Binning().at(calosample).GetNbinsX() == 1)
-    return false;
-  return true;
+  // The binning is stored per layer with int keys
+  const auto it = get_Binning().find(static_cast<int>(calosample));
+  return it != get_Binning().cend() && it->second.GetNbinsX() != 1;
 }
 
 auto TFCSEnergyAndHitGANV2::get_nr_of_init(unsigned int bin) const
@@ -201,7 +200,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           continue;
         }
 
-        simulstate.add_E(layer, Einit * energyInVoxel);
+        simulstate.add_E(static_cast<std::size_t>(layer),
+                         Einit * energyInVoxel);
         vox++;
       }
     }
@@ -521,8 +521,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer)
-    {
+    for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }

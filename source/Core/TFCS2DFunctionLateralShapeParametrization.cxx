@@ -76,15 +76,14 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   const int pdgId = truth->pdgid();
   const double charge = ParticleData::charge(pdgId);
 
-  const int cs = calosample();
+  const std::size_t cs = calosample();
   const double center_eta = hit.center_eta();
   const double center_phi = hit.center_phi();
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
   if (std::isnan(center_r) or std::isnan(center_z) or std::isnan(center_eta)
-      or std::isnan(center_phi))
-  {  // Check if extrapolation fails
+      or std::isnan(center_phi)) {  // Check if extrapolation fails
     return FCSFatal;
   }
 

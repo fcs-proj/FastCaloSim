@@ -31,8 +31,7 @@ auto TFCSHitCellMapping::simulate_hit(
   Position lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
 
   // Get the best matching cell
-  const auto& cell =
-      m_geo->get_cell(static_cast<unsigned int>(calosample()), lookup_pos);
+  const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
   FCS_MSG_DEBUG(cell);
 
   // Get hit-cell boundary proximity

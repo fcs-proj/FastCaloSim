@@ -47,31 +47,30 @@ auto TFCSEnergyRenormalization::simulate(
       400.0, 400.0, 400.0, 400.0, 300.0, 150.0, 40.0,  150.0,
       40.0,  400.0, 300.0, 150.0, 40.0,  400.0, 400.0, 400.0};
 
-  for (int layer = 0; layer < static_cast<int>(m_geo->n_layers()); ++layer) {
-    const auto ilayer = static_cast<std::size_t>(layer);
+  for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
-    if (FastCaloSim::exactly_equal(energies[ilayer], 0.0)
+    if (FastCaloSim::exactly_equal(energies[layer], 0.0)
         && !FastCaloSim::exactly_equal(simulstate.E(layer), 0.0))
     {
       if (simulstate.E(layer)
-              > 8.0 * static_cast<double>(approxLayerNoise.at(ilayer))
+              > 8.0 * static_cast<double>(approxLayerNoise.at(layer))
           && layer != 5 && layer != 6 && layer != 7)
         FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
-            << " simulated: " << energies[ilayer]);
+            << " simulated: " << energies[layer]);
       if (simulstate.E(layer) > 1500.0
           && (layer == 5 || layer == 6 || layer == 7))
         FCS_MSG_INFO(
             "TFCSEnergyRenormalization::simulate(): energy not simulated "
             "(out-of-calo) in layer "
             << layer << " expected: " << simulstate.E(layer)
-            << " simulated: " << energies[ilayer]);
+            << " simulated: " << energies[layer]);
     }
-    if (!FastCaloSim::exactly_equal(energies[ilayer], 0.0))
-      scalefactor[ilayer] = simulstate.E(layer) / energies[ilayer];
+    if (!FastCaloSim::exactly_equal(energies[layer], 0.0))
+      scalefactor[layer] = simulstate.E(layer) / energies[layer];
   }
 
   // Loop over all cells and apply the scalefactor
@@ -84,10 +83,9 @@ auto TFCSEnergyRenormalization::simulate(
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("Apply scale factors : ");
-    for (unsigned int layer = 0; layer < m_geo->n_layers(); ++layer) {
+    for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
       FCS_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
-                         << energies[layer] << " -> "
-                         << simulstate.E(static_cast<int>(layer)));
+                         << energies[layer] << " -> " << simulstate.E(layer));
     }
   }
 

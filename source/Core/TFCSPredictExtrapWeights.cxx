@@ -156,7 +156,7 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
   };
 
   std::map<std::string, double> inputVariables;
-  for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer) {
+  for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
         != m_relevantLayers->cend())
     {
@@ -201,7 +201,7 @@ auto TFCSPredictExtrapWeights::simulate(
 
   // Get predicted extrapolation weights
   auto outputs = m_nn->compute(inputVariables);
-  for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer) {
+  for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
         != m_relevantLayers->cend())
     {
@@ -232,7 +232,7 @@ auto TFCSPredictExtrapWeights::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
-  const int cs = calosample();
+  const std::size_t cs = calosample();
 
   // Get corresponding predicted extrapolation weight from simulstate
   double extrapWeight;

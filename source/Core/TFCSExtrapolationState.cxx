@@ -22,14 +22,12 @@ void TFCSExtrapolationState::Print(Option_t*) const
 
   // Iterate over the unordered_map to print layer/subpos info
   for (const auto& [key, ok] : m_CaloOK) {
-    int layer = key.first;
-    int subpos = key.second;
+    const auto& [layer, subpos] = key;
     if (ok) {
       FCS_MSG_INFO("  layer " << layer << " subpos " << subpos
-                              << " MID eta=" << m_etaCalo.at({layer, subpos})
-                              << " phi=" << m_phiCalo.at({layer, subpos})
-                              << " r=" << m_rCalo.at({layer, subpos})
-                              << " z=" << m_zCalo.at({layer, subpos}));
+                              << " MID eta=" << m_etaCalo.at(key) << " phi="
+                              << m_phiCalo.at(key) << " r=" << m_rCalo.at(key)
+                              << " z=" << m_zCalo.at(key));
     }
   }
 }

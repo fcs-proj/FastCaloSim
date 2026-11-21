@@ -85,12 +85,14 @@ void dump(FILE* out, const std::string& label, FastSimModel& model)
                  ex.IDCaloBoundary_z(),
                  ex.IDCaloBoundary_AngleEta(),
                  ex.IDCaloBoundary_Angle3D());
-    for (int layer = 0; layer <= 23; ++layer) {
-      for (int subpos = 0; subpos < 3; ++subpos) {
+    for (std::size_t layer = 0; layer <= 23; ++layer) {
+      for (const Cell::SubPos subpos :
+           {Cell::SubPos::MID, Cell::SubPos::ENT, Cell::SubPos::EXT})
+      {
         std::fprintf(out,
-                     "%d %d %d %a %a %a %a %a %a\n",
+                     "%zu %d %d %a %a %a %a %a %a\n",
                      layer,
-                     subpos,
+                     static_cast<int>(subpos),
                      static_cast<int>(ex.OK(layer, subpos)),
                      ex.eta(layer, subpos),
                      ex.phi(layer, subpos),
@@ -105,9 +107,9 @@ void dump(FILE* out, const std::string& label, FastSimModel& model)
   int istate = 0;
   for (const auto& state : states.get()) {
     std::fprintf(out, "STATE %d %d %a\n", istate++, state.Ebin(), state.E());
-    for (int sample = 0; sample <= 23; ++sample) {
+    for (std::size_t sample = 0; sample <= 23; ++sample) {
       std::fprintf(
-          out, "E %d %a %a\n", sample, state.E(sample), state.Efrac(sample));
+          out, "E %zu %a %a\n", sample, state.E(sample), state.Efrac(sample));
     }
     const std::map<unsigned long long, float> cells(state.cells().begin(),
                                                     state.cells().end());
