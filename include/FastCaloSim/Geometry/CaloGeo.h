@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -29,6 +30,8 @@ public:
   CaloGeo() = default;
   // Base class of alternative geometry handlers (e.g. the FCal)
   virtual ~CaloGeo() = default;
+  CaloGeo(const CaloGeo&) = delete;
+  auto operator=(const CaloGeo&) -> CaloGeo& = delete;
   CaloGeo(CaloGeo&&) = default;
   auto operator=(CaloGeo&&) -> CaloGeo& = default;
 
@@ -39,57 +42,58 @@ public:
   // (rtree_cache_size is unused and only kept for compatibility: the R-trees
   // are built in memory)
   void load(const std::string& base_path,
-            size_t rtree_cache_size = 5 * 1024 * 1024);
+            size_t rtree_cache_size = std::size_t {5} * 1024 * 1024);
 
   // Retrieve the best matching cell for a given position
   // Alternative geo handlers need to override this method
-  virtual auto get_cell(unsigned int layer, const Position& pos) const
+  virtual auto get_cell(std::size_t layer, const Position& pos) const
       -> const Cell&;
 
   // Retrieve the id of the best matching cell for a given position
-  auto get_cell_id(unsigned int layer, const Position& pos) const
+  auto get_cell_id(std::size_t layer, const Position& pos) const
       -> unsigned long long;
   /// @brief Get the number of cells in a layer
-  auto n_cells(unsigned int layer) const -> unsigned int;
+  auto n_cells(std::size_t layer) const -> std::size_t;
   /// @brief Get the total number of cells
-  auto n_cells() const -> unsigned int;
+  auto n_cells() const -> std::size_t;
   /// @brief Get the number of layers
-  auto n_layers() const -> unsigned int;
+  auto n_layers() const -> std::size_t;
 
   /// @brief Get a cell by its ID
   auto get_cell(unsigned long long id) const -> const Cell&;
   /// @brief Get a cell by its index in a layer
-  auto get_cell_at_idx(unsigned int layer, size_t idx) const -> const Cell&;
+  auto get_cell_at_idx(std::size_t layer, size_t idx) const -> const Cell&;
 
   /// @brief Check if a layer is a barrel layer
-  auto is_barrel(unsigned int layer) const -> bool;
+  auto is_barrel(std::size_t layer) const -> bool;
   /// @brief Check if cuboid cells in a layer are described by (x, y, z)
-  auto is_xyz(unsigned int layer) const -> bool;
+  auto is_xyz(std::size_t layer) const -> bool;
   /// @brief Check if cuboid cells in a layer are described by (eta, phi, r)
-  auto is_eta_phi_r(unsigned int layer) const -> bool;
+  auto is_eta_phi_r(std::size_t layer) const -> bool;
   /// @brief Check if cuboid cells in a layer are described by (eta, phi, z)
-  auto is_eta_phi_z(unsigned int layer) const -> bool;
+  auto is_eta_phi_z(std::size_t layer) const -> bool;
 
   /// @brief Get the z position of a cell in a layer at a given position
-  auto zpos(unsigned int layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto zpos(std::size_t layer,
+            const Position& pos,
+            FastCaloSim::SubPos subpos) const -> double;
   /// @brief Get the r position of a cell in a layer at a given position
-  auto rpos(unsigned int layer, const Position& pos, Cell::SubPos subpos) const
-      -> double;
+  auto rpos(std::size_t layer,
+            const Position& pos,
+            FastCaloSim::SubPos subpos) const -> double;
 
   /// @brief Get the min eta extent of a layer on a given detector side
-  auto min_eta(unsigned int layer, DetectorSide side) const -> double;
+  auto min_eta(std::size_t layer, DetectorSide side) const -> double;
   /// @brief Get the max eta extent of a layer on a given detector side
-  auto max_eta(unsigned int layer, DetectorSide side) const -> double;
+  auto max_eta(std::size_t layer, DetectorSide side) const -> double;
 
   /// @brief Set an alternative geometry handler for a layer
-  void set_alt_geo_handler(unsigned int layer,
-                           std::shared_ptr<CaloGeo> handler);
+  void set_alt_geo_handler(std::size_t layer, std::shared_ptr<CaloGeo> handler);
 
   /// @brief Set an alternative geometry handler for a range of layers
-  void set_alt_geo_handler(unsigned int first_layer,
-                           unsigned int last_layer,
-                           std::shared_ptr<CaloGeo> handler);
+  void set_alt_geo_handler(std::size_t first_layer,
+                           std::size_t last_layer,
+                           const std::shared_ptr<CaloGeo>& handler);
 
 private:
   /// @brief The eta extent of a layer on a given detector side
@@ -112,34 +116,36 @@ private:
     // Define default values for the eta extensions of the layers
     LayerFlags()
     {
-      eta_extensions[DetectorSide::kEtaPositive] = EtaExtremes {1000, -1000};
-      eta_extensions[DetectorSide::kEtaNegative] = EtaExtremes {1000, -1000};
+      eta_extensions[DetectorSide::kEtaPositive] =
+          EtaExtremes {.eta_min = 1000, .eta_max = -1000};
+      eta_extensions[DetectorSide::kEtaNegative] =
+          EtaExtremes {.eta_min = 1000, .eta_max = -1000};
     }
   };
 
   /// @brief The number of layers
-  unsigned int m_n_layers {};
+  std::size_t m_n_layers {};
   /// @brief The total number of cells
-  unsigned int m_n_total_cells {};
+  std::size_t m_n_total_cells {};
 
   /// @brief Maps layer id -> R-tree for the cell lookup
-  std::unordered_map<unsigned int, std::unique_ptr<RTree>> m_layer_rtrees;
+  std::unordered_map<std::size_t, std::unique_ptr<RTree>> m_layer_rtrees;
 
   /// @brief The memory-mapped cell store
   CellStore m_cell_store;
 
   /// @brief Maps layer ID to vector of cell IDs in that layer
-  std::unordered_map<unsigned int, std::vector<unsigned long long>>
+  std::unordered_map<std::size_t, std::vector<unsigned long long>>
       m_layer_cell_ids;
 
   /// @brief Alternative geo handlers
   /// Allows to implement custom geo handling for specific layers
   /// This is especially useful if the geometry is not well described
   /// by cuboid cells and you want to implement your own cell lookup
-  std::unordered_map<unsigned int, std::shared_ptr<CaloGeo>> m_alt_geo_handlers;
+  std::unordered_map<std::size_t, std::shared_ptr<CaloGeo>> m_alt_geo_handlers;
 
   /// @brief Maps layer id -> layer properties
-  std::map<unsigned int, LayerFlags> m_layer_flags;
+  std::map<std::size_t, LayerFlags> m_layer_flags;
 
   // What get_cell(layer, pos) needs for a layer, in a single map, so that the
   // lookup done for every hit needs one hash lookup for any layer ID
@@ -152,11 +158,11 @@ private:
     // Cell store index of each cell of the layer, in R-tree order
     std::vector<std::uint32_t> store_index;
   };
-  std::unordered_map<unsigned int, LayerLookup> m_layer_lookup;
+  std::unordered_map<std::size_t, LayerLookup> m_layer_lookup;
 
   /// @brief Record a cell in the geometry
   void record_cell(std::unique_ptr<Cell> cell);
 
   /// @brief Update the eta extremes of a layer
-  void update_eta_extremes(unsigned int layer, const Cell& cell);
+  void update_eta_extremes(std::size_t layer, const Cell& cell);
 };

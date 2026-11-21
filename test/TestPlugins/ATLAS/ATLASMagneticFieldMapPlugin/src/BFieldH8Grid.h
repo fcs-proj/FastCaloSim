@@ -12,6 +12,8 @@
 #ifndef BFIELDH8GRID_H
 #define BFIELDH8GRID_H
 
+#include <array>
+#include <cstddef>
 #include <iostream>
 #include <vector>
 
@@ -23,11 +25,11 @@ public:
   // read map data from a text file
   void readMap(std::istream& input);
   // compute magnetic field + derivatives
-  void getB(const double* xyz, double* B, double* deriv = 0) const;
+  void getB(const double* xyz, double* B, double* deriv = nullptr) const;
   // true if the grid has been defined
-  bool defined() const { return (m_n[0] > 0); }
+  auto defined() const -> bool { return (m_n[0] > 0); }
   // true if xyz[3] is inside this grid
-  bool inside(const double* xyz) const
+  auto inside(const double* xyz) const -> bool
   {
     return (xyz[0] >= m_min[0] && xyz[0] <= m_max[0] && xyz[1] >= m_min[1]
             && xyz[1] <= m_max[1] && xyz[2] >= m_min[2] && xyz[2] <= m_max[2]);
@@ -37,19 +39,18 @@ public:
   // get copies of size vectors
   void getBounds(double* out_min, double* out_max, double* out_d) const
   {
-    for (unsigned i = 0; i < 3; i++) {
+    for (std::size_t i = 0; i < 3; i++) {
       out_min[i] = m_min[i];
       out_max[i] = m_max[i];
       out_d[i] = m_d[i];
     }
-    return;
   }
 
 private:
-  int m_n[3];  // number of grid points
-  double m_min[3], m_max[3];  // range in x,y,z (mm)
-  double m_d[3];  // offset in x,y,z (mm)
-  std::vector<double> m_B[3];  // Bz,By,Bz (kT)
+  std::array<int, 3> m_n {};  // number of grid points
+  std::array<double, 3> m_min {}, m_max {};  // range in x,y,z (mm)
+  std::array<double, 3> m_d {};  // offset in x,y,z (mm)
+  std::array<std::vector<double>, 3> m_B;  // Bz,By,Bz (kT)
 };
 
 #endif

@@ -20,12 +20,20 @@
 
 namespace
 {
+// libxml2 strings are unsigned char; libxml2's own BAD_CAST would cast away
+// const
+auto xml_string(const char* text) -> const xmlChar*
+{
+  return reinterpret_cast<const xmlChar*>(text);
+}
+
 // Read an XML attribute and free the memory allocated by xmlGetProp
 auto getXmlAttr(xmlNodePtr node, const char* name) -> std::string
 {
-  xmlChar* prop = xmlGetProp(node, BAD_CAST name);
-  if (!prop)
+  xmlChar* prop = xmlGetProp(node, xml_string(name));
+  if (prop == nullptr) {
     return {};
+  }
   std::string value(reinterpret_cast<const char*>(prop));
   xmlFree(prop);
   return value;
@@ -59,7 +67,8 @@ void TFCSGANXMLParameters::InitialiseFromXML(
     int pid, int etaMid, const std::string& FastCaloGANInputFolderName)
 {
   m_fastCaloGANInputFolderName = FastCaloGANInputFolderName;
-  std::string xmlFullFileName = FastCaloGANInputFolderName + "/binning.xml";
+  std::string const xmlFullFileName =
+      FastCaloGANInputFolderName + "/binning.xml";
 
   // RAII ownership: the document must also be freed when the numeric
   // attribute conversions below throw
@@ -73,23 +82,23 @@ void TFCSGANXMLParameters::InitialiseFromXML(
   for (xmlNodePtr nodeRoot = doc->children; nodeRoot != nullptr;
        nodeRoot = nodeRoot->next)
   {
-    if (xmlStrEqual(nodeRoot->name, BAD_CAST "Bins")) {
+    if (xmlStrEqual(nodeRoot->name, xml_string("Bins")) != 0) {
       for (xmlNodePtr nodeParticle = nodeRoot->children;
            nodeParticle != nullptr;
            nodeParticle = nodeParticle->next)
       {
-        if (xmlStrEqual(nodeParticle->name, BAD_CAST "Particle")) {
-          int nodePid = getXmlAttrInt(nodeParticle, "pid");
+        if (xmlStrEqual(nodeParticle->name, xml_string("Particle")) != 0) {
+          int const nodePid = getXmlAttrInt(nodeParticle, "pid");
 
           if (nodePid == pid) {
             for (xmlNodePtr nodeBin = nodeParticle->children;
                  nodeBin != nullptr;
                  nodeBin = nodeBin->next)
             {
-              if (xmlStrEqual(nodeBin->name, BAD_CAST "Bin")) {
-                int nodeEtaMin = getXmlAttrInt(nodeBin, "etaMin");
-                int nodeEtaMax = getXmlAttrInt(nodeBin, "etaMax");
-                int regionId = getXmlAttrInt(nodeBin, "regionId");
+              if (xmlStrEqual(nodeBin->name, xml_string("Bin")) != 0) {
+                int const nodeEtaMin = getXmlAttrInt(nodeBin, "etaMin");
+                int const nodeEtaMax = getXmlAttrInt(nodeBin, "etaMax");
+                int const regionId = getXmlAttrInt(nodeBin, "regionId");
 
                 if (std::abs(etaMid) > nodeEtaMin
                     && std::abs(etaMid) < nodeEtaMax)
@@ -103,24 +112,28 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                        nodeLayer != nullptr;
                        nodeLayer = nodeLayer->next)
                   {
-                    if (xmlStrEqual(nodeLayer->name, BAD_CAST "Layer")) {
+                    if (xmlStrEqual(nodeLayer->name, xml_string("Layer")) != 0)
+                    {
                       std::vector<double> edges;
-                      std::string s(getXmlAttr(nodeLayer, "r_edges"));
+                      std::string const s(getXmlAttr(nodeLayer, "r_edges"));
 
                       std::istringstream ss(s);
                       std::string token;
 
                       while (std::getline(ss, token, ',')) {
-                        if (token.empty())
+                        if (token.empty()) {
                           continue;
+                        }
                         edges.push_back(std::stod(token));
                       }
 
-                      int binsInAlpha = getXmlAttrInt(nodeLayer, "n_bin_alpha");
-                      int layer = getXmlAttrInt(nodeLayer, "id");
+                      int const binsInAlpha =
+                          getXmlAttrInt(nodeLayer, "n_bin_alpha");
+                      int const layer = getXmlAttrInt(nodeLayer, "id");
 
-                      std::string name = "hist_pid_" + std::to_string(nodePid)
-                          + "_region_" + std::to_string(regionId) + "_layer_"
+                      std::string const name = "hist_pid_"
+                          + std::to_string(nodePid) + "_region_"
+                          + std::to_string(regionId) + "_layer_"
                           + std::to_string(layer);
                       int xBins = static_cast<int>(edges.size()) - 1;
                       if (xBins <= 0) {
@@ -129,8 +142,9 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                             << layer
                             << ", setting to 1 bin to avoid empty histogram");
                         xBins = 1;
-                        if (edges.empty())
+                        if (edges.empty()) {
                           edges.push_back(0);
+                        }
                         edges.push_back(edges.back() + 1);
                       } else {
                         m_relevantlayers.push_back(layer);
@@ -182,10 +196,10 @@ void TFCSGANXMLParameters::Print() const
   FCS_MSG(INFO) << END_FCS_MSG(INFO);
 
   for (const auto& element : m_binning) {
-    int layer = element.first;
+    int const layer = element.first;
     const TH2D* h = &element.second;
 
-    int xBinNum = h->GetNbinsX();
+    int const xBinNum = h->GetNbinsX();
     const TAxis* x = h->GetXaxis();
 
     // If only one bin in r means layer is empty, no value should be added

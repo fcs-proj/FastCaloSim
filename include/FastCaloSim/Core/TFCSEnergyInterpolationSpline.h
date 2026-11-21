@@ -10,8 +10,8 @@ class TGraph;
 class TFCSEnergyInterpolationSpline : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationSpline(const char* name = nullptr,
-                                const char* title = nullptr);
+  explicit TFCSEnergyInterpolationSpline(const char* name = nullptr,
+                                         const char* title = nullptr);
 
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
@@ -21,29 +21,29 @@ public:
                  ///< should only be scaled by the spline
   };
 
-  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
-  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
-  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); }
+  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); }
+  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); }
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_calosample(int /*calosample*/) const -> bool override
+  }
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override
   {
     return true;
-  };
+  }
 
   /// Initialize interpolation from spline
   /// x values should be log(Ekin), y values should <E(reco)/Ekin(true)>
-  void InitFromSpline(const TSpline3& spline) { m_spline = spline; };
+  void InitFromSpline(const TSpline3& spline) { m_spline = spline; }
 
   /// Initialize spline interpolation from arrays in log(Ekin) and
   /// response=<E(reco)/Ekin(true)> opt, valbeg and valend as defined for
   /// TSpline3
   void InitFromArrayInLogEkin(Int_t np,
-                              Double_t logEkin[],
-                              Double_t response[],
+                              Double_t* logEkin,
+                              Double_t* response,
                               const char* opt = nullptr,
                               Double_t valbeg = 0,
                               Double_t valend = 0);
@@ -52,13 +52,13 @@ public:
   /// response=<E(reco)/Ekin(true)> opt, valbeg and valend as defined for
   /// TSpline3
   void InitFromArrayInEkin(Int_t np,
-                           Double_t Ekin[],
-                           Double_t response[],
+                           Double_t* Ekin,
+                           Double_t* response,
                            const char* opt = nullptr,
                            Double_t valbeg = 0,
                            Double_t valend = 0);
 
-  auto spline() const -> const TSpline3& { return m_spline; };
+  auto spline() const -> const TSpline3& { return m_spline; }
 
   /// Initialize simulstate with the mean reconstructed energy in the
   /// calorimater expected from the true kinetic energy

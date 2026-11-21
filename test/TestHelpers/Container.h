@@ -18,6 +18,11 @@ class Container
 {
 public:
   Container() = default;
+  virtual ~Container() = default;
+  Container(const Container&) = default;
+  Container(Container&&) noexcept = default;
+  auto operator=(const Container&) -> Container& = default;
+  auto operator=(Container&&) noexcept -> Container& = default;
 
   explicit Container(std::vector<ElementType> container)
       : m_container(std::move(container))
@@ -56,7 +61,7 @@ public:
    */
   void serialize(const std::string& filename) const
   {
-    nlohmann::json j = flatten();
+    nlohmann::json const j = flatten();
     if (j.empty()) {
       throw std::runtime_error("JSON serialization failed. Object is empty!");
     }
@@ -68,7 +73,7 @@ public:
   /**
    * @brief Set the geometry
    */
-  void set_geometry(CaloGeo* geo) { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) { m_geo = geo; }
 
 protected:
   /**
@@ -78,7 +83,7 @@ protected:
   virtual auto flatten() const -> std::vector<SerializedType> = 0;
 
   std::vector<ElementType> m_container;
-  CaloGeo* m_geo;
+  CaloGeo* m_geo {nullptr};
 };
 
 }  // namespace TestHelpers

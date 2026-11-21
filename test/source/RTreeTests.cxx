@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
 #include "TestConfig/AtlasGeoTestsConfig.h"
@@ -30,14 +31,28 @@ const auto kEtaPhi = RTreeHelpers::CoordinateSystem::EtaPhiR;
 auto eta_phi_cell(uint64_t id, double eta, double phi, double deta, double dphi)
     -> Cell
 {
-  const Position center {0, 0, 0, eta, phi, 0};
-  return Cell(
-      id, center, 0, true, false, true, false, false, 0, 0, 0, deta, dphi, 0);
+  const Position center {
+      .m_x = 0, .m_y = 0, .m_z = 0, .m_eta = eta, .m_phi = phi, .m_r = 0};
+  return {id,
+          center,
+          0,
+          /*isBarrel=*/true,
+          /*isXYZ=*/false,
+          /*isEtaPhiR=*/true,
+          /*isEtaPhiZ=*/false,
+          /*isRPhiZ=*/false,
+          0,
+          0,
+          0,
+          deta,
+          dphi,
+          0};
 }
 
 auto at_eta_phi(double eta, double phi) -> Position
 {
-  return Position {0, 0, 0, eta, phi, 0};
+  return Position {
+      .m_x = 0, .m_y = 0, .m_z = 0, .m_eta = eta, .m_phi = phi, .m_r = 0};
 }
 }  // namespace
 
@@ -80,6 +95,27 @@ TEST(RTreeTests, PositionOutsideAllCells)
   EXPECT_EQ(rtree.query_point(at_eta_phi(1000, 0.0)), 2);
 }
 
+TEST(RTreeTests, PositionNotFinite)
+{
+  const RTree rtree(kEtaPhi,
+                    {eta_phi_cell(1, 0.5, 0.0, 1.0, 0.2),  // eta in [0, 1]
+                     eta_phi_cell(2, 1.5, 0.0, 1.0, 0.2)});  // eta in [1, 2]
+
+  // A position that is not finite lies in no cell; one of the cells is
+  // returned, without undefined behavior in the cell lookup
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  const double inf = std::numeric_limits<double>::infinity();
+  for (const Position& pos : {at_eta_phi(nan, 0.0),
+                              at_eta_phi(0.5, nan),
+                              at_eta_phi(nan, nan),
+                              at_eta_phi(inf, 0.0),
+                              at_eta_phi(0.5, -inf)})
+  {
+    const auto id = rtree.query_point(pos);
+    EXPECT_TRUE(id == 1 || id == 2) << "id " << id;
+  }
+}
+
 TEST(RTreeTests, CellAcrossPhiBoundary)
 {
   // Cell 1 covers phi in [pi - 0.1, pi] and [-pi, -pi + 0.1]
@@ -116,7 +152,8 @@ TEST(RTreeTests, TieFarFromAllCells)
       if (i >= 80 && i <= 220) {
         continue;
       }
-      const uint64_t id = (i < 150) == left_smaller ? 1000 + i : 2000 + i;
+      const auto id = static_cast<uint64_t>(
+          (i < 150) == left_smaller ? 1000 + i : 2000 + i);
       cells.push_back(eta_phi_cell(id, i, 0.0, 1.0, 0.2));
     }
     const RTree rtree(kEtaPhi, cells);
@@ -148,7 +185,7 @@ TEST(RTreeTests, LargeLayerIds)
         : m_cell(eta_phi_cell(id, 0.0, 0.0, 1.0, 1.0))
     {
     }
-    auto get_cell(unsigned int /*layer*/, const Position& /*pos*/) const
+    auto get_cell(std::size_t /*layer*/, const Position& /*pos*/) const
         -> const Cell& override
     {
       return m_cell;
@@ -159,7 +196,7 @@ TEST(RTreeTests, LargeLayerIds)
   };
 
   CaloGeo geo;
-  const unsigned int max_layer = std::numeric_limits<unsigned int>::max();
+  const std::size_t max_layer = std::numeric_limits<std::size_t>::max();
   geo.set_alt_geo_handler(7, std::make_shared<FixedCellGeo>(1));
   geo.set_alt_geo_handler(100000000, std::make_shared<FixedCellGeo>(2));
   geo.set_alt_geo_handler(max_layer, std::make_shared<FixedCellGeo>(3));
@@ -200,7 +237,6 @@ struct Rect
     return du * du + dv * dv;
   }
 };
-}  // namespace
 
 class AtlasRTreeTests : public ::testing::Test
 {
@@ -211,18 +247,22 @@ protected:
   {
     ROOT::RDataFrame df(AtlasGeoTestsConfig::ATLAS_CALO_CELL_TREE_NAME,
                         AtlasGeoTestsConfig::ATLAS_CALO_CELL_PATH);
-    char tmpl[] = "/tmp/fastcalosimXXXXXX";
-    const std::string geo_dir = mkdtemp(tmpl);
+    std::string tmpl = "/tmp/fastcalosimXXXXXX";
+    const char* dir = mkdtemp(tmpl.data());
+    if (dir == nullptr) {
+      throw std::runtime_error("Cannot create a temporary directory");
+    }
+    const std::string geo_dir = dir;
     geo = new CaloGeo();
     geo->build(df, geo_dir);
     geo->load(geo_dir);
   }
 
   // The rectangles of all cells of a layer
-  static auto cell_rects(unsigned int layer) -> std::vector<Rect>
+  static auto cell_rects(std::size_t layer) -> std::vector<Rect>
   {
     std::vector<Rect> rects;
-    for (unsigned int i = 0; i < geo->n_cells(layer); ++i) {
+    for (std::size_t i = 0; i < geo->n_cells(layer); ++i) {
       const Cell cell = geo->get_cell_at_idx(layer, i);
       const auto boxes = geo->is_xyz(layer)
           ? std::vector {RTreeHelpers::build_xy_box(
@@ -230,7 +270,11 @@ protected:
           : RTreeHelpers::build_eta_phi_boxes(
                 cell.eta(), cell.phi(), cell.deta(), cell.dphi());
       for (const auto& b : boxes) {
-        rects.push_back({b[0], b[1], b[2], b[3], cell.id()});
+        rects.push_back({.u_min = b[0],
+                         .v_min = b[1],
+                         .u_max = b[2],
+                         .v_max = b[3],
+                         .cell_id = cell.id()});
       }
     }
     return rects;
@@ -265,22 +309,27 @@ protected:
     for (const auto& r : rects) {
       min_distance2 = std::min(min_distance2, r.distance2(u, v));
     }
-    for (const auto& r : rects) {
-      if (r.cell_id == cell_id && r.distance2(u, v) == min_distance2) {
-        return true;
-      }
-    }
-    return false;
+    return std::ranges::any_of(rects,
+                               [&](const Rect& r) -> bool
+                               {
+                                 return r.cell_id == cell_id
+                                     && FastCaloSim::exactly_equal(
+                                            r.distance2(u, v), min_distance2);
+                               });
   }
 };
+}  // namespace
 
 TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
 {
+  // A fixed seed, for the same test positions in every run
+  // NOLINTBEGIN(bugprone-random-generator-seed,cert-msc32-c,cert-msc51-cpp)
   std::mt19937_64 rng(42);
+  // NOLINTEND(bugprone-random-generator-seed,cert-msc32-c,cert-msc51-cpp)
   std::normal_distribution<double> gauss(0., 1.);
   const double inf = std::numeric_limits<double>::infinity();
 
-  for (unsigned int layer = 0; layer < geo->n_layers(); ++layer) {
+  for (std::size_t layer = 0; layer < geo->n_layers(); ++layer) {
     const auto rects = cell_rects(layer);
 
     // Positions around 300 random cells: scattered inside and around the
@@ -300,24 +349,31 @@ TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
             {u_mid + 2 * du * gauss(rng), v_mid + 2 * dv * gauss(rng)});
       }
       points.push_back({u_mid + 50 * du, v_mid});
-      for (double u : {r.u_min, u_mid, r.u_max}) {
-        for (double v : {r.v_min, v_mid, r.v_max}) {
+      for (double const u : {r.u_min, u_mid, r.u_max}) {
+        for (double const v : {r.v_min, v_mid, r.v_max}) {
           points.push_back({u, v});
         }
       }
-      for (double u : {r.u_min, r.u_max}) {
+      for (double const u : {r.u_min, r.u_max}) {
         points.push_back({std::nextafter(u, -inf), v_mid});
         points.push_back({std::nextafter(u, inf), v_mid});
       }
-      for (double v : {r.v_min, r.v_max}) {
+      for (double const v : {r.v_min, r.v_max}) {
         points.push_back({u_mid, std::nextafter(v, -inf)});
         points.push_back({u_mid, std::nextafter(v, inf)});
       }
     }
 
     for (const auto& [u, v] : points) {
-      const Position pos = geo->is_xyz(layer) ? Position {u, v, 0, 0, 0, 0}
-                                              : Position {0, 0, 0, u, v, 0};
+      const Position pos = geo->is_xyz(layer)
+          ? Position {.m_x = u,
+                      .m_y = v,
+                      .m_z = 0,
+                      .m_eta = 0,
+                      .m_phi = 0,
+                      .m_r = 0}
+          : Position {
+                .m_x = 0, .m_y = 0, .m_z = 0, .m_eta = u, .m_phi = v, .m_r = 0};
       const uint64_t cell_id = geo->get_cell(layer, pos).id();
 
       ASSERT_TRUE(is_expected_cell(cell_id, rects, u, v))

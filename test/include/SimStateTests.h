@@ -11,7 +11,7 @@ class TFCSSimulationStateTest
     : public ::testing::TestWithParam<TestHelpers::Event>
 {
 protected:
-  CLHEP::HepRandomEngine* m_random_engine;
+  CLHEP::HepRandomEngine* m_random_engine {nullptr};
 
   void SetUp() override { m_random_engine = new CLHEP::RanluxEngine(); }
 

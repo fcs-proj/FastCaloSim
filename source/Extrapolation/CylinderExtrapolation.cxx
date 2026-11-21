@@ -66,20 +66,22 @@ auto closestPointOfLines(const Vector3D& posA,
 }
 
 /// The intersections of the infinite line through a and b, projected onto the
-/// xy plane, with the circle of the given radius around the z axis. For lines
-/// parallel to the endcaps: the points take the z of a (first) and b (second).
-auto circleIntersections(float radius, const Vector3D& a, const Vector3D& b)
-    -> Intersections
+/// xy plane, with the circle of the cylinder radius around the z axis. For
+/// lines parallel to the endcaps: the points take the z of a (first) and b
+/// (second).
+auto circleIntersections(const Cylinder& cylinder,
+                         const Vector3D& a,
+                         const Vector3D& b) -> Intersections
 {
   const double dx = b.x() - a.x();
   const double dy = b.y() - a.y();
   const double qa = dx * dx + dy * dy;
   const double qb = 2 * (dx * a.x() + dy * a.y());
-  const double qc = a.x() * a.x() + a.y() * a.y() - radius * radius;
+  const double qc = a.x() * a.x() + a.y() * a.y() - cylinder.r2();
   const double discriminant = qb * qb - 4 * qa * qc;
 
-  const auto pointAt = [&](double t, double z)
-  { return Vector3D(a.x() + t * dx, a.y() + t * dy, z); };
+  const auto pointAt = [&](double t, double z) -> Vector3D
+  { return {a.x() + t * dx, a.y() + t * dy, z}; };
 
   Intersections result;
   if (qa <= 0.0000001 || discriminant < 0) {
@@ -153,8 +155,8 @@ auto closestPointToSurface(const Cylinder& cylinder,
                            const Vector3D& a,
                            const Vector3D& b) -> Vector3D
 {
-  const float radius = cylinder.radius;
-  const float halfLength = cylinder.halfLength;
+  const double radius = cylinder.r();
+  const double halfLength = cylinder.half_length();
   const Vector3D ab = b - a;
   const Vector3D projA = cylinder.project(a);
   const Vector3D projB = cylinder.project(b);
@@ -169,7 +171,7 @@ auto closestPointToSurface(const Cylinder& cylinder,
   if (!beyondEndcaps) {
     // The point closest to the z axis if on the segment, else the end closer
     // to the surface
-    const Vector3D closestToAxis =
+    Vector3D closestToAxis =
         closestPointOfLines(a, ab.unit(), Vector3D(0, 0, 0), Vector3D(0, 0, 1));
     if (isOnSegment(closestToAxis, a, b)) {
       return closestToAxis;
@@ -194,7 +196,7 @@ auto closestPointToSurface(const Cylinder& cylinder,
   // The segment is parallel to the endcaps and beyond them, so all its points
   // within the radius are equally close to the endcap disc: take the middle of
   // the part within the radius
-  const Intersections circle = circleIntersections(radius, a, b);
+  const Intersections circle = circleIntersections(cylinder, a, b);
   if (circle.count == 2) {
     const auto& [p, q] = circle.points;
     const bool pOnSegment = isOnSegment(p, a, b);
@@ -222,8 +224,7 @@ auto closestPointToSurface(const Cylinder& cylinder,
   }
   // The line misses the circle: the point closest to the endcap center if on
   // the segment, else the end closer to it
-  const Vector3D closestToCenter =
-      a + ((endcapCenter - a).dot(ab) / ab.dot(ab)) * ab;
+  Vector3D closestToCenter = a + ((endcapCenter - a).dot(ab) / ab.dot(ab)) * ab;
   if (isOnSegment(closestToCenter, a, b)) {
     return closestToCenter;
   }
@@ -320,7 +321,8 @@ auto extrapolateWithIntersection(const std::vector<TrackPoint>& track,
     if (crossesSurface || isOnSegment(intersection, p1, p2)
         || (bothOutside && !isForward && nExtrapolations == 1) || isLast)
     {
-      return TrackPoint {intersection, closerDirection(cylinder, start, end)};
+      return TrackPoint {.position = intersection,
+                         .direction = closerDirection(cylinder, start, end)};
     }
   }
   return std::nullopt;
@@ -342,7 +344,8 @@ auto extrapolateWithClosestApproach(const std::vector<TrackPoint>& track,
     const double distance = (closest - onSurface).mag();
     if (distance < minDistance) {
       minDistance = distance;
-      result = TrackPoint {onSurface, closerDirection(cylinder, start, end)};
+      result = TrackPoint {.position = onSurface,
+                           .direction = closerDirection(cylinder, start, end)};
     }
   }
   return result;
@@ -355,7 +358,8 @@ auto extrapolateToCylinder(const std::vector<TrackPoint>& track,
     -> std::optional<TrackPoint>
 {
   if (track.size() == 1) {
-    return TrackPoint {cylinder.project(track[0].position), track[0].direction};
+    return TrackPoint {.position = cylinder.project(track[0].position),
+                       .direction = track[0].direction};
   }
   if (auto crossing = extrapolateWithIntersection(track, cylinder)) {
     return crossing;

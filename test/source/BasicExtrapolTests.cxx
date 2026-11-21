@@ -21,7 +21,7 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   truth_state.set_pdgid(22);
 
   // Vector of positions to be used in the extrapolation
-  std::vector<G4ThreeVector> pos_vec = {
+  std::vector<G4ThreeVector> const pos_vec = {
       G4ThreeVector(1429.33, 64.2977, 2229.77),
       G4ThreeVector(1482.48, -13.6767, 2325.32),
       G4ThreeVector(1502.78, -63.3824, 2359.21),
@@ -39,13 +39,13 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   // Dummy values for the momentum direction and polarization
   // Note: the momentum direction only has an influence on
   // angle between extrapolated position and momentum (Angle3D and AngleEta)
-  G4ThreeVector mom_dir = G4ThreeVector(0, 1, 1.0);
-  G4ThreeVector pol = G4ThreeVector(0.0, 0.0, 0.0);
+  G4ThreeVector const mom_dir = G4ThreeVector(0, 1, 1.0);
+  G4ThreeVector const pol = G4ThreeVector(0.0, 0.0, 0.0);
 
   std::vector<G4FieldTrack> calo_steps;
   calo_steps.reserve(pos_vec.size());
   for (const auto& pos : pos_vec) {
-    G4FieldTrack track = G4FieldTrack(pos, 0, mom_dir, 0, 0.0, 0.0, pol);
+    G4FieldTrack const track = G4FieldTrack(pos, 0, mom_dir, 0, 0.0, 0.0, pol);
     calo_steps.emplace_back(track);
   }
 
@@ -58,12 +58,13 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   ASSERT_NEAR(extrapol_state.IDCaloBoundary_r(), 1148, 1e-1);
 
   // Helper lambda to test layer values
-  auto test_layer = [&](int layer, double eta, double phi, double r, double z)
+  auto test_layer =
+      [&](std::size_t layer, double eta, double phi, double r, double z) -> void
   {
-    ASSERT_NEAR(extrapol_state.eta(layer, Cell::SubPos::MID), eta, 1e-1);
-    ASSERT_NEAR(extrapol_state.phi(layer, Cell::SubPos::MID), phi, 1e-1);
-    ASSERT_NEAR(extrapol_state.r(layer, Cell::SubPos::MID), r, 1e-1);
-    ASSERT_NEAR(extrapol_state.z(layer, Cell::SubPos::MID), z, 1e-1);
+    ASSERT_NEAR(extrapol_state.eta(layer, FastCaloSim::SubPos::MID), eta, 1e-1);
+    ASSERT_NEAR(extrapol_state.phi(layer, FastCaloSim::SubPos::MID), phi, 1e-1);
+    ASSERT_NEAR(extrapol_state.r(layer, FastCaloSim::SubPos::MID), r, 1e-1);
+    ASSERT_NEAR(extrapol_state.z(layer, FastCaloSim::SubPos::MID), z, 1e-1);
   };
 
   // Test each layerß

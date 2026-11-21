@@ -35,22 +35,21 @@ auto TFCSLateralShapeParametrizationHitBase::get_number_of_hits(
 auto TFCSLateralShapeParametrizationHitBase::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const -> float
+    const TFCSExtrapolationState* extrapol) const -> double
 {
   const int nhits = get_number_of_hits(simulstate, truth, extrapol);
-  const int sample = calosample();
-  if (nhits <= 0 || sample < 0)
+  if (nhits <= 0 || !has_calosample()) {
     return -1.;
-  else
-    return simulstate.E(sample) / nhits;
+  }
+  return simulstate.E(calosample()) / nhits;
 }
 
-auto TFCSLateralShapeParametrizationHitBase::getMinWeight() const -> float
+auto TFCSLateralShapeParametrizationHitBase::getMinWeight() const -> double
 {
   return -1.;
 }
 
-auto TFCSLateralShapeParametrizationHitBase::getMaxWeight() const -> float
+auto TFCSLateralShapeParametrizationHitBase::getMaxWeight() const -> double
 {
   return -1.;
 }
@@ -61,13 +60,13 @@ auto TFCSLateralShapeParametrizationHitBase::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
-  int cs = calosample();
+  std::size_t const cs = calosample();
   hit.set_eta_x(0.5
-                * (extrapol->eta(cs, Cell::SubPos::ENT)
-                   + extrapol->eta(cs, Cell::SubPos::EXT)));
+                * (extrapol->eta(cs, FastCaloSim::SubPos::ENT)
+                   + extrapol->eta(cs, FastCaloSim::SubPos::EXT)));
   hit.set_phi_y(0.5
-                * (extrapol->phi(cs, Cell::SubPos::ENT)
-                   + extrapol->phi(cs, Cell::SubPos::EXT)));
+                * (extrapol->phi(cs, FastCaloSim::SubPos::ENT)
+                   + extrapol->phi(cs, FastCaloSim::SubPos::EXT)));
 
   return FCSSuccess;
 }

@@ -36,23 +36,25 @@ the simulate_hit method. Hit level simulation is controlled through the special
 chain TFCSLateralShapeParametrizationHitChain.
 */
 
-/// Return codes for the simulate function
-enum FCSReturnCode
+/// Return codes for the simulate function. FCSRetry + n asks for up to n
+/// retries, so the underlying type is fixed to int to make all those values
+/// valid return codes.
+enum FCSReturnCode : int
 {
   FCSFatal = 0,
   FCSSuccess = 1,
   FCSRetry = 2
 };
 
-#define FCS_RETRY_COUNT 3
+constexpr int FCS_RETRY_COUNT = 3;
 
 class FASTCALOSIM_EXPORT TFCSParametrizationBase
     : public TNamed
     , public FastCaloSim::MLogging
 {
 public:
-  TFCSParametrizationBase(const char* name = nullptr,
-                          const char* title = nullptr);
+  explicit TFCSParametrizationBase(const char* name = nullptr,
+                                   const char* title = nullptr);
 
   /// Status bit for FCS needs
   enum FCSStatusBits
@@ -64,42 +66,42 @@ public:
   virtual auto is_match_pdgid(int /*id*/) const -> bool
   {
     return TestBit(kMatchAllPDGID);
-  };
-  virtual auto is_match_Ekin(float /*Ekin*/) const -> bool { return false; };
-  virtual auto is_match_eta(float /*eta*/) const -> bool { return false; };
+  }
+  virtual auto is_match_Ekin(float /*Ekin*/) const -> bool { return false; }
+  virtual auto is_match_eta(float /*eta*/) const -> bool { return false; }
 
-  virtual auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool
+  virtual auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool
   {
     return false;
-  };
-  virtual auto is_match_calosample(int /*calosample*/) const -> bool
+  }
+  virtual auto is_match_calosample(std::size_t /*calosample*/) const -> bool
   {
     return false;
-  };
+  }
 
   virtual auto is_match_all_pdgid() const -> bool
   {
     return TestBit(kMatchAllPDGID);
-  };
-  virtual auto is_match_all_Ekin() const -> bool { return false; };
-  virtual auto is_match_all_eta() const -> bool { return false; };
-  virtual auto is_match_all_Ekin_bin() const -> bool { return false; };
-  virtual auto is_match_all_calosample() const -> bool { return false; };
+  }
+  virtual auto is_match_all_Ekin() const -> bool { return false; }
+  virtual auto is_match_all_eta() const -> bool { return false; }
+  virtual auto is_match_all_Ekin_bin() const -> bool { return false; }
+  virtual auto is_match_all_calosample() const -> bool { return false; }
 
   virtual auto pdgid() const -> const std::set<int>&
   {
     static const std::set<int> empty;
     return empty;
-  };
-  virtual auto Ekin_nominal() const -> double { return init_Ekin_nominal; };
-  virtual auto Ekin_min() const -> double { return init_Ekin_min; };
-  virtual auto Ekin_max() const -> double { return init_Ekin_max; };
-  virtual auto eta_nominal() const -> double { return init_eta_nominal; };
-  virtual auto eta_min() const -> double { return init_eta_min; };
-  virtual auto eta_max() const -> double { return init_eta_max; };
+  }
+  virtual auto Ekin_nominal() const -> double { return init_Ekin_nominal; }
+  virtual auto Ekin_min() const -> double { return init_Ekin_min; }
+  virtual auto Ekin_max() const -> double { return init_Ekin_max; }
+  virtual auto eta_nominal() const -> double { return init_eta_nominal; }
+  virtual auto eta_min() const -> double { return init_eta_min; }
+  virtual auto eta_max() const -> double { return init_eta_max; }
 
-  virtual void set_match_all_pdgid() { SetBit(kMatchAllPDGID); };
-  virtual void reset_match_all_pdgid() { ResetBit(kMatchAllPDGID); };
+  virtual void set_match_all_pdgid() { SetBit(kMatchAllPDGID); }
+  virtual void reset_match_all_pdgid() { ResetBit(kMatchAllPDGID); }
 
   /// Method to set the geometry access pointer. Loops over daughter objects if
   /// present
@@ -108,30 +110,32 @@ public:
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual auto size() const -> unsigned int { return 0; };
+  virtual auto size() const -> std::size_t { return 0; }
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual auto operator[](unsigned int /*ind*/) const
+  virtual auto operator[](std::size_t /*ind*/) const
       -> const TFCSParametrizationBase*
   {
     return nullptr;
-  };
+  }
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The size() and operator[] methods give general access to these
   /// daughters
-  virtual auto operator[](unsigned int /*ind*/) -> TFCSParametrizationBase*
+  virtual auto operator[](std::size_t /*ind*/) -> TFCSParametrizationBase*
   {
     return nullptr;
-  };
+  }
 
   /// Some derived classes have daughter instances of TFCSParametrizationBase
   /// objects The set_daughter method allows to change these daughters - expert
   /// use only! The original element at this position is not deleted
-  virtual void set_daughter(unsigned int /*ind*/,
-                            TFCSParametrizationBase* /*param*/) {};
+  virtual void set_daughter(std::size_t /*ind*/,
+                            TFCSParametrizationBase* /*param*/)
+  {
+  }
 
   /// The == operator compares the content of instances.
   /// The implementation in the base class only returns true for a comparison
@@ -139,7 +143,7 @@ public:
   virtual auto operator==(const TFCSParametrizationBase& ref) const -> bool
   {
     return compare(ref);
-  };
+  }
 
   /// Method in all derived classes to do some simulation
   virtual auto simulate(TFCSSimulationState& simulstate,
@@ -149,7 +153,7 @@ public:
 
   /// Method in all derived classes to delete objects stored in the simulstate
   /// AuxInfo
-  virtual void CleanAuxInfo(TFCSSimulationState& /*simulstate*/) const {};
+  virtual void CleanAuxInfo(TFCSSimulationState& /*simulstate*/) const {}
 
   /// Called immediately after being read from file to fix histograms that
   /// erroneously have kIsOnHeap set. See ATLASSIM-7031.
@@ -162,11 +166,11 @@ public:
   {
     TFCSParametrizationBase* replace = nullptr;
     std::vector<TFCSParametrizationBase*> mother;
-    std::vector<unsigned int> index;
+    std::vector<std::size_t> index;
   };
   using FindDuplicates_t = std::map<TFCSParametrizationBase*, Duplicate_t>;
   using FindDuplicateClasses_t = std::map<std::string, FindDuplicates_t>;
-  void FindDuplicates(FindDuplicateClasses_t& dup);
+  void FindDuplicates(FindDuplicateClasses_t& dupclasses);
   void RemoveDuplicates();
   void RemoveNameTitle();
 
@@ -197,9 +201,13 @@ public:
   virtual void setLevel(int level, bool recursive)
   {
     this->setLevel(level);
-    if (recursive)
-      for (unsigned int i = 0; i < size(); ++i)
-        (*this)[i]->setLevel(level, recursive);
+    if (recursive) {
+      for (std::size_t i = 0; i < size(); ++i) {
+        if (TFCSParametrizationBase* param = (*this)[i]) {
+          param->setLevel(level, recursive);
+        }
+      }
+    }
   }
 
 private:

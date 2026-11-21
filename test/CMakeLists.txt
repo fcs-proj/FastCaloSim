@@ -51,15 +51,12 @@ include_directories(${Boost_INCLUDE_DIRS})
 # Note: test should be linked with gtest_main unless
 # you want to write your own main function
 deactivate_checks(gtest gtest_main
-                  gmock gmock_main
-                  FastCaloSim_FastCaloSim
-                  FastCaloSim_dict)
+                  gmock gmock_main)
 
 # Build a simple geant4 application
 # - Used to test the particle transport
 # - Uses simplified geometry
 add_subdirectory(g4app)
-deactivate_checks(g4app)
 
 # Get the nlohmann json library
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz DOWNLOAD_EXTRACT_TIMESTAMP true)
@@ -68,12 +65,10 @@ FetchContent_MakeAvailable(json)
 
 # Build the ATLAS geometry plugin
 add_subdirectory(TestPlugins/ATLAS/ATLASFCalGeoPlugin)
-deactivate_checks(ATLASFCalGeoPlugin)
 
 # Build the ATLAS magnetic field map plugin
 # - Used to transport particles through the simplified geometry
 add_subdirectory(TestPlugins/ATLAS/ATLASMagneticFieldMapPlugin)
-deactivate_checks(ATLASMagneticFieldMapPlugin)
 # Pass the path to the magnetic field shared library (MagneticFieldMapPlugin.so) to the g4app
 target_compile_definitions(g4app PRIVATE ATLASMagneticFieldMapPluginLib="$<TARGET_FILE:ATLASMagneticFieldMapPlugin>")
 
@@ -108,7 +103,6 @@ if(FastCaloSim_BUILD_BENCHMARK)
   add_executable(AtlasBenchmark benchmark/AtlasBenchmark.cxx)
   target_link_libraries(AtlasBenchmark PRIVATE FastCaloSim::FastCaloSim GTest::gtest_main ATLASFCalGeoPlugin g4app)
   target_include_directories(AtlasBenchmark PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR})
-  deactivate_checks(AtlasBenchmark)
 endif()
 
 # Add python tests

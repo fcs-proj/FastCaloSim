@@ -15,12 +15,12 @@ VNetworkLWTNN::VNetworkLWTNN(const VNetworkLWTNN& copy_from)
     , m_json(copy_from.m_json)
     , m_printable_name(copy_from.m_printable_name)
 {
-  if (m_json.length() == 0) {
+  if (m_json.empty()) {
     throw std::invalid_argument(
         "Trying to copy a VNetworkLWTNN with length 0 m_json, probably "
         "deleteAllButNet was called on the object being copied from.");
   };
-};
+}
 
 VNetworkLWTNN::~VNetworkLWTNN() = default;
 
@@ -28,7 +28,7 @@ VNetworkLWTNN::~VNetworkLWTNN() = default;
 // fill in m_json.
 void VNetworkLWTNN::setupPersistedVariables()
 {
-  if (this->isFile(m_inputFile)) {
+  if (VNetworkLWTNN::isFile(m_inputFile)) {
     FCS_MSG_DEBUG("Making an LWTNN network using a file on disk, "
                   << m_inputFile);
     m_printable_name = m_inputFile;
@@ -39,17 +39,17 @@ void VNetworkLWTNN::setupPersistedVariables()
     m_printable_name = "JSON from memory";
     m_json = m_inputFile;
   };
-};
+}
 
 void VNetworkLWTNN::print(std::ostream& strm) const
 {
   strm << m_printable_name;
-};
+}
 
 void VNetworkLWTNN::writeNetToTTree(TTree& tree)
 {
   writeStringToTTree(tree, m_json);
-};
+}
 
 void VNetworkLWTNN::fillJson(std::string const& tree_name)
 {
@@ -57,8 +57,8 @@ void VNetworkLWTNN::fillJson(std::string const& tree_name)
   if (this->isRootFile()) {
     FCS_MSG_VERBOSE("Treating input file as a root file");
     TFile tfile(this->m_inputFile.c_str(), "READ");
-    TTree* tree = (TTree*)tfile.Get(tree_name.c_str());
-    std::string found = this->readStringFromTTree(*tree);
+    auto* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
+    std::string found = readStringFromTTree(*tree);
     FCS_MSG_DEBUG("Read json from root file, length " << found.length());
     m_json = std::move(found);
   } else {
@@ -76,18 +76,20 @@ void VNetworkLWTNN::fillJson(std::string const& tree_name)
 auto VNetworkLWTNN::readStringFromTTree(TTree& tree) -> std::string
 {
   std::string found = std::string();
+  // ROOT fills the string through this pointer
+  // NOLINTNEXTLINE(misc-const-correctness)
   std::string* to_found = &found;
   tree.SetBranchAddress("lwtnn_json", &to_found);
   tree.GetEntry(0);
   return found;
-};
+}
 
 void VNetworkLWTNN::writeStringToTTree(TTree& tree, std::string json_string)
 {
   tree.Branch("lwtnn_json", &json_string);
   tree.Fill();
   tree.Write();
-};
+}
 
 void VNetworkLWTNN::deleteAllButNet()
 {
@@ -102,4 +104,4 @@ void VNetworkLWTNN::deleteAllButNet()
                   << m_inputFile.capacity()
                   << ". m_printable_name now has capacity "
                   << m_printable_name.capacity());
-};
+}

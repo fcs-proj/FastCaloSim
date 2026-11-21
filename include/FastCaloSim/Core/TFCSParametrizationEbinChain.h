@@ -8,23 +8,32 @@
 class TFCSParametrizationEbinChain : public TFCSParametrizationBinnedChain
 {
 public:
-  TFCSParametrizationEbinChain(const char* name = nullptr,
-                               const char* title = nullptr)
-      : TFCSParametrizationBinnedChain(name, title) {};
+  explicit TFCSParametrizationEbinChain(const char* name = nullptr,
+                                        const char* title = nullptr)
+      : TFCSParametrizationBinnedChain(name, title)
+  {
+  }
   TFCSParametrizationEbinChain(const TFCSParametrizationEbinChain& ref) =
       default;
+  TFCSParametrizationEbinChain(TFCSParametrizationEbinChain&& ref) = default;
+  auto operator=(const TFCSParametrizationEbinChain& ref)
+      -> TFCSParametrizationEbinChain& = default;
+  auto operator=(TFCSParametrizationEbinChain&& ref)
+      -> TFCSParametrizationEbinChain& = default;
+  ~TFCSParametrizationEbinChain() override = default;
 
   /// current convention is to start Ebin counting at 1, to be updated to start
   /// counting with 0
   auto get_bin(TFCSSimulationState& simulstate,
-               const TFCSTruthState*,
-               const TFCSExtrapolationState*) const -> int override
+               const TFCSTruthState* /*unused*/,
+               const TFCSExtrapolationState* /*unused*/) const
+      -> std::optional<std::size_t> override
   {
     return simulstate.Ebin();
-  };
+  }
   auto get_variable_text(TFCSSimulationState& simulstate,
-                         const TFCSTruthState*,
-                         const TFCSExtrapolationState*) const
+                         const TFCSTruthState* /*unused*/,
+                         const TFCSExtrapolationState* /*unused*/) const
       -> const std::string override;
 
 private:

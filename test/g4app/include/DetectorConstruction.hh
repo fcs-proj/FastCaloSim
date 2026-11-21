@@ -19,10 +19,14 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
   DetectorConstruction();
-  virtual ~DetectorConstruction() override;
+  ~DetectorConstruction() override;
+  DetectorConstruction(const DetectorConstruction&) = delete;
+  auto operator=(const DetectorConstruction&) -> DetectorConstruction& = delete;
+  DetectorConstruction(DetectorConstruction&&) = delete;
+  auto operator=(DetectorConstruction&&) -> DetectorConstruction& = delete;
 
-  virtual G4VPhysicalVolume* Construct() override;
-  virtual void ConstructSDandField() override;
+  auto Construct() -> G4VPhysicalVolume* override;
+  void ConstructSDandField() override;
 
   // Interface to access the name of the fast simulation trigger region
   auto getFastSimTriggerRegionName() const -> std::string
@@ -48,12 +52,12 @@ private:
   // World volume of the simplified geometry for the particle transport
   G4VPhysicalVolume* fTransportWorld = nullptr;
   // Name of the fast simulation trigger region
-  const std::string fFastSimTriggerRegionName = "FastSimTriggerRegion";
+  std::string fFastSimTriggerRegionName = "FastSimTriggerRegion";
   // Method to add a cylinder to the fast simulation trigger region
-  void add_cylinder(G4LogicalVolume* world_log,
-                    G4Region* region,
-                    TestHelpers::Cylinder cyl,
-                    const std::string& name);
+  static void add_cylinder(G4LogicalVolume* world_log,
+                           G4Region* region,
+                           TestHelpers::Cylinder cyl,
+                           const std::string& name);
   // Use ATLAS magnetic field
   bool fUseAtlasField = true;
   // Magnetic field strength of uniform magnetic field if ATLAS field is not used

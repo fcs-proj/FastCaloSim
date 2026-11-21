@@ -1,15 +1,15 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cstring>
 #include <iostream>
+#include <type_traits>
+#include <variant>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
 #include "CLHEP/Random/RandomEngine.h"
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSSimulationState =========
@@ -24,7 +24,7 @@ TFCSSimulationState::TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine)
 void TFCSSimulationState::clear()
 {
   set_SF(1);
-  m_Ebin = -1;
+  m_Ebin.reset();
   m_Etot = 0;
   m_E.clear();
   m_Efrac.clear();
@@ -35,29 +35,31 @@ void TFCSSimulationState::deposit(const unsigned long long cell_id, float E)
   m_cells[cell_id] += E;
 }
 
-void TFCSSimulationState::Print(Option_t*) const
+void TFCSSimulationState::Print(Option_t* /*option*/) const
 {
-  FCS_MSG_INFO("Ebin=" << m_Ebin << " E=" << E()
-                       << " #cells=" << m_cells.size());
-  for (int i = 0; i < m_E.size(); ++i)
-    if (E(i) != 0) {
+  FCS_MSG_INFO("Ebin=" << (m_Ebin ? std::to_string(*m_Ebin) : "none")
+                       << " E=" << E() << " #cells=" << m_cells.size());
+  for (std::size_t i = 0; i < m_E.size(); ++i) {
+    if (!FastCaloSim::exactly_equal(E(i), 0.0)) {
       FCS_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
     }
+  }
   if (!m_AuxInfo.empty()) {
     FCS_MSG_INFO("  AuxInfo has " << m_AuxInfo.size() << " elements");
     for (const auto& a : m_AuxInfo) {
-      FCS_MSG_INFO("    " << a.first
-                          << " : "
-                          // Don't print as char/bool.
-                          // Accessing as a bool is likely to undefined
-                          // behavior (which triggers a warning from
-                          // the sanitizer).  As a char, it may not
-                          // be printable.
-                          //<< "bool=" << a.second.b
-                          //<< " char=" << a.second.c
-                          << " int=" << a.second.i << " float=" << a.second.f
-                          << " double=" << a.second.d
-                          << " void*=" << a.second.p);
+      // Print the value with the type it was stored with
+      std::visit(
+          [&a, this](const auto& value) -> void
+          {
+            // Print chars as numbers, they may not be printable
+            if constexpr (std::is_same_v<std::decay_t<decltype(value)>, char>) {
+              FCS_MSG_INFO("    " << a.first << " : "
+                                  << static_cast<int>(value));
+            } else {
+              FCS_MSG_INFO("    " << a.first << " : " << value);
+            }
+          },
+          a.second);
     }
   }
 }
@@ -83,5 +85,3 @@ void TFCSSimulationState::DoAuxInfoCleanup()
     para->CleanAuxInfo(*this);
   }
 }
-
-#pragma GCC diagnostic pop

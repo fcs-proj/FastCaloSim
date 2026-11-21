@@ -8,8 +8,8 @@
 class TFCSEnergyInterpolationHistogram : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationHistogram(const char* name = nullptr,
-                                   const char* title = nullptr);
+  explicit TFCSEnergyInterpolationHistogram(const char* name = nullptr,
+                                            const char* title = nullptr);
 
   enum FCSEnergyInitializationStatusBits
   {
@@ -18,24 +18,24 @@ public:
                  ///< should only be scaled by the spline
   };
 
-  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
-  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
-  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); }
+  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); }
+  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); }
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_calosample(int /*calosample*/) const -> bool override
+  }
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override
   {
     return true;
-  };
+  }
 
   /// Initialize interpolation from histogram
   /// x values should be Ekin, y values should <E(reco)/Ekin(true)>
-  void InitFromHist(const TH1F& hist) { m_hist = hist; };
+  void InitFromHist(const TH1F& hist) { m_hist = hist; }
 
-  auto hist() const -> const TH1F& { return m_hist; };
+  auto hist() const -> const TH1F& { return m_hist; }
 
   /// Initialize simulstate with the mean reconstructed energy in the
   /// calorimater expected from the true kinetic energy

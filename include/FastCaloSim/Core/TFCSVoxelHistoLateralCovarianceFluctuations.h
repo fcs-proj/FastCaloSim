@@ -16,12 +16,20 @@ class TFCSVoxelHistoLateralCovarianceFluctuations
     : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSVoxelHistoLateralCovarianceFluctuations(const char* name = nullptr,
-                                              const char* title = nullptr);
+  explicit TFCSVoxelHistoLateralCovarianceFluctuations(
+      const char* name = nullptr, const char* title = nullptr);
   ~TFCSVoxelHistoLateralCovarianceFluctuations() override;
+  TFCSVoxelHistoLateralCovarianceFluctuations(
+      const TFCSVoxelHistoLateralCovarianceFluctuations& ref) = default;
+  TFCSVoxelHistoLateralCovarianceFluctuations(
+      TFCSVoxelHistoLateralCovarianceFluctuations&& ref) = default;
+  auto operator=(const TFCSVoxelHistoLateralCovarianceFluctuations& ref)
+      -> TFCSVoxelHistoLateralCovarianceFluctuations& = default;
+  auto operator=(TFCSVoxelHistoLateralCovarianceFluctuations&& ref)
+      -> TFCSVoxelHistoLateralCovarianceFluctuations& = default;
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
-  auto get_geometry() -> CaloGeo* { return m_geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
+  auto get_geometry() -> CaloGeo* { return m_geo; }
 
   auto initialize(TFile* inputfile, const std::string& folder) -> bool;
 
@@ -43,7 +51,8 @@ public:
 protected:
   CaloGeo* m_geo = nullptr;  //! do not persistify
 
-  using weight_t = std::vector<std::vector<float>>;
+  // Transient per-event weights, not persistified
+  using weight_t = std::vector<std::vector<double>>;
 
   std::vector<std::vector<std::vector<TFCS1DFunction*>>> m_transform;
 

@@ -7,10 +7,10 @@
 #include "TFile.h"
 #include "TestConfig/BasicSimTestsConfig.h"
 
-class BasicSimTests : public AtlasGeoTests
+class BasicSimTests : public virtual AtlasGeoTests
 {
 protected:
-  static std::map<std::string, TFile*> param_files;
+  static inline std::map<std::string, TFile*> param_files;
 
   // Per-test-suite set-up.
   // Called before the first test in this test suite.
@@ -39,6 +39,3 @@ protected:
     }
   }
 };
-
-// Initialize the static members
-std::map<std::string, TFile*> BasicSimTests::param_files;

@@ -18,8 +18,8 @@ class G4RunTests : public virtual ::testing::TestWithParam<TestHelpers::Event>
 protected:
   // Make the run manager a member variable so that it can be accessed in the
   // tests
-  static G4RunManager* run_manager;
-  static ActionInitialization* actionInitialization;
+  static inline G4RunManager* run_manager = nullptr;
+  static inline ActionInitialization* actionInitialization = nullptr;
 
   // Per-test-suite set-up.
   // Note: the geant4 kernel does not support kernel re-instanciation
@@ -50,16 +50,16 @@ protected:
     fastSimulationPhysics->BeVerbose();
 
     // Activate fast simulation for the following particles
-    std::vector<G4String> fast_sim_particles = {"e-",
-                                                "e+",
-                                                "gamma",
-                                                "pi+",
-                                                "pi-",
-                                                "pi0",
-                                                "kaon+",
-                                                "proton",
-                                                "anti-proton"};
-    for (auto& particle : fast_sim_particles) {
+    std::vector<G4String> const fast_sim_particles = {"e-",
+                                                      "e+",
+                                                      "gamma",
+                                                      "pi+",
+                                                      "pi-",
+                                                      "pi0",
+                                                      "kaon+",
+                                                      "proton",
+                                                      "anti-proton"};
+    for (const auto& particle : fast_sim_particles) {
       fastSimulationPhysics->ActivateFastSimulation(particle);
     }
 
@@ -79,7 +79,3 @@ protected:
     delete run_manager;
   }
 };
-
-// Initialize the static members
-G4RunManager* G4RunTests::run_manager = nullptr;
-ActionInitialization* G4RunTests::actionInitialization = nullptr;

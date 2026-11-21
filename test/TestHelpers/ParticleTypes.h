@@ -9,16 +9,18 @@ namespace TestHelpers
 
 struct ParticleType
 {
-  constexpr ParticleType(int pid, std::string_view name, std::string_view label)
-      : pid(pid)
-      , name(name)
-      , label(label)
+  constexpr ParticleType(int pdg_id,
+                         std::string_view particle_name,
+                         std::string_view latex_label)
+      : pid(pdg_id)
+      , name(particle_name)
+      , label(latex_label)
   {
   }
 
-  const int pid;
-  const std::string_view name;
-  const std::string_view label;
+  int pid;
+  std::string_view name;
+  std::string_view label;
 };
 
 constexpr auto make_particle(int pid,

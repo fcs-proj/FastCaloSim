@@ -21,34 +21,36 @@ class BFieldSolenoid
 {
 public:
   // constructor
-  BFieldSolenoid()
-      : m_orig(0)
-      , m_tilt(0)
-  {
-    ;
-  }
+  BFieldSolenoid() = default;
   // destructor
   ~BFieldSolenoid()
   {
     delete m_orig;
-    if (m_orig != m_tilt)
+    if (m_orig != m_tilt) {
       delete m_tilt;
+    }
   }
+  // the maps are owned by this object
+  BFieldSolenoid(const BFieldSolenoid&) = delete;
+  auto operator=(const BFieldSolenoid&) -> BFieldSolenoid& = delete;
+  BFieldSolenoid(BFieldSolenoid&&) = delete;
+  auto operator=(BFieldSolenoid&&) -> BFieldSolenoid& = delete;
   // read/write map from/to file
-  int readMap(std::istream& input);
+  auto readMap(std::istream& input) -> int;
   // int readMap( TFile* rootfile );
   // void writeMap( TFile* rootfile, bool tilted = false );
   //  move and tilt the map
   void moveMap(double dx, double dy, double dz, double ax, double ay);
   // compute magnetic field
-  void getB(const double* xyz, double* B, double* deriv = 0) const;
+  void getB(const double* xyz, double* B, double* deriv = nullptr) const;
   // accessor
-  const BFieldMesh<double>* tiltedMap() const { return m_tilt; }
+  auto tiltedMap() const -> const BFieldMesh<double>* { return m_tilt; }
 
 private:
   // data members
-  BFieldMesh<double>* m_orig;  // original map as it was read from file
-  BFieldMesh<double>* m_tilt;  // tilted and moved map
+  BFieldMesh<double>* m_orig {
+      nullptr};  // original map as it was read from file
+  BFieldMesh<double>* m_tilt {nullptr};  // tilted and moved map
   // cache for speed
   mutable BFieldCache m_cache;
 };

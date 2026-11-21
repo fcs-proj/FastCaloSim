@@ -48,8 +48,8 @@ target_include_directories(
 # Generate ROOT dictionary for custom classes when building a shared library
 ROOT_GENERATE_DICTIONARY(FastCaloSimParam_dict MODULE FastCaloSim_Param LINKDEF include/FastCaloSimParam/LinkDef.h)
 
-# Deacticate checks for the generated dictionary
-deactivate_checks(FastCaloSimParam_dict FastCaloSim_Param)
+# Deactivate checks for the dictionary that rootcling generates
+deactivate_checks(FastCaloSimParam_dict)
 
 # Set the shared library properties
 set_target_properties(

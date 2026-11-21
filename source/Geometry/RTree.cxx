@@ -15,6 +15,8 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/index/rtree.hpp>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
+
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
 
@@ -47,7 +49,8 @@ public:
     m_x0 = m_y0 = std::numeric_limits<double>::max();
     double x1 = std::numeric_limits<double>::lowest();
     double y1 = std::numeric_limits<double>::lowest();
-    std::vector<double> widths, heights;
+    std::vector<double> widths;
+    std::vector<double> heights;
     widths.reserve(entries.size());
     heights.reserve(entries.size());
     for (const auto& [box, pos] : entries) {
@@ -63,9 +66,10 @@ public:
 
     // Bins about the size of a typical rectangle, but never more bins than a
     // few per rectangle
-    const auto median = [](std::vector<double>& v)
+    const auto median = [](std::vector<double>& v) -> double
     {
-      std::nth_element(v.begin(), v.begin() + v.size() / 2, v.end());
+      const auto middle = v.begin() + static_cast<std::ptrdiff_t>(v.size() / 2);
+      std::nth_element(v.begin(), middle, v.end());
       return v[v.size() / 2];
     };
     const double width = median(widths);
@@ -112,7 +116,7 @@ public:
     // List the rectangles of each bin contiguously (compressed row storage)
     m_bin_begin.assign(m_nx * m_ny + 1, 0);
     for_each_bin_of(entries,
-                    [&](std::size_t bin, const Entry&)
+                    [&](std::size_t bin, const Entry&) -> void
                     { ++m_bin_begin[bin + 1]; });
     for (std::size_t bin = 0; bin < m_nx * m_ny; ++bin) {
       m_bin_begin[bin + 1] += m_bin_begin[bin];
@@ -120,7 +124,7 @@ public:
     m_entries.resize(m_bin_begin.back());
     std::vector<std::size_t> next(m_bin_begin.begin(), m_bin_begin.end() - 1);
     for_each_bin_of(entries,
-                    [&](std::size_t bin, const Entry& entry)
+                    [&](std::size_t bin, const Entry& entry) -> void
                     { m_entries[next[bin]++] = entry; });
   }
 
@@ -130,8 +134,11 @@ public:
   {
     const double x = point.get<0>();
     const double y = point.get<1>();
-    // Outside the extent of all rectangles (or NaN): no rectangle contains it
-    if (!(x >= m_x0 && x <= m_x1 && y >= m_y0 && y <= m_y1)) {
+    // Not finite or outside the extent of all rectangles: no rectangle
+    // contains it (and the bin below needs finite coordinates)
+    if (!std::isfinite(x) || !std::isfinite(y) || x < m_x0 || x > m_x1
+        || y < m_y0 || y > m_y1)
+    {
       return;
     }
     const std::size_t bin = bin_y(y) * m_nx + bin_x(x);
@@ -181,7 +188,7 @@ public:
     const std::size_t iy = clamped_bin((y - m_y0) * m_inv_wy, m_ny);
 
     double best = std::numeric_limits<double>::infinity();
-    const auto visit_bin = [&](std::size_t bx, std::size_t by)
+    const auto visit_bin = [&](std::size_t bx, std::size_t by) -> auto
     {
       const std::size_t bin = by * m_nx + bx;
       for (std::size_t i = m_bin_begin[bin]; i < m_bin_begin[bin + 1]; ++i) {
@@ -191,10 +198,10 @@ public:
           best = d;
           candidates.clear();
           candidates.push_back(entry);
-        } else if (d == best
+        } else if (FastCaloSim::exactly_equal(d, best)
                    && std::none_of(candidates.begin(),
                                    candidates.end(),
-                                   [&](const Entry& c)
+                                   [&](const Entry& c) -> auto
                                    {
                                      return c.second == entry.second
                                          && bg::equals(c.first, entry.first);
@@ -241,7 +248,7 @@ public:
       }
       double bound = std::numeric_limits<double>::infinity();
       const auto beyond =
-          [&](double xmin, double ymin, double xmax, double ymax)
+          [&](double xmin, double ymin, double xmax, double ymax) -> auto
       {
         bound = std::min(bound,
                          bg::comparable_distance(
@@ -288,7 +295,7 @@ private:
     m_wy = (m_y1 - m_y0) / static_cast<double>(ny);
     // Far larger than the rounding of the bin computation, far smaller than
     // a bin
-    const auto margin = [](double lo, double hi, double w)
+    const auto margin = [](double lo, double hi, double w) -> double
     { return 1e-9 * std::max({std::abs(lo), std::abs(hi), w}); };
     m_margin_x = margin(m_x0, m_x1, m_wx);
     m_margin_y = margin(m_y0, m_y1, m_wy);
@@ -305,7 +312,7 @@ private:
   }
 
   template<typename F>
-  void for_each_bin_of(const std::vector<Entry>& entries, F&& f) const
+  void for_each_bin_of(const std::vector<Entry>& entries, const F& f) const
   {
     for (const auto& entry : entries) {
       const std::size_t ix0 = bin_x(entry.first.min_corner().get<0>());
@@ -363,8 +370,10 @@ RTree::RTree(RTreeHelpers::CoordinateSystem coord_sys,
   }
 
   // Constructing the tree from all rectangles at once packs it (bulk loading)
-  m_impl = std::make_unique<const Impl>(Impl {
-      Tree(entries.begin(), entries.end()), Grid(entries), std::move(ids)});
+  m_impl = std::make_unique<const Impl>(
+      Impl {.tree = Tree(entries.begin(), entries.end()),
+            .grid = Grid(entries),
+            .ids = std::move(ids)});
 }
 
 RTree::~RTree() = default;
@@ -397,7 +406,7 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
          ++it)
     {
       const double d = bg::comparable_distance(point, it->first);
-      if (!candidates.empty() && d != min_distance) {
+      if (!candidates.empty() && !FastCaloSim::exactly_equal(d, min_distance)) {
         break;
       }
       min_distance = d;
@@ -415,15 +424,15 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
   // Of several candidates, take the cell whose rectangle center is nearest
   // (and the smaller cell ID on an exact tie)
   const auto& ids = m_impl->ids;
-  const auto center_distance_and_id = [&point, &ids](const Entry& entry)
+  const auto center_distance_and_id =
+      [&point, &ids](const Entry& entry) -> std::pair<double, unsigned long>
   {
     const auto center = bg::return_centroid<Point>(entry.first);
-    return std::pair(bg::comparable_distance(point, center), ids[entry.second]);
+    return {bg::comparable_distance(point, center), ids[entry.second]};
   };
-  const auto best = std::min_element(
-      candidates.begin(),
-      candidates.end(),
-      [&](const Entry& a, const Entry& b)
+  const auto best = std::ranges::min_element(
+      candidates,
+      [&](const Entry& a, const Entry& b) -> bool
       { return center_distance_and_id(a) < center_distance_and_id(b); });
   return best->second;
 }

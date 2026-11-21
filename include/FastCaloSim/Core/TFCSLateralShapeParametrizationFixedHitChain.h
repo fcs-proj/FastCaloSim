@@ -8,9 +8,9 @@ class TFCSLateralShapeParametrizationFixedHitChain
     : public TFCSLateralShapeParametrizationHitChain
 {
 public:
-  TFCSLateralShapeParametrizationFixedHitChain(const char* name = nullptr,
-                                               const char* title = nullptr);
-  TFCSLateralShapeParametrizationFixedHitChain(
+  explicit TFCSLateralShapeParametrizationFixedHitChain(
+      const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSLateralShapeParametrizationFixedHitChain(
       TFCSLateralShapeParametrizationHitBase* hitsim);
 
 protected:

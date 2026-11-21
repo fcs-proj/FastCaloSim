@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
@@ -7,6 +8,7 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
+#include "FastCaloSim/Core/GaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "TH1.h"
 #include "TVector2.h"
@@ -23,18 +25,19 @@ TFCSHistoLateralShapeWeight::TFCSHistoLateralShapeWeight(const char* name,
 
 TFCSHistoLateralShapeWeight::~TFCSHistoLateralShapeWeight()
 {
-  if (m_hist)
+  {
     delete m_hist;
+  }
 }
 
-auto TFCSHistoLateralShapeWeight::getMinWeight() const -> float
+auto TFCSHistoLateralShapeWeight::getMinWeight() const -> double
 {
-  return m_minWeight;
+  return static_cast<double>(m_minWeight);
 }
 
-auto TFCSHistoLateralShapeWeight::getMaxWeight() const -> float
+auto TFCSHistoLateralShapeWeight::getMaxWeight() const -> double
 {
-  return m_maxWeight;
+  return static_cast<double>(m_maxWeight);
 }
 
 auto TFCSHistoLateralShapeWeight::simulate_hit(
@@ -43,7 +46,7 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
@@ -52,28 +55,26 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  const float dist000 = FastCaloSim::dist000(center_r, center_z);
-  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+  const double dist000 = FastCaloSim::dist000(center_r, center_z);
+  const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  const float delta_eta = hit.eta() - center_eta;
-  const float delta_phi = hit.phi() - center_phi;
-  const float delta_eta_mm = delta_eta * eta_jakobi * dist000;
-  const float delta_phi_mm = delta_phi * center_r;
-  const float delta_r_mm =
+  const double delta_eta = hit.eta() - center_eta;
+  const double delta_phi = hit.phi() - center_phi;
+  const double delta_eta_mm = delta_eta * eta_jakobi * dist000;
+  const double delta_phi_mm = delta_phi * center_r;
+  const double delta_r_mm =
       std::sqrt(delta_eta_mm * delta_eta_mm + delta_phi_mm * delta_phi_mm);
 
   // TODO: delta_r_mm should perhaps be cached in hit
 
   Int_t bin = m_hist->FindBin(delta_r_mm);
-  if (bin < 1)
-    bin = 1;
-  if (bin > m_hist->GetNbinsX())
-    bin = m_hist->GetNbinsX();
-  float weight = m_hist->GetBinContent(bin);
-  float RMS = m_hist->GetBinError(bin);
+  bin = std::max(bin, 1);
+  bin = std::min(bin, m_hist->GetNbinsX());
+  double weight = m_hist->GetBinContent(bin);
+  double const RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
     weight =
-        CLHEP::RandGaussZiggurat::shoot(simulstate.randomEngine(), weight, RMS);
+        FastCaloSim::gauss_ziggurat(simulstate.randomEngine(), weight, RMS);
   }
   hit.set_E(weight * hit.E());
 
@@ -84,12 +85,14 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
 
 auto TFCSHistoLateralShapeWeight::Initialize(TH1* hist) -> bool
 {
-  if (!hist)
+  if (hist == nullptr) {
     return false;
-  if (m_hist)
+  }
+  {
     delete m_hist;
-  m_hist = (TH1*)hist->Clone(
-      (std::string("TFCSHistoLateralShapeWeight_") + hist->GetName()).c_str());
+  }
+  m_hist = static_cast<TH1*>(hist->Clone(
+      (std::string("TFCSHistoLateralShapeWeight_") + hist->GetName()).c_str()));
   m_hist->SetDirectory(nullptr);
 
   return true;
@@ -101,14 +104,15 @@ void TFCSHistoLateralShapeWeight::Print(Option_t* option) const
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
   if (longprint) {
-    if (m_hist)
+    if (m_hist != nullptr) {
       FCS_MSG_INFO(optprint
                    << "  Histogram: " << m_hist->GetNbinsX() << " bins ["
                    << std::as_const(m_hist)->GetXaxis()->GetXmin() << ","
                    << std::as_const(m_hist)->GetXaxis()->GetXmax() << "]"
                    << " min weight: " << m_minWeight
                    << " max weight: " << m_maxWeight);
-    else
+    } else {
       FCS_MSG_INFO(optprint << "  no Histogram");
+    }
   }
 }

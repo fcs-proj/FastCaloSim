@@ -1,9 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 #include <algorithm>
+#include <cstddef>
 #include <format>
 
 #include "FastCaloSim/Core/TFCSEnergyBinParametrization.h"
@@ -11,6 +9,8 @@
 #include "CLHEP/Random/RandFlat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "TFile.h"
 #include "TVectorF.h"
 
@@ -21,20 +21,19 @@
 TFCSEnergyBinParametrization::TFCSEnergyBinParametrization(const char* name,
                                                            const char* title)
     : TFCSEnergyParametrization(name, title)
+    , m_number_of_Ekin_bins(1)
 {
-  m_number_of_Ekin_bins = 1;
 }
 
-auto TFCSEnergyBinParametrization::is_match_Ekin_bin(int Ekin_bin) const -> bool
+auto TFCSEnergyBinParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
+    -> bool
 {
-  if (Ekin_bin >= 1 && Ekin_bin <= n_bins())
-    return true;
-  return false;
+  return Ekin_bin >= 1 && Ekin_bin <= n_bins();
 }
 
 void TFCSEnergyBinParametrization::resize()
 {
-  for (int id : pdgid()) {
+  for (int const id : pdgid()) {
     FCS_MSG_VERBOSE("PDGid=" << id << " resize to " << n_bins() + 1);
     m_pdgid_Ebin_probability[id].resize(n_bins() + 1);
   }
@@ -84,24 +83,29 @@ void TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(
         << prob.size() << " instance=" << m_pdgid_Ebin_probability[id].size());
     return;
   }
-  float ptot = 0;
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin)
-    ptot += prob[iEbin];
-  if (ptot == 0.f) {
+  const auto n_probabilities = n_bins() + 1;
+  double ptot = 0;
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
+    ptot += static_cast<double>(prob[iEbin]);
+  }
+  if (FastCaloSim::exactly_equal(ptot, 0.)) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::set_pdgid_Ekin_bin_probability(): "
         "ptot is zero.");
     return;
   }
-  float p = 0;
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
-    p += prob[iEbin] / ptot;
-    m_pdgid_Ebin_probability[id][iEbin] = p;
+  double p = 0;
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
+    p += static_cast<double>(prob[iEbin]) / ptot;
+    m_pdgid_Ebin_probability[id][iEbin] = static_cast<float>(p);
   }
 }
 
 auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
-    int id, TFile* file, std::string prob_object_name) -> bool
+    int id,
+    TFile* file,
+    // NOLINTNEXTLINE(performance-unnecessary-value-param): public virtual API
+    std::string prob_object_name) -> bool
 {
   add_pdgid(id);
 
@@ -136,19 +140,21 @@ auto TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_file(
     }
   }
 
-  float ptot {};
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin)
-    ptot += prob[iEbin];
-  if (ptot == 0.f) {
+  const auto n_probabilities = n_bins() + 1;
+  double ptot = 0;
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
+    ptot += static_cast<double>(prob[iEbin]);
+  }
+  if (FastCaloSim::exactly_equal(ptot, 0.)) {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::load_pdgid_Ekin_bin_probability_from_"
         "file(): ptot is zero");
     return false;
   }
-  float p {};
-  for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
-    p += prob[iEbin] / ptot;
-    m_pdgid_Ebin_probability[id][iEbin] = p;
+  double p {};
+  for (std::size_t iEbin = 0; iEbin < n_probabilities; ++iEbin) {
+    p += static_cast<double>(prob[iEbin]) / ptot;
+    m_pdgid_Ebin_probability[id][iEbin] = static_cast<float>(p);
   }
 
   return true;
@@ -159,15 +165,14 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSEnergyParametrization::Print(option);
   if (longprint) {
-    for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
-         ++it)
-    {
-      FCS_MSG(INFO) << optprint << "  PDGID=" << *it << " : ";
+    for (const int it : pdgid()) {
+      FCS_MSG(INFO) << optprint << "  PDGID=" << it << " : ";
       float p = 0;
-      for (int iEbin = 0; iEbin <= n_bins(); ++iEbin) {
-        if (iEbin > 0)
+      for (std::size_t iEbin = 0; iEbin <= n_bins(); ++iEbin) {
+        if (iEbin > 0) {
           FCS_MSG(INFO) << ", ";
-        auto mapit = m_pdgid_Ebin_probability.find(*it);
+        }
+        auto mapit = m_pdgid_Ebin_probability.find(it);
         FCS_MSG(INFO) << "b" << iEbin << "="
                       << (mapit->second[iEbin] - p) / mapit->second.back() * 100
                       << "%";
@@ -183,34 +188,38 @@ auto TFCSEnergyBinParametrization::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
   const int truth_pdgid = truth->pdgid();
   int pdgid = -99;
 
-  if (is_match_pdgid(truth_pdgid))
+  if (is_match_pdgid(truth_pdgid)) {
     pdgid = truth_pdgid;
-  else if (is_match_pdgid(0))
+  } else if (is_match_pdgid(0)) {
     pdgid = 0;
-  else {
+  } else {
     FCS_MSG_ERROR(
         "TFCSEnergyBinParametrization::simulate(): cannot simulate pdgid="
         << truth_pdgid);
     return FCSFatal;
   }
 
-  const float searchRand = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  // The cumulative probabilities are stored in single precision, so is the
+  // random number that selects the bin
+  const auto searchRand =
+      static_cast<float>(CLHEP::RandFlat::shoot(simulstate.randomEngine()));
   const auto& Ebin_probability = m_pdgid_Ebin_probability.at(pdgid);
   const auto first = Ebin_probability.begin();
-  int chosenBin =
-      std::upper_bound(first, first + n_bins() + 1, searchRand) - first;
+  const auto last = first + static_cast<std::ptrdiff_t>(n_bins()) + 1;
+  auto chosenBin = FastCaloSim::index_of(
+      Ebin_probability, std::upper_bound(first, last, searchRand));
   if (chosenBin > n_bins()) {
     FCS_MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): "
         "chosenBin>n_bins() (will use chosenBin=n_bins())");
-    std::string array = "";
+    std::string array;
     for (const auto& prob : Ebin_probability) {
       array += std::format("{} ", prob);
     }
@@ -223,5 +232,3 @@ auto TFCSEnergyBinParametrization::simulate(
 
   return FCSSuccess;
 }
-
-#pragma GCC diagnostic pop

@@ -13,13 +13,19 @@ class TFCS1DFunctionRegression : public TFCS1DFunction
 public:
   TFCS1DFunctionRegression() = default;
   ~TFCS1DFunctionRegression() override = default;
+  TFCS1DFunctionRegression(const TFCS1DFunctionRegression&) = default;
+  TFCS1DFunctionRegression(TFCS1DFunctionRegression&&) = default;
+  auto operator=(const TFCS1DFunctionRegression&)
+      -> TFCS1DFunctionRegression& = default;
+  auto operator=(TFCS1DFunctionRegression&&)
+      -> TFCS1DFunctionRegression& = default;
 
   using TFCS1DFunction::rnd_to_fct;
   auto rnd_to_fct(double rnd) const -> double override;
   auto regression_value(double uniform) const -> double;
   void set_weights(const std::vector<std::vector<double>>& fWeightMatrix0to1,
                    const std::vector<std::vector<double>>& fWeightMatrix1to2);
-  static auto sigmoid(double) -> double;
+  static auto sigmoid(double /*x*/) -> double;
 
 private:
   std::vector<std::vector<double>> m_fWeightMatrix0to1;

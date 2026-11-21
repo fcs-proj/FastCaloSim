@@ -1,8 +1,11 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <string_view>
+
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
 
 // Geant4 includes for particle extrapolation
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "G4ChargeState.hh"
 #include "G4DynamicParticle.hh"
 #include "G4EquationOfMotion.hh"
@@ -13,12 +16,13 @@
 #include "G4Navigator.hh"
 #include "G4PVPlacement.hh"
 #include "G4PropagatorInField.hh"
+#include "G4String.hh"
 #include "G4Track.hh"
 #include "G4TransportationManager.hh"
 
 G4CaloTransportTool::G4CaloTransportTool(G4VPhysicalVolume* world)
 {
-  if (!world) {
+  if (world == nullptr) {
     G4Exception("G4CaloTransportTool::G4CaloTransportTool",
                 "MissingWorldVolume",
                 FatalException,
@@ -41,7 +45,7 @@ auto G4CaloTransportTool::createSimplifiedWorld(
 {
   G4LogicalVolume* logVol =
       G4LogicalVolumeStore::GetInstance()->GetVolume(worldLogicalVolumeName);
-  if (!logVol) {
+  if (logVol == nullptr) {
     G4ExceptionDescription description;
     description << "G4CaloTransportTool: simplified world logical volume '"
                 << worldLogicalVolumeName
@@ -71,13 +75,13 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack,
                                  G4VPhysicalVolume* currentPhysVol)
 {
   G4double retSafety = -1.0;
-  G4double currentMinimumStep = 10.0 * CLHEP::m;
+  G4double const currentMinimumStep = 10.0 * CLHEP::m;
 
-  if (fieldTrack.GetCharge() == 0) {
+  if (FastCaloSim::exactly_equal(fieldTrack.GetCharge(), 0.0)) {
     /* Neutral particles: transport with navigator */
 
     // Compute the step length
-    G4double stepLength =
+    G4double const stepLength =
         m_navigator->ComputeStep(fieldTrack.GetPosition(),
                                  fieldTrack.GetMomentumDirection(),
                                  currentMinimumStep,
@@ -135,13 +139,16 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
       G4InputTrack.GetDynamicParticle();
   const G4ParticleDefinition* inputParticleDef =
       inputDynamicParticle->GetDefinition();
-  G4ChargeState chargeState(inputDynamicParticle->GetCharge(),
-                            inputDynamicParticle->GetMagneticMoment(),
-                            inputParticleDef->GetPDGSpin());
-  m_propagator->GetCurrentEquationOfMotion()->SetChargeMomentumMass(
-      chargeState,
-      inputDynamicParticle->GetTotalMomentum(),
-      inputDynamicParticle->GetMass());
+  G4ChargeState const chargeState(inputDynamicParticle->GetCharge(),
+                                  inputDynamicParticle->GetMagneticMoment(),
+                                  inputParticleDef->GetPDGSpin());
+  // Without a magnetic field there is no equation of motion to update
+  if (G4EquationOfMotion* equation = m_propagator->GetCurrentEquationOfMotion())
+  {
+    equation->SetChargeMomentumMass(chargeState,
+                                    inputDynamicParticle->GetTotalMomentum(),
+                                    inputDynamicParticle->GetMass());
+  }
 
   // The chord finder lives on the (thread-local) field manager, not on the
   // propagator. Clear its cached last step-size estimate so field propagation
@@ -172,7 +179,9 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
                                                     &direction);
     if (volume != nullptr) {
       // We stop the track navigation once we have reached the provided volume
-      if (volume->GetName().find(m_transportLimitVolume) != std::string::npos) {
+      if (G4StrUtil::contains(volume->GetName(),
+                              std::string_view(m_transportLimitVolume)))
+      {
         break;
       }
     } else {

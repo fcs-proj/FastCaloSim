@@ -11,12 +11,19 @@ class TH2;
 class TFCS1DFunctionInt32Histogram : public TFCS1DFunction
 {
 public:
-  TFCS1DFunctionInt32Histogram(const TH1* hist = nullptr)
+  explicit TFCS1DFunctionInt32Histogram(const TH1* hist = nullptr)
   {
-    if (hist)
+    if (hist != nullptr) {
       Initialize(hist);
-  };
+    }
+  }
   ~TFCS1DFunctionInt32Histogram() override = default;
+  TFCS1DFunctionInt32Histogram(const TFCS1DFunctionInt32Histogram&) = default;
+  TFCS1DFunctionInt32Histogram(TFCS1DFunctionInt32Histogram&&) = default;
+  auto operator=(const TFCS1DFunctionInt32Histogram&)
+      -> TFCS1DFunctionInt32Histogram& = default;
+  auto operator=(TFCS1DFunctionInt32Histogram&&)
+      -> TFCS1DFunctionInt32Histogram& = default;
 
   void Initialize(const TH1* hist);
 
@@ -34,16 +41,16 @@ public:
   auto get_HistoBordersx() const -> const std::vector<float>&
   {
     return m_HistoBorders;
-  };
-  auto get_HistoBordersx() -> std::vector<float>& { return m_HistoBorders; };
+  }
+  auto get_HistoBordersx() -> std::vector<float>& { return m_HistoBorders; }
   auto get_HistoContents() const -> const std::vector<HistoContent_t>&
   {
     return m_HistoContents;
-  };
+  }
   auto get_HistoContents() -> std::vector<HistoContent_t>&
   {
     return m_HistoContents;
-  };
+  }
 
 protected:
   std::vector<float> m_HistoBorders;

@@ -19,7 +19,8 @@ public:
       FastCaloSim::MSG::Level::INFO;
 
   // The list of events (event = particle container) to be simulated
-  inline static const std::vector<TestHelpers::Event> EVENTS = []()
+  inline static const std::vector<TestHelpers::Event> EVENTS =
+      []() -> std::vector<TestHelpers::Event>
   {
     // Vector of events to be processed
     std::vector<TestHelpers::Event> events;
@@ -32,7 +33,7 @@ public:
     using ParticleParamsList = std::vector<ParticleSimParams>;
 
     // Define the properties of the particles you want to test
-    ParticleParamsList params = {
+    ParticleParamsList const params = {
         // Barrel (eta = 0.2)
         {22, 16384, 0.2, "barrel"},
         {22, 131072, 0.2, "barrel"},
@@ -71,8 +72,10 @@ public:
     // Loop over the parameters and create the events
     for (const auto& ptcl : params) {
       // Create photon with speficfic PID, EKIN, and ETA
-      TestHelpers::Particle particle =
-          sampler.generate(ptcl.pid, ptcl.ekin, ptcl.eta);
+      TestHelpers::Particle const particle =
+          sampler.generate(ptcl.pid,
+                           static_cast<float>(ptcl.ekin),
+                           static_cast<float>(ptcl.eta));
 
       // Create a particle container and add the particle
       TestHelpers::ParticleContainer particles;
@@ -106,43 +109,43 @@ public:
       "simulated_cell_energy.gif";
 
   // Path to the serialized transportation data
-  inline static auto transport_output_path() -> std::string
+  static auto transport_output_path() -> std::string
   {
     return output_dir + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the reference transportation data
-  inline static auto transport_output_ref_path() -> std::string
+  static auto transport_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the serialized simulation data
-  inline static auto sim_output_path() -> std::string
+  static auto sim_output_path() -> std::string
   {
     return output_dir + SIM_DATA_FILE_NAME;
   }
 
   // Path to the reference simulation data
-  inline static auto sim_output_ref_path() -> std::string
+  static auto sim_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + SIM_DATA_FILE_NAME;
   }
 
   // Path to the output plot of the simulation plot
-  inline static auto plot_output_sim_path() -> std::string
+  static auto plot_output_sim_path() -> std::string
   {
     return output_dir + SIM_PLOT_FILE_NAME;
   }
 
   // Path to the output simulation animation
-  inline static auto plot_output_sim_animation() -> std::string
+  static auto plot_output_sim_animation() -> std::string
   {
     return output_dir + SIM_GIF_FILE_NAME;
   }
 
   // String of the python command to plot simulation output
-  inline static auto py_sim_exec(std::string label) -> std::string
+  static auto py_sim_exec(const std::string& label) -> std::string
   {
     std::string command = "python3 " + PYTHON_SCRIPT + " --sim_input "
         + sim_output_path() + " --output_png " + plot_output_sim_path()
@@ -153,10 +156,7 @@ public:
   }
 
   // Method to set the output directory for the test
-  inline static void set_output_dir(const std::string& dir)
-  {
-    output_dir = dir;
-  }
+  static void set_output_dir(const std::string& dir) { output_dir = dir; }
 
 private:
   inline static std::string output_dir;

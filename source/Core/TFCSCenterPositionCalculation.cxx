@@ -13,7 +13,7 @@
 TFCSCenterPositionCalculation::TFCSCenterPositionCalculation(const char* name,
                                                              const char* title)
     : TFCSLateralShapeParametrizationHitBase(name, title)
-    , m_extrapWeight(0.5)
+
 {
 }
 
@@ -23,16 +23,17 @@ auto TFCSCenterPositionCalculation::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
-  const int cs = calosample();
+  const std::size_t cs = calosample();
 
-  double r = (1. - m_extrapWeight) * extrapol->r(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->r(cs, Cell::SubPos::EXT);
-  double z = (1. - m_extrapWeight) * extrapol->z(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->z(cs, Cell::SubPos::EXT);
-  double eta = (1. - m_extrapWeight) * extrapol->eta(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->eta(cs, Cell::SubPos::EXT);
-  double phi = (1. - m_extrapWeight) * extrapol->phi(cs, Cell::SubPos::ENT)
-      + m_extrapWeight * extrapol->phi(cs, Cell::SubPos::EXT);
+  const auto weight = static_cast<double>(m_extrapWeight);
+  double r = (1. - weight) * extrapol->r(cs, FastCaloSim::SubPos::ENT)
+      + weight * extrapol->r(cs, FastCaloSim::SubPos::EXT);
+  double z = (1. - weight) * extrapol->z(cs, FastCaloSim::SubPos::ENT)
+      + weight * extrapol->z(cs, FastCaloSim::SubPos::EXT);
+  double eta = (1. - weight) * extrapol->eta(cs, FastCaloSim::SubPos::ENT)
+      + weight * extrapol->eta(cs, FastCaloSim::SubPos::EXT);
+  double phi = (1. - weight) * extrapol->phi(cs, FastCaloSim::SubPos::ENT)
+      + weight * extrapol->phi(cs, FastCaloSim::SubPos::EXT);
 
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))
@@ -75,7 +76,8 @@ void TFCSCenterPositionCalculation::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  Weight for extrapolated position: "
                           << m_extrapWeight);
+  }
 }

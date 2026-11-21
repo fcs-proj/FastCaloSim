@@ -22,11 +22,7 @@ struct Cylinder
 class IDCaloBoundary
 {
 public:
-  IDCaloBoundary()
-      : cylinderThickness(10 * CLHEP::mm)
-  {
-    recalculate();
-  }
+  IDCaloBoundary() { recalculate(); }
 
   void setThickness(float thickness)
   {
@@ -42,45 +38,47 @@ public:
   }
 
 private:
-  float cylinderThickness;
+  float cylinderThickness {10 * CLHEP::mm};
 
   std::map<std::string, Cylinder> m_cylinders;
 
   void recalculate()
   {
-    m_cylinders["barrel"] = {1148 * CLHEP::mm,
-                             1148 * CLHEP::mm + cylinderThickness,
-                             0.0 * CLHEP::mm,
-                             3550.0 * CLHEP::mm,
-                             true};
+    // The cylinder dimensions are stored in double precision
+    const auto thickness = static_cast<double>(cylinderThickness);
+    m_cylinders["barrel"] = {.rmin = 1148 * CLHEP::mm,
+                             .rmax = 1148 * CLHEP::mm + thickness,
+                             .zmin = 0.0 * CLHEP::mm,
+                             .zmax = 3550.0 * CLHEP::mm,
+                             .barrel = true};
 
     m_cylinders["barrelEndcap"] = {
-        120 * CLHEP::mm,
-        m_cylinders["barrel"].rmax,
-        m_cylinders["barrel"].zmax,
-        m_cylinders["barrel"].zmax + cylinderThickness,
-        false};
+        .rmin = 120 * CLHEP::mm,
+        .rmax = m_cylinders["barrel"].rmax,
+        .zmin = m_cylinders["barrel"].zmax,
+        .zmax = m_cylinders["barrel"].zmax + thickness,
+        .barrel = false};
 
     m_cylinders["innerBeamPipe"] = {
-        m_cylinders["barrelEndcap"].rmin,
-        m_cylinders["barrelEndcap"].rmin + cylinderThickness,
-        m_cylinders["barrelEndcap"].zmax,
-        4587.0 * CLHEP::mm,
-        true};
+        .rmin = m_cylinders["barrelEndcap"].rmin,
+        .rmax = m_cylinders["barrelEndcap"].rmin + thickness,
+        .zmin = m_cylinders["barrelEndcap"].zmax,
+        .zmax = 4587.0 * CLHEP::mm,
+        .barrel = true};
 
     m_cylinders["innerBeamPipeEndcap"] = {
-        41 * CLHEP::mm,
-        m_cylinders["innerBeamPipe"].rmin,
-        m_cylinders["innerBeamPipe"].zmax,
-        m_cylinders["innerBeamPipe"].zmax + cylinderThickness,
-        false};
+        .rmin = 41 * CLHEP::mm,
+        .rmax = m_cylinders["innerBeamPipe"].rmin,
+        .zmin = m_cylinders["innerBeamPipe"].zmax,
+        .zmax = m_cylinders["innerBeamPipe"].zmax + thickness,
+        .barrel = false};
 
     m_cylinders["outerBeamPipe"] = {
-        m_cylinders["innerBeamPipeEndcap"].rmin,
-        m_cylinders["innerBeamPipeEndcap"].rmin + cylinderThickness,
-        m_cylinders["innerBeamPipeEndcap"].zmax,
-        6783 * CLHEP::mm,
-        true};
+        .rmin = m_cylinders["innerBeamPipeEndcap"].rmin,
+        .rmax = m_cylinders["innerBeamPipeEndcap"].rmin + thickness,
+        .zmin = m_cylinders["innerBeamPipeEndcap"].zmax,
+        .zmax = 6783 * CLHEP::mm,
+        .barrel = true};
   }
 };
 

@@ -30,22 +30,28 @@ public:
 
   using event_bins_t = std::vector<layer_bins_t>;
 
-  TFCSBinnedShowerONNX(const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSBinnedShowerONNX(const char* name = nullptr,
+                                const char* title = nullptr);
 
   ~TFCSBinnedShowerONNX() override;
+  TFCSBinnedShowerONNX(const TFCSBinnedShowerONNX&) = default;
+  TFCSBinnedShowerONNX(TFCSBinnedShowerONNX&&) = default;
+  auto operator=(const TFCSBinnedShowerONNX&)
+      -> TFCSBinnedShowerONNX& = default;
+  auto operator=(TFCSBinnedShowerONNX&&) -> TFCSBinnedShowerONNX& = default;
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
+  }
 
-  void enable_upscaling() { m_use_upscaling = true; };
-  void disable_upscaling() { m_use_upscaling = false; };
+  void enable_upscaling() { m_use_upscaling = true; }
+  void disable_upscaling() { m_use_upscaling = false; }
 
   // Loads the ONNX model for the calorimeter simulation.
   auto load_simulator(const std::string& filename) -> bool
   {
-    if (m_ai_simulator) {
+    if (m_ai_simulator != nullptr) {
       delete m_ai_simulator;
       m_ai_simulator = nullptr;
     }
@@ -62,12 +68,12 @@ public:
   // upscaling
   // TODO: Define HDF5 file format somewhere
   void load_meta_data(const std::string& filename,
-                      std::vector<long unsigned int>& layers);
+                      std::vector<std::size_t>& layers);
 
   void load_sub_bin_distribution(const std::string& filename);
 
   // Allows to set the voxel boundaries for the given layer manually.
-  void set_bin_boundaries(long unsigned int layer_index,
+  void set_bin_boundaries(std::size_t layer_index,
                           const std::vector<float>& R_lower,
                           const std::vector<float>& R_size,
                           const std::vector<float>& alpha_lower,
@@ -104,30 +110,29 @@ public:
 protected:
   // Returns the event to be used
   void get_event(TFCSSimulationState& simulstate,
-                 float eta_center,
-                 float phi_center,
-                 float e_init,
-                 long unsigned int reference_layer_index) const override;
+                 double eta_center,
+                 double phi_center,
+                 double e_init,
+                 std::size_t reference_layer_index) const override;
 
   // Returns the number of hits that are going to be simulated in the given
   // layer.
   auto get_n_hits(TFCSSimulationState& simulstate,
-                  long unsigned int layer_index) const
-      -> long unsigned int override;
+                  std::size_t layer_index) const -> std::size_t override;
 
   // Used to precompute the number of hits for all layers in the event.
   virtual void compute_n_hits_and_elayer(TFCSSimulationState& simulstate) const;
 
   // Returns the total deposited energy in the given layer for the current event
   auto get_layer_energy(TFCSSimulationState& simulstate,
-                        long unsigned int layer_index) const -> float override;
+                        std::size_t layer_index) const -> double override;
 
   // Returns the position and energy of the corresponding hit in the given
   // event, layer and bin
   auto get_hit_position_and_energy(TFCSSimulationState& simulstate,
-                                   long unsigned int layer_index,
-                                   long unsigned int hit_index) const
-      -> std::tuple<float, float, float> override;
+                                   std::size_t layer_index,
+                                   std::size_t hit_index) const
+      -> std::tuple<double, double, double> override;
 
   // Delete all pointers that were created in get_event()
   void delete_event(TFCSSimulationState& simulstate) const override;
@@ -137,8 +142,9 @@ private:
   event_bins_t m_coordinates;
 
   auto get_coordinates(TFCSSimulationState& simulstate,
-                       long unsigned int layer_index,
-                       int bin_index) const -> std::tuple<float, float>;
+                       std::size_t layer_index,
+                       unsigned int bin_index) const
+      -> std::tuple<double, double>;
 
   // If true, the sub-cell distribution is used to upscale the energy deposition
   bool m_use_upscaling = false;
@@ -150,26 +156,26 @@ private:
   std::vector<float> m_upscaling_energies;  // energies of the avg showers
 
   void upscale(TFCSSimulationState& simulstate,
-               float& R_min,
-               float& R_max,
-               float& alpha_min,
-               float& alpha_max,
-               long unsigned int layer_index,
-               int bin_index) const;
+               double& R_min,
+               double& R_max,
+               double& alpha_min,
+               double& alpha_max,
+               std::size_t layer_index,
+               unsigned int bin_index) const;
 
   auto get_energy_index(TFCSSimulationState& simulstate,
-                        long unsigned int layer_index,
-                        long unsigned int hit_index) const -> long unsigned int;
+                        std::size_t layer_index,
+                        std::size_t hit_index) const -> std::size_t;
   // Helper functions to load the HDF5 dataset
-  auto load_hdf5_dataset(const std::string& filename,
-                         const std::string& datasetname)
+  static auto load_hdf5_dataset(const std::string& filename,
+                                const std::string& datasetname)
       -> std::tuple<std::vector<float>, std::vector<hsize_t>, bool>;
 
   void load_bin_boundaries(const std::string& filename,
-                           long unsigned int layer_index);
+                           std::size_t layer_index);
 
   void load_upscaling_distribution(const std::string& filename,
-                                   long unsigned int layer_index);
+                                   std::size_t layer_index);
 
   // Store a reference to the class that handles the actual ONNX call.
   TFCSMLCalorimeterSimulator* m_ai_simulator = nullptr;

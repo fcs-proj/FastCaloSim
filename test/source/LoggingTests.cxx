@@ -37,7 +37,10 @@ public:
              std::string_view text) override
   {
     const std::scoped_lock lock(m_mutex);
-    m_records.push_back({lvl, std::string(file), line, std::string(text)});
+    m_records.push_back({.lvl = lvl,
+                         .file = std::string(file),
+                         .line = line,
+                         .text = std::string(text)});
   }
 
   auto records() -> std::vector<Record>
@@ -94,8 +97,9 @@ public:
   void streamed(int n) const
   {
     FCS_MSG(INFO) << "items:";
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
       FCS_MSG(INFO) << " " << i;
+    }
     FCS_MSG(INFO) << END_FCS_MSG(INFO);
   }
   void part(const char* text) const { FCS_MSG(INFO) << text; }
@@ -131,11 +135,14 @@ public:
   }
   ExitLogger(const ExitLogger&) = delete;
   auto operator=(const ExitLogger&) -> ExitLogger& = delete;
+  ExitLogger(ExitLogger&&) = delete;
+  auto operator=(ExitLogger&&) -> ExitLogger& = delete;
   ~ExitLogger() override
   {
     part("streamed at exit");
-    if (m_end_line)
+    if (m_end_line) {
       end();
+    }
   }
 
 private:
@@ -217,7 +224,7 @@ TEST_F(LoggingTest, DisabledMessageIsNotEvaluated)
 {
   const Logger log;
   int calls = 0;
-  log.debug_with([&calls] { return ++calls; });
+  log.debug_with([&calls] -> int { return ++calls; });
   EXPECT_EQ(calls, 0);
   EXPECT_TRUE(m_sink->records().empty());
 }
@@ -285,18 +292,22 @@ TEST_F(LoggingTest, ThreadsSharingAnObject)
   constexpr int n_lines = 200;
   {
     std::vector<std::jthread> threads;
-    for (int t = 0; t < n_threads; ++t)
+    threads.reserve(n_threads);
+    for (int t = 0; t < n_threads; ++t) {
       threads.emplace_back(
-          [&log]
+          [&log] -> void
           {
-            for (int i = 0; i < n_lines; ++i)
+            for (int i = 0; i < n_lines; ++i) {
               log.streamed(5);
+            }
           });
+    }
   }
   const auto records = m_sink->records();
-  ASSERT_EQ(records.size(), std::size_t {n_threads * n_lines});
-  for (const auto& record : records)
+  ASSERT_EQ(records.size(), std::size_t {n_threads} * std::size_t {n_lines});
+  for (const auto& record : records) {
     EXPECT_EQ(record.text, "items: 0 1 2 3 4");
+  }
 }
 
 // Sinks can be replaced while other threads log, and no message is lost
@@ -310,19 +321,23 @@ TEST(LoggingSinkTest, ReplaceWhileLogging)
   constexpr int n_messages = 2000;
   {
     std::vector<std::jthread> threads;
-    for (int t = 0; t < n_threads; ++t)
+    threads.reserve(n_threads);
+    for (int t = 0; t < n_threads; ++t) {
       threads.emplace_back(
-          [&log]
+          [&log] -> void
           {
-            for (int i = 0; i < n_messages; ++i)
+            for (int i = 0; i < n_messages; ++i) {
               log.info(i);
+            }
           });
-    for (int i = 0; i < 1000; ++i)
+    }
+    for (int i = 0; i < 1000; ++i) {
       FastCaloSim::set_log_sink(i % 2 == 0 ? second : first);
+    }
   }
   FastCaloSim::set_log_sink(nullptr);
   EXPECT_EQ(first->records().size() + second->records().size(),
-            std::size_t {n_threads * n_messages});
+            std::size_t {n_threads} * std::size_t {n_messages});
 }
 
 // A failing sink neither throws at the call site nor loses the message

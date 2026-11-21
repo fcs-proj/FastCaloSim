@@ -2,57 +2,49 @@
 
 #pragma once
 
+#include <filesystem>
 #include <iostream>
 #include <string>
 
 #include <dlfcn.h>
-#include <libgen.h>
 
 template<class Plugin>
 class GeoPluginLoader
 {
 public:
   // Constructor:
-  GeoPluginLoader();
+  GeoPluginLoader() = default;
 
   // Destructor:
-  ~GeoPluginLoader();
+  ~GeoPluginLoader() = default;
+
+  GeoPluginLoader(const GeoPluginLoader&) = delete;
+  auto operator=(const GeoPluginLoader&) -> GeoPluginLoader& = delete;
+  GeoPluginLoader(GeoPluginLoader&&) = delete;
+  auto operator=(GeoPluginLoader&&) -> GeoPluginLoader& = delete;
 
   // load G4Solid plugin
-  Plugin* load(const std::string& path) const;
-
-private:
-  GeoPluginLoader(const GeoPluginLoader&) = delete;
-  GeoPluginLoader& operator=(const GeoPluginLoader&) = delete;
+  auto load(const std::string& pString) const -> Plugin*;
 };
 
 template<class Plugin>
-GeoPluginLoader<Plugin>::GeoPluginLoader()
+auto GeoPluginLoader<Plugin>::load(const std::string& pString) const -> Plugin*
 {
-}
-
-template<class Plugin>
-GeoPluginLoader<Plugin>::~GeoPluginLoader()
-{
-}
-
-template<class Plugin>
-Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
-{
-  std::string bNameString =
-      basename((char*)pString.c_str());  // Strip off the directory
+  std::string bNameString = std::filesystem::path(pString)
+                                .filename()
+                                .string();  // Strip off the directory
   bNameString = bNameString.substr(3);  // Strip off leading "lib"
   bNameString =
-      bNameString.substr(0, bNameString.find("."));  // Strip off extensions
+      bNameString.substr(0, bNameString.find('.'));  // Strip off extensions
 
-  std::string createFunctionName = std::string("create") + bNameString;
+  std::string const createFunctionName = std::string("create") + bNameString;
 
   //
   // Loads the library:
   //
   void* handle = dlopen(pString.c_str(), RTLD_NOW);
-  if (!handle) {
-    std::cerr << dlerror() << std::endl;
+  if (handle == nullptr) {
+    std::cerr << dlerror() << '\n';
     return nullptr;
   }
 
@@ -60,17 +52,17 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   // Gets the function
   //
   void* f = dlsym(handle, createFunctionName.c_str());
-  if (!f) {
-    std::cerr << dlerror() << std::endl;
+  if (f == nullptr) {
+    std::cerr << dlerror() << '\n';
     return nullptr;
   }
 
-  typedef void* (*CreationMethod)();
-  CreationMethod F = (CreationMethod)f;
+  using CreationMethod = void* (*)();
+  auto F = reinterpret_cast<CreationMethod>(f);
 
   //
   //
   //
-  Plugin* factory = (Plugin*)F();
+  auto* factory = static_cast<Plugin*>(F());
   return factory;
 }

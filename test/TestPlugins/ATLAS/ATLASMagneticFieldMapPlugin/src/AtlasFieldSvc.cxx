@@ -6,8 +6,12 @@
 // AtlasFieldSvc.cxx, (c) ATLAS Detector software
 ///////////////////////////////////////////////////////////////////
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 #include "AtlasFieldSvc.h"
 
@@ -61,15 +65,10 @@ MagField::AtlasFieldSvc::AtlasFieldSvc(bool isAscii)
     m_useSoleCurrent(7730.)
     , m_useToroCurrent(20400.)
     , m_lockMapCurrents(false)
-    ,
-    // m_mapHandle(),
-    // m_currentHandle(),
-    m_zone()
     , m_meshZR(nullptr)
     , m_edge()
     , m_edgeLUT()
     , m_invq()
-    , m_zoneLUT()
     , m_zmin(0.)
     , m_zmax(0.)
     , m_nz(0)
@@ -120,12 +119,10 @@ MagField::AtlasFieldSvc::AtlasFieldSvc(const std::string& name,
     , m_useSoleCurrent(7730.)
     , m_useToroCurrent(20400.)
     , m_lockMapCurrents(false)
-    , m_zone()
     , m_meshZR(nullptr)
     , m_edge()
     , m_edgeLUT()
     , m_invq()
-    , m_zoneLUT()
     , m_zmin(0.)
     , m_zmax(0.)
     , m_nz(0)
@@ -135,11 +132,10 @@ MagField::AtlasFieldSvc::AtlasFieldSvc(const std::string& name,
 {
   if (m_isAscii) {
     m_fullMapAscii = name;
-    std::cout << "Magnetic field map file is ascii, will open " << name
-              << std::endl;
+    std::cout << "Magnetic field map file is ascii, will open " << name << '\n';
   } else {
     m_fullMapFilename = name;
-    std::cout << "File is root, will open " << name << std::endl;
+    std::cout << "File is root, will open " << name << '\n';
   }
   if (solenoidOFF) {
     setSolenoidCurrent(0.);
@@ -157,9 +153,9 @@ MagField::AtlasFieldSvc::~AtlasFieldSvc()
 }
 
 /** framework methods */
-bool MagField::AtlasFieldSvc::initialize()
+auto MagField::AtlasFieldSvc::initialize() -> bool
 {
-  std::cout << "initialize() ..." << std::endl;
+  std::cout << "initialize() ..." << '\n';
 
   //    // determine map location from COOL, if available
   //    if ( m_useMapsFromCOOL ) {
@@ -234,7 +230,7 @@ bool MagField::AtlasFieldSvc::initialize()
      getFieldActual = &MagField::AtlasFieldSvc::getFieldStandard;
      } */
 
-  std::cout << "initialize() successful" << std::endl;
+  std::cout << "initialize() successful" << '\n';
   return true;
 }
 
@@ -243,36 +239,35 @@ void MagField::AtlasFieldSvc::handle()
   // get thread-local storage
   AtlasFieldSvcTLS& tls = getAtlasFieldSvcTLS();
   if (!importCurrents(tls)) {
-    std::cout << "Failure in setting of currents" << std::endl;
+    std::cout << "Failure in setting of currents" << '\n';
   }
 }
 
-bool MagField::AtlasFieldSvc::importCurrents(AtlasFieldSvcTLS& tls)
+auto MagField::AtlasFieldSvc::importCurrents(AtlasFieldSvcTLS& tls) -> bool
 {
-  std::cout << "\nImportCurrents() ..." << std::endl;
+  std::cout << "\nImportCurrents() ..." << '\n';
 
   // take the current values from JobOptions
   double solcur(m_useSoleCurrent);
   double torcur(m_useToroCurrent);
   if (solcur < m_soleMinCurrent) {
     solcur = 0.0;
-    std::cout << "Solenoid is off." << std::endl;
+    std::cout << "Solenoid is off." << '\n';
   }
   if (torcur < m_toroMinCurrent) {
     torcur = 0.0;
-    std::cout << "Toroids are off." << std::endl;
+    std::cout << "Toroids are off." << '\n';
   }
-  setSolenoidCurrent(solcur);
-  setToroidsCurrent(torcur);
+  setSolenoidCurrent(static_cast<float>(solcur));
+  setToroidsCurrent(static_cast<float>(torcur));
   // read the map file
   if (!initializeMap(tls)) {
     // ATH_MSG_FATAL( "Failed to initialize field map" );
-    std::cout << "FATAL! Failed to initialize field map" << std::endl;
+    std::cout << "FATAL! Failed to initialize field map" << '\n';
     return false;
   }
 
-  std::cout << "Currents imported and map initialized successfully!"
-            << std::endl;
+  std::cout << "Currents imported and map initialized successfully!" << '\n';
   return true;
 }
 
@@ -450,23 +445,24 @@ bool MagField::AtlasFieldSvc::importCurrents(AtlasFieldSvcTLS& tls)
 //
 //  read and initialize map
 //
-bool MagField::AtlasFieldSvc::initializeMap(AtlasFieldSvcTLS& tls)
+auto MagField::AtlasFieldSvc::initializeMap(AtlasFieldSvcTLS& tls) -> bool
 {
   std::cout << "Initializing the field map (solenoidCurrent="
             << getSolenoidCurrent() << " toroidCurrent=" << getToroidsCurrent()
-            << ")" << std::endl;
+            << ")" << '\n';
   // empty the current map first
   clearMap(tls);
 
   // determine the map to load
-  std::string mapFile("");
+  std::string mapFile;
   // ALL the Magnets are ON
   if (solenoidOn() && toroidsOn()) {
-    if (m_isAscii)
+    if (m_isAscii) {
       mapFile = m_fullMapAscii;
-    else
+    } else {
       mapFile = m_fullMapFilename;
-    std::cout << "mapFile::: " << mapFile << std::endl;
+    }
+    std::cout << "mapFile::: " << mapFile << '\n';
   } else if (solenoidOn()) {
     mapFile = m_soleMapFilename;
   } else if (toroidsOn()) {
@@ -478,50 +474,50 @@ bool MagField::AtlasFieldSvc::initializeMap(AtlasFieldSvcTLS& tls)
   // find the path to the map file
   // std::string resolvedMapFile = PathResolver::find_file( mapFile.c_str(),
   // "DATAPATH" );
-  std::string resolvedMapFile = mapFile.c_str();
-  if (resolvedMapFile == "") {
-    std::cout << "Field map file " << mapFile << " not found" << std::endl;
+  std::string const resolvedMapFile = mapFile;
+  if (resolvedMapFile.empty()) {
+    std::cout << "Field map file " << mapFile << " not found" << '\n';
     return false;
   }
 
-  if (strstr(mapFile.c_str(), ".root") != 0) {
+  if (strstr(mapFile.c_str(), ".root") != nullptr) {
     // read the ROOT map file
     // if ( !readMap( resolvedMapFile.c_str() ) )
     if (!readMapRoot(resolvedMapFile)) {
-      std::cout << "\nERROR! Magnetic field map cannot be read!" << std::endl;
-      std::cout << "You may copy the map from the location:" << std::endl
-                << std::endl;
+      std::cout << "\nERROR! Magnetic field map cannot be read!" << '\n';
+      // dirname() may modify its argument
+      std::string mapDir = resolvedMapFile;
+      std::cout << "You may copy the map from the location:" << '\n' << '\n';
       std::cout << "https://geomodel.web.cern.ch/atlas-magnetic-field/"
                    "bmagatlas_09_fullAsym20400.data"
-                << std::endl
-                << std::endl;
-      std::cout << "to " << std::endl
-                << std::endl
-                << std::string(dirname((char*)resolvedMapFile.c_str()))
-                << std::endl;
+                << '\n'
+                << '\n';
+      std::cout << "to " << '\n'
+                << '\n'
+                << std::string(dirname(mapDir.data())) << '\n';
       exit(-1);
       return false;
     }
 
-  } else if (strstr(mapFile.c_str(), ".data") != 0) {
+  } else if (strstr(mapFile.c_str(), ".data") != nullptr) {
     std::filebuf fb;
-    if (fb.open(mapFile, std::ios::in)) {
+    if (fb.open(mapFile, std::ios::in) != nullptr) {
       std::istream is(&fb);
-      std::cout << "Reading field map from " << mapFile << std::endl;
+      std::cout << "Reading field map from " << mapFile << '\n';
       readMap(is);
       fb.close();
     } else {
-      std::cout << "\nERROR! Magnetic field map cannot be read!" << std::endl;
-      std::cout << "You may copy the map from the location:" << std::endl
-                << std::endl;
+      std::cout << "\nERROR! Magnetic field map cannot be read!" << '\n';
+      // dirname() may modify its argument
+      std::string mapDir = resolvedMapFile;
+      std::cout << "You may copy the map from the location:" << '\n' << '\n';
       std::cout << "https://geomodel.web.cern.ch/atlas-magnetic-field/"
                    "bmagatlas_09_fullAsym20400.data"
-                << std::endl
-                << std::endl;
-      std::cout << "to " << std::endl
-                << std::endl
-                << std::string(dirname((char*)resolvedMapFile.c_str()))
-                << std::endl;
+                << '\n'
+                << '\n';
+      std::cout << "to " << '\n'
+                << '\n'
+                << std::string(dirname(mapDir.data())) << '\n';
       exit(-1);
     }
   } else {
@@ -529,63 +525,67 @@ bool MagField::AtlasFieldSvc::initializeMap(AtlasFieldSvcTLS& tls)
                  "are .root or .data files!";
     std::cout << "Alternatively, you can set a constant Magnetic Field through "
                  "the macro.g4 file."
-              << std::endl;
+              << '\n';
     exit(-1);
   }
-  std::cout << "Initialized the field map from " << resolvedMapFile
-            << std::endl;
+  std::cout << "Initialized the field map from " << resolvedMapFile << '\n';
   // scale magnet current as needed
-  if (!m_lockMapCurrents)
+  if (!m_lockMapCurrents) {
     scaleField();
-  else
+  } else {
     std::cout << "Currents are NOT scaled - using map values sole="
-              << m_mapSoleCurrent << " toro=" << m_mapToroCurrent << std::endl;
+              << m_mapSoleCurrent << " toro=" << m_mapToroCurrent << '\n';
+  }
 
   return true;
 }
 
 void MagField::AtlasFieldSvc::scaleField()
 {
-  BFieldZone* solezone(0);
+  BFieldZone* solezone(nullptr);
   //
   if (solenoidOn()) {
     solezone = findZoneSlow(0.0, 0.0, 0.0);
     if (m_mapSoleCurrent > 0.0
-        && std::abs(getSolenoidCurrent() / m_mapSoleCurrent - 1.0) > 0.001)
+        && std::abs(static_cast<double>(getSolenoidCurrent()) / m_mapSoleCurrent
+                    - 1.0)
+            > 0.001)
     {
       // scale the field in the solenoid zone
-      double factor = getSolenoidCurrent() / m_mapSoleCurrent;
+      double const factor =
+          static_cast<double>(getSolenoidCurrent()) / m_mapSoleCurrent;
       solezone->scaleField(factor);
       // remake the fast map
       buildZR();
-      std::cout << "Scaled the solenoid field by a factor " << factor
-                << std::endl;
+      std::cout << "Scaled the solenoid field by a factor " << factor << '\n';
     }
   }
   //
   if (toroidsOn()) {
     if (m_mapToroCurrent > 0.0
-        && std::abs(getToroidsCurrent() / m_mapToroCurrent - 1.0) > 0.001)
+        && std::abs(static_cast<double>(getToroidsCurrent()) / m_mapToroCurrent
+                    - 1.0)
+            > 0.001)
     {
       // scale the field in all zones except for the solenoid zone
-      double factor = getToroidsCurrent() / m_mapToroCurrent;
-      for (unsigned i = 0; i < m_zone.size(); i++) {
-        if (&(m_zone[i]) != solezone) {
-          m_zone[i].scaleField(factor);
+      double const factor =
+          static_cast<double>(getToroidsCurrent()) / m_mapToroCurrent;
+      for (auto& i : m_zone) {
+        if (&i != solezone) {
+          i.scaleField(factor);
         }
       }
-      std::cout << "Scaled the toroid field by a factor " << factor
-                << std::endl;
+      std::cout << "Scaled the toroid field by a factor " << factor << '\n';
     }
   }
 }
 
 /** framework methods */
-bool MagField::AtlasFieldSvc::finalize()
+auto MagField::AtlasFieldSvc::finalize() -> bool
 {
   // finalization code would go here
   //
-  std::cout << "Finalize() AtlasFieldSvc successful!" << std::endl;
+  std::cout << "Finalize() AtlasFieldSvc successful!" << '\n';
   return true;
 }
 
@@ -598,12 +598,12 @@ void MagField::AtlasFieldSvc::getField(const double* xyz,
   const double& x(xyz[0]);
   const double& y(xyz[1]);
   const double& z(xyz[2]);
-  double r = std::sqrt(x * x + y * y);
-  double phi = std::atan2(y, x);
+  double const r = std::sqrt(x * x + y * y);
+  double const phi = std::atan2(y, x);
 
   // retrieve the thread-local storage
   AtlasFieldSvcTLS& tls = getAtlasFieldSvcTLS();
-  BFieldCache& cache = tls.cache;
+  BFieldCache const& cache = tls.cache;
 
   // test if the TLS was initialized and the cache is valid
   if (!tls.isInitialized || !cache.inside(z, r, phi)) {
@@ -616,7 +616,7 @@ void MagField::AtlasFieldSvc::getField(const double* xyz,
       // !"<<std::sqrt(3*defaultB*defaultB)/CLHEP::tesla<<std::endl;
       bxyz[0] = bxyz[1] = bxyz[2] = defaultB;
       // return zero gradient if requested
-      if (deriv) {
+      if (deriv != nullptr) {
         for (int i = 0; i < 9; i++) {
           deriv[i] = 0.;
         }
@@ -628,7 +628,7 @@ void MagField::AtlasFieldSvc::getField(const double* xyz,
   cache.getB(xyz, r, phi, bxyz, deriv);
 
   // add biot savart component
-  if (tls.cond) {
+  if (tls.cond != nullptr) {
     const size_t condSize = tls.cond->size();
     for (size_t i = 0; i < condSize; i++) {
       (*tls.cond)[i].addBiotSavart(xyz, bxyz, deriv);
@@ -675,11 +675,11 @@ void MagField::AtlasFieldSvc::getFieldZR(const double* xyz,
   const double& x(xyz[0]);
   const double& y(xyz[1]);
   const double& z(xyz[2]);
-  double r = sqrt(x * x + y * y);
+  double const r = sqrt(x * x + y * y);
 
   // get thread-local storage
   AtlasFieldSvcTLS& tls = getAtlasFieldSvcTLS();
-  BFieldCacheZR& cacheZR = tls.cacheZR;
+  BFieldCacheZR const& cacheZR = tls.cacheZR;
 
   // test if the TLS was initialized and the cache is valid
   if (!tls.isInitialized || !cacheZR.inside(z, r)) {
@@ -709,7 +709,7 @@ void MagField::AtlasFieldSvc::clearMap(AtlasFieldSvcTLS& tls)
   // Next lines clear m_zone, m_edge[3], m_edgeLUT[3], and m_zoneLUT and
   // deallocate their memory.
   std::vector<BFieldZone>().swap(m_zone);
-  for (int i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; i++) {
     std::vector<double>().swap(m_edge[i]);
     std::vector<int>().swap(m_edgeLUT[i]);
   }
@@ -727,14 +727,13 @@ void MagField::AtlasFieldSvc::clearMap(AtlasFieldSvcTLS& tls)
 // Read the solenoid map from file.
 // The filename must end with ".root".
 //
-bool MagField::AtlasFieldSvc::readMap(const char* filename)
+auto MagField::AtlasFieldSvc::readMap(const char* filename) -> bool
 {
-  if (strstr(filename, ".root") != 0) {
-    std::cout << "Sorry, ROOT map is not supported at the moment!" << std::endl;
+  if (strstr(filename, ".root") != nullptr) {
+    std::cout << "Sorry, ROOT map is not supported at the moment!" << '\n';
     return false;
   }
-  std::cout << "This method should not be called, call readMapRoot!"
-            << std::endl;
+  std::cout << "This method should not be called, call readMapRoot!" << '\n';
   return false;
 
   //    std::cout<<"root: "<<filename<<std::endl;
@@ -768,45 +767,45 @@ bool MagField::AtlasFieldSvc::readMap(const char* filename)
 // read an ASCII field map from istream
 // convert units m -> mm, and T -> kT
 //
-bool MagField::AtlasFieldSvc::readMap(std::istream& input)
+auto MagField::AtlasFieldSvc::readMap(std::istream& input) -> bool
 {
-  std::cout << "Reading the map" << std::endl;
+  std::cout << "Reading the map" << '\n';
   const std::string myname("readMap()");
   // first line contains version, date, time
   std::string word;
-  int version;
-  int date;
-  int time;
+  int version {};
+  int date {};
+  int time {};
   input >> word >> version;
   if (word != "FORMAT-VERSION") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'FORMAT-VERSION'" << std::endl;
+              << "' instead of 'FORMAT-VERSION'" << '\n';
     return false;
   }
   if (version < 5 || version > 6) {
     std::cout << "ERROR: " << myname << ": version number is " << version
-              << " instead of 5 or 6" << std::endl;
+              << " instead of 5 or 6" << '\n';
     return false;
   }
   input >> word >> date;
   if (word != "DATE") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'DATE'" << std::endl;
+              << "' instead of 'DATE'" << '\n';
     return false;
   }
   input >> word >> time;
   if (word != "TIME") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'TIME'" << std::endl;
+              << "' instead of 'TIME'" << '\n';
     return false;
   }
 
   // read and skip header cards
-  int nheader;
+  int nheader {};
   input >> word >> nheader;
   if (word != "HEADERS") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'HEADERS'" << std::endl;
+              << "' instead of 'HEADERS'" << '\n';
     return false;
   }
   std::string restofline;
@@ -817,38 +816,59 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
   }
 
   // read zone definitions
-  int nzone;
+  int nzone {};
   input >> word >> nzone;
   if (word != "ZONES") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'ZONES'" << std::endl;
+              << "' instead of 'ZONES'" << '\n';
     return false;
   }
-  std::vector<int> jz(nzone), nz(nzone);
-  std::vector<int> jr(nzone), nr(nzone);
-  std::vector<int> jphi(nzone), nphi(nzone);
-  std::vector<int> jbs(nzone), nbs(nzone);
-  std::vector<int> jcoil(nzone), ncoil(nzone);
-  std::vector<int> jfield(nzone), nfield(nzone);
-  std::vector<int> jaux(nzone), naux(nzone);
+  const auto nzones = static_cast<std::size_t>(nzone);
+  std::vector<int> jz(nzones);
+  std::vector<int> nz(nzones);
+  std::vector<int> jr(nzones);
+  std::vector<int> nr(nzones);
+  std::vector<int> jphi(nzones);
+  std::vector<int> nphi(nzones);
+  std::vector<int> jbs(nzones);
+  std::vector<int> nbs(nzones);
+  std::vector<int> jcoil(nzones);
+  std::vector<int> ncoil(nzones);
+  std::vector<int> jfield(nzones);
+  std::vector<int> nfield(nzones);
+  std::vector<int> jaux(nzones);
+  std::vector<int> naux(nzones);
 
-  for (int i = 0; i < nzone; i++) {
-    int id;
-    int nrep, map;  // unused
-    double z1, z2, r1, r2, phi1, phi2;
-    int nzrphi0;  // unused
-    double tol;  // unused
-    int mzn, mxsym, mrefl, mback;  // unused
-    double qz, qr, qphi;  // unused
-    double bscale;
+  for (std::size_t i = 0; i < nzones; i++) {
+    int id {};
+    int nrep {};
+    int map {};  // unused
+    double z1 {};
+    double z2 {};
+    double r1 {};
+    double r2 {};
+    double phi1 {};
+    double phi2 {};
+    int nzrphi0 {};  // unused
+    double tol {};  // unused
+    int mzn {};
+    int mxsym {};
+    int mrefl {};
+    int mback {};  // unused
+    double qz {};
+    double qr {};
+    double qphi {};  // unused
+    double bscale {};
     input >> id >> nrep;
-    if (version == 6)
+    if (version == 6) {
       input >> map;
+    }
     input >> z1 >> z2 >> nz[i] >> r1 >> r2 >> nr[i] >> phi1 >> phi2 >> nphi[i]
         >> nzrphi0 >> tol >> jbs[i] >> nbs[i] >> jcoil[i] >> ncoil[i] >> jz[i]
         >> jr[i] >> jphi[i] >> jfield[i] >> nfield[i] >> mzn;
-    if (version == 6)
+    if (version == 6) {
       input >> mxsym;
+    }
     input >> mrefl >> mback >> jaux[i] >> naux[i] >> qz >> qr >> qphi >> bscale;
     if (id >= 0) {  // remove dummy zone
       z1 *= CLHEP::meter;
@@ -858,35 +878,37 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
       phi1 *= CLHEP::degree;
       phi2 *= CLHEP::degree;
       bscale *= CLHEP::tesla;
-      BFieldZone zone(id, z1, z2, r1, r2, phi1, phi2, bscale);
+      BFieldZone const zone(id, z1, z2, r1, r2, phi1, phi2, bscale);
       m_zone.push_back(zone);
     }
   }
 
   // read Biot-Savart data
-  int nbiot;
+  int nbiot {};
   input >> word >> nbiot;
   if (word != "BIOT") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'BIOT'" << std::endl;
+              << "' instead of 'BIOT'" << '\n';
     return false;
   }
   std::vector<BFieldCond> bslist;
   for (int i = 0; i < nbiot; i++) {
-    char dummy;  // unused
-    char cfinite;
-    double xyz1[3], xyz2[3];
-    double phirot;  // unused
-    double curr;
+    char dummy {};  // unused
+    char cfinite {};
+    std::array<double, 3> xyz1 {};
+    std::array<double, 3> xyz2 {};
+    double phirot {};  // unused
+    double curr {};
     input >> dummy >> cfinite >> xyz1[0] >> xyz1[1] >> xyz1[2] >> xyz2[0]
         >> xyz2[1] >> xyz2[2] >> phirot >> curr;
-    bool finite = (cfinite == 'T');
-    for (int j = 0; j < 3; j++) {
+    bool const finite = (cfinite == 'T');
+    for (std::size_t j = 0; j < 3; j++) {
       xyz1[j] *= CLHEP::meter;
-      if (finite)
+      if (finite) {
         xyz2[j] *= CLHEP::meter;
+      }
     }
-    BFieldCond bs(finite, xyz1, xyz2, curr);
+    BFieldCond const bs(finite, xyz1.data(), xyz2.data(), curr);
     bslist.push_back(bs);
   }
   // attach them to the zones
@@ -894,16 +916,16 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
     // copy the range that belongs to this zone
     for (int j = 0; j < nbs[i]; j++) {
       // Fortran -> C conversion requires "-1"
-      m_zone[i].appendCond(bslist[jbs[i] + j - 1]);
+      m_zone[i].appendCond(bslist[static_cast<std::size_t>(jbs[i] + j - 1)]);
     }
   }
 
   // read and skip coil data
-  int nc;
+  int nc {};
   input >> word >> nc;
   if (word != "COIL") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'COIL'" << std::endl;
+              << "' instead of 'COIL'" << '\n';
     return false;
   }
   getline(input, restofline);
@@ -913,31 +935,32 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
   }
 
   // read and skip auxiliary array = list of subzones
-  int nauxarr;
+  int nauxarr {};
   input >> word >> nauxarr;
   if (word != "AUXARR") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'AUXARR'" << std::endl;
+              << "' instead of 'AUXARR'" << '\n';
     return false;
   }
-  if (version == 6)
+  if (version == 6) {
     input >> word;  // skip 'T'
+  }
   for (int i = 0; i < nauxarr; i++) {
-    int aux;
+    int aux {};
     input >> aux;
   }
 
   // read mesh definition
-  int nmesh;
+  int nmesh {};
   input >> word >> nmesh;
   if (word != "MESH") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'MESH'" << std::endl;
+              << "' instead of 'MESH'" << '\n';
     return false;
   }
   std::vector<double> meshlist;
   for (int i = 0; i < nmesh; i++) {
-    double mesh;
+    double mesh {};
     input >> mesh;
     meshlist.push_back(mesh);
   }
@@ -945,79 +968,93 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
   for (unsigned i = 0; i < m_zone.size(); i++) {
     m_zone[i].reserve(nz[i], nr[i], nphi[i]);
     for (int j = 0; j < nz[i]; j++) {
-      m_zone[i].appendMesh(0, meshlist[jz[i] + j - 1] * CLHEP::meter);
+      m_zone[i].appendMesh(
+          0, meshlist[static_cast<std::size_t>(jz[i] + j - 1)] * CLHEP::meter);
     }
     for (int j = 0; j < nr[i]; j++) {
-      m_zone[i].appendMesh(1, meshlist[jr[i] + j - 1] * CLHEP::meter);
+      m_zone[i].appendMesh(
+          1, meshlist[static_cast<std::size_t>(jr[i] + j - 1)] * CLHEP::meter);
     }
     for (int j = 0; j < nphi[i]; j++) {
-      m_zone[i].appendMesh(2, meshlist[jphi[i] + j - 1]);
+      m_zone[i].appendMesh(2,
+                           meshlist[static_cast<std::size_t>(jphi[i] + j - 1)]);
     }
   }
 
   // read field values
-  int nf, nzlist;
-  std::string ftype, bytype;
+  int nf {};
+  int nzlist {};
+  std::string ftype;
+  std::string bytype;
   input >> word >> nf >> nzlist >> ftype >> bytype;
   if (word != "FIELD") {
     std::cout << "ERROR: " << myname << ": found '" << word
-              << "' instead of 'FIELD'" << std::endl;
+              << "' instead of 'FIELD'" << '\n';
     return false;
   }
   if (ftype != "I2PACK") {
     std::cout << "ERROR: " << myname << ": found '" << ftype
-              << "' instead of 'I2PACK'" << std::endl;
+              << "' instead of 'I2PACK'" << '\n';
     return false;
   }
   if (bytype != "FBYTE") {
     std::cout << "ERROR: " << myname << ": found '" << bytype
-              << "' instead of 'FBYTE'" << std::endl;
+              << "' instead of 'FBYTE'" << '\n';
     return false;
   }
   // read zone by zone
   for (int i = 0; i < nzlist; i++) {
-    int izone, idzone, nfzone;
+    int izone {};
+    int idzone {};
+    int nfzone {};
     input >> izone >> idzone >> nfzone;
     izone--;  // fortran -> C++
-    if (idzone != m_zone[izone].id()) {
+    BFieldZone& zone = m_zone[static_cast<std::size_t>(izone)];
+    if (idzone != zone.id()) {
       std::cout << "ERROR: " << myname << ": zone id " << idzone
-                << " != " << m_zone[izone].id() << std::endl;
+                << " != " << zone.id() << '\n';
       // return StatusCode(2);
       return true;  // TO DO - it should be recoverable - handle ! enum class
                     // ErrorCode : code_t { FAILURE = 0, SUCCESS = 1,
                     // RECOVERABLE = 2 };
     }
 
-    std::vector<int> data[3];
+    std::array<std::vector<int>, 3> data;
+    // number of field values in this zone (no values if nfzone <= 0)
+    const std::size_t nfz = nfzone > 0 ? static_cast<std::size_t>(nfzone) : 0;
 
     // for field data in 2 bytes
-    for (int j = 0; j < 3; j++) {  // repeat z, r, phi
-      int ierr = read_packed_data(input, data[j]);
+    for (auto& j : data) {  // repeat z, r, phi
+      int const ierr = read_packed_data(input, j);
       // if ( ierr != 0 ) return StatusCode(ierr);
-      if (ierr != 0)
+      if (ierr != 0) {
         return true;  // TODO it could be 2 .. to handle!   enum class ErrorCode
-                      // : code_t { FAILURE = 0, SUCCESS = 1, RECOVERABLE = 2 };
-      for (int k = 0; k < nfzone; k++) {
+      }
+      // : code_t { FAILURE = 0, SUCCESS = 1, RECOVERABLE = 2 };
+      for (std::size_t k = 0; k < nfz; k++) {
         // recover sign
-        data[j][k] =
-            (data[j][k] % 2 == 0) ? data[j][k] / 2 : -(data[j][k] + 1) / 2;
+        j[k] = (j[k] % 2 == 0) ? j[k] / 2 : -(j[k] + 1) / 2;
         // second-order diff
-        if (k >= 2)
-          data[j][k] += 2 * data[j][k - 1] - data[j][k - 2];
+        if (k >= 2) {
+          j[k] += 2 * j[k - 1] - j[k - 2];
+        }
       }
     }
     // store
-    for (int k = 0; k < nfzone; k++) {
-      BFieldVector<short> B(data[0][k], data[1][k], data[2][k]);
-      m_zone[izone].appendField(B);
+    for (std::size_t k = 0; k < nfz; k++) {
+      BFieldVector<short> const B(static_cast<short>(data[0][k]),
+                                  static_cast<short>(data[1][k]),
+                                  static_cast<short>(data[2][k]));
+      zone.appendField(B);
     }
 
     // skip fbyte
-    char c;
+    char c {};
     while (input.good()) {
       input >> c;
-      if (input.eof() || c == '}')
+      if (input.eof() || c == '}') {
         break;
+      }
     }
   }
 
@@ -1336,7 +1373,7 @@ bool MagField::AtlasFieldSvc::readMap(std::istream& input)
 //
 //}
 
-bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
+auto MagField::AtlasFieldSvc::readMapRoot(const std::string& filename) -> bool
 {
   // Create (or get) analysis reader
   G4RootAnalysisReader* analysisReader = G4RootAnalysisReader::Instance();
@@ -1344,24 +1381,31 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
 
   // Define a base file name
   analysisReader->SetFileName(filename);
-  int ntupleId = analysisReader->GetNtuple("BFieldMap");
+  int const ntupleId = analysisReader->GetNtuple("BFieldMap");
 
   if (ntupleId < 0) {
     // no tree
     std::cout << "readMap(): TTree 'BFieldMap' does not exist in ROOT field map"
-              << std::endl;
+              << '\n';
     return false;
   }
-  int id;
-  double zmin, zmax, rmin, rmax, phimin, phimax;
-  double bscale;
-  int ncond;
+  int id {};
+  double zmin {};
+  double zmax {};
+  double rmin {};
+  double rmax {};
+  double phimin {};
+  double phimax {};
+  double bscale {};
+  int ncond {};
   // int finite;
   // double p1x, p1y, p1z, p2x, p2y, p2z;
   // double curr;
-  int nmeshz, nmeshr, nmeshphi;
+  int nmeshz {};
+  int nmeshr {};
+  int nmeshphi {};
   // double meshz, meshr, meshphi;
-  int nfield;
+  int nfield {};
   // double fieldz, fieldr, fieldphi;
 
   if (ntupleId >= 0) {
@@ -1383,9 +1427,13 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
   // prepare arrays - need to know the maximum sizes
   // open the tree of buffer sizes (may not exist in old maps)
 
-  int maxcond(0), maxmeshz(0), maxmeshr(0), maxmeshphi(0), maxfield(0);
+  int maxcond(0);
+  int maxmeshz(0);
+  int maxmeshr(0);
+  int maxmeshphi(0);
+  int maxfield(0);
 
-  int ntupleId2 = analysisReader->GetNtuple("BFieldMapSize");
+  int const ntupleId2 = analysisReader->GetNtuple("BFieldMapSize");
   // TTree* tmax = (TTree*)rootfile->Get("BFieldMapSize");
   if (ntupleId2 >= 0) {
     analysisReader->SetNtupleIColumn(ntupleId2, "maxcond", maxcond);
@@ -1397,22 +1445,24 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
     analysisReader->GetNtupleRow(ntupleId2);  // Get one entry
     std::cout << "maxcond: " << maxcond << "\tmaxmeshz: " << maxmeshz
               << "\tmaxmeshr: " << maxmeshr << "\tmaxmeshphi: " << maxmeshphi
-              << "\tmaxfield: " << maxfield << std::endl;
+              << "\tmaxfield: " << maxfield << '\n';
   }
-  std::vector<int> finite(maxcond);
-  std::vector<double> p1x(maxcond);
-  std::vector<double> p1y(maxcond);
-  std::vector<double> p1z(maxcond);
-  std::vector<double> p2x(maxcond);
-  std::vector<double> p2y(maxcond);
-  std::vector<double> p2z(maxcond);
-  std::vector<double> curr(maxcond);
-  std::vector<double> meshz(maxmeshz);
-  std::vector<double> meshr(maxmeshr);
-  std::vector<double> meshphi(maxmeshphi);
-  std::vector<double> fieldz(maxfield);
-  std::vector<double> fieldr(maxfield);
-  std::vector<double> fieldphi(maxfield);
+  const auto ncondmax = static_cast<std::size_t>(maxcond);
+  const auto nfieldmax = static_cast<std::size_t>(maxfield);
+  std::vector<int> finite(ncondmax);
+  std::vector<double> p1x(ncondmax);
+  std::vector<double> p1y(ncondmax);
+  std::vector<double> p1z(ncondmax);
+  std::vector<double> p2x(ncondmax);
+  std::vector<double> p2y(ncondmax);
+  std::vector<double> p2z(ncondmax);
+  std::vector<double> curr(ncondmax);
+  std::vector<double> meshz(static_cast<std::size_t>(maxmeshz));
+  std::vector<double> meshr(static_cast<std::size_t>(maxmeshr));
+  std::vector<double> meshphi(static_cast<std::size_t>(maxmeshphi));
+  std::vector<double> fieldz(nfieldmax);
+  std::vector<double> fieldr(nfieldmax);
+  std::vector<double> fieldphi(nfieldmax);
 
   analysisReader->SetNtupleIColumn(ntupleId, "finite", finite);
   analysisReader->SetNtupleDColumn(ntupleId, "p1x", p1x);
@@ -1429,7 +1479,7 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
   analysisReader->SetNtupleDColumn(ntupleId, "fieldr", fieldr);
   analysisReader->SetNtupleDColumn(ntupleId, "fieldphi", fieldphi);
 
-  std::cout << "Ntuples reading" << std::endl;
+  std::cout << "Ntuples reading" << '\n';
   // reserve the space for m_zone so that it won't move as the vector grows
   m_zone.reserve(406);
   // int counter = 0;
@@ -1441,32 +1491,32 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
     //        rmax <<std::endl; std::cout << "  phimin: " << phimin <<
     //        "\tphimax: " << phimax <<"\tbscale: "<<bscale<<std::endl;
 
-    BFieldZone z(id, zmin, zmax, rmin, rmax, phimin, phimax, bscale);
+    BFieldZone const z(id, zmin, zmax, rmin, rmax, phimin, phimax, bscale);
     m_zone.push_back(z);
     m_zone.back().reserve(nmeshz, nmeshr, nmeshphi);
     for (int j = 0; j < ncond; j++) {
-      double p1[3], p2[3];
-      p1[0] = p1x[j];
-      p1[1] = p1y[j];
-      p1[2] = p1z[j];
-      p2[0] = p2x[j];
-      p2[1] = p2y[j];
-      p2[2] = p2z[j];
-      bool fini = (bool)finite[j];
-      BFieldCond cond(fini, p1, p2, curr[j]);
+      const auto k = static_cast<std::size_t>(j);
+      const std::array<double, 3> p1 {p1x[k], p1y[k], p1z[k]};
+      const std::array<double, 3> p2 {p2x[k], p2y[k], p2z[k]};
+      bool const fini = static_cast<bool>(finite[k]);
+      BFieldCond const cond(fini, p1.data(), p2.data(), curr[k]);
       m_zone.back().appendCond(cond);
     }
     for (int j = 0; j < nmeshz; j++) {
-      m_zone.back().appendMesh(0, meshz[j]);
+      m_zone.back().appendMesh(0, meshz[static_cast<std::size_t>(j)]);
     }
     for (int j = 0; j < nmeshr; j++) {
-      m_zone.back().appendMesh(1, meshr[j]);
+      m_zone.back().appendMesh(1, meshr[static_cast<std::size_t>(j)]);
     }
     for (int j = 0; j < nmeshphi; j++) {
-      m_zone.back().appendMesh(2, meshphi[j]);
+      m_zone.back().appendMesh(2, meshphi[static_cast<std::size_t>(j)]);
     }
     for (int j = 0; j < nfield; j++) {
-      BFieldVector<short> field(fieldz[j], fieldr[j], fieldphi[j]);
+      const auto k = static_cast<std::size_t>(j);
+      // the field values are stored as double in the ntuple, truncate to short
+      BFieldVector<short> const field(static_cast<short>(fieldz[k]),
+                                      static_cast<short>(fieldr[k]),
+                                      static_cast<short>(fieldphi[k]));
       m_zone.back().appendField(field);
     }
   }
@@ -1639,25 +1689,26 @@ bool MagField::AtlasFieldSvc::readMapRoot(std::string filename)
 //
 // utility function used by readMap()
 //
-int MagField::AtlasFieldSvc::read_packed_data(std::istream& input,
-                                              std::vector<int>& data) const
+auto MagField::AtlasFieldSvc::read_packed_data(std::istream& input,
+                                               std::vector<int>& data) -> int
 {
-  const std::string myname("BFieldMap::read_packed_data()");
-
   data.resize(0);
   char mode = 'u';
-  char c;
+  char c {};
   while (input.good()) {
     input >> c;
-    if (input.eof())
+    if (input.eof()) {
       return 0;
-    else if (c == '}') {  // end of record
+    }
+    if (c == '}') {  // end of record
       return 0;
-    } else if (c == 'z') {  // series of zeros
-      int n;
-      int ierr = read_packed_int(input, n);
-      if (ierr != 0)
+    }
+    if (c == 'z') {  // series of zeros
+      int n {};
+      int const ierr = read_packed_int(input, n);
+      if (ierr != 0) {
         return ierr;
+      }
       for (int i = 0; i < n; i++) {
         data.push_back(0);
       }
@@ -1671,10 +1722,11 @@ int MagField::AtlasFieldSvc::read_packed_data(std::istream& input,
       switch (mode) {
         case 'u': {
           input.putback(c);
-          int n;
-          int ierr = read_packed_int(input, n);
-          if (ierr != 0)
+          int n {};
+          int const ierr = read_packed_int(input, n);
+          if (ierr != 0) {
             return ierr;
+          }
           data.push_back(n);
         } break;
         case 'v': {
@@ -1689,17 +1741,19 @@ int MagField::AtlasFieldSvc::read_packed_data(std::istream& input,
           data.push_back(c - '!');
           break;
         case 'x': {
-          int n = c - '!';
+          int const n = c - '!';
           data.push_back(n / 9);
           data.push_back(n % 9);
         } break;
         case 'y': {
-          int n = c - '!';
+          int const n = c - '!';
           data.push_back(n / 27);
           data.push_back((n / 9) % 3);
           data.push_back((n / 3) % 3);
           data.push_back(n % 3);
         } break;
+        default:  // the mode is always one of 'u' - 'y'
+          break;
       }
     }
   }
@@ -1709,11 +1763,11 @@ int MagField::AtlasFieldSvc::read_packed_data(std::istream& input,
 //
 // utility function used by read_packed_data()
 //
-int MagField::AtlasFieldSvc::read_packed_int(std::istream& input, int& n) const
+auto MagField::AtlasFieldSvc::read_packed_int(std::istream& input, int& n)
+    -> int
 {
-  const std::string myname("BFieldMap::read_packed_int()");
   n = 0;
-  char c;
+  char c {};
   input >> c;
   while (c >= '!' && c <= 'J') {
     n = 42 * n + c - '!';
@@ -1732,15 +1786,15 @@ int MagField::AtlasFieldSvc::read_packed_int(std::istream& input, int& n) const
 // Search for the zone that contains a point (z, r, phi)
 // This is a linear-search version, used only to construct the LUT.
 //
-BFieldZone* MagField::AtlasFieldSvc::findZoneSlow(double z,
-                                                  double r,
-                                                  double phi)
+auto MagField::AtlasFieldSvc::findZoneSlow(double z, double r, double phi)
+    -> BFieldZone*
 {
-  for (int j = m_zone.size() - 1; j >= 0; --j) {
-    if (m_zone[j].inside(z, r, phi))
+  for (std::size_t j = m_zone.size(); j-- > 0;) {  // last to first
+    if (m_zone[j].inside(z, r, phi)) {
       return &m_zone[j];
+    }
   }
-  return 0;
+  return nullptr;
 }
 
 //
@@ -1752,64 +1806,68 @@ void MagField::AtlasFieldSvc::buildLUT()
 {
   // make lists of (z,r,phi) edges of all zones
   for (int j = 0; j < 3; j++) {  // z, r, phi
-    for (unsigned i = 0; i < m_zone.size(); i++) {
-      double e[2];
-      e[0] = m_zone[i].min(j);
-      e[1] = m_zone[i].max(j);
-      for (int k = 0; k < 2; k++) {
+    std::vector<double>& edge = m_edge[static_cast<std::size_t>(j)];
+    for (auto& i : m_zone) {
+      std::array<double, 2> e {i.min(j), i.max(j)};
+      for (double& k : e) {
         // for the phi edge, fit into [-pi,pi]
-        if (j == 2 && e[k] > M_PI)
-          e[k] -= 2.0 * M_PI;
-        m_edge[j].push_back(e[k]);
+        if (j == 2 && k > M_PI) {
+          k -= 2.0 * M_PI;
+        }
+        edge.push_back(k);
       }
     }
     // add -pi and +pi to phi, just in case
     m_edge[2].push_back(-M_PI);
     m_edge[2].push_back(M_PI);
     // sort
-    sort(m_edge[j].begin(), m_edge[j].end());
+    std::ranges::sort(edge);
     // remove duplicates
     // must do this by hand to allow small differences due to rounding in phi
-    int index = 0;
-    for (unsigned k = 1; k < m_edge[j].size(); k++) {
-      if (fabs(m_edge[j][index] - m_edge[j][k]) < 1.0e-6)
+    std::size_t index = 0;
+    for (unsigned k = 1; k < edge.size(); k++) {
+      if (fabs(edge[index] - edge[k]) < 1.0e-6) {
         continue;
-      m_edge[j][++index] = m_edge[j][k];
+      }
+      edge[++index] = edge[k];
     }
-    m_edge[j].resize(index + 1);
+    edge.resize(index + 1);
     // because of the small differences allowed in the comparison above,
     // m_edge[][] values do not exactly match the m_zone[] boundaries.
     // we have to fix this up in order to avoid invalid field values
     // very close to the zone boundaries.
-    for (unsigned i = 0; i < m_zone.size(); i++) {
-      for (unsigned k = 0; k < m_edge[j].size(); k++) {
-        if (fabs(m_zone[i].min(j) - m_edge[j][k]) < 1.0e-6) {
-          m_zone[i].adjustMin(j, m_edge[j][k]);
+    for (auto& i : m_zone) {
+      for (const double e : edge) {
+        if (fabs(i.min(j) - e) < 1.0e-6) {
+          i.adjustMin(j, e);
         }
-        if (fabs(m_zone[i].max(j) - m_edge[j][k]) < 1.0e-6) {
-          m_zone[i].adjustMax(j, m_edge[j][k]);
+        if (fabs(i.max(j) - e) < 1.0e-6) {
+          i.adjustMax(j, e);
         }
       }
     }
   }
   // build LUT for edge finding
-  for (int j = 0; j < 3; j++) {  // z, r, phi
+  for (std::size_t j = 0; j < 3; j++) {  // z, r, phi
     // find the size of the smallest interval
-    double width = m_edge[j].back() - m_edge[j].front();
+    double const width = m_edge[j].back() - m_edge[j].front();
     double q(width);
-    for (unsigned i = 0; i < m_edge[j].size() - 1; i++) {
+    for (std::size_t i = 0; i < m_edge[j].size() - 1; i++) {
       q = std::min(q, m_edge[j][i + 1] - m_edge[j][i]);
     }
     // find the number of cells in the LUT
-    int n = int(width / q) + 1;
+    int n = static_cast<int>(width / q) + 1;
     q = width / (n + 0.5);
     m_invq[j] = 1.0 / q;
     n++;
     // fill the LUT
     int m = 0;
     for (int i = 0; i < n; i++) {  // index of LUT
-      if (q * i + m_edge[j].front() > m_edge[j][m + 1])
+      if (q * i + m_edge[j].front()
+          > m_edge[j][static_cast<std::size_t>(m) + 1])
+      {
         m++;
+      }
       m_edgeLUT[j].push_back(m);
     }
   }
@@ -1823,24 +1881,28 @@ void MagField::AtlasFieldSvc::buildLUT()
   //    std::cout<<" m_rmax: "<<m_rmax<<std::endl;
 
   // build LUT for zone finding
-  m_nz = m_edge[0].size() - 1;
-  m_nr = m_edge[1].size() - 1;
-  m_nphi = m_edge[2].size() - 1;
-  m_zoneLUT.reserve(m_nz * m_nr * m_nphi);
+  m_nz = static_cast<int>(m_edge[0].size() - 1);
+  m_nr = static_cast<int>(m_edge[1].size() - 1);
+  m_nphi = static_cast<int>(m_edge[2].size() - 1);
+  const int n_zone_lut = m_nz * m_nr * m_nphi;
+  m_zoneLUT.reserve(static_cast<std::size_t>(n_zone_lut));
   for (int iz = 0; iz < m_nz; iz++) {
-    double z = 0.5 * (m_edge[0][iz] + m_edge[0][iz + 1]);
+    const auto uz = static_cast<std::size_t>(iz);
+    double const z = 0.5 * (m_edge[0][uz] + m_edge[0][uz + 1]);
     for (int ir = 0; ir < m_nr; ir++) {
-      double r = 0.5 * (m_edge[1][ir] + m_edge[1][ir + 1]);
+      const auto ur = static_cast<std::size_t>(ir);
+      double const r = 0.5 * (m_edge[1][ur] + m_edge[1][ur + 1]);
       for (int iphi = 0; iphi < m_nphi; iphi++) {
-        double phi = 0.5 * (m_edge[2][iphi] + m_edge[2][iphi + 1]);
+        const auto uphi = static_cast<std::size_t>(iphi);
+        double const phi = 0.5 * (m_edge[2][uphi] + m_edge[2][uphi + 1]);
         const BFieldZone* zone = findZoneSlow(z, r, phi);
         m_zoneLUT.push_back(zone);
       }
     }
   }
   // build LUT in each zone
-  for (unsigned i = 0; i < m_zone.size(); i++) {
-    m_zone[i].buildLUT();
+  for (auto& i : m_zone) {
+    i.buildLUT();
   }
 }
 
@@ -1856,6 +1918,11 @@ void MagField::AtlasFieldSvc::buildZR()
   // solenoid zone always covers 100 < R < 1000, but not necessarily R < 100
   // so we search for the zone that contains a point at R = 200, Z = 0
   const BFieldZone* solezone = findZone(0.0, 200.0, 0.0);
+  if (solezone == nullptr) {
+    m_meshZR = nullptr;
+    throw std::runtime_error(
+        "AtlasFieldSvc::buildZR: no field zone contains the solenoid");
+  }
 
   // instantiate the new ZR map with the same external coverage as the solenoid
   // zone make sure R = 0 is covered
@@ -1863,11 +1930,12 @@ void MagField::AtlasFieldSvc::buildZR()
       solezone->zmin(), solezone->zmax(), 0.0, solezone->rmax());
 
   // reserve the right amount of memory
-  unsigned nmeshz = solezone->nmesh(0);
+  unsigned const nmeshz = solezone->nmesh(0);
   unsigned nmeshr = solezone->nmesh(1);
-  if (solezone->rmin() > 0.0)
+  if (solezone->rmin() > 0.0) {
     nmeshr++;
-  m_meshZR->reserve(nmeshz, nmeshr);
+  }
+  m_meshZR->reserve(static_cast<int>(nmeshz), static_cast<int>(nmeshr));
 
   // copy the mesh structure in z/r
   // take care of R = 0 first
@@ -1878,32 +1946,31 @@ void MagField::AtlasFieldSvc::buildZR()
   for (int i = 0; i < 2; i++) {  // z, r
     for (unsigned j = 0; j < solezone->nmesh(i); j++)
     {  // loop over mesh points
-      m_meshZR->appendMesh(i, solezone->mesh(i, j));
+      m_meshZR->appendMesh(i, solezone->mesh(i, static_cast<int>(j)));
     }
   }
 
   // loop through the mesh and compute the phi-averaged field
   for (unsigned iz = 0; iz < m_meshZR->nmesh(0); iz++) {  // loop over z
-    double z = m_meshZR->mesh(0, iz);
+    double const z = m_meshZR->mesh(0, static_cast<int>(iz));
     for (unsigned ir = 0; ir < m_meshZR->nmesh(1); ir++) {  // loop over r
-      double r = m_meshZR->mesh(1, ir);
+      double const r = m_meshZR->mesh(1, static_cast<int>(ir));
       const int nphi(200);  // number of phi slices to average
       double Br = 0.0;
       double Bz = 0.0;
       for (int iphi = 0; iphi < nphi; iphi++) {
-        double phi = double(iphi) / double(nphi) * 2. * M_PI;
-        double xyz[3];
-        xyz[0] = r * cos(phi);
-        xyz[1] = r * sin(phi);
-        xyz[2] = z;
-        double B[3];
-        solezone->getB(xyz, B, 0);
+        double const phi =
+            static_cast<double>(iphi) / static_cast<double>(nphi) * 2. * M_PI;
+        const std::array<double, 3> xyz {r * cos(phi), r * sin(phi), z};
+        std::array<double, 3> B {};
+        solezone->getB(xyz.data(), B.data(), nullptr);
         Br += B[0] * cos(phi) + B[1] * sin(phi);
         Bz += B[2];
       }
-      Br *= 1.0 / double(nphi);
-      Bz *= 1.0 / double(nphi);
-      m_meshZR->appendField(BFieldVectorZR(Bz, Br));
+      Br *= 1.0 / static_cast<double>(nphi);
+      Bz *= 1.0 / static_cast<double>(nphi);
+      m_meshZR->appendField(
+          BFieldVectorZR(static_cast<float>(Bz), static_cast<float>(Br)));
     }
   }
 
@@ -1914,21 +1981,23 @@ void MagField::AtlasFieldSvc::buildZR()
 //
 // Approximate memory footprint
 //
-int MagField::AtlasFieldSvc::memSize() const
+auto MagField::AtlasFieldSvc::memSize() const -> int
 {
-  int size = 0;
+  // accumulate in size_t; the final conversion to int gives the same value
+  // as converting after every addition (modular arithmetic)
+  std::size_t size = 0;
   size += sizeof(BFieldCache);
   size += sizeof(BFieldCacheZR);
-  for (unsigned i = 0; i < m_zone.size(); i++) {
-    size += m_zone[i].memSize();
+  for (const auto& i : m_zone) {
+    size += static_cast<std::size_t>(i.memSize());
   }
-  for (int i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; i++) {
     size += sizeof(double) * m_edge[i].capacity();
     size += sizeof(int) * m_edgeLUT[i].capacity();
   }
   size += sizeof(BFieldZone*) * m_zoneLUT.capacity();
-  if (m_meshZR) {
-    size += m_meshZR->memSize();
+  if (m_meshZR != nullptr) {
+    size += static_cast<std::size_t>(m_meshZR->memSize());
   }
-  return size;
+  return static_cast<int>(size);
 }

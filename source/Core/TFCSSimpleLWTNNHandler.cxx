@@ -16,7 +16,7 @@ TFCSSimpleLWTNNHandler::TFCSSimpleLWTNNHandler(const std::string& inputFile)
   FCS_MSG_DEBUG("Setting up from inputFile.");
   setupPersistedVariables();
   TFCSSimpleLWTNNHandler::setupNet();
-};
+}
 
 TFCSSimpleLWTNNHandler::TFCSSimpleLWTNNHandler(
     const TFCSSimpleLWTNNHandler& copy_from)
@@ -30,7 +30,7 @@ TFCSSimpleLWTNNHandler::TFCSSimpleLWTNNHandler(
   m_lwtnn_neural = std::make_unique<lwt::LightweightNeuralNetwork>(
       config.inputs, config.layers, config.outputs);
   m_outputLayers = copy_from.m_outputLayers;
-};
+}
 
 void TFCSSimpleLWTNNHandler::setupNet()
 {
@@ -54,7 +54,7 @@ void TFCSSimpleLWTNNHandler::setupNet()
 auto TFCSSimpleLWTNNHandler::getOutputLayers() const -> std::vector<std::string>
 {
   return m_outputLayers;
-};
+}
 
 // This is implement the specific compute, and ensure the output is returned in
 // regular format. For LWTNN, that's easy.
@@ -79,7 +79,7 @@ auto TFCSSimpleLWTNNHandler::compute(
   FCS_MSG_DEBUG(VNetworkBase::representNetworkOutputs(outputs, 20));
   FCS_MSG_DEBUG("Computation on LWTNN neural network done, returning");
   return outputs;
-};
+}
 
 // Giving this it's own streamer to call setupNet
 void TFCSSimpleLWTNNHandler::Streamer(TBuffer& buf)
@@ -107,4 +107,4 @@ void TFCSSimpleLWTNNHandler::Streamer(TBuffer& buf)
     // Persist variables
     TFCSSimpleLWTNNHandler::Class()->WriteBuffer(buf, this);
   };
-};
+}

@@ -7,20 +7,20 @@
 class TFCSEnergyParametrization : public TFCSParametrization
 {
 public:
-  TFCSEnergyParametrization(const char* name = nullptr,
-                            const char* title = nullptr);
+  explicit TFCSEnergyParametrization(const char* name = nullptr,
+                                     const char* title = nullptr);
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_calosample(int /*calosample*/) const -> bool override
+  }
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override
   {
     return true;
-  };
+  }
 
   // return number of energy parametrization bins
-  virtual auto n_bins() const -> int { return 0; };
+  virtual auto n_bins() const -> std::size_t { return 0; }
 
 private:
   ClassDefOverride(TFCSEnergyParametrization, 1)  // TFCSEnergyParametrization

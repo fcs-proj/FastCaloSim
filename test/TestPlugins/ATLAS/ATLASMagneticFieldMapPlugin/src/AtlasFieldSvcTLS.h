@@ -30,21 +30,14 @@ namespace MagField
 struct AtlasFieldSvcTLS
 {
   /// Constructor
-  AtlasFieldSvcTLS()
-      : isInitialized(false)
-      , cond(nullptr)
-      , cache()
-      , cacheZR()
-  {
-    ;
-  }
+  AtlasFieldSvcTLS() { ; }
 
   /// Is the current AtlasFieldSvcTLS object properly initialized
-  bool isInitialized;
+  bool isInitialized {false};
 
   /// Pointer to the conductors in the current field zone (to compute
   /// Biot-Savart component)
-  const std::vector<BFieldCond>* cond;
+  const std::vector<BFieldCond>* cond {nullptr};
 
   /// Full 3d field
   BFieldCache cache;

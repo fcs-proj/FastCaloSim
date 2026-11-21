@@ -37,6 +37,12 @@ endif()
 
 # ROOT is a required dependency for FastCaloSim
 find_package(ROOT 6.28 REQUIRED)
+# ROOT's dictionary generator and interpreter read the public headers with the
+# C++ standard that ROOT was built with, so ROOT must use C++23 as well
+if(DEFINED ROOT_CXX_STANDARD AND ROOT_CXX_STANDARD LESS 23)
+  message(FATAL_ERROR "FastCaloSim needs a ROOT built with C++23 or later, "
+                      "found ROOT built with C++${ROOT_CXX_STANDARD}")
+endif()
 # Geant4 (with gdml activated) is a required dependency for FastCaloSim
 find_package(Geant4 10.6 REQUIRED gdml)
 # lwtnn for neural network inference
@@ -112,9 +118,9 @@ set( _dictName "FastCaloSim_dict" )
 set( _libName "FastCaloSim_FastCaloSim" )
 ROOT_GENERATE_DICTIONARY( ${_dictName} MODULE ${_libName} LINKDEF include/FastCaloSim/LinkDef.h )
 
-# Deactivate compiler warnings and static analyzers for third party libraries
-# TODO: fix FCS warnings and remove FastCaloSim_FastCaloSim from list
-deactivate_checks(FastCaloSim_dict FastCaloSim_FastCaloSim)
+# Deactivate compiler warnings and static analyzers for the dictionary that
+# rootcling generates
+deactivate_checks(FastCaloSim_dict)
 
 # ROOT >= 6.40 emits the generated dictionary as its own (object-library) target
 # and links it PRIVATE into the module. In a static build (BUILD_SHARED_LIBS=OFF)
@@ -174,11 +180,6 @@ set(FastCaloSim_TARGETS FastCaloSim_FastCaloSim)
 
 # Create FastCaloSim::Param target
 if (FastCaloSim_PARAM_MODE)
-    # fmt for the parametrization executables
-    find_package(fmt REQUIRED)
-    # fmt is built from source when it is not installed: third party code,
-    # no project warnings or analyzers
-    deactivate_checks(fmt::fmt)
     add_subdirectory(param)
 endif()
 

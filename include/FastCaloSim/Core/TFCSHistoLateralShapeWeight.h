@@ -10,9 +10,15 @@ class TFCSHistoLateralShapeWeight
     : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSHistoLateralShapeWeight(const char* name = nullptr,
-                              const char* title = nullptr);
+  explicit TFCSHistoLateralShapeWeight(const char* name = nullptr,
+                                       const char* title = nullptr);
   ~TFCSHistoLateralShapeWeight() override;
+  TFCSHistoLateralShapeWeight(const TFCSHistoLateralShapeWeight&) = default;
+  TFCSHistoLateralShapeWeight(TFCSHistoLateralShapeWeight&&) = default;
+  auto operator=(const TFCSHistoLateralShapeWeight&)
+      -> TFCSHistoLateralShapeWeight& = default;
+  auto operator=(TFCSHistoLateralShapeWeight&&)
+      -> TFCSHistoLateralShapeWeight& = default;
 
   /// weight the energy of one hit in order to generate fluctuations
   auto simulate_hit(Hit& hit,
@@ -25,13 +31,13 @@ public:
   /// expected hits to be generated
   auto Initialize(TH1* hist) -> bool;
 
-  auto getHistogram() const -> TH1* { return m_hist; };
+  auto getHistogram() const -> TH1* { return m_hist; }
 
   void Print(Option_t* option = "") const override;
   virtual void setMinWeight(float minWeight) { m_minWeight = minWeight; }
   virtual void setMaxWeight(float maxWeight) { m_maxWeight = maxWeight; }
-  auto getMinWeight() const -> float override;
-  auto getMaxWeight() const -> float override;
+  auto getMinWeight() const -> double override;
+  auto getMaxWeight() const -> double override;
 
 protected:
   /// Histogram to be used for the shape simulation

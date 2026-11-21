@@ -28,7 +28,8 @@ public:
   auto compareLogs() const -> bool
   {
     const std::string diff_cmd = buildDiffCommand();
-    int diff_status = system(diff_cmd.c_str());
+    // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): diff pipeline
+    int const diff_status = system(diff_cmd.c_str());
     return diff_status == 0;  // Return true if logs match, false otherwise
   }
 
@@ -36,8 +37,8 @@ public:
   auto getDiffCommand() const -> std::string { return buildDiffCommand(); }
 
 private:
-  const std::string ref_log_file;
-  const std::string new_log_file;
+  std::string ref_log_file;
+  std::string new_log_file;
   std::vector<std::string> ignore_patterns;
 
   // Build the grep -F command that ignores lines containing any pattern
@@ -61,11 +62,11 @@ private:
   // Build the full diff command with filtering
   auto buildDiffCommand() const -> std::string
   {
-    std::string grep_filter = buildGrepFilterCommand();
+    std::string const grep_filter = buildGrepFilterCommand();
 
     std::cout << "Comparing " << ref_log_file << " and " << new_log_file
-              << std::endl;
-    std::cout << "Grep filter: " << grep_filter << std::endl;
+              << '\n';
+    std::cout << "Grep filter: " << grep_filter << '\n';
 
     // We'll replace memory addresses and timing info, then pipe both logs
     // through the same sed+grep filter, then compare with diff -u.

@@ -27,7 +27,7 @@ public:
   {
   }
 
-  explicit Track(std::vector<G4FieldTrack> caloSteps)
+  explicit Track(const std::vector<G4FieldTrack>& caloSteps)
   {
     for (const auto& step : caloSteps) {
       m_track.emplace_back(step.GetPosition());

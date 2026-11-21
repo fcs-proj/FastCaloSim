@@ -33,7 +33,12 @@ namespace ParticleData
 class FASTCALOSIM_EXPORT Provider
 {
 public:
+  Provider() = default;
   virtual ~Provider() = default;
+  Provider(const Provider&) = default;
+  Provider(Provider&&) = default;
+  auto operator=(const Provider&) -> Provider& = default;
+  auto operator=(Provider&&) -> Provider& = default;
 
   /// Electric charge of the particle with the given PDG id, in units of e.
   /// Implementations should throw if the pdgID is not supported.

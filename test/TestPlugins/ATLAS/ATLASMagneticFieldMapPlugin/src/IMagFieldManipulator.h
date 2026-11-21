@@ -39,6 +39,12 @@ class IMagFieldManipulator
 public:
   /** constructor */
   IMagFieldManipulator() { ; }
+  virtual ~IMagFieldManipulator() = default;
+  IMagFieldManipulator(const IMagFieldManipulator&) = default;
+  IMagFieldManipulator(IMagFieldManipulator&&) = default;
+  auto operator=(const IMagFieldManipulator&)
+      -> IMagFieldManipulator& = default;
+  auto operator=(IMagFieldManipulator&&) -> IMagFieldManipulator& = default;
 
   /** Retrieve interface ID */
   //        static const InterfaceID& interfaceID() {
@@ -54,7 +60,7 @@ public:
   /** correct B field value at a position xyz */
   /** bxyz[3] is in kT */
   /** if deriv[9] is given, field derivatives are returned in kT/mm */
-  virtual void modifyField(double* bxyz, double* deriv = 0) = 0;
+  virtual void modifyField(double* bxyz, double* deriv = nullptr) = 0;
 };
 }  // namespace MagField
 

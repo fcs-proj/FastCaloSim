@@ -10,6 +10,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
+
 // for convenience
 using json = nlohmann::json;
 
@@ -25,9 +27,9 @@ using json = nlohmann::json;
 class JsonComparer
 {
 public:
-  JsonComparer(double tolerance = 0.0, int print_limit = 50)
-      : m_tolerance(tolerance)
-      , m_print_limit(print_limit)
+  explicit JsonComparer(double tolerance = 0.0, int print_limit = 50)
+      : m_print_limit(print_limit)
+      , m_tolerance(tolerance)
   {
   }
 
@@ -35,13 +37,14 @@ public:
   {
     m_print_count = 0, m_output_suppressed = false;
 
-    json json1, json2;
+    json json1;
+    json json2;
 
     if (!read_json(file1, json1) || !read_json(file2, json2)) {
       return false;
     }
 
-    bool are_equal = compare_json(json1, json2, "");
+    bool const are_equal = compare_json(json1, json2, "");
     if (!are_equal) {
       std::cout << "Differences found:\n";
     }
@@ -50,8 +53,8 @@ public:
   }
 
 private:
-  int m_print_limit, m_print_count;
-  bool m_output_suppressed;
+  int m_print_limit, m_print_count = 0;
+  bool m_output_suppressed = false;
   double m_tolerance;
 
   static auto read_json(const std::string& file_path, json& json_obj) -> bool
@@ -111,7 +114,8 @@ private:
   {
     bool are_equal = true;
     for (auto it = json1.begin(); it != json1.end(); ++it) {
-      std::string new_path = path.empty() ? it.key() : path + "." + it.key();
+      std::string const new_path =
+          path.empty() ? it.key() : path + "." + it.key();
       if (json2.contains(it.key())) {
         if (!compare_json(it.value(), json2.at(it.key()), new_path)) {
           are_equal = false;
@@ -123,7 +127,8 @@ private:
       }
     }
     for (auto it = json2.begin(); it != json2.end(); ++it) {
-      std::string new_path = path.empty() ? it.key() : path + "." + it.key();
+      std::string const new_path =
+          path.empty() ? it.key() : path + "." + it.key();
       if (!json1.contains(it.key())) {
         print_difference("Extra key in second JSON", "", it.value(), new_path);
         are_equal = false;
@@ -137,7 +142,7 @@ private:
                       const std::string& path) -> bool
   {
     bool are_equal = true;
-    size_t min_size = std::min(json1.size(), json2.size());
+    size_t const min_size = std::min(json1.size(), json2.size());
     for (size_t i = 0; i < min_size; ++i) {
       if (!compare_json(
               json1[i], json2[i], path + "[" + std::to_string(i) + "]"))
@@ -169,9 +174,9 @@ private:
                        const json& json2,
                        const std::string& path) -> bool
   {
-    double val1 = json1.get<double>();
-    double val2 = json2.get<double>();
-    double percent_diff =
+    double const val1 = json1.get<double>();
+    double const val2 = json2.get<double>();
+    double const percent_diff =
         std::fabs(val1 - val2) / std::max(std::fabs(val1), std::fabs(val2));
     if (percent_diff > m_tolerance) {
       print_difference("Value mismatch", val1, val2, path, percent_diff * 100);
@@ -203,7 +208,7 @@ private:
     } else {
       std::cout << message << " at " << path << ": " << json1 << " vs "
                 << json2;
-      if (percent_diff != 0.0) {
+      if (!FastCaloSim::exactly_equal(percent_diff, 0.0)) {
         std::cout << " (difference: " << percent_diff << "%)";
       }
       std::cout << "\n";

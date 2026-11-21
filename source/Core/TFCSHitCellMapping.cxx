@@ -1,6 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
@@ -31,7 +28,12 @@ auto TFCSHitCellMapping::simulate_hit(
                                   << " phi=" << hit.phi());
 
   // Position where we will perform the lookup
-  Position lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
+  Position const lookup_pos {.m_x = 0,
+                             .m_y = 0,
+                             .m_z = 0,
+                             .m_eta = hit.eta(),
+                             .m_phi = hit.phi(),
+                             .m_r = 0};
 
   // Get the best matching cell
   const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
@@ -40,7 +42,7 @@ auto TFCSHitCellMapping::simulate_hit(
   // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
-  double proximity = cell.boundary_proximity(lookup_pos);
+  double const proximity = cell.boundary_proximity(lookup_pos);
 
   FCS_MSG_DEBUG("Hit-cell distance in eta-phi is: " << proximity);
 
@@ -51,7 +53,8 @@ auto TFCSHitCellMapping::simulate_hit(
   // for FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
   if (proximity < 0.005) {
-    simulstate.deposit(cell.id(), hit.E());
+    // Cell energies are stored in single precision
+    simulstate.deposit(cell.id(), static_cast<float>(hit.E()));
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }
@@ -61,14 +64,13 @@ auto TFCSHitCellMapping::simulate_hit(
 auto TFCSHitCellMapping::operator==(const TFCSParametrizationBase& ref) const
     -> bool
 {
-  if (TFCSParametrizationBase::compare(ref))
+  if (TFCSParametrizationBase::compare(ref)) {
     return true;
-  if (!TFCSParametrization::compare(ref))
+  }
+  if (!TFCSParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrization::compare(ref))
-    return false;
-
-  return true;
+  }
+  return TFCSLateralShapeParametrization::compare(ref);
 }
 
 void TFCSHitCellMapping::Print(Option_t* option) const
@@ -76,8 +78,7 @@ void TFCSHitCellMapping::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  geo=" << m_geo);
+  }
 }
-
-#pragma GCC diagnostic push

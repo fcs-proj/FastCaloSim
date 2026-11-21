@@ -12,10 +12,10 @@ public:
   // Destructor
   virtual ~MagFieldPlugin() = default;
 
-  virtual G4MagneticField* getField() = 0;
-
-private:
   MagFieldPlugin(const MagFieldPlugin&) = delete;
+  auto operator=(const MagFieldPlugin&) -> MagFieldPlugin& = delete;
+  MagFieldPlugin(MagFieldPlugin&&) = delete;
+  auto operator=(MagFieldPlugin&&) -> MagFieldPlugin& = delete;
 
-  MagFieldPlugin& operator=(const MagFieldPlugin&) = delete;
+  virtual auto getField() -> G4MagneticField* = 0;
 };

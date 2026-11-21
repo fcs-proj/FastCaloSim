@@ -7,20 +7,20 @@
 class TFCSEnergyInterpolationLinear : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationLinear(const char* name = nullptr,
-                                const char* title = nullptr);
+  explicit TFCSEnergyInterpolationLinear(const char* name = nullptr,
+                                         const char* title = nullptr);
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_calosample(int /*calosample*/) const -> bool override
+  }
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override
   {
     return true;
-  };
+  }
 
-  void set_slope(float slope) { m_slope = slope; };
-  void set_offset(float offset) { m_offset = offset; };
+  void set_slope(float slope) { m_slope = slope; }
+  void set_offset(float offset) { m_offset = offset; }
 
   // Initialize simulstate with the mean reconstructed energy in the calorimater
   // expected from the true kinetic energy
@@ -32,8 +32,8 @@ public:
   void Print(Option_t* option = "") const override;
 
 private:
-  float m_slope;
-  float m_offset;
+  float m_slope {1};
+  float m_offset {0};
 
   ClassDefOverride(TFCSEnergyInterpolationLinear,
                    1)  // TFCSEnergyInterpolationLinear

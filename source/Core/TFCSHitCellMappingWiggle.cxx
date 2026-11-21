@@ -1,6 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
@@ -14,6 +11,8 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "TH1.h"
 #include "TVector2.h"
 
@@ -36,7 +35,7 @@ TFCSHitCellMappingWiggle::~TFCSHitCellMappingWiggle()
 void TFCSHitCellMappingWiggle::clear()
 {
   for (auto*& function : m_functions) {
-    if (function) {
+    if (function != nullptr) {
       delete function;
       function = nullptr;
     }
@@ -47,8 +46,9 @@ void TFCSHitCellMappingWiggle::clear()
 
 void TFCSHitCellMappingWiggle::initialize(TFCS1DFunction* func)
 {
-  if (!func)
+  if (func == nullptr) {
     return;
+  }
   clear();
 
   m_functions.resize(1);
@@ -76,13 +76,14 @@ void TFCSHitCellMappingWiggle::initialize(
 
 void TFCSHitCellMappingWiggle::initialize(TH1* histogram, float xscale)
 {
-  if (!histogram)
+  if (histogram == nullptr) {
     return;
-  TFCS1DFunctionInt32Histogram* func =
-      new TFCS1DFunctionInt32Histogram(histogram);
-  if (xscale != 1) {
-    for (auto& ele : func->get_HistoBordersx())
+  }
+  auto* func = new TFCS1DFunctionInt32Histogram(histogram);
+  if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
+    for (auto& ele : func->get_HistoBordersx()) {
       ele *= xscale;
+    }
   }
   initialize(func);
 }
@@ -99,13 +100,13 @@ void TFCSHitCellMappingWiggle::initialize(
     return;
   }
   std::vector<const TFCS1DFunction*> functions(histograms.size());
-  for (unsigned int i = 0; i < histograms.size(); ++i) {
-    if (histograms[i]) {
-      TFCS1DFunctionInt32Histogram* func =
-          new TFCS1DFunctionInt32Histogram(histograms[i]);
-      if (xscale != 1) {
-        for (auto& ele : func->get_HistoBordersx())
+  for (std::size_t i = 0; i < histograms.size(); ++i) {
+    if (histograms[i] != nullptr) {
+      auto* func = new TFCS1DFunctionInt32Histogram(histograms[i]);
+      if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
+        for (auto& ele : func->get_HistoBordersx()) {
           ele *= xscale;
+        }
       }
       functions[i] = func;
     } else {
@@ -122,23 +123,30 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
-  float eta = std::fabs(hit.eta());
-  if (eta < m_bin_low_edge[0] || eta >= m_bin_low_edge[get_number_of_bins()]) {
+  const double eta = std::fabs(hit.eta());
+  if (eta < get_bin_low_edge(0)
+      || eta >= get_bin_up_edge(get_number_of_bins() - 1))
+  {
     return TFCSHitCellMapping::simulate_hit(hit, simulstate, truth, extrapol);
   }
 
-  auto it = std::upper_bound(m_bin_low_edge.begin(), m_bin_low_edge.end(), eta);
-  int bin = std::distance(m_bin_low_edge.begin(), it) - 1;
+  // The bin edges are stored in single precision
+  const auto it = std::ranges::upper_bound(
+      m_bin_low_edge,
+      eta,
+      std::ranges::less {},
+      [](float edge) -> double { return static_cast<double>(edge); });
+  const std::size_t bin = FastCaloSim::index_of(m_bin_low_edge, it) - 1;
 
   const TFCS1DFunction* func = get_function(bin);
-  if (func) {
-    double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  if (func != nullptr) {
+    double const rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
-    double wiggle = func->rnd_to_fct(rnd);
+    double const wiggle = func->rnd_to_fct(rnd);
 
     FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << calosample()
                             << " eta=" << hit.eta() << " phi=" << hit.phi()
@@ -146,7 +154,7 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
                             << get_bin_low_edge(bin) << ","
                             << get_bin_up_edge(bin) << "] func=" << func);
 
-    double hit_phi_shifted = hit.phi() + wiggle;
+    double const hit_phi_shifted = hit.phi() + wiggle;
     hit.set_phi_y(TVector2::Phi_mpi_pi(hit_phi_shifted));
   }
 
@@ -156,16 +164,16 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
 auto TFCSHitCellMappingWiggle::operator==(
     const TFCSParametrizationBase& ref) const -> bool
 {
-  if (TFCSParametrizationBase::compare(ref))
+  if (TFCSParametrizationBase::compare(ref)) {
     return true;
-  if (!TFCSParametrization::compare(ref))
+  }
+  if (!TFCSParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrization::compare(ref))
+  }
+  if (!TFCSLateralShapeParametrization::compare(ref)) {
     return false;
-  if (!TFCSHitCellMappingWiggle::compare(ref))
-    return false;
-
-  return true;
+  }
+  return TFCSHitCellMappingWiggle::compare(ref);
 }
 
 void TFCSHitCellMappingWiggle::Print(Option_t* option) const
@@ -176,9 +184,10 @@ void TFCSHitCellMappingWiggle::Print(Option_t* option) const
   if (longprint) {
     FCS_MSG(INFO) << optprint << "  " << get_number_of_bins()
                   << " functions : ";
-    for (unsigned int i = 0; i < get_number_of_bins(); ++i)
+    for (std::size_t i = 0; i < get_number_of_bins(); ++i) {
       FCS_MSG(INFO) << get_bin_low_edge(i) << " < (" << get_function(i)
                     << ") < ";
+    }
     FCS_MSG(INFO) << get_bin_up_edge(get_number_of_bins() - 1)
                   << END_FCS_MSG(INFO);
   }
@@ -192,20 +201,20 @@ auto TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSHitCellMappingWiggle& ref_typed =
-      static_cast<const TFCSHitCellMappingWiggle&>(ref);
+  const auto& ref_typed = static_cast<const TFCSHitCellMappingWiggle&>(ref);
 
   if (m_bin_low_edge != ref_typed.m_bin_low_edge) {
     FCS_MSG_DEBUG("operator==(): different bin edges");
     return false;
   }
 
-  for (unsigned int i = 0; i < get_number_of_bins(); ++i) {
+  for (std::size_t i = 0; i < get_number_of_bins(); ++i) {
     const TFCS1DFunction* f1 = get_function(i);
     const TFCS1DFunction* f2 = ref_typed.get_function(i);
-    if (!f1 && !f2)
+    if (f1 == nullptr && f2 == nullptr) {
       continue;
-    if ((f1 && !f2) || (!f1 && f2)) {
+    }
+    if ((f1 == nullptr) != (f2 == nullptr)) {
       FCS_MSG_DEBUG(
           "compare(): different only one function pointer is nullptr");
       return false;
@@ -224,5 +233,3 @@ auto TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
 
   return true;
 }
-
-#pragma GCC diagnostic pop

@@ -8,18 +8,29 @@ class TFCSParametrizationAbsEtaSelectChain
     : public TFCSParametrizationEtaSelectChain
 {
 public:
-  TFCSParametrizationAbsEtaSelectChain(const char* name = nullptr,
-                                       const char* title = nullptr)
-      : TFCSParametrizationEtaSelectChain(name, title) {};
+  explicit TFCSParametrizationAbsEtaSelectChain(const char* name = nullptr,
+                                                const char* title = nullptr)
+      : TFCSParametrizationEtaSelectChain(name, title)
+  {
+  }
   TFCSParametrizationAbsEtaSelectChain(
       const TFCSParametrizationAbsEtaSelectChain& ref) = default;
+  TFCSParametrizationAbsEtaSelectChain(
+      TFCSParametrizationAbsEtaSelectChain&& ref) = default;
+  auto operator=(const TFCSParametrizationAbsEtaSelectChain& ref)
+      -> TFCSParametrizationAbsEtaSelectChain& = default;
+  auto operator=(TFCSParametrizationAbsEtaSelectChain&& ref)
+      -> TFCSParametrizationAbsEtaSelectChain& = default;
+  ~TFCSParametrizationAbsEtaSelectChain() override = default;
 
   // selects on |extrapol->IDCaloBoundary_eta()|
-  // return -1 if outside range
-  auto get_bin(TFCSSimulationState&,
+  // returns no value if outside range
+  auto get_bin(TFCSSimulationState& /*unused*/,
                const TFCSTruthState* truth,
-               const TFCSExtrapolationState* extrapol) const -> int override;
-  auto get_bin_text(int bin) const -> const std::string override;
+               const TFCSExtrapolationState* extrapol) const
+      -> std::optional<std::size_t> override;
+  auto get_bin_text(std::optional<std::size_t> bin) const
+      -> const std::string override;
 
 private:
   ClassDefOverride(TFCSParametrizationAbsEtaSelectChain,

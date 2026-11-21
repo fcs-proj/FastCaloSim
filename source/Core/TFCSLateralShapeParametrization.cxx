@@ -11,26 +11,25 @@
 TFCSLateralShapeParametrization::TFCSLateralShapeParametrization(
     const char* name, const char* title)
     : TFCSParametrization(name, title)
-    , m_Ekin_bin(-1)
-    , m_calosample(-1)
+
 {
 }
 
-void TFCSLateralShapeParametrization::set_Ekin_bin(int bin)
+void TFCSLateralShapeParametrization::set_Ekin_bin(std::size_t bin)
 {
-  m_Ekin_bin = bin;
+  m_Ekin_bin = static_cast<int>(bin);
 }
 
-void TFCSLateralShapeParametrization::set_calosample(int cs)
+void TFCSLateralShapeParametrization::set_calosample(std::size_t cs)
 {
-  m_calosample = cs;
+  m_calosample = static_cast<int>(cs);
 }
 
 void TFCSLateralShapeParametrization::set_pdgid_Ekin_eta_Ekin_bin_calosample(
     const TFCSLateralShapeParametrization& ref)
 {
-  set_calosample(ref.calosample());
-  set_Ekin_bin(ref.Ekin_bin());
+  m_calosample = ref.m_calosample;
+  m_Ekin_bin = ref.m_Ekin_bin;
   set_pdgid_Ekin_eta(ref);
 }
 
@@ -42,13 +41,13 @@ auto TFCSLateralShapeParametrization::compare(
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSLateralShapeParametrization& ref_typed =
+  const auto& ref_typed =
       static_cast<const TFCSLateralShapeParametrization&>(ref);
-  if (Ekin_bin() != ref_typed.Ekin_bin()) {
+  if (m_Ekin_bin != ref_typed.m_Ekin_bin) {
     FCS_MSG_DEBUG("compare(): different Ekin bin");
     return false;
   }
-  if (calosample() != ref_typed.calosample()) {
+  if (m_calosample != ref_typed.m_calosample) {
     FCS_MSG_DEBUG("compare(): different calosample");
     return false;
   }
@@ -61,10 +60,11 @@ void TFCSLateralShapeParametrization::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
   if (longprint) {
-    if (Ekin_bin() == -1)
-      FCS_MSG_INFO(optprint << "  Ekin_bin=all ; calosample=" << calosample());
-    else
-      FCS_MSG_INFO(optprint << "  Ekin_bin=" << Ekin_bin()
-                            << " ; calosample=" << calosample());
+    if (!Ekin_bin()) {
+      FCS_MSG_INFO(optprint << "  Ekin_bin=all ; calosample=" << m_calosample);
+    } else {
+      FCS_MSG_INFO(optprint << "  Ekin_bin=" << m_Ekin_bin
+                            << " ; calosample=" << m_calosample);
+    }
   }
 }

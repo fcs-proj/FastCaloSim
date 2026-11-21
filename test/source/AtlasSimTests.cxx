@@ -22,7 +22,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   AtlasSimTestConfig::set_output_dir(output_dir);
 
   // Retrieve the event to be transported
-  const TestHelpers::Event evt = GetParam();
+  const TestHelpers::Event& evt = GetParam();
 
   // Tell the action initialization to set the particles
   G4RunTests::actionInitialization->set_particle_container(
@@ -37,6 +37,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   auto* mgr = G4GlobalFastSimulationManager::GetGlobalFastSimulationManager();
   auto* model =
       dynamic_cast<FastSimModel*>(mgr->GetFastSimulationModel("model"));
+  ASSERT_NE(model, nullptr);
 
   // Reset the state of the fast simulation model
   model->Reset();
@@ -47,10 +48,10 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   model->setExtrapolationTool(BasicExtrapolTests::extrapolator);
 
   // Activate the simulation for this test
-  model->doSimulation(true);
+  model->doSimulation(/*doSimulation=*/true);
 
   // Set the param file path
-  std::string paramsObject {"SelPDGID"};
+  std::string const paramsObject {"SelPDGID"};
   TFCSParametrizationBase* param = static_cast<TFCSParametrizationBase*>(
       BasicSimTests::param_files[evt.get_param_file_key()]->Get(
           paramsObject.c_str()));
@@ -67,7 +68,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   G4RunTests::run_manager->BeamOn(1);
 
   // Retrieve the transportation tracks and serialize to json file
-  TestHelpers::TrackContainer tracks = model->GetTransportTracks();
+  TestHelpers::TrackContainer const tracks = model->GetTransportTracks();
   tracks.serialize(AtlasSimTestConfig::transport_output_path());
 
   // Retrieve the simulation states and serialize to json file
@@ -77,20 +78,23 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   states.serialize(AtlasSimTestConfig::sim_output_path());
 
   // Plot the cells containing energy and color according to the energy
-  std::string sim_plot_exec = AtlasSimTestConfig::py_sim_exec(evt.get_label());
+  std::string const sim_plot_exec =
+      AtlasSimTestConfig::py_sim_exec(evt.get_label());
 
+  // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): plot script
   ASSERT_TRUE(system(sim_plot_exec.c_str()) == 0);
 
   // Now compare results with references with a tolerance of 0.1 percent
   const double tol = 1e-3;
-  JsonComparer json(tol);
+  JsonComparer comparer(tol);
 
   // Compare the transport data to references
-  ASSERT_TRUE(json.compare(AtlasSimTestConfig::transport_output_path(),
-                           AtlasSimTestConfig::transport_output_ref_path()));
+  ASSERT_TRUE(
+      comparer.compare(AtlasSimTestConfig::transport_output_path(),
+                       AtlasSimTestConfig::transport_output_ref_path()));
   // Compare the simulation data to references
-  ASSERT_TRUE(json.compare(AtlasSimTestConfig::sim_output_path(),
-                           AtlasSimTestConfig::sim_output_ref_path()));
+  ASSERT_TRUE(comparer.compare(AtlasSimTestConfig::sim_output_path(),
+                               AtlasSimTestConfig::sim_output_ref_path()));
 }
 
 INSTANTIATE_TEST_SUITE_P(AtlasSimulation,

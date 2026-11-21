@@ -39,7 +39,7 @@ public:
   // compute Biot-Savart magnetic field and add to B[3]
   inline void addBiotSavart(const double* xyz,
                             double* B,
-                            double* deriv = 0) const;
+                            double* deriv = nullptr) const;
   // scale B field by a multiplicative factor
   void scaleField(double factor)
   {
@@ -49,25 +49,32 @@ public:
     }
   }
   // accessors
-  int id() const { return m_id; }
-  unsigned ncond() const { return m_cond.size(); }
-  const BFieldCond& cond(int i) const { return m_cond[i]; }
-  const std::vector<BFieldCond>* condVector() const { return &m_cond; }
-  int memSize() const
+  auto id() const -> int { return m_id; }
+  auto ncond() const -> unsigned
   {
-    return BFieldMesh<short>::memSize() + sizeof(int)
-        + sizeof(BFieldCond) * m_cond.capacity();
+    return static_cast<unsigned>(m_cond.size());
+  }
+  auto cond(int i) const -> const BFieldCond&
+  {
+    return m_cond[static_cast<std::size_t>(i)];
+  }
+  auto condVector() const -> const std::vector<BFieldCond>* { return &m_cond; }
+  auto memSize() const -> int
+  {
+    return static_cast<int>(static_cast<std::size_t>(meshMemSize())
+                            + sizeof(int)
+                            + sizeof(BFieldCond) * m_cond.capacity());
   }
   // adjust the min/max edges to a new value
   void adjustMin(int i, double x)
   {
-    m_min[i] = x;
-    m_mesh[i].front() = x;
+    m_min[static_cast<std::size_t>(i)] = x;
+    m_mesh[static_cast<std::size_t>(i)].front() = x;
   }
   void adjustMax(int i, double x)
   {
-    m_max[i] = x;
-    m_mesh[i].back() = x;
+    m_max[static_cast<std::size_t>(i)] = x;
+    m_mesh[static_cast<std::size_t>(i)].back() = x;
   }
 
 private:
@@ -84,8 +91,8 @@ void BFieldZone::addBiotSavart(const double* xyz,
                                double* B,
                                double* deriv) const
 {
-  for (unsigned i = 0; i < m_cond.size(); i++) {
-    m_cond[i].addBiotSavart(xyz, B, deriv);
+  for (const auto& i : m_cond) {
+    i.addBiotSavart(xyz, B, deriv);
   }
 }
 

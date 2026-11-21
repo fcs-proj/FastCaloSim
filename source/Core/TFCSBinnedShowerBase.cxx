@@ -41,38 +41,34 @@ auto TFCSBinnedShowerBase::simulate(
   delete_event(simulstate);
 
   // select a random event from the library
-  float eta_center, phi_center;
   // NOTE: This is ATLAS specific
   // layer 2 is EMB2
-  long unsigned int reference_layer_index = 2;
-  eta_center = extrapol->eta(reference_layer_index, Cell::SubPos::MID);
-  if (eta_center > 1.4) {  // Endcap becomes more relevant
+  std::size_t reference_layer = 2;
+  if (extrapol->eta(reference_layer, FastCaloSim::SubPos::MID) > 1.4)
+  {  // Endcap becomes more relevant
     // NOTE: This is ATLAS specific
     // layer 6 is EME2
-    reference_layer_index = 6;
+    reference_layer = 6;
   }
   // TODO: What about the endcap?
-  eta_center = extrapol->eta(reference_layer_index, Cell::SubPos::MID);
-  phi_center = extrapol->phi(reference_layer_index, Cell::SubPos::MID);
+  const double eta_center =
+      extrapol->eta(reference_layer, FastCaloSim::SubPos::MID);
+  const double phi_center =
+      extrapol->phi(reference_layer, FastCaloSim::SubPos::MID);
 
   // Fill the total energy and layer energies into simulstate
-  float Einit;
-  const float Ekin = truth->Ekin();
-
-  if (OnlyScaleEnergy())
-    Einit = simulstate.E();
-  else
-    Einit = Ekin;
+  const double Ekin = truth->Ekin();
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
 
   // Reset the total energy
   simulstate.set_E(0);
 
-  get_event(simulstate, eta_center, phi_center, Einit, reference_layer_index);
+  get_event(simulstate, eta_center, phi_center, Einit, reference_layer);
 
-  for (long unsigned int layer_index = 0; layer_index < m_geo->n_layers();
+  for (std::size_t layer_index = 0; layer_index < m_geo->n_layers();
        ++layer_index)
   {
-    float layer_energy = get_layer_energy(simulstate, layer_index);
+    const double layer_energy = get_layer_energy(simulstate, layer_index);
 
     // Reset and set the layer energy
     simulstate.set_E(layer_index, 0);
@@ -80,7 +76,7 @@ auto TFCSBinnedShowerBase::simulate(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+    for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }
@@ -94,8 +90,8 @@ auto TFCSBinnedShowerBase::simulate_hit(
     const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   const int pdgId = truth->pdgid();
-  const float charge = ParticleData::charge(pdgId);
-  long unsigned int layer_index = calosample();
+  const double charge = ParticleData::charge(pdgId);
+  const std::size_t layer_index = calosample();
 
   const double center_eta = hit.center_eta();
   const double center_phi = hit.center_phi();
@@ -105,14 +101,13 @@ auto TFCSBinnedShowerBase::simulate_hit(
   FCS_MSG_VERBOSE(" Layer " << layer_index << " Extrap eta " << center_eta
                             << " phi " << center_phi << " R " << center_r);
 
-  const float dist000 = FastCaloSim::dist000(center_r, center_z);
-  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+  const double dist000 = FastCaloSim::dist000(center_r, center_z);
+  const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  long unsigned int hit_index = hit.idx();
+  std::size_t const hit_index = hit.idx();
 
   // Get necessary the hit information
-  float r, alpha, E;
-  std::tie(r, alpha, E) =
+  const auto [r, alpha, E] =
       get_hit_position_and_energy(simulstate, layer_index, hit_index);
 
   hit.reset();
@@ -121,8 +116,8 @@ auto TFCSBinnedShowerBase::simulate_hit(
   // NOTE: this is ATLAS dependent
   // layer 21 is FCAL0
   if (layer_index <= 21) {
-    float delta_eta_mm = r * std::cos(alpha);
-    float delta_phi_mm = r * std::sin(alpha);
+    double delta_eta_mm = r * std::cos(alpha);
+    double delta_phi_mm = r * std::sin(alpha);
 
     // Particles with negative eta are expected to have the same shape
     // as those with positive eta after transformation: delta_eta -->
@@ -135,11 +130,12 @@ auto TFCSBinnedShowerBase::simulate_hit(
     // hadrons. Particle with the opposite charge are expected to have the
     // same shower shape after the transformation: delta_phi -->
     // -delta_phi
-    if ((charge < 0. && pdgId != 11) || pdgId == -11)
+    if ((charge < 0. && pdgId != 11) || pdgId == -11) {
       delta_phi_mm = -delta_phi_mm;
+    }
 
-    const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
-    const float delta_phi = delta_phi_mm / center_r;
+    const double delta_eta = delta_eta_mm / eta_jakobi / dist000;
+    const double delta_phi = delta_phi_mm / center_r;
 
     hit.set_eta_x(center_eta + delta_eta);
     hit.set_phi_y(TVector2::Phi_mpi_pi(center_phi + delta_phi));
@@ -148,15 +144,16 @@ auto TFCSBinnedShowerBase::simulate_hit(
                                 << " layer " << layer_index);
 
   } else {  // FCAL is in (x,y,z)
-    const float hit_r = r * std::cos(alpha) + center_r;
-    float delta_phi = r * std::sin(alpha) / center_r;
+    const double hit_r = r * std::cos(alpha) + center_r;
+    double delta_phi = r * std::sin(alpha) / center_r;
     // We derive the shower shapes for electrons and positively charged
     // hadrons. Particle with the opposite charge are expected to have the
     // same shower shape after the transformation: delta_phi -->
     // -delta_phi
-    if ((charge < 0. && pdgId != 11) || pdgId == -11)
+    if ((charge < 0. && pdgId != 11) || pdgId == -11) {
       delta_phi = -delta_phi;
-    const float hit_phi = TVector2::Phi_mpi_pi(center_phi + delta_phi);
+    }
+    const double hit_phi = TVector2::Phi_mpi_pi(center_phi + delta_phi);
     hit.set_eta_x(hit_r * std::cos(hit_phi));
     hit.set_phi_y(hit_r * std::sin(hit_phi));
     hit.set_z(center_z);

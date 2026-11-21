@@ -19,16 +19,17 @@ void TFCSParametrizationBinnedChain::push_before_first_bin(
   if (m_bin_start[0] == size()) {
     chain().push_back(param);
   } else {
-    Chain_t::iterator it(&chain()[m_bin_start[0]]);
+    Chain_t::iterator const it(&chain()[m_bin_start[0]]);
     chain().insert(it, param);
   }
-  for (auto& ele : m_bin_start)
+  for (auto& ele : m_bin_start) {
     ele++;
+  }
   recalc();
 }
 
 void TFCSParametrizationBinnedChain::push_back_in_bin(
-    TFCSParametrizationBase* param, unsigned int bin)
+    TFCSParametrizationBase* param, std::size_t bin)
 {
   if (m_bin_start.size() <= bin + 1) {
     m_bin_start.resize(bin + 2, m_bin_start.back());
@@ -37,34 +38,53 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
   if (m_bin_start[bin + 1] == size()) {
     chain().push_back(param);
   } else {
-    Chain_t::iterator it(&chain()[m_bin_start[bin + 1]]);
+    Chain_t::iterator const it(&chain()[m_bin_start[bin + 1]]);
     chain().insert(it, param);
   }
-  for (unsigned int ibin = bin + 1; ibin < m_bin_start.size(); ++ibin)
+  for (std::size_t ibin = bin + 1; ibin < m_bin_start.size(); ++ibin) {
     m_bin_start[ibin]++;
+  }
   recalc();
 }
 
 auto TFCSParametrizationBinnedChain::get_bin(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> int
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* /*unused*/) const
+    -> std::optional<std::size_t>
 {
   return 0;
 }
 
+auto TFCSParametrizationBinnedChain::valid_bin(
+    std::optional<std::size_t> bin) const -> std::optional<std::size_t>
+{
+  if (bin && *bin < get_number_of_bins()) {
+    return bin;
+  }
+  return std::nullopt;
+}
+
+auto TFCSParametrizationBinnedChain::bin_label(std::optional<std::size_t> bin)
+    -> std::string
+{
+  return bin ? std::to_string(*bin) : std::string("none");
+}
+
+// NOLINTNEXTLINE(readability-const-return-type): virtual, overridden
 auto TFCSParametrizationBinnedChain::get_variable_text(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> const std::string
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* /*unused*/) const -> const std::string
 {
   return std::string("NO VARIABLE DEFINED");
 }
 
-auto TFCSParametrizationBinnedChain::get_bin_text(int bin) const
-    -> const std::string
+// NOLINTNEXTLINE(readability-const-return-type): virtual, overridden
+auto TFCSParametrizationBinnedChain::get_bin_text(
+    std::optional<std::size_t> bin) const -> const std::string
 {
-  return std::format("bin {}", bin);
+  return std::format("bin {}", bin_label(bin));
 }
 
 auto TFCSParametrizationBinnedChain::simulate(
@@ -74,23 +94,26 @@ auto TFCSParametrizationBinnedChain::simulate(
 {
   return simulate_with_restarts(
       "TFCSParametrizationBinnedChain::simulate()",
-      [&]
+      [&] -> FCSReturnCode
       {
         // Parametrizations before the bins, run for all bins
-        for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
+        for (std::size_t ichain = 0; ichain < m_bin_start[0]; ++ichain) {
           FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
           const FCSReturnCode status =
               simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
-          if (status != FCSSuccess)
+          if (status != FCSSuccess) {
             return status;
+          }
         }
 
         // Parametrizations of the bin of this particle
         if (get_number_of_bins() > 0) {
-          const int bin = get_bin(simulstate, truth, extrapol);
-          if (bin >= 0 && bin < (int)get_number_of_bins()) {
-            for (unsigned int ichain = m_bin_start[bin];
-                 ichain < m_bin_start[bin + 1];
+          // Select once: the selection may draw random numbers
+          const auto selected = get_bin(simulstate, truth, extrapol);
+          const auto bin = valid_bin(selected);
+          if (bin) {
+            for (unsigned int ichain = m_bin_start[*bin];
+                 ichain < m_bin_start[*bin + 1];
                  ++ichain)
             {
               FCS_MSG_DEBUG("for "
@@ -99,26 +122,28 @@ auto TFCSParametrizationBinnedChain::simulate(
                             << chain()[ichain]->GetName());
               const FCSReturnCode status = simulate_and_retry(
                   chain()[ichain], simulstate, truth, extrapol);
-              if (status != FCSSuccess)
+              if (status != FCSSuccess) {
                 return status;
+              }
             }
           } else {
             FCS_MSG_WARNING("for "
                             << get_variable_text(simulstate, truth, extrapol)
-                            << ": " << get_bin_text(bin));
+                            << ": " << get_bin_text(selected));
           }
         } else {
           FCS_MSG_WARNING("no bins defined, is this intended?");
         }
 
         // Parametrizations after the bins, run for all bins
-        for (unsigned int ichain = m_bin_start.back(); ichain < size();
-             ++ichain) {
+        for (std::size_t ichain = m_bin_start.back(); ichain < size(); ++ichain)
+        {
           FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
           const FCSReturnCode status =
               simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
-          if (status != FCSSuccess)
+          if (status != FCSSuccess) {
             return status;
+          }
         }
         return FCSSuccess;
       });
@@ -126,31 +151,38 @@ auto TFCSParametrizationBinnedChain::simulate(
 
 void TFCSParametrizationBinnedChain::Print(Option_t* option) const
 {
+  // The chain is printed per bin below, not as in TFCSParametrizationChain
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call): skip the chain printout
   TFCSParametrization::Print(option);
   const std::string opt = option != nullptr ? option : "";
   const auto [shortprint, longprint, optprint] = print_options(option);
 
   std::string prefix = "- ";
-  for (unsigned int ichain = 0; ichain < size(); ++ichain) {
+  for (std::size_t ichain = 0; ichain < size(); ++ichain) {
     if (ichain == 0 && ichain != m_bin_start.front()) {
       prefix = "> ";
-      if (longprint)
+      if (longprint) {
         FCS_MSG_INFO(optprint << prefix << "Run for all bins");
+      }
     }
-    for (unsigned int ibin = 0; ibin < get_number_of_bins(); ++ibin) {
+    for (std::size_t ibin = 0; ibin < get_number_of_bins(); ++ibin) {
       if (ichain == m_bin_start[ibin]) {
-        if (ibin < get_number_of_bins() - 1)
-          if (ichain == m_bin_start[ibin + 1])
+        if (ibin < get_number_of_bins() - 1) {
+          if (ichain == m_bin_start[ibin + 1]) {
             continue;
+          }
+        }
         prefix = std::format("{:<2}", ibin);
-        if (longprint)
+        if (longprint) {
           FCS_MSG_INFO(optprint << prefix << "Run for " << get_bin_text(ibin));
+        }
       }
     }
     if (ichain == m_bin_start.back()) {
       prefix = "< ";
-      if (longprint)
+      if (longprint) {
         FCS_MSG_INFO(optprint << prefix << "Run for all bins");
+      }
     }
     chain()[ichain]->Print((opt + prefix).c_str());
   }

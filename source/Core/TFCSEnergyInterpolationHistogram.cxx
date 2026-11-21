@@ -10,13 +10,6 @@
 #include "TAxis.h"
 #include "TGraph.h"
 
-namespace Gaudi::Units
-{
-constexpr double megaelectronvolt = 1.;
-constexpr double kiloelectronvolt = 1.e-3 * megaelectronvolt;
-constexpr double keV = kiloelectronvolt;
-}  // namespace Gaudi::Units
-
 //=============================================
 //======= TFCSEnergyInterpolation =========
 //=============================================
@@ -30,24 +23,22 @@ TFCSEnergyInterpolationHistogram::TFCSEnergyInterpolationHistogram(
 auto TFCSEnergyInterpolationHistogram::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const -> FCSReturnCode
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  float Emean;
-  float Einit;
-  const float Ekin = truth->Ekin();
-  if (OnlyScaleEnergy())
-    Einit = simulstate.E();
-  else
-    Einit = Ekin;
-  if (Einit < m_hist.GetXaxis()->GetBinLowEdge(1)) {
-    Emean = m_hist.GetBinContent(1) * Einit;
-  } else {
-    if (Einit > m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX())) {
-      Emean = m_hist.GetBinContent(m_hist.GetNbinsX()) * Einit;
-    } else {
-      Emean = m_hist.GetBinContent(m_hist.GetXaxis()->FindBin(Einit)) * Einit;
+  const double Ekin = truth->Ekin();
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
+  // Outside of the histogram range, the first or last bin is used
+  const int bin = [&] -> int
+  {
+    if (Einit < m_hist.GetXaxis()->GetBinLowEdge(1)) {
+      return 1;
     }
-  }
+    if (Einit > m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX())) {
+      return m_hist.GetNbinsX();
+    }
+    return m_hist.GetXaxis()->FindBin(Einit);
+  }();
+  const double Emean = m_hist.GetBinContent(bin) * Einit;
 
   if (OnlyScaleEnergy()) {
     FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin()
@@ -65,10 +56,11 @@ void TFCSEnergyInterpolationHistogram::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(
         optprint << (OnlyScaleEnergy() ? "  E()*" : "  Ekin()*")
                  << "histNbins=" << m_hist.GetNbinsX() << " "
                  << m_hist.GetXaxis()->GetBinLowEdge(1) << "<=Ekin<="
                  << m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX()));
+  }
 }

@@ -19,7 +19,6 @@
 TFCSFlatLateralShapeParametrization::TFCSFlatLateralShapeParametrization(
     const char* name, const char* title)
     : TFCSLateralShapeParametrizationHitBase(name, title)
-    , m_nhits(0)
     , m_scale(1)
 {
 }
@@ -32,11 +31,12 @@ auto TFCSFlatLateralShapeParametrization::get_number_of_hits(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> int
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return -1;
   }
 
-  return CLHEP::RandPoisson::shoot(simulstate.randomEngine(), m_nhits);
+  return static_cast<int>(CLHEP::RandPoisson::shoot(
+      simulstate.randomEngine(), static_cast<double>(m_nhits)));
 }
 
 void TFCSFlatLateralShapeParametrization::set_number_of_hits(float nhits)
@@ -60,11 +60,11 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return FCSFatal;
   }
 
-  const int cs = calosample();
+  const std::size_t cs = calosample();
   const double center_eta = hit.center_eta();
   const double center_phi = hit.center_phi();
   const double center_r = hit.center_r();
@@ -76,19 +76,18 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
     return FCSFatal;
   }
 
-  float alpha, r;
-
-  alpha =
+  const double alpha =
       2 * std::numbers::pi * CLHEP::RandFlat::shoot(simulstate.randomEngine());
-  r = m_dR * CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  const double r = static_cast<double>(m_dR)
+      * CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
-  float delta_eta = r * std::cos(alpha);
-  float delta_phi = r * std::sin(alpha);
+  double const delta_eta = r * std::cos(alpha);
+  double const delta_phi = r * std::sin(alpha);
 
   hit.setEtaPhiZE(center_eta + delta_eta,
                   center_phi + delta_phi,
                   center_z,
-                  hit.E() * m_scale);
+                  hit.E() * static_cast<double>(m_scale));
 
   FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << cs << " eta=" << hit.eta()
                           << " phi=" << hit.phi() << " z=" << hit.z()

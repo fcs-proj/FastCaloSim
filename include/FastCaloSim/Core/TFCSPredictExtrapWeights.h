@@ -12,16 +12,18 @@
 namespace lwt
 {
 class LightweightNeuralNetwork;
-}
+}  // namespace lwt
 
+// Owns the persistent pointers; never copied, copy is kept for ROOT
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSPredictExtrapWeights : public TFCSLateralShapeParametrizationHitBase
 {
 public:
-  TFCSPredictExtrapWeights(const char* name = nullptr,
-                           const char* title = nullptr,
-                           CaloGeo* geo = nullptr);
+  explicit TFCSPredictExtrapWeights(const char* name = nullptr,
+                                    const char* title = nullptr,
+                                    CaloGeo* geo = nullptr);
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
 
   ~TFCSPredictExtrapWeights() override;
 
@@ -46,8 +48,8 @@ public:
     kfreemem = BIT(17)  ///< Set this bit in the TObject bit if the memory for
                         ///< m_input should be freed after reading in athena
   };
-  auto freemem() const -> bool { return TestBit(kfreemem); };
-  void set_freemem() { SetBit(kfreemem); };
+  auto freemem() const -> bool { return TestBit(kfreemem); }
+  void set_freemem() { SetBit(kfreemem); }
 
   // Initialize Neural Network
   auto initializeNetwork(int pid,
@@ -59,7 +61,7 @@ public:
                      const std::string& FastCaloTXTInputFolderName) -> bool;
 
   // Prepare inputs to the Neural Network
-  auto prepareInputs(TFCSSimulationState& simulstate, const float truthE) const
+  auto prepareInputs(TFCSSimulationState& simulstate, double truthE) const
       -> std::map<std::string, double>;
 
   // Print()
@@ -73,9 +75,9 @@ public:
   auto UseHardcodedWeight() const -> bool
   {
     return TestBit(kUseHardcodedWeight);
-  };
-  void set_UseHardcodedWeight() { SetBit(kUseHardcodedWeight); };
-  void reset_UseHardcodedWeight() { ResetBit(kUseHardcodedWeight); };
+  }
+  void set_UseHardcodedWeight() { SetBit(kUseHardcodedWeight); }
+  void reset_UseHardcodedWeight() { ResetBit(kUseHardcodedWeight); }
 
 protected:
   CaloGeo* m_geo;  //! do not persistify

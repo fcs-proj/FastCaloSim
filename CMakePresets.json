@@ -34,14 +34,21 @@
       "name": "cppcheck",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr"
+        "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr;--suppress=*:*/_deps/*;--suppress=normalCheckLevelMaxBranches;--error-exitcode=1"
+      }
+    },
+    {
+      "name": "werror",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_COMPILE_WARNING_AS_ERROR": "ON"
       }
     },
     {
       "name": "clang-tidy",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--header-filter=^${sourceDir}/"
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--header-filter=^${sourceDir}/(source|include|test|param)/;--warnings-as-errors=*"
       }
     },
     {
@@ -93,7 +100,8 @@
       "name": "ci-coverage",
       "inherits": [
         "coverage",
-        "dev-mode"
+        "dev-mode",
+        "werror"
       ],
       "cacheVariables": {
         "COVERAGE_HTML_COMMAND": ""
@@ -123,7 +131,8 @@
         "linux",
         "clang-tidy",
         "cppcheck",
-        "dev-mode"
+        "dev-mode",
+        "werror"
       ]
     },
     {
@@ -131,14 +140,16 @@
       "inherits": [
         "ci-build",
         "linux",
-        "dev-mode"
+        "dev-mode",
+        "werror"
       ]
     },
     {
       "name": "ci-static",
       "inherits": [
         "ci-build",
-        "linux"
+        "linux",
+        "werror"
       ],
       "cacheVariables": {
         "BUILD_SHARED_LIBS": "OFF",

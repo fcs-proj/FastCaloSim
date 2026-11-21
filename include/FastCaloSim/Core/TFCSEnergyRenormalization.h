@@ -13,15 +13,21 @@ class CaloGeo;
 class TFCSEnergyRenormalization : public TFCSParametrization
 {
 public:
-  TFCSEnergyRenormalization(const char* name = nullptr,
-                            const char* title = nullptr,
-                            CaloGeo* geo = nullptr);
+  explicit TFCSEnergyRenormalization(const char* name = nullptr,
+                                     const char* title = nullptr,
+                                     CaloGeo* geo = nullptr);
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
   ~TFCSEnergyRenormalization() override;
+  TFCSEnergyRenormalization(const TFCSEnergyRenormalization&) = default;
+  TFCSEnergyRenormalization(TFCSEnergyRenormalization&&) = default;
+  auto operator=(const TFCSEnergyRenormalization&)
+      -> TFCSEnergyRenormalization& = default;
+  auto operator=(TFCSEnergyRenormalization&&)
+      -> TFCSEnergyRenormalization& = default;
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override;
-  auto is_match_calosample(int /*calosample*/) const -> bool override;
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override;
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override;
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* /*truth*/,
@@ -35,14 +41,14 @@ private:
   ClassDefOverride(TFCSEnergyRenormalization, 1)  // TFCSEnergyRenormalization
 };
 
-inline auto TFCSEnergyRenormalization::is_match_Ekin_bin(int /*Ekin_bin*/) const
-    -> bool
+inline auto TFCSEnergyRenormalization::is_match_Ekin_bin(
+    std::size_t /*Ekin_bin*/) const -> bool
 {
   return true;
 }
 
 inline auto TFCSEnergyRenormalization::is_match_calosample(
-    int /*calosample*/) const -> bool
+    std::size_t /*calosample*/) const -> bool
 {
   return true;
 }

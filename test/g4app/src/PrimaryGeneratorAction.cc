@@ -7,9 +7,8 @@
 
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
-    : G4VUserPrimaryGeneratorAction()
+    : fParticleGun(new G4ParticleGun(1))
 {
-  fParticleGun = new G4ParticleGun(1);
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
@@ -20,7 +19,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 void PrimaryGeneratorAction::configure_gun(const TestHelpers::Particle* particle)
 {
     fParticleGun->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle(particle->pid));
-    fParticleGun->SetParticleEnergy(particle->ekin);
+    fParticleGun->SetParticleEnergy(static_cast<double>(particle->ekin));
     fParticleGun->SetParticlePosition(particle->pos);
     fParticleGun->SetParticleMomentumDirection(particle->dir);
 }
@@ -31,6 +30,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     if (fParticleContainer == nullptr)
     {
         G4Exception("PrimaryGeneratorAction::GeneratePrimaries()", "PrimaryGeneratorAction", FatalException, "Particle container not set");
+        return;
     }
 
     for(const auto &particle : fParticleContainer->get())

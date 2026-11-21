@@ -4,19 +4,15 @@
 
 #include "RunAction.hh"
 
-RunAction::RunAction()
-    : G4UserRunAction()
-{
-}
+RunAction::RunAction() = default;
 
 RunAction::~RunAction()
+= default;
+
+void RunAction::BeginOfRunAction(const G4Run * /*unused*/)
 {
 }
 
-void RunAction::BeginOfRunAction(const G4Run *)
-{
-}
-
-void RunAction::EndOfRunAction(const G4Run *)
+void RunAction::EndOfRunAction(const G4Run * /*unused*/)
 {
 }

@@ -35,6 +35,8 @@ public:
 
   G4CaloTransportTool(const G4CaloTransportTool&) = delete;
   auto operator=(const G4CaloTransportTool&) -> G4CaloTransportTool& = delete;
+  G4CaloTransportTool(G4CaloTransportTool&&) = delete;
+  auto operator=(G4CaloTransportTool&&) -> G4CaloTransportTool& = delete;
 
   /// @brief Place the world volume of the simplified geometry, whose logical
   /// volumes must have been loaded (e.g. from GDML) into the Geant4 geometry

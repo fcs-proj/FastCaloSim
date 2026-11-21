@@ -31,7 +31,8 @@ public:
   inline static const std::string PYTHON_SCRIPT_DIR = "test/python/scripts/";
 
   // The list of events (event = particle container) to be transported
-  inline static const std::vector<TestHelpers::Event> EVENTS = []()
+  inline static const std::vector<TestHelpers::Event> EVENTS =
+      []() -> std::vector<TestHelpers::Event>
   {
     // Vector of events to be processed
     std::vector<TestHelpers::Event> events;
@@ -39,9 +40,9 @@ public:
     // For each event we sample particles of the same type uniformly in eta
     const float min_eta = -5;  //-5
     const float max_eta = 5;  // 5
-    const float step_size = 0.05;  // 0.5
+    const float step_size = 0.05F;  // 0.5
     const float energy = 50 * CLHEP::MeV;
-    std::vector<TestHelpers::ParticleType> ptype = {
+    std::vector<TestHelpers::ParticleType> const ptype = {
         TestHelpers::ParticleTypes::Photon,
         TestHelpers::ParticleTypes::Electron,
         TestHelpers::ParticleTypes::Positron,
@@ -51,18 +52,18 @@ public:
     TestHelpers::IDCaloBoundarySampler sampler;
 
     for (const auto& type : ptype) {
-      TestHelpers::ParticleContainer particles = sampler.uniformEtaSample(
+      TestHelpers::ParticleContainer const particles = sampler.uniformEtaSample(
           type.pid, energy, min_eta, max_eta, step_size);
 
       // Plot label rounded to 2 decimal places
       std::stringstream estring;
       estring << std::fixed << std::setprecision(2) << energy;
-      std::string evt_label = "$ E=" + estring.str() + R"(\,\text{MeV}\,)"
+      std::string const evt_label = "$ E=" + estring.str() + R"(\,\text{MeV}\,)"
           + std::string(type.label) + "$";
       // Construct the event with the particle container and event label
       TestHelpers::Event evt(particles, evt_label);
       // How should the test for this event be printed?
-      std::string ptcl_name = std::string(type.name);
+      std::string const ptcl_name = std::string(type.name);
       evt.set_print_string(ptcl_name);
 
       events.emplace_back(evt);
@@ -94,43 +95,43 @@ public:
       "particle_extrapolation.png";
 
   // Path to the serialized transport data
-  inline static auto transport_output_path() -> std::string
+  static auto transport_output_path() -> std::string
   {
     return output_dir + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the reference transport data
-  inline static auto transport_output_ref_path() -> std::string
+  static auto transport_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + TRANSPORT_DATA_FILE_NAME;
   }
 
   // Path to the serialized extrapolation data
-  inline static auto extrapolation_output_path() -> std::string
+  static auto extrapolation_output_path() -> std::string
   {
     return output_dir + EXTRAPOLATION_DATA_FILE_NAME;
   }
 
   // Path to the reference extrapolation data
-  inline static auto extrapolation_output_ref_path() -> std::string
+  static auto extrapolation_output_ref_path() -> std::string
   {
     return TestHelpers::IOManager::ref_dir() + EXTRAPOLATION_DATA_FILE_NAME;
   }
 
   // Path to the output plot of the transport
-  inline static auto plot_output_transport_path() -> std::string
+  static auto plot_output_transport_path() -> std::string
   {
     return output_dir + TRANSPORT_PLOT_NAME;
   }
 
   // Path to the output plot of the extrapolation
-  inline static auto plot_output_extrapol_path() -> std::string
+  static auto plot_output_extrapol_path() -> std::string
   {
     return output_dir + EXTRAPOLATION_PLOT_NAME;
   }
 
   // String of the python command to plot transportation
-  inline static auto py_transport_exec(std::string label) -> std::string
+  static auto py_transport_exec(const std::string& label) -> std::string
   {
     std::string command = "python3 " + PYTHON_SCRIPT + " --input "
         + transport_output_path() + " --output " + plot_output_transport_path()
@@ -144,7 +145,7 @@ public:
   }
 
   // String of the python command to plot the extrapolation
-  inline static auto py_extrapol_exec(std::string label) -> std::string
+  static auto py_extrapol_exec(const std::string& label) -> std::string
   {
     std::string command = "python3 " + PYTHON_EXTRAP_SCRIPT + " --input "
         + extrapolation_output_path() + " --output "
@@ -154,10 +155,7 @@ public:
   }
 
   // Method to set the output directory for the test
-  inline static void set_output_dir(const std::string& dir)
-  {
-    output_dir = dir;
-  }
+  static void set_output_dir(const std::string& dir) { output_dir = dir; }
 
 private:
   inline static std::string output_dir;

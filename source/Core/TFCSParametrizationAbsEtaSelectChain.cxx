@@ -14,24 +14,26 @@
 //=============================================
 
 auto TFCSParametrizationAbsEtaSelectChain::get_bin(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState* extrapol) const -> int
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*truth*/,
+    const TFCSExtrapolationState* extrapol) const -> std::optional<std::size_t>
 {
-  return val_to_bin(std::abs(extrapol->IDCaloBoundary_eta()));
+  // The bin edges are single precision, so is the binning variable
+  return val_to_bin(
+      static_cast<float>(std::abs(extrapol->IDCaloBoundary_eta())));
 }
 
-auto TFCSParametrizationAbsEtaSelectChain::get_bin_text(int bin) const
-    -> const std::string
+auto TFCSParametrizationAbsEtaSelectChain::get_bin_text(
+    std::optional<std::size_t> bin) const -> const std::string
 {
-  if (bin == -1 || bin >= (int)get_number_of_bins()) {
+  if (!bin || *bin >= get_number_of_bins()) {
     return std::format("bin={} not in [{:2.2f}<=|eta|<{:2.2f})",
-                       bin,
+                       bin_label(bin),
                        m_bin_low_edge[0],
                        m_bin_low_edge[get_number_of_bins()]);
   }
   return std::format("bin={}, {:2.2f}<=|eta|<{:2.2f}",
-                     bin,
-                     m_bin_low_edge[bin],
-                     m_bin_low_edge[bin + 1]);
+                     *bin,
+                     get_bin_low_edge(*bin),
+                     get_bin_up_edge(*bin));
 }

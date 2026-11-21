@@ -14,16 +14,20 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
     PrimaryGeneratorAction();
-    virtual ~PrimaryGeneratorAction() override;
+    ~PrimaryGeneratorAction() override;
+    PrimaryGeneratorAction(const PrimaryGeneratorAction&) = delete;
+    auto operator=(const PrimaryGeneratorAction&) -> PrimaryGeneratorAction& = delete;
+    PrimaryGeneratorAction(PrimaryGeneratorAction&&) = delete;
+    auto operator=(PrimaryGeneratorAction&&) -> PrimaryGeneratorAction& = delete;
 
-    virtual void GeneratePrimaries(G4Event *) override;
+    void GeneratePrimaries(G4Event * /*anEvent*/) override;
 
     void configure_gun(const TestHelpers::Particle* particle);
-    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;};
+    void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;}
 
 private:
     G4ParticleGun *fParticleGun;
-    const TestHelpers::ParticleContainer *fParticleContainer;
+    const TestHelpers::ParticleContainer *fParticleContainer {nullptr};
 };
 
 #endif

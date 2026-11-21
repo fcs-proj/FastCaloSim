@@ -1,13 +1,14 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFluctChain.h"
 
 #include "CLHEP/Random/RandGaussZiggurat.h"
+#include "FastCaloSim/Core/GaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSLateralShapeParametrizationFluctChain =========
@@ -32,18 +33,19 @@ TFCSLateralShapeParametrizationFluctChain::
 auto TFCSLateralShapeParametrizationFluctChain::get_E_hit(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const -> float
+    const TFCSExtrapolationState* extrapol) const -> double
 {
-  const float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
-  const int sample = calosample();
-  if (sigma2 <= 0 || sample < 0)
+  const double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
+  if (sigma2 <= 0 || !has_calosample()) {
     return -1.;
-  const float maxWeight = getMaxWeight();
+  }
+  const std::size_t sample = calosample();
+  const double maxWeight = getMaxWeight();
 
-  if (maxWeight > 0)
+  if (maxWeight > 0) {
     return simulstate.E(sample) * sigma2 / maxWeight;
-  else
-    return simulstate.E(sample) * sigma2;
+  }
+  return simulstate.E(sample) * sigma2;
 }
 
 auto TFCSLateralShapeParametrizationFluctChain::simulate(
@@ -51,7 +53,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  FastCaloSim::MSG::Level old_level = level();
+  FastCaloSim::MSG::Level const old_level = level();
   const bool debug = msgLvl(FastCaloSim::MSG::DEBUG);
 
   // Execute the first get_nr_of_init() simulate calls only once. Used for
@@ -64,14 +66,14 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
 
   // Initialize hit energy only now, as init loop above might change the layer
   // energy
-  const float Elayer = simulstate.E(calosample());
-  if (Elayer == 0) {
+  const double Elayer = simulstate.E(calosample());
+  if (FastCaloSim::exactly_equal(Elayer, 0.0)) {
     FCS_MSG_VERBOSE("Elayer=0, nothing to do");
     return FCSSuccess;
   }
 
   // Call get_sigma2_fluctuation only once, as it could contain a random number
-  float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
+  double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
   if (sigma2 >= s_max_sigma2_fluctuation) {
     FCS_MSG_ERROR(
         "TFCSLateralShapeParametrizationFluctChain::simulate(): "
@@ -81,16 +83,15 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
 
   // Limit to relative precision of 10^-4=0.01%. ATLAS calorimeter is ~0.1% at
   // best
-  if (sigma2 < 1e-8)
-    sigma2 = 1e-8;
+  sigma2 = std::max(sigma2, 1e-8);
 
   // Make a good guess of the needed hit energy, assuming all hits would have
   // the same energy
-  const float Eavghit = get_E_hit(simulstate, truth, extrapol);
-  const float absEavghit_tenth = std::abs(Eavghit / 10);
-  float sumEhit = 0;
-  float error2_sumEhit = 0;
-  float error2 = 2 * s_max_sigma2_fluctuation;
+  const double Eavghit = get_E_hit(simulstate, truth, extrapol);
+  const double absEavghit_tenth = std::abs(Eavghit / 10);
+  double sumEhit = 0;
+  double error2_sumEhit = 0;
+  double error2 = 2 * s_max_sigma2_fluctuation;
 
   if (debug) {
     PropagateMSGLevel(old_level);
@@ -107,54 +108,60 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
   do {
     hit.reset();
     do {
-      hit.set_E(CLHEP::RandGaussZiggurat::shoot(
-          simulstate.randomEngine(), Eavghit, m_RMS * Eavghit));
+      hit.set_E(
+          FastCaloSim::gauss_ziggurat(simulstate.randomEngine(),
+                                      Eavghit,
+                                      static_cast<double>(m_RMS) * Eavghit));
     } while (std::abs(hit.E()) < absEavghit_tenth);
     bool failed = false;
-    if (debug)
+    if (debug) {
       if (ihit == 2) {
         // Switch debug output back to INFO to avoid huge logs
         PropagateMSGLevel(FastCaloSim::MSG::INFO);
       }
+    }
     for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
       TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
 
-      FCSReturnCode status =
+      FCSReturnCode const status =
           hitsim->simulate_hit(hit, simulstate, truth, extrapol);
 
-      if (status == FCSSuccess)
+      if (status == FCSSuccess) {
         continue;
+      }
       if (status == FCSFatal) {
-        if (debug)
+        if (debug) {
           PropagateMSGLevel(old_level);
+        }
         return FCSFatal;
       }
       failed = true;
       ++ifail;
       ++itotalfail;
       retry = status - FCSRetry;
-      retry_warning = retry >> 1;
-      if (retry_warning < 1)
-        retry_warning = 1;
+      retry_warning = retry / 2;
+      retry_warning = std::max(retry_warning, 1);
       break;
     }
     if (!failed) {
       ifail = 0;
       ++ihit;
-      const float Ehit = hit.E();
+      const double Ehit = hit.E();
       sumEhit += Ehit;
-      float sumEhit2 = sumEhit * sumEhit;
+      double const sumEhit2 = sumEhit * sumEhit;
       error2_sumEhit += Ehit * Ehit;
-      if (sumEhit2 > 0)
+      if (sumEhit2 > 0) {
         error2 = error2_sumEhit / sumEhit2;
+      }
     } else {
       if (ifail >= retry) {
         FCS_MSG_ERROR(
             "TFCSLateralShapeParametrizationFluctChain::simulate(): "
             "simulate_hit call failed after "
             << ifail << "/" << retry << "retries, total fails=" << itotalfail);
-        if (debug)
+        if (debug) {
           PropagateMSGLevel(old_level);
+        }
         return FCSFatal;
       }
       if (ifail >= retry_warning) {
@@ -184,8 +191,7 @@ void TFCSLateralShapeParametrizationFluctChain::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitChain::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  hit energy fluctuation RMS=" << m_RMS);
+  }
 }
-
-#pragma GCC diagnostic pop

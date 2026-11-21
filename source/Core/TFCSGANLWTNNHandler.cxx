@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <format>
+
 #include "FastCaloSim/Core/TFCSGANLWTNNHandler.h"
 
 // For writing to a tree
@@ -16,7 +18,7 @@ TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const std::string& inputFile)
   FCS_MSG_DEBUG("Setting up from inputFile.");
   setupPersistedVariables();
   TFCSGANLWTNNHandler::setupNet();
-};
+}
 
 TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler& copy_from)
     : VNetworkLWTNN(copy_from)
@@ -28,12 +30,12 @@ TFCSGANLWTNNHandler::TFCSGANLWTNNHandler(const TFCSGANLWTNNHandler& copy_from)
   const lwt::GraphConfig config = lwt::parse_json_graph(json_stream);
   m_lwtnn_graph = std::make_unique<lwt::LightweightGraph>(config);
   m_outputLayers = copy_from.m_outputLayers;
-};
+}
 
 void TFCSGANLWTNNHandler::setupNet()
 {
   // Backcompatability, previous versions stored this in m_input
-  if (m_json.length() == 0 && m_input != nullptr) {
+  if (m_json.empty() && m_input != nullptr) {
     m_json = *m_input;
     delete m_input;
     m_input = nullptr;
@@ -53,18 +55,18 @@ void TFCSGANLWTNNHandler::setupNet()
     for (const std::string& label : node_config.labels) {
       FCS_MSG_VERBOSE("Found output layer called " << node_name << "_"
                                                    << label);
-      m_outputLayers.push_back(node_name + "_" + label);
+      m_outputLayers.push_back(std::format("{}_{}", node_name, label));
     }
   };
   FCS_MSG_VERBOSE("Removing prefix from stored layers.");
   removePrefixes(m_outputLayers);
   FCS_MSG_VERBOSE("Finished output nodes.");
-};
+}
 
 auto TFCSGANLWTNNHandler::getOutputLayers() const -> std::vector<std::string>
 {
   return m_outputLayers;
-};
+}
 
 // This is implement the specific compute, and ensure the output is returned in
 // regular format. For LWTNN, that's easy.
@@ -74,7 +76,7 @@ auto TFCSGANLWTNNHandler::compute(
 {
   FCS_MSG_DEBUG("Running computation on LWTNN graph network");
   NetworkInputs local_copy = inputs;
-  if (inputs.find("Noise") != inputs.end()) {
+  if (inputs.contains("Noise")) {
     // Graphs from EnergyAndHitsGANV2 have the local_copy encoded as Noise =
     // node_0 and mycond = node_1
     auto noiseNode = local_copy.extract("Noise");
@@ -90,7 +92,7 @@ auto TFCSGANLWTNNHandler::compute(
   removePrefixes(outputs);
   FCS_MSG_DEBUG("Computation on LWTNN graph network done, returning.");
   return outputs;
-};
+}
 
 // Giving this it's own streamer to call setupNet
 void TFCSGANLWTNNHandler::Streamer(TBuffer& buf)
@@ -120,4 +122,4 @@ void TFCSGANLWTNNHandler::Streamer(TBuffer& buf)
     // Persist variables
     TFCSGANLWTNNHandler::Class()->WriteBuffer(buf, this);
   };
-};
+}

@@ -11,8 +11,12 @@ class IntArray
 {
 public:
   IntArray();
-  IntArray(int);
+  explicit IntArray(int /*n*/);
   ~IntArray() override;
+  IntArray(const IntArray&) = default;
+  IntArray(IntArray&&) = default;
+  auto operator=(const IntArray&) -> IntArray& = default;
+  auto operator=(IntArray&&) -> IntArray& = default;
 
 private:
   ClassDefOverride(IntArray, 1)

@@ -12,8 +12,8 @@
 class TFCSEnergyInterpolationPiecewiseLinear : public TFCSParametrization
 {
 public:
-  TFCSEnergyInterpolationPiecewiseLinear(const char* name = nullptr,
-                                         const char* title = nullptr);
+  explicit TFCSEnergyInterpolationPiecewiseLinear(const char* name = nullptr,
+                                                  const char* title = nullptr);
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
   {
@@ -22,25 +22,25 @@ public:
                  ///< should only be scaled by the spline
   };
 
-  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
-  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
-  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); }
+  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); }
+  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); }
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_calosample(int /*calosample*/) const -> bool override
+  }
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override
   {
     return true;
-  };
+  }
 
   void InitFromArrayInLogEkin(Int_t np,
-                              const Double_t logEkin[],
-                              const Double_t response[]);
+                              const Double_t* logEkin,
+                              const Double_t* response);
   void InitFromArrayInEkin(Int_t np,
-                           const Double_t Ekin[],
-                           const Double_t response[]);
+                           const Double_t* Ekin,
+                           const Double_t* response);
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

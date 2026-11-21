@@ -15,8 +15,9 @@
 void TFCSParametrizationEtaSelectChain::recalc()
 {
   clear();
-  if (size() == 0)
+  if (size() == 0) {
     return;
+  }
 
   recalc_pdgid_intersect();
   recalc_Ekin_intersect();
@@ -28,36 +29,40 @@ void TFCSParametrizationEtaSelectChain::recalc()
 void TFCSParametrizationEtaSelectChain::push_back_in_bin(
     TFCSParametrizationBase* param)
 {
-  push_back_in_bin(param, param->eta_min(), param->eta_max());
+  // The bin edges are stored in single precision
+  push_back_in_bin(param,
+                   static_cast<float>(param->eta_min()),
+                   static_cast<float>(param->eta_max()));
 }
 
 auto TFCSParametrizationEtaSelectChain::get_bin(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState* extrapol) const -> int
+    TFCSSimulationState& /*simulstate*/,
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* extrapol) const -> std::optional<std::size_t>
 {
-  return val_to_bin(extrapol->IDCaloBoundary_eta());
+  // The bin edges are single precision, so is the binning variable
+  return val_to_bin(static_cast<float>(extrapol->IDCaloBoundary_eta()));
 }
 
 auto TFCSParametrizationEtaSelectChain::get_variable_text(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*unused*/,
     const TFCSExtrapolationState* extrapol) const -> const std::string
 {
   return std::format("eta={:2.2f}", extrapol->IDCaloBoundary_eta());
 }
 
-auto TFCSParametrizationEtaSelectChain::get_bin_text(int bin) const
-    -> const std::string
+auto TFCSParametrizationEtaSelectChain::get_bin_text(
+    std::optional<std::size_t> bin) const -> const std::string
 {
-  if (bin == -1 || bin >= (int)get_number_of_bins()) {
+  if (!bin || *bin >= get_number_of_bins()) {
     return std::format("bin={} not in [{:2.2f}<=eta<{:2.2f})",
-                       bin,
+                       bin_label(bin),
                        m_bin_low_edge[0],
                        m_bin_low_edge[get_number_of_bins()]);
   }
   return std::format("bin={}, {:2.2f}<=eta<{:2.2f}",
-                     bin,
-                     m_bin_low_edge[bin],
-                     m_bin_low_edge[bin + 1]);
+                     *bin,
+                     get_bin_low_edge(*bin),
+                     get_bin_up_edge(*bin));
 }

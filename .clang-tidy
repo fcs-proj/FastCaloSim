@@ -1,17 +1,110 @@
 ---
-# Enable ALL the things! Except not really
-# misc-non-private-member-variables-in-classes: the options don't do anything
-# modernize-use-nodiscard: too aggressive, attribute is situationally useful
+# All checks, except those that conflict with deliberate choices of this code
+# base, with ROOT or with the performance of the simulation:
+#
+# altera-*, fuchsia-*, llvmlibc-*: rules of other projects
+# fuchsia-multiple-inheritance, misc-multiple-inheritance: the persistent
+#   classes derive from TObject and FastCaloSim::MLogging
+# google-readability-todo: TODOs without an author are fine
+# llvm-header-guard, portability-avoid-pragma-once: we use #pragma once
+# llvm-include-order: the order is set by clang-format
+# llvm-prefer-static-over-anonymous-namespace: anonymous namespaces are fine
+# modernize-use-nodiscard: too aggressive, the attribute is situationally
+#   useful
+# misc-non-private-member-variables-in-classes,
+# cppcoreguidelines-non-private-member-variables-in-classes: the
+#   parametrization classes give their derived classes access to their
+#   (persistent) members
+# readability-identifier-naming, readability-identifier-length: the names
+#   follow the existing (TFCS, m_) conventions that Athena uses
+# readability-magic-numbers, cppcoreguidelines-avoid-magic-numbers: physics
+#   and detector constants
+# readability-math-missing-parentheses: operator precedence is not unclear
+# readability-function-cognitive-complexity: the simulation steps are long
+#   by nature; splitting them is a refactoring of its own
+# cppcoreguidelines-avoid-do-while, cppcoreguidelines-macro-usage: the
+#   logging macros and ROOT's ClassDef
+# cppcoreguidelines-owning-memory: ROOT's ownership model with raw pointers
+#   (parametrization chains, histograms read from files)
+# cppcoreguidelines-pro-type-static-cast-downcast: downcasts after an
+#   InheritsFrom() or IsA() check, as ROOT does it
+# cppcoreguidelines-pro-type-reinterpret-cast: byte level I/O (cell store,
+#   libxml2 strings)
+# cppcoreguidelines-pro-type-vararg: printf style output of the benchmark
+# cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
+# cppcoreguidelines-pro-bounds-constant-array-index,
+# cppcoreguidelines-pro-bounds-pointer-arithmetic,
+# cppcoreguidelines-pro-bounds-array-to-pointer-decay: bounds checked access
+#   (at()) in the per-hit code would slow down the simulation; ROOT arrays
+#   are accessed through pointers
+# cppcoreguidelines-use-enum-class, performance-enum-size: would change
+#   public (FCSReturnCode, Cell::SubPos) and persistent enums
+# bugprone-easily-swappable-parameters: (eta, phi, r, z, E) interfaces
+# google-runtime-int: ROOT and the standard library use long
+# google-default-arguments: default arguments of virtual functions are part
+#   of the public interface
+# misc-include-cleaner: ROOT and Geant4 headers are not include-what-you-use
+#   clean
+# misc-no-recursion: the parametrization chains are trees
+# concurrency-mt-unsafe: the flagged functions are only called during
+#   initialization
+# android-cloexec-*: no fork/exec
+# cert-err58-cpp, bugprone-throwing-static-initialization: static tables
+#   whose construction cannot fail in practice
+# boost-use-ranges, llvm-use-ranges: duplicates of modernize-use-ranges
+# modernize-use-constraints: clang-tidy 18 (used in CI) crashes in it on the
+#   Boost.Multiprecision headers that Boost.Geometry includes
+# clang-analyzer-optin.core.EnumCastOutOfRange: FCSReturnCode encodes retry
+#   counts as FCSRetry + n, valid values of its fixed underlying type
+# portability-template-virtual-member-function: fires in ROOT's own class
+#   templates (TVectorT, TMatrixT, TParameter) when the code instantiates them
 Checks: "*,\
-  -google-readability-todo,\
   -altera-*,\
   -fuchsia-*,\
-  fuchsia-multiple-inheritance,\
-  -llvm-header-guard,\
-  -llvm-include-order,\
   -llvmlibc-*,\
+  -misc-multiple-inheritance,\
+  -google-readability-todo,\
+  -llvm-header-guard,\
+  -portability-avoid-pragma-once,\
+  -llvm-include-order,\
+  -llvm-prefer-static-over-anonymous-namespace,\
   -modernize-use-nodiscard,\
-  -misc-non-private-member-variables-in-classes"
+  -misc-non-private-member-variables-in-classes,\
+  -cppcoreguidelines-non-private-member-variables-in-classes,\
+  -readability-identifier-naming,\
+  -readability-identifier-length,\
+  -readability-magic-numbers,\
+  -cppcoreguidelines-avoid-magic-numbers,\
+  -readability-math-missing-parentheses,\
+  -readability-function-cognitive-complexity,\
+  -cppcoreguidelines-avoid-do-while,\
+  -cppcoreguidelines-macro-usage,\
+  -cppcoreguidelines-owning-memory,\
+  -cppcoreguidelines-pro-type-static-cast-downcast,\
+  -cppcoreguidelines-pro-type-reinterpret-cast,\
+  -cppcoreguidelines-pro-type-vararg,\
+  -hicpp-vararg,\
+  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,\
+  -cppcoreguidelines-pro-bounds-constant-array-index,\
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,\
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+  -hicpp-no-array-decay,\
+  -cppcoreguidelines-use-enum-class,\
+  -performance-enum-size,\
+  -bugprone-easily-swappable-parameters,\
+  -google-runtime-int,\
+  -google-default-arguments,\
+  -misc-include-cleaner,\
+  -misc-no-recursion,\
+  -concurrency-mt-unsafe,\
+  -android-cloexec-*,\
+  -cert-err58-cpp,\
+  -bugprone-throwing-static-initialization,\
+  -boost-use-ranges,\
+  -llvm-use-ranges,\
+  -modernize-use-constraints,\
+  -clang-analyzer-optin.core.EnumCastOutOfRange,\
+  -portability-template-virtual-member-function"
 WarningsAsErrors: ''
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'
@@ -45,111 +138,4 @@ CheckOptions:
     value: 'true'
   - key: 'readability-redundant-access-specifiers.CheckFirstDeclaration'
     value: 'true'
-# These seem to be the most common identifier styles
-  - key: 'readability-identifier-naming.AbstractClassCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ClassCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ClassConstantCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ClassMemberCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ClassMethodCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ConstantCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ConstantMemberCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ConstantParameterCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ConstantPointerParameterCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ConstexprFunctionCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ConstexprMethodCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ConstexprVariableCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.EnumCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.EnumConstantCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.FunctionCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.GlobalConstantCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.GlobalConstantPointerCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.GlobalFunctionCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.GlobalPointerCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.GlobalVariableCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.InlineNamespaceCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.LocalConstantCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.LocalConstantPointerCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.LocalPointerCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.LocalVariableCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.MacroDefinitionCase'
-    value: 'UPPER_CASE'
-  - key: 'readability-identifier-naming.MemberCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.MethodCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.NamespaceCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ParameterCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ParameterPackCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.PointerParameterCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.PrivateMemberCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.PrivateMemberPrefix'
-    value: 'm_'
-  - key: 'readability-identifier-naming.PrivateMethodCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ProtectedMemberCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ProtectedMemberPrefix'
-    value: 'm_'
-  - key: 'readability-identifier-naming.ProtectedMethodCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.PublicMemberCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.PublicMethodCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ScopedEnumConstantCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.StaticConstantCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.StaticVariableCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.StructCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.TemplateParameterCase'
-    value: 'CamelCase'
-  - key: 'readability-identifier-naming.TemplateTemplateParameterCase'
-    value: 'CamelCase'
-  - key: 'readability-identifier-naming.TypeAliasCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.TypedefCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.TypeTemplateParameterCase'
-    value: 'CamelCase'
-  - key: 'readability-identifier-naming.UnionCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.ValueTemplateParameterCase'
-    value: 'CamelCase'
-  - key: 'readability-identifier-naming.VariableCase'
-    value: 'lower_case'
-  - key: 'readability-identifier-naming.VirtualMethodCase'
-    value: 'lower_case'
 ...

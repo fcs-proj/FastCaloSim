@@ -15,17 +15,17 @@
 TFCSEnergyInterpolationLinear::TFCSEnergyInterpolationLinear(const char* name,
                                                              const char* title)
     : TFCSParametrization(name, title)
-    , m_slope(1)
-    , m_offset(0)
+
 {
 }
 
 auto TFCSEnergyInterpolationLinear::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const -> FCSReturnCode
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  const float Emean = m_slope * truth->Ekin() + m_offset;
+  const double Emean = static_cast<double>(m_slope) * truth->Ekin()
+      + static_cast<double>(m_offset);
 
   FCS_MSG_DEBUG("set E=" << Emean << " for true Ekin=" << truth->Ekin());
   simulstate.set_E(Emean);
@@ -38,7 +38,8 @@ void TFCSEnergyInterpolationLinear::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSParametrization::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  Emean=" << m_slope << "*Ekin(true) + "
                           << m_offset);
+  }
 }

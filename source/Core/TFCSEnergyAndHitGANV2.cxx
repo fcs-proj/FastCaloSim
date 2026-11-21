@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <iostream>
 #include <limits>
@@ -16,6 +17,7 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TF1.h"
@@ -35,35 +37,33 @@ TFCSEnergyAndHitGANV2::TFCSEnergyAndHitGANV2(const char* name,
 
 TFCSEnergyAndHitGANV2::~TFCSEnergyAndHitGANV2()
 {
-  if (m_slice != nullptr) {
-    delete m_slice;
-  }
+  delete m_slice;
 }
 
-auto TFCSEnergyAndHitGANV2::is_match_calosample(int calosample) const -> bool
+auto TFCSEnergyAndHitGANV2::is_match_calosample(std::size_t calosample) const
+    -> bool
 {
-  if (get_Binning().find(calosample) == get_Binning().cend())
-    return false;
-  if (get_Binning().at(calosample).GetNbinsX() == 1)
-    return false;
-  return true;
+  // The binning is stored per layer with int keys
+  const auto it = get_Binning().find(static_cast<int>(calosample));
+  return it != get_Binning().cend() && it->second.GetNbinsX() != 1;
 }
 
-auto TFCSEnergyAndHitGANV2::get_nr_of_init(unsigned int bin) const
+auto TFCSEnergyAndHitGANV2::get_nr_of_init(std::size_t bin) const
     -> unsigned int
 {
-  if (bin >= m_bin_ninit.size())
+  if (bin >= m_bin_ninit.size()) {
     return 0;
-  return m_bin_ninit[bin];
+  }
+  return static_cast<unsigned int>(m_bin_ninit[bin]);
 }
 
-void TFCSEnergyAndHitGANV2::set_nr_of_init(unsigned int bin, unsigned int ninit)
+void TFCSEnergyAndHitGANV2::set_nr_of_init(std::size_t bin, unsigned int ninit)
 {
   if (bin >= m_bin_ninit.size()) {
     m_bin_ninit.resize(bin + 1, 0);
     m_bin_ninit.shrink_to_fit();
   }
-  m_bin_ninit[bin] = ninit;
+  m_bin_ninit[bin] = static_cast<int>(ninit);
 }
 
 // initialize lwtnn network
@@ -82,10 +82,12 @@ auto TFCSEnergyAndHitGANV2::initializeNetwork(
 
   reset_match_all_pdgid();
   set_pdgid(pid);
-  if (pid == 11)
+  if (pid == 11) {
     add_pdgid(-pid);
-  if (pid == 211)
+  }
+  if (pid == 211) {
     add_pdgid(-pid);
+  }
   set_eta_min(etaMin / 100.0);
   set_eta_max(etaMax / 100.0);
   set_eta_nominal((etaMin + etaMax) / 200.0);
@@ -105,8 +107,8 @@ auto TFCSEnergyAndHitGANV2::initializeNetwork(
 
 auto TFCSEnergyAndHitGANV2::get_variable_text(
     TFCSSimulationState& simulstate,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> const std::string
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* /*unused*/) const -> const std::string
 {
   return std::format("layer={}",
                      simulstate.getAuxInfo<int>("GANlayer"_FCShash));
@@ -117,25 +119,21 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> bool
 {
-  if (!truth) {
+  if (truth == nullptr) {
     FCS_MSG_ERROR("Invalid truth pointer");
     return false;
   }
 
-  if (!extrapol) {
+  if (extrapol == nullptr) {
     FCS_MSG_ERROR("Invalid extrapolation pointer");
     return false;
   }
 
   const int pdgId = truth->pdgid();
-  const float charge = ParticleData::charge(pdgId);
+  const double charge = ParticleData::charge(pdgId);
 
-  float Einit;
-  const float Ekin = truth->Ekin();
-  if (OnlyScaleEnergy())
-    Einit = simulstate.E();
-  else
-    Einit = Ekin;
+  const double Ekin = truth->Ekin();
+  const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
 
   FCS_MSG_VERBOSE("Momentum " << truth->P() << " pdgId " << truth->pdgid());
   // check that the network exists
@@ -188,7 +186,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
     // First fill energies
     for (int ix = 1; ix <= xBinNum; ++ix) {
-      double binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
+      double const binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
       for (int iy = 1; iy <= binsInAlphaInRBin; ++iy) {
         const double energyInVoxel = outputs.at(std::to_string(vox));
         FCS_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
@@ -199,18 +197,19 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           continue;
         }
 
-        simulstate.add_E(layer, Einit * energyInVoxel);
+        simulstate.add_E(static_cast<std::size_t>(layer),
+                         Einit * energyInVoxel);
         vox++;
       }
     }
   }
 
-  for (unsigned int ichain = m_bin_start.back(); ichain < size(); ++ichain) {
+  for (std::size_t ichain = m_bin_start.back(); ichain < size(); ++ichain) {
     FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
     if (simulate_and_retry(chain()[ichain], simulstate, truth, extrapol)
         != FCSSuccess)
     {
-      return FCSFatal;
+      return false;
     }
   }
 
@@ -235,11 +234,14 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     }
 
     if (get_number_of_bins() > 0) {
-      const int bin = get_bin(simulstate, truth, extrapol);
-      if (bin >= 0 && bin < (int)get_number_of_bins()) {
-        for (unsigned int ichain = m_bin_start[bin];
-             ichain < std::min(m_bin_start[bin] + get_nr_of_init(bin),
-                               m_bin_start[bin + 1]);
+      // Select once: the selection may draw random numbers
+      const auto selected = get_bin(simulstate, truth, extrapol);
+      const auto bin = valid_bin(selected);
+      if (bin) {
+        const std::size_t ubin = *bin;
+        for (unsigned int ichain = m_bin_start[ubin];
+             ichain < std::min(m_bin_start[ubin] + get_nr_of_init(ubin),
+                               m_bin_start[ubin + 1]);
              ++ichain)
         {
           FCS_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
@@ -248,9 +250,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           if (chain()[ichain]->InheritsFrom(
                   TFCSLateralShapeParametrizationHitBase::Class()))
           {
-            TFCSLateralShapeParametrizationHitBase* sim =
-                static_cast<TFCSLateralShapeParametrizationHitBase*>(
-                    chain()[ichain]);
+            auto* sim = static_cast<TFCSLateralShapeParametrizationHitBase*>(
+                chain()[ichain]);
             if (sim->simulate_hit(hit, simulstate, truth, extrapol)
                 != FCSSuccess)
             {
@@ -273,7 +274,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
       } else {
         FCS_MSG_WARNING("nothing to init for "
                         << get_variable_text(simulstate, truth, extrapol)
-                        << ": " << get_bin_text(bin));
+                        << ": " << get_bin_text(selected));
       }
     }
 
@@ -290,8 +291,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     FCS_MSG_VERBOSE(" Layer " << layer << " Extrap eta " << center_eta
                               << " phi " << center_phi << " R " << center_r);
 
-    const float dist000 = FastCaloSim::dist000(center_r, center_z);
-    const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+    const double dist000 = FastCaloSim::dist000(center_r, center_z);
+    const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
     int nHitsAlpha {};
     int nHitsR {};
@@ -299,6 +300,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     // Now create hits
     for (int ix = 1; ix <= xBinNum; ++ix) {
       const int binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
+      const auto r_bin = static_cast<std::size_t>(ix - 1);
 
       // Horrible work around for variable # of bins along alpha direction
       const int binsToMerge = yBinNum == 32 ? 32 / binsInAlphaInRBin : 1;
@@ -316,25 +318,26 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
         if (std::abs(pdgId) == 22 || std::abs(pdgId) == 11) {
           // maximum 10 MeV per hit, equally distributed in alpha and r
-          int maxHitsInVoxel = energyInVoxel * truth->Ekin() / 10;
-          if (maxHitsInVoxel < 1)
-            maxHitsInVoxel = 1;
-          nHitsAlpha = std::sqrt(maxHitsInVoxel);
-          nHitsR = std::sqrt(maxHitsInVoxel);
+          int maxHitsInVoxel =
+              static_cast<int>(energyInVoxel * truth->Ekin() / 10);
+          maxHitsInVoxel = std::max(maxHitsInVoxel, 1);
+          nHitsAlpha = static_cast<int>(std::sqrt(maxHitsInVoxel));
+          nHitsR = static_cast<int>(std::sqrt(maxHitsInVoxel));
         } else {
           // One hit per mm along r
-          nHitsR = x->GetBinUpEdge(ix) - x->GetBinLowEdge(ix);
+          nHitsR = static_cast<int>(x->GetBinUpEdge(ix) - x->GetBinLowEdge(ix));
           if (yBinNum == 1) {
             // nbins in alpha depend on circumference length
             const double r = x->GetBinUpEdge(ix);
-            nHitsAlpha = std::ceil(2 * std::numbers::pi * r / binResolution);
+            nHitsAlpha = static_cast<int>(
+                std::ceil(2 * std::numbers::pi * r / binResolution));
           } else {
             // d = 2*r*sin (a/2r) this distance at the upper r must be 1mm for
             // layer 1 or 5, 5mm otherwise.
             const double angle = y->GetBinUpEdge(iy) - y->GetBinLowEdge(iy);
             const double r = x->GetBinUpEdge(ix);
             const double d = 2 * r * std::sin(angle / 2 * r);
-            nHitsAlpha = std::ceil(d / binResolution);
+            nHitsAlpha = static_cast<int>(std::ceil(d / binResolution));
           }
 
           if (layer != 1 && layer != 5) {
@@ -353,14 +356,15 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
           for (int ialpha = 1; ialpha <= nHitsAlpha; ++ialpha) {
             if (ganVersion > 1) {
-              if (fitResults.at(layer)[ix - 1] != 0) {
+              if (!FastCaloSim::exactly_equal(fitResults.at(layer)[r_bin], 0.0))
+              {
                 int tries = 0;
                 double a = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
                                                   x->GetBinLowEdge(ix),
                                                   x->GetBinUpEdge(ix));
                 double rand_r =
                     std::log((a - x->GetBinLowEdge(ix)) / (x->GetBinWidth(ix)))
-                    / fitResults.at(layer)[ix - 1];
+                    / fitResults.at(layer)[r_bin];
                 while ((rand_r < x->GetBinLowEdge(ix)
                         || rand_r > x->GetBinUpEdge(ix))
                        && tries < 100)
@@ -370,14 +374,14 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                                              x->GetBinUpEdge(ix));
                   rand_r = std::log((a - x->GetBinLowEdge(ix))
                                     / (x->GetBinWidth(ix)))
-                      / fitResults.at(layer)[ix - 1];
+                      / fitResults.at(layer)[r_bin];
                   tries++;
                 }
                 if (tries >= 100) {
                   FCS_MSG_VERBOSE(" Too many tries for bin ["
                                   << x->GetBinLowEdge(ix) << "-"
                                   << x->GetBinUpEdge(ix) << "] having slope "
-                                  << fitResults.at(layer)[ix - 1]
+                                  << fitResults.at(layer)[r_bin]
                                   << " will use grid (old method)");
                 } else {
                   r = rand_r;
@@ -385,24 +389,21 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               }
             }
 
-            double alpha;
-            if (binsInAlphaInRBin == 1) {
-              alpha = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
-                                             -std::numbers::pi,
-                                             std::numbers::pi);
-            } else {
-              alpha = y->GetBinLowEdge(lowEdgeIndex)
-                  + y->GetBinWidth(iy) * binsToMerge / (nHitsAlpha + 1)
-                      * ialpha;
-
-              if (m_param.IsSymmetrisedAlpha()) {
-                if (CLHEP::RandFlat::shoot(simulstate.randomEngine(),
-                                           -std::numbers::pi,
-                                           std::numbers::pi)
-                    < 0)
-                {
-                  alpha = -alpha;
-                }
+            const bool random_alpha = binsInAlphaInRBin == 1;
+            double alpha = random_alpha
+                ? CLHEP::RandFlat::shoot(simulstate.randomEngine(),
+                                         -std::numbers::pi,
+                                         std::numbers::pi)
+                : y->GetBinLowEdge(lowEdgeIndex)
+                    + y->GetBinWidth(iy) * binsToMerge / (nHitsAlpha + 1)
+                        * ialpha;
+            if (!random_alpha && m_param.IsSymmetrisedAlpha()) {
+              if (CLHEP::RandFlat::shoot(simulstate.randomEngine(),
+                                         -std::numbers::pi,
+                                         std::numbers::pi)
+                  < 0)
+              {
+                alpha = -alpha;
               }
             }
 
@@ -410,8 +411,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             hit.set_E(Einit * energyInVoxel / (nHitsAlpha * nHitsR));
 
             if (layer <= 20) {
-              float delta_eta_mm = r * std::cos(alpha);
-              float delta_phi_mm = r * std::sin(alpha);
+              double delta_eta_mm = r * std::cos(alpha);
+              double delta_phi_mm = r * std::sin(alpha);
 
               FCS_MSG_VERBOSE("delta_eta_mm " << delta_eta_mm
                                               << " delta_phi_mm "
@@ -420,17 +421,19 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               // Particles with negative eta are expected to have the same shape
               // as those with positive eta after transformation: delta_eta -->
               // -delta_eta
-              if (center_eta < 0.)
+              if (center_eta < 0.) {
                 delta_eta_mm = -delta_eta_mm;
+              }
               // We derive the shower shapes for electrons and positively
               // charged hadrons. Particle with the opposite charge are expected
               // to have the same shower shape after the transformation:
               // delta_phi --> -delta_phi
-              if ((charge < 0. && pdgId != 11) || pdgId == -11)
+              if ((charge < 0. && pdgId != 11) || pdgId == -11) {
                 delta_phi_mm = -delta_phi_mm;
+              }
 
-              const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
-              const float delta_phi = delta_phi_mm / center_r;
+              const double delta_eta = delta_eta_mm / eta_jakobi / dist000;
+              const double delta_phi = delta_phi_mm / center_r;
 
               hit.set_eta_x(center_eta + delta_eta);
               hit.set_phi_y(TVector2::Phi_mpi_pi(center_phi + delta_phi));
@@ -438,15 +441,16 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               FCS_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                           << " layer " << layer);
             } else {  // FCAL is in (x,y,z)
-              const float hit_r = r * std::cos(alpha) + center_r;
-              float delta_phi = r * std::sin(alpha) / center_r;
+              const double hit_r = r * std::cos(alpha) + center_r;
+              double delta_phi = r * std::sin(alpha) / center_r;
               // We derive the shower shapes for electrons and positively
               // charged hadrons. Particle with the opposite charge are expected
               // to have the same shower shape after the transformation:
               // delta_phi --> -delta_phi
-              if ((charge < 0. && pdgId != 11) || pdgId == -11)
+              if ((charge < 0. && pdgId != 11) || pdgId == -11) {
                 delta_phi = -delta_phi;
-              const float hit_phi =
+              }
+              const double hit_phi =
                   TVector2::Phi_mpi_pi(center_phi + delta_phi);
               hit.set_eta_x(hit_r * std::cos(hit_phi));
               hit.set_phi_y(hit_r * std::sin(hit_phi));
@@ -456,11 +460,14 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             }
 
             if (get_number_of_bins() > 0) {
-              const int bin = get_bin(simulstate, truth, extrapol);
-              if (bin >= 0 && bin < (int)get_number_of_bins()) {
+              // Select once: the selection may draw random numbers
+              const auto selected = get_bin(simulstate, truth, extrapol);
+              const auto bin = valid_bin(selected);
+              if (bin) {
+                const std::size_t ubin = *bin;
                 for (unsigned int ichain =
-                         m_bin_start[bin] + get_nr_of_init(bin);
-                     ichain < m_bin_start[bin + 1];
+                         m_bin_start[ubin] + get_nr_of_init(ubin);
+                     ichain < m_bin_start[ubin + 1];
                      ++ichain)
                 {
                   FCS_MSG_DEBUG(
@@ -470,7 +477,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                   if (chain()[ichain]->InheritsFrom(
                           TFCSLateralShapeParametrizationHitBase::Class()))
                   {
-                    TFCSLateralShapeParametrizationHitBase* sim =
+                    auto* sim =
                         static_cast<TFCSLateralShapeParametrizationHitBase*>(
                             chain()[ichain]);
                     if (sim->simulate_hit(hit, simulstate, truth, extrapol)
@@ -497,7 +504,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                 FCS_MSG_WARNING(
                     "nothing to do for "
                     << get_variable_text(simulstate, truth, extrapol) << ": "
-                    << get_bin_text(bin));
+                    << get_bin_text(selected));
               }
             } else {
               FCS_MSG_WARNING("no bins defined, is this intended?");
@@ -513,7 +520,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+    for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }
@@ -527,7 +534,7 @@ auto TFCSEnergyAndHitGANV2::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
+  for (std::size_t ichain = 0; ichain < m_bin_start[0]; ++ichain) {
     FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
     if (simulate_and_retry(chain()[ichain], simulstate, truth, extrapol)
         != FCSSuccess)
@@ -548,14 +555,16 @@ auto TFCSEnergyAndHitGANV2::simulate(
 
 auto TFCSEnergyAndHitGANV2::GetBinsInFours(double const bins) -> int
 {
-  if (bins < 4)
+  if (bins < 4) {
     return 4;
-  else if (bins < 8)
+  }
+  if (bins < 8) {
     return 8;
-  else if (bins < 16)
+  }
+  if (bins < 16) {
     return 16;
-  else
-    return 32;
+  }
+  return 32;
 }
 
 auto TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
@@ -578,7 +587,7 @@ auto TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
                                    << " (" << x->GetBinLowEdge(ix) << "-"
                                    << x->GetBinUpEdge(ix) << ")");
   }
-  return binsInAlphaInRBin;
+  return static_cast<int>(binsInAlphaInRBin);
 }
 
 void TFCSEnergyAndHitGANV2::fixHists()

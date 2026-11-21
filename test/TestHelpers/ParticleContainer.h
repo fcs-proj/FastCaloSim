@@ -23,10 +23,7 @@ public:
   }
 
   // Add a particle to the container
-  inline void add(const Particle& particle)
-  {
-    m_particles.emplace_back(particle);
-  }
+  void add(const Particle& particle) { m_particles.emplace_back(particle); }
 
   // Add a vector of particles to the container
   void add(const std::vector<Particle>& particles)
@@ -35,17 +32,15 @@ public:
   }
 
   // Add a particle based on pid, eta, ekin, phi, pos
-  inline void add(int pid, float ekin, RPhiEta pos, RPhiEta dir)
+  void add(int pid, float ekin, const RPhiEta& pos, const RPhiEta& dir)
   {
-    Particle particle = {pid, ekin, pos.get(), dir.get().unit()};
+    Particle const particle = {
+        .pid = pid, .ekin = ekin, .pos = pos.get(), .dir = dir.get().unit()};
     m_particles.emplace_back(particle);
   }
 
-  inline void clear() { m_particles.clear(); }
-  inline auto get() const -> const std::vector<Particle>&
-  {
-    return m_particles;
-  }
+  void clear() { m_particles.clear(); }
+  auto get() const -> const std::vector<Particle>& { return m_particles; }
 
 private:
   std::vector<Particle> m_particles;

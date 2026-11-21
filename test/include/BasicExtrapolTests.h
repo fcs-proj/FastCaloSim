@@ -10,7 +10,7 @@
 class BasicExtrapolTests : public virtual AtlasGeoTests
 {
 protected:
-  static FastCaloSimCaloExtrapolation extrapolator;
+  static inline FastCaloSimCaloExtrapolation extrapolator;
   // Per-test-suite set-up.
   // Called before the first test in this test suite.
   static void SetUpTestSuite()
@@ -31,6 +31,3 @@ protected:
     AtlasGeoTests::TearDownTestSuite();
   }
 };
-
-// Initialize the static members
-FastCaloSimCaloExtrapolation BasicExtrapolTests::extrapolator;

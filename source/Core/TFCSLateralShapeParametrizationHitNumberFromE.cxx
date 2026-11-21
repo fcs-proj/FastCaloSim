@@ -1,5 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
@@ -10,6 +8,7 @@
 
 #include "CLHEP/Random/RandPoisson.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeParametrization =========
@@ -47,8 +46,8 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
-  int cs = calosample();
-  float energy = simulstate.E(cs);
+  std::size_t const cs = calosample();
+  const double energy = simulstate.E(cs);
 
   if (energy < 0) {
     return 1;
@@ -59,16 +58,16 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     return 1;
   }
 
-  double sqrtE = std::sqrt(energy / 1000.0);
-  double sigma_stochastic = m_stochastic / sqrtE;
-  double sigma_stochastic_hadron = m_stochastic_hadron / sqrtE;
+  double const sqrtE = std::sqrt(energy / 1000.0);
+  double const sigma_stochastic = m_stochastic / sqrtE;
+  double const sigma_stochastic_hadron = m_stochastic_hadron / sqrtE;
 
   // Attention: linear sum of "hadron" stochastic term and constant term as
   // emulation of fluctuations in EM component
-  double sigma_hadron = m_constant + sigma_stochastic_hadron;
+  double const sigma_hadron = m_constant + sigma_stochastic_hadron;
 
   // Usual quadratic sum of "hardon" component and normal stochastic term
-  double sigma2 =
+  double const sigma2 =
       sigma_stochastic * sigma_stochastic + sigma_hadron * sigma_hadron;
 
   FCS_MSG_DEBUG("sigma^2 fluctuation=" << sigma2);
@@ -81,12 +80,13 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> int
 {
-  if (!simulstate.randomEngine()) {
+  if (simulstate.randomEngine() == nullptr) {
     return -1;
   }
 
-  float sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
-  int hits = CLHEP::RandPoisson::shoot(simulstate.randomEngine(), 1.0 / sigma2);
+  const double sigma2 = get_sigma2_fluctuation(simulstate, truth, extrapol);
+  const auto hits = static_cast<int>(
+      CLHEP::RandPoisson::shoot(simulstate.randomEngine(), 1.0 / sigma2));
 
   FCS_MSG_DEBUG("#hits=" << hits);
 
@@ -96,15 +96,16 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_number_of_hits(
 auto TFCSLateralShapeParametrizationHitNumberFromE::operator==(
     const TFCSParametrizationBase& ref) const -> bool
 {
-  if (TFCSParametrizationBase::compare(ref))
+  if (TFCSParametrizationBase::compare(ref)) {
     return true;
-  if (!TFCSParametrization::compare(ref))
+  }
+  if (!TFCSParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrization::compare(ref))
+  }
+  if (!TFCSLateralShapeParametrization::compare(ref)) {
     return false;
-  if (!TFCSLateralShapeParametrizationHitNumberFromE::compare(ref))
-    return false;
-  return true;
+  }
+  return TFCSLateralShapeParametrizationHitNumberFromE::compare(ref);
 }
 
 auto TFCSLateralShapeParametrizationHitNumberFromE::compare(
@@ -115,11 +116,12 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::compare(
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSLateralShapeParametrizationHitNumberFromE& ref_typed =
+  const auto& ref_typed =
       static_cast<const TFCSLateralShapeParametrizationHitNumberFromE&>(ref);
-  if (m_stochastic != ref_typed.m_stochastic
-      || m_stochastic_hadron != ref_typed.m_stochastic_hadron
-      || m_constant != ref_typed.m_constant)
+  if (!FastCaloSim::exactly_equal(m_stochastic, ref_typed.m_stochastic)
+      || !FastCaloSim::exactly_equal(m_stochastic_hadron,
+                                     ref_typed.m_stochastic_hadron)
+      || !FastCaloSim::exactly_equal(m_constant, ref_typed.m_constant))
   {
     FCS_MSG_DEBUG("operator==(): different fluctuation model sigma^2=["
                   << m_stochastic << "/sqrt(E/GeV)]^2 + [" << m_constant
@@ -139,10 +141,9 @@ void TFCSLateralShapeParametrizationHitNumberFromE::Print(
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSLateralShapeParametrizationHitBase::Print(option);
 
-  if (longprint)
+  if (longprint) {
     FCS_MSG_INFO(optprint << "  sigma^2=[" << m_stochastic
                           << "/sqrt(E/GeV)]^2 + [" << m_constant << " + "
                           << m_stochastic_hadron << "/sqrt(E/GeV)]^2");
+  }
 }
-
-#pragma GCC diagnostic pop

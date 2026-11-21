@@ -4,15 +4,22 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
+// The copy constructor copies only name, title and chain, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationChain : public TFCSParametrization
 {
 public:
-  TFCSParametrizationChain(const char* name = nullptr,
-                           const char* title = nullptr)
-      : TFCSParametrization(name, title) {};
+  explicit TFCSParametrizationChain(const char* name = nullptr,
+                                    const char* title = nullptr)
+      : TFCSParametrization(name, title)
+  {
+  }
+  // NOLINTNEXTLINE(bugprone-copy-constructor-init): copies only name, title
   TFCSParametrizationChain(const TFCSParametrizationChain& ref)
       : TFCSParametrization(ref.GetName(), ref.GetTitle())
-      , m_chain(ref.chain()) {};
+      , m_chain(ref.chain())
+  {
+  }
 
   /// Status bit for chain persistency
   enum FCSSplitChainObjects
@@ -28,45 +35,42 @@ public:
     kRetryChainFromStart = BIT(17)
   };
 
-  auto SplitChainObjects() const -> bool
-  {
-    return TestBit(kSplitChainObjects);
-  };
-  void set_SplitChainObjects() { SetBit(kSplitChainObjects); };
-  void reset_SplitChainObjects() { ResetBit(kSplitChainObjects); };
+  auto SplitChainObjects() const -> bool { return TestBit(kSplitChainObjects); }
+  void set_SplitChainObjects() { SetBit(kSplitChainObjects); }
+  void reset_SplitChainObjects() { ResetBit(kSplitChainObjects); }
 
   auto RetryChainFromStart() const -> bool
   {
     return TestBit(kRetryChainFromStart);
-  };
-  void set_RetryChainFromStart() { SetBit(kRetryChainFromStart); };
-  void reset_RetryChainFromStart() { ResetBit(kRetryChainFromStart); };
+  }
+  void set_RetryChainFromStart() { SetBit(kRetryChainFromStart); }
+  void reset_RetryChainFromStart() { ResetBit(kRetryChainFromStart); }
 
   using Chain_t = std::vector<TFCSParametrizationBase*>;
-  auto size() const -> unsigned int override { return m_chain.size(); };
-  auto operator[](unsigned int ind) const
+  auto size() const -> std::size_t override { return m_chain.size(); }
+  auto operator[](std::size_t ind) const
       -> const TFCSParametrizationBase* override
   {
     return m_chain[ind];
-  };
-  auto operator[](unsigned int ind) -> TFCSParametrizationBase* override
+  }
+  auto operator[](std::size_t ind) -> TFCSParametrizationBase* override
   {
     return m_chain[ind];
-  };
-  void set_daughter(unsigned int ind, TFCSParametrizationBase* param) override
+  }
+  void set_daughter(std::size_t ind, TFCSParametrizationBase* param) override
   {
     m_chain.at(ind) = param;
-  };
-  auto chain() const -> const Chain_t& { return m_chain; };
-  auto chain() -> Chain_t& { return m_chain; };
+  }
+  auto chain() const -> const Chain_t& { return m_chain; }
+  auto chain() -> Chain_t& { return m_chain; }
   void push_back(const Chain_t::value_type& param)
   {
     m_chain.push_back(param);
     recalc();
-  };
+  }
 
-  auto is_match_Ekin_bin(int Ekin_bin) const -> bool override;
-  auto is_match_calosample(int calosample) const -> bool override;
+  auto is_match_Ekin_bin(std::size_t Ekin_bin) const -> bool override;
+  auto is_match_calosample(std::size_t calosample) const -> bool override;
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,

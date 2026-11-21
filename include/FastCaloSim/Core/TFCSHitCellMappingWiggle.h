@@ -10,10 +10,16 @@ class TH1;
 class TFCSHitCellMappingWiggle : public TFCSHitCellMapping
 {
 public:
-  TFCSHitCellMappingWiggle(const char* name = nullptr,
-                           const char* title = nullptr,
-                           CaloGeo* geo = nullptr);
+  explicit TFCSHitCellMappingWiggle(const char* name = nullptr,
+                                    const char* title = nullptr,
+                                    CaloGeo* geo = nullptr);
   ~TFCSHitCellMappingWiggle() override;
+  TFCSHitCellMappingWiggle(const TFCSHitCellMappingWiggle&) = default;
+  TFCSHitCellMappingWiggle(TFCSHitCellMappingWiggle&&) = default;
+  auto operator=(const TFCSHitCellMappingWiggle&)
+      -> TFCSHitCellMappingWiggle& = default;
+  auto operator=(TFCSHitCellMappingWiggle&&)
+      -> TFCSHitCellMappingWiggle& = default;
 
   void initialize(TFCS1DFunction* func);
   void initialize(const std::vector<const TFCS1DFunction*>& functions,
@@ -24,34 +30,33 @@ public:
                   const std::vector<float>& bin_low_edges,
                   float xscale = 1);
 
+  // Deletes only the wiggle functions and bins
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   void clear();
 
-  inline auto get_number_of_bins() const -> unsigned int
-  {
-    return m_functions.size();
-  };
+  auto get_number_of_bins() const -> std::size_t { return m_functions.size(); }
 
-  inline auto get_bin_low_edge(int bin) const -> double
+  auto get_bin_low_edge(std::size_t bin) const -> double
   {
-    return m_bin_low_edge[bin];
-  };
-  inline auto get_bin_up_edge(int bin) const -> double
+    return static_cast<double>(m_bin_low_edge[bin]);
+  }
+  auto get_bin_up_edge(std::size_t bin) const -> double
   {
-    return m_bin_low_edge[bin + 1];
-  };
+    return static_cast<double>(m_bin_low_edge[bin + 1]);
+  }
 
-  inline auto get_function(int bin) const -> const TFCS1DFunction*
+  auto get_function(std::size_t bin) const -> const TFCS1DFunction*
   {
     return m_functions[bin];
-  };
+  }
   auto get_functions() const -> const std::vector<const TFCS1DFunction*>&
   {
     return m_functions;
-  };
+  }
   auto get_bin_low_edges() const -> const std::vector<float>&
   {
     return m_bin_low_edge;
-  };
+  }
 
   /// modify one hit position to emulate the LAr accordion shape
   /// and then fills all hits into calorimeter cells
@@ -66,6 +71,9 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
+  // Not virtual: compares only the members of this class, operator== combines
+  // the comparisons of the base classes
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
   auto compare(const TFCSParametrizationBase& ref) const -> bool;
 
 private:

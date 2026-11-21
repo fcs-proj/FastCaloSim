@@ -26,33 +26,41 @@ public:
     FCSRetryPCA = FCSRetry + 20
   };
 
-  TFCSPCAEnergyParametrization(const char* name = nullptr,
-                               const char* title = nullptr,
-                               CaloGeo* geo = nullptr);
+  explicit TFCSPCAEnergyParametrization(const char* name = nullptr,
+                                        const char* title = nullptr,
+                                        CaloGeo* geo = nullptr);
 
-  void set_geometry(CaloGeo* geo) override { m_geo = geo; };
+  void set_geometry(CaloGeo* geo) override { m_geo = geo; }
 
   auto simulate(TFCSSimulationState& simulstate,
                 const TFCSTruthState* truth,
                 const TFCSExtrapolationState* extrapol) const
       -> FCSReturnCode override;
 
-  auto n_pcabins() const -> int { return m_numberpcabins; };
-  auto n_bins() const -> int override { return m_numberpcabins; };
+  auto n_pcabins() const -> std::size_t
+  {
+    return static_cast<std::size_t>(m_numberpcabins);
+  }
+  auto n_bins() const -> std::size_t override { return n_pcabins(); }
   auto get_layers() const -> const std::vector<int>&
   {
     return m_RelevantLayers;
-  };
+  }
 
-  auto is_match_Ekin_bin(int Ekin_bin) const -> bool override;
-  auto is_match_calosample(int calosample) const -> bool override;
-  auto is_match_all_Ekin_bin() const -> bool override { return true; };
-  auto is_match_all_calosample() const -> bool override { return false; };
+  auto is_match_Ekin_bin(std::size_t Ekin_bin) const -> bool override;
+  auto is_match_calosample(std::size_t calosample) const -> bool override;
+  auto is_match_all_Ekin_bin() const -> bool override { return true; }
+  auto is_match_all_calosample() const -> bool override { return false; }
 
-  static void P2X(
-      TVectorD*, TVectorD*, TMatrixD*, int, const double*, double*, int);
+  static void P2X(TVectorD* /*SigmaValues*/,
+                  TVectorD* /*MeanValues*/,
+                  TMatrixD* /*EV*/,
+                  int /*gNVariables*/,
+                  const double* /*p*/,
+                  double* /*x*/,
+                  int /*nTest*/);
   auto loadInputs(TFile* file) -> bool;
-  auto loadInputs(TFile* file, const std::string&) -> bool;
+  auto loadInputs(TFile* file, const std::string& /*folder*/) -> bool;
 
   void clean();
 
@@ -61,16 +69,16 @@ public:
   auto get_total_energy_normalization() const -> float
   {
     return m_total_energy_normalization;
-  };
+  }
   void set_total_energy_normalization(float norm)
   {
     m_total_energy_normalization = norm;
-  };
+  }
 
-  void set_totalE_probability_ratio(int Ekin_bin, TH1* hist);
-  auto get_totalE_probability_ratio(int Ekin_bin) const -> TH1*;
+  void set_totalE_probability_ratio(std::size_t Ekin_bin, TH1* hist);
+  auto get_totalE_probability_ratio(std::size_t Ekin_bin) const -> TH1*;
 
-  int do_rescale;
+  int do_rescale {1};
 
 protected:
   CaloGeo* m_geo;  //! do not persistify
@@ -87,7 +95,7 @@ private:
 
   std::vector<TH1*> m_totalE_probability_ratio;
 
-  int m_numberpcabins;
+  int m_numberpcabins {1};
 
   float m_total_energy_normalization {1};
 

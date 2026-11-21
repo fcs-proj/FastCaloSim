@@ -14,13 +14,17 @@ class TFCS1DFunction : public TFCSFunction
 public:
   TFCS1DFunction() = default;
   ~TFCS1DFunction() override = default;
+  TFCS1DFunction(const TFCS1DFunction&) = default;
+  TFCS1DFunction(TFCS1DFunction&&) = default;
+  auto operator=(const TFCS1DFunction&) -> TFCS1DFunction& = default;
+  auto operator=(TFCS1DFunction&&) -> TFCS1DFunction& = default;
 
-  auto ndim() const -> int override { return 1; };
+  auto ndim() const -> int override { return 1; }
 
   /// Function gets array of random numbers rnd[] in the range [0,1) as
   /// arguments and returns function value in array value. For a n-dimensional
   /// function, value and rnd should both have n elements.
-  void rnd_to_fct(float value[], const float rnd[]) const override;
+  void rnd_to_fct(float* value, const float* rnd) const override;
 
   /// Function gets random number rnd in the range [0,1) as argument and returns
   /// function value
@@ -32,9 +36,9 @@ public:
   virtual auto operator==(const TFCS1DFunction& ref) const -> bool
   {
     return this == &ref;
-  };
+  }
 
-  static auto get_maxdev(TH1*, TH1*) -> double;
+  static auto get_maxdev(TH1* /*h_input1*/, TH1* /*h_approx1*/) -> double;
 
   static auto CheckAndIntegrate1DHistogram(const TH1* hist,
                                            std::vector<double>& integral_vec,

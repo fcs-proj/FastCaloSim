@@ -24,19 +24,20 @@ struct TrackContainerData
 
 class TrackContainer : public Container<Track, TrackContainerData>
 {
+protected:
   auto flatten() const -> std::vector<TrackContainerData> override
   {
     std::vector<TrackContainerData> data;
     int track_id = 0;
     for (const auto& track : m_container) {
       for (const auto& point : track) {
-        data.push_back({track_id,
-                        point.x() / CLHEP::m,
-                        point.y() / CLHEP::m,
-                        point.z() / CLHEP::m,
-                        point.rho() / CLHEP::m,
-                        point.eta(),
-                        point.phi()});
+        data.push_back({.track_id = track_id,
+                        .x = point.x() / CLHEP::m,
+                        .y = point.y() / CLHEP::m,
+                        .z = point.z() / CLHEP::m,
+                        .r = point.rho() / CLHEP::m,
+                        .eta = point.eta(),
+                        .phi = point.phi()});
       }
       ++track_id;
     }

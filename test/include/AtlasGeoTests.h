@@ -2,7 +2,11 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdio>
 #include <filesystem>
+#include <stdexcept>
+#include <string>
 
 #include <CLHEP/Random/RanluxEngine.h>
 #include <gtest/gtest.h>
@@ -19,7 +23,7 @@ class AtlasGeoTests
     : public virtual ::testing::TestWithParam<TestHelpers::Event>
 {
 protected:
-  static CaloGeo* geo;
+  static inline CaloGeo* geo = nullptr;
 
   // Sets up the test suite
   // Called before the first test in this test suite
@@ -31,22 +35,24 @@ protected:
     geo = new CaloGeo();
 
     // Create Temporary dir for the RTree files
-    char tmpl[] = "/tmp/fastcalosimXXXXXX";
-    int fd = mkstemp(tmpl);
+    std::string tmpl = "/tmp/fastcalosimXXXXXX";
+    int const fd = mkstemp(tmpl.data());
     close(fd);
-    std::remove(tmpl);
+    if (std::remove(tmpl.c_str()) != 0) {
+      throw std::runtime_error("Cannot remove the temporary file " + tmpl);
+    }
     std::filesystem::create_directory(tmpl);
-    std::filesystem::path tmp_dir_path {tmpl};
+    std::filesystem::path const tmp_dir_path {tmpl};
 
     // Build the geometry and write it to disk
     geo->build(df, tmp_dir_path.string());
     // Load the geometry from the files
     // Set the Rtree cache size to 5 MB per layer
-    size_t rtree_cache_size = 5 * 1024 * 1024;
+    std::size_t const rtree_cache_size = std::size_t {5} * 1024 * 1024;
     geo->load(tmp_dir_path.string(), rtree_cache_size);
 
     // Create alternative geometry handler for FCal
-    std::shared_ptr<FCal> fcal_geo = std::make_shared<FCal>();
+    std::shared_ptr<FCal> const fcal_geo = std::make_shared<FCal>();
     // Load the FCal geometry from the files
     fcal_geo->load(AtlasGeoTestsConfig::FCAL_ELECTRODE_FILES);
     // Set the pointer to the main geo to access cell store
@@ -59,6 +65,3 @@ protected:
   // Called after the last test in this test suite
   static void TearDownTestSuite() {}  // deleting geo here causes issues
 };
-
-// Initialize the static member
-CaloGeo* AtlasGeoTests::geo = nullptr;

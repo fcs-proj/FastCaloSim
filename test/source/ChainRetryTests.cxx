@@ -3,12 +3,15 @@
 #include <memory>
 #include <vector>
 
+#include <CLHEP/Random/MixMaxRng.h>
+#include <CLHEP/Random/RandFlat.h>
 #include <TClass.h>
 #include <gtest/gtest.h>
 
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
+#include "FastCaloSim/Core/TFCSParametrizationEkinSelectChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 
@@ -40,13 +43,24 @@ private:
   mutable std::size_t m_calls = 0;
 };
 
-// The chain classes are created through ROOT, as when they are read from a
-// parametrization file
+// A chain created through ROOT, as when it is read from a parametrization
+// file. Like any client of the library, the test owns it through the
+// exported base class: the chain classes themselves are not exported, so
+// their destructors must not be called directly from here.
 template<typename T>
-auto make_chain(const char* class_name) -> std::unique_ptr<T>
+struct ChainHandle
 {
-  return std::unique_ptr<T>(
-      static_cast<T*>(TClass::GetClass(class_name)->New()));
+  std::unique_ptr<TFCSParametrizationBase> owner;
+
+  auto operator->() const -> T* { return static_cast<T*>(owner.get()); }
+  auto operator*() const -> T& { return *operator->(); }
+};
+
+template<typename T>
+auto make_chain(const char* class_name) -> ChainHandle<T>
+{
+  auto* chain = static_cast<T*>(TClass::GetClass(class_name)->New());
+  return {std::unique_ptr<TFCSParametrizationBase>(chain)};
 }
 
 auto simulate(TFCSParametrizationBase& chain) -> FCSReturnCode
@@ -58,7 +72,7 @@ auto simulate(TFCSParametrizationBase& chain) -> FCSReturnCode
   return chain.simulate(simulstate, &truth, nullptr);
 }
 
-constexpr int retry(int n)
+constexpr auto retry(int n) -> int
 {
   return FCSRetry + n;
 }
@@ -125,4 +139,33 @@ TEST(ChainRetryTest, BinnedRestartWithoutParametrizationsBeforeBins)
   chain->push_back_in_bin(&in_bin, 1);
   EXPECT_EQ(simulate(*chain), FCSSuccess);
   EXPECT_EQ(in_bin.calls(), 2U);
+}
+
+// The bin of a particle is selected once per simulation: with random
+// interpolation, the Ekin selection draws one random number, also when no bin
+// matches. Selecting the bin a second time (e.g. for a warning) would change
+// the random numbers of everything simulated afterwards.
+TEST(ChainRetryTest, BinSelectionDrawsOneRandomNumberOutsideTheBins)
+{
+  auto chain = make_chain<TFCSParametrizationEkinSelectChain>(
+      "TFCSParametrizationEkinSelectChain");
+  chain->set_DoRandomInterpolation();
+  ScriptedParametrization in_bin({});
+  chain->push_back_in_bin(&in_bin, 1000.F, 2000.F);
+
+  CLHEP::MixMaxRng engine(42);
+  CLHEP::MixMaxRng reference(42);
+  TFCSSimulationState simulstate(&engine);
+  TFCSTruthState truth;
+  // Ekin = 5000 MeV, outside the bin
+  truth.SetPxPyPzE(0, 0, 5000, 5000);
+  truth.set_pdgid(22);
+
+  EXPECT_EQ(chain->simulate(simulstate, &truth, nullptr), FCSSuccess);
+  EXPECT_EQ(in_bin.calls(), 0U);
+
+  // The reference draws the one expected random number: both engines must
+  // now be at the same position
+  CLHEP::RandFlat::shoot(&reference);
+  EXPECT_EQ(engine.flat(), reference.flat());
 }

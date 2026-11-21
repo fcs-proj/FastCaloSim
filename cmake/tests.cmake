@@ -8,7 +8,4 @@ function(create_test_executable suite_name test_sources)
   target_include_directories(${suite_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR})
   # Enable GTest discovery
   gtest_discover_tests(${suite_name} DISCOVERY_TIMEOUT 600)
-  # Deactivate compiler warnings and static analyzers
-  # Note: this is necessary until we have fixed all FastCaloSim related warnings
-  deactivate_checks(${suite_name})
 endfunction()

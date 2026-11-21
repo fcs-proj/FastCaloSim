@@ -17,14 +17,11 @@
 #include "TestHelpers/GeoPluginLoader.h"
 #include "TestHelpers/MagFieldPlugin.h"
 
-DetectorConstruction::DetectorConstruction()
-    : G4VUserDetectorConstruction()
-{
-}
+DetectorConstruction::DetectorConstruction() = default;
 
-DetectorConstruction::~DetectorConstruction() {}
+DetectorConstruction::~DetectorConstruction() = default;
 
-G4VPhysicalVolume* DetectorConstruction::Construct()
+auto DetectorConstruction::Construct() -> G4VPhysicalVolume*
 {
   G4NistManager* nist = G4NistManager::Instance();
 
@@ -32,32 +29,35 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4Material* worldMat = nist->FindOrBuildMaterial("G4_AIR");
 
   // World volume
-  G4double world_size = 100 * CLHEP::m;
-  G4Box* solidWorld =
+  G4double const world_size = 100 * CLHEP::m;
+  auto* solidWorld =
       new G4Box("World", world_size / 2, world_size / 2, world_size / 2);
-  G4LogicalVolume* world_log =
+  auto* world_log =
       new G4LogicalVolume(solidWorld, worldMat, "World");
-  G4VPhysicalVolume* world_phys = new G4PVPlacement(
-      0, G4ThreeVector(), world_log, "World", 0, false, 999, true);
 
   // Define the fast simulation trigger region
   // Particles that reach this region will be processed by the fast simulation
   // model
-  auto detectorRegion = new G4Region(fFastSimTriggerRegionName);
+  // Owned by the G4RegionStore, which the constructor registers it with
+  auto *detectorRegion = new G4Region(fFastSimTriggerRegionName);
 
   // Add the cylinders of the ID-Calo boundary to the fast simulation trigger
   // region
   TestHelpers::IDCaloBoundary boundary;
-  std::map<std::string, TestHelpers::Cylinder> cylinders = boundary.getCylinders();
+  std::map<std::string, TestHelpers::Cylinder> const cylinders = boundary.getCylinders();
   for (const auto& [name, cyl] : cylinders) {
     add_cylinder(world_log, detectorRegion, cyl, name);
   }
 
   // World of the simplified geometry through which the fast simulation model
   // transports particles. It is shared by the models of all threads.
+  // The G4RegionStore owns detectorRegion (allocated above)
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
   fTransportWorld = G4CaloTransportTool::createSimplifiedWorld("WorldLog");
 
-  return world_phys;
+  // Place the world volume
+  return new G4PVPlacement(
+      nullptr, G4ThreeVector(), world_log, "World", nullptr, false, 999, true);
 }
 
 void DetectorConstruction::ConstructSDandField()
@@ -65,12 +65,12 @@ void DetectorConstruction::ConstructSDandField()
   // Create the fast simulation model before the magnetic field is set up in a
   // new global field manager, as frameworks like Athena do: the transport must
   // use the field manager that is current when it runs
-  auto triggerRegion =
+  auto *triggerRegion =
       G4RegionStore::GetInstance()->GetRegion(fFastSimTriggerRegionName);
   new FastSimModel("model", triggerRegion, fTransportWorld);
 
   // Replace the global Geant4 field manager by a new one for the field
-  G4FieldManager* fieldMgr = new G4FieldManager();
+  auto* fieldMgr = new G4FieldManager();
   G4TransportationManager::GetTransportationManager()->SetFieldManager(fieldMgr);
 
   if (fUseAtlasField){
@@ -79,8 +79,9 @@ void DetectorConstruction::ConstructSDandField()
     G4cout<<"*************************************************"<<G4endl;
 
     // Load the ATLAS magnetic field
-    GeoPluginLoader<MagFieldPlugin> loader;
+    GeoPluginLoader<MagFieldPlugin> const loader;
     MagFieldPlugin* plugin = loader.load(ATLASMagneticFieldMapPluginLib);
+    // NOLINTNEXTLINE(misc-const-correctness): G4Cache::Put needs non-const
     G4MagneticField* field = plugin->getField();
 
     if (field == nullptr) {
@@ -97,7 +98,7 @@ void DetectorConstruction::ConstructSDandField()
     G4cout<< "          Using uniform magnetic field"          << G4endl;
     G4cout<<"*************************************************"<<G4endl;
 
-    auto uniformMagField     = new G4UniformMagField(G4ThreeVector(0.0, 0.0, fMagFieldStrength));
+    auto *uniformMagField     = new G4UniformMagField(G4ThreeVector(0.0, 0.0, fMagFieldStrength));
     fieldMgr->SetDetectorField(uniformMagField);
     fieldMgr->CreateChordFinder(uniformMagField);
 
@@ -109,14 +110,15 @@ void DetectorConstruction::add_cylinder(G4LogicalVolume* world_log,
                                         TestHelpers::Cylinder cyl,
                                         const std::string& name)
 {
-  // Compute the cylinder half-length
-  const float halfLength = std::abs(cyl.zmax - cyl.zmin) / 2;
+  // Compute the cylinder half-length (rounded to float precision)
+  const auto halfLengthF = static_cast<float>(std::abs(cyl.zmax - cyl.zmin) / 2);
+  const auto halfLength = static_cast<double>(halfLengthF);
 
   // Create the solid volume
-  G4Tubs* solid =
+  auto* solid =
       new G4Tubs(name, cyl.rmin, cyl.rmax, halfLength, 0, 2 * CLHEP::pi);
   // Create the logical volume
-  G4LogicalVolume* logic =
+  auto* logic =
       new G4LogicalVolume(solid, world_log->GetMaterial(), name);
 
   // Place a cylinder in the positive z half space

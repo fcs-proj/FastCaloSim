@@ -16,6 +16,12 @@ class TFCSMLCalorimeterSimulator : public FastCaloSim::MLogging
 public:
   TFCSMLCalorimeterSimulator();
   ~TFCSMLCalorimeterSimulator() override;
+  TFCSMLCalorimeterSimulator(const TFCSMLCalorimeterSimulator&) = delete;
+  auto operator=(const TFCSMLCalorimeterSimulator&)
+      -> TFCSMLCalorimeterSimulator& = delete;
+  TFCSMLCalorimeterSimulator(TFCSMLCalorimeterSimulator&&) = default;
+  auto operator=(TFCSMLCalorimeterSimulator&&)
+      -> TFCSMLCalorimeterSimulator& = default;
 
   struct layer_t
   {
@@ -59,7 +65,7 @@ public:
     m_used_layers = std::move(used_layers);
     m_nVoxels = m_layer_boundaries.back();
     m_nLayers = m_used_layers.size();
-  };
+  }
 
 private:
   std::unique_ptr<VNetworkBase> m_onnx_model = nullptr;

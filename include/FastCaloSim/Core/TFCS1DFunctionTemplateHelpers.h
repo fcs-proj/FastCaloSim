@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 
+#include "FastCaloSim/Definitions/Index.h"
 #include "TBuffer.h"
 
 // For the purpose of FastCaloSim, 32bit are sufficient for bin counting
@@ -26,19 +27,19 @@ class TFCS1DFunction_Numeric
 
 public:
   static constexpr T MaxValue = std::numeric_limits<T>::max();
-  static constexpr Tfloat MaxValueFloat = MaxValue;
+  static constexpr Tfloat MaxValueFloat = static_cast<Tfloat>(MaxValue);
 
   static auto MaxCeilOnlyForInt(const Tfloat value) -> T
   {
-    return std::ceil(MaxValueFloat * value);
+    return static_cast<T>(std::ceil(MaxValueFloat * value));
   }
   static auto ExpandToMaxRange(const Tfloat value) -> T
   {
-    return value * (1 + MaxValueFloat);
+    return static_cast<T>(value * (1 + MaxValueFloat));
   }
   static auto ToNormalizedRange(const T value) -> Tfloat
   {
-    return value / (1 + MaxValueFloat);
+    return static_cast<Tfloat>(value) / (1 + MaxValueFloat);
   }
 };
 
@@ -49,7 +50,7 @@ public:
   using size_t = TFCS1DFunction_size_t;
 
   TFCS1DFunction_Array() = default;
-  TFCS1DFunction_Array(size_t count) { resize(count); }
+  explicit TFCS1DFunction_Array(size_t count) { resize(count); }
 
   auto MemorySizeArray() const -> std::size_t { return size() * sizeof(T); }
   auto MemorySize() const -> std::size_t
@@ -62,11 +63,15 @@ public:
   /// resize to given count, copying old content
   void resize(size_t count)
   {
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
     std::unique_ptr<T[]> new_cont;
-    if (count > 0)
+    if (count > 0) {
+      // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
       new_cont = std::make_unique_for_overwrite<T[]>(count);
-    if (m_content && new_cont)
+    }
+    if (m_content && new_cont) {
       std::copy_n(m_content.get(), std::min(count, size()), new_cont.get());
+    }
     m_size = count;
     m_content = std::move(new_cont);
   }
@@ -89,6 +94,9 @@ public:
   auto end() const -> const T* { return m_content.get() + size(); }
 
 private:
+  // A pointer only, the size is stored separately: the parametrization
+  // files contain many of these arrays
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
   std::unique_ptr<T[]> m_content;  //!
   size_t m_size {0};
 
@@ -101,15 +109,17 @@ template<typename T>
 void TFCS1DFunction_Array<T>::Streamer(TBuffer& b)
 {
   if (b.IsReading()) {
-    size_t count;
+    size_t count = 0;
     b >> count;
     resize(count);
-    if (m_size > 0)
+    if (m_size > 0) {
       b.ReadFastArray(m_content.get(), m_size);
+    }
   } else {
     b << m_size;
-    if (m_size > 0)
+    if (m_size > 0) {
       b.WriteFastArray(m_content.get(), m_size);
+    }
   }
 }
 
@@ -123,7 +133,7 @@ public:
   using value_type = T;
   using random_type = Trandom;
 
-  TFCS1DFunction_HistogramContent(size_t nbins = 0)
+  explicit TFCS1DFunction_HistogramContent(size_t nbins = 0)
       : m_array(nbins >= 1 ? nbins - 1 : 0)
   {
   }
@@ -141,17 +151,20 @@ public:
   /// [0,1]
   void set_fraction(size_t pos, Trandom value)
   {
-    if (pos >= size())
+    if (pos >= size()) {
       return;
+    }
     m_array[pos] = TFCS1DFunction_Numeric<T, Trandom>::MaxCeilOnlyForInt(value);
   }
 
   /// Get the cumulative content at bin pos as fraction in the range [0,1]
   auto get_fraction(size_t pos) const -> Trandom
   {
-    if (pos >= size())
+    if (pos >= size()) {
       return 1;
-    return m_array[pos] / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
+    }
+    return static_cast<Trandom>(m_array[pos])
+        / TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat;
   }
 
   /// set number of bins.
@@ -169,37 +182,48 @@ public:
   /// returned in residual_rnd
   auto get_bin(Trandom drnd, Trandom& residual_rnd) const -> size_t
   {
-    if (drnd <= 0)
+    if (drnd <= 0) {
       drnd = 0;
-    if (drnd >= 1)
-      drnd = std::nextafter((Trandom)1.0, (Trandom)0.0);
+    }
+    if (drnd >= 1) {
+      drnd =
+          std::nextafter(static_cast<Trandom>(1.0), static_cast<Trandom>(0.0));
+    }
     if (size() == 0) {
       residual_rnd = drnd;
       return 0;
     }
-    T rnd = TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat * drnd;
-    auto it = std::upper_bound(m_array.begin(), m_array.end(), rnd);
+    T rnd = static_cast<T>(TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat
+                           * drnd);
+    const auto* it = std::upper_bound(m_array.begin(), m_array.end(), rnd);
 
     T basecont = 0;
-    if (it != m_array.begin())
+    if (it != m_array.begin()) {
       basecont = *(it - 1);
+    }
 
     T fullcont = TFCS1DFunction_Numeric<T, Trandom>::MaxValue;
-    if (it != m_array.end())
+    if (it != m_array.end()) {
       fullcont = *it;
+    }
 
     T dcont = fullcont - basecont;
     if (dcont > 0) {
-      residual_rnd = ((Trandom)(rnd - basecont)) / dcont;
-      if (residual_rnd > 1)
-        residual_rnd = std::nextafter((Trandom)1.0, (Trandom)0.0);
+      residual_rnd =
+          static_cast<Trandom>(rnd - basecont) / static_cast<Trandom>(dcont);
+      if (residual_rnd > 1) {
+        residual_rnd = std::nextafter(static_cast<Trandom>(1.0),
+                                      static_cast<Trandom>(0.0));
+      }
     } else {
       residual_rnd = 0.5;
     }
 
-    if (it == m_array.end())
+    if (it == m_array.end()) {
       return size();
-    return std::distance(m_array.begin(), it);
+    }
+    // The bin numbers of this class are 32 bit (size_t is its own alias)
+    return static_cast<size_t>(FastCaloSim::index_of(m_array, it));
   }
 
 private:
@@ -219,10 +243,12 @@ template<typename Trandom>
 inline auto TFCS1DFunction_linear_slope_fraction(Trandom m, Trandom drnd)
     -> Trandom
 {
-  if (m > 2)
+  if (m > 2) {
     m = 2;
-  if (m < -2)
+  }
+  if (m < -2) {
     m = -2;
+  }
   return std::abs(m) > 0.001
       ? (0.5 * std::sqrt(m * (m + 8 * drnd - 4) + 4) - 1) / m + 0.5
       : drnd;
@@ -240,11 +266,10 @@ public:
   using random_type = Trandom;
   using internal_storage_type = Tint;
 
-  TFCS1DFunction_HistogramCompactBinEdges(size_t nbins = 0)
+  explicit TFCS1DFunction_HistogramCompactBinEdges(size_t nbins = 0)
       : m_array(nbins >= 1 ? nbins - 1 : 0)
   {
   }
-  ~TFCS1DFunction_HistogramCompactBinEdges() = default;
 
   auto MemorySizeArray() const -> std::size_t
   {
@@ -281,10 +306,12 @@ public:
   /// set and may not be changed!
   auto GetBinLowEdge(size_t pos) const -> T
   {
-    if (pos == 0)
+    if (pos == 0) {
       return GetMin();
-    if (pos >= get_nbins())
+    }
+    if (pos >= get_nbins()) {
       return GetMax();
+    }
     return GetMin()
         + Length()
         * TFCS1DFunction_Numeric<Tint, T>::ToNormalizedRange(m_array[pos - 1]);

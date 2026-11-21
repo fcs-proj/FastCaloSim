@@ -23,13 +23,14 @@ TEST(ParamCreationTests, Barrel)
       std::string(PARAM_BINARY_DIR) + "createParamSlice";
 
   // Run the executable
-  std::string command = EXECUTABLE_PATH + " > " + log_file + " 2>&1";
-  int returnCode = std::system(command.c_str());
+  std::string const command = EXECUTABLE_PATH + " > " + log_file + " 2>&1";
+  // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): runs the slicer
+  int const returnCode = std::system(command.c_str());
   EXPECT_EQ(returnCode, 0) << "Executable failed to run. Check log: "
                            << log_file;
 
   // Compare the log files
-  LogComparer comparer(ref_log_file, log_file);
+  LogComparer const comparer(ref_log_file, log_file);
 
   ASSERT_TRUE(comparer.compareLogs())
       << "Log files differ! See the filtered differences above.";

@@ -35,6 +35,8 @@ public:
 
   TFCSGANEtaSlice(const TFCSGANEtaSlice&) = delete;
   auto operator=(const TFCSGANEtaSlice&) -> TFCSGANEtaSlice& = delete;
+  TFCSGANEtaSlice(TFCSGANEtaSlice&&) = delete;
+  auto operator=(TFCSGANEtaSlice&&) -> TFCSGANEtaSlice& = delete;
 
   using FitResultsPerLayer = std::map<int, std::vector<double>>;
   using ExtrapolatorWeights = std::map<int, double>;

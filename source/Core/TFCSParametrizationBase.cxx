@@ -17,8 +17,11 @@ TFCSParametrizationBase::TFCSParametrizationBase(const char* name,
 
 void TFCSParametrizationBase::set_geometry(CaloGeo* geo)
 {
-  for (unsigned int i = 0; i < size(); ++i)
-    (*this)[i]->set_geometry(geo);
+  for (std::size_t i = 0; i < size(); ++i) {
+    if (TFCSParametrizationBase* param = (*this)[i]) {
+      param->set_geometry(geo);
+    }
+  }
 }
 
 /// Result should be returned in simulstate.
@@ -34,7 +37,7 @@ auto TFCSParametrizationBase::simulate(
       "normally not happen");
   // Force one retry to issue a printout from the chain causing the call to this
   // method
-  return (FCSReturnCode)(FCSRetry + 1);
+  return static_cast<FCSReturnCode>(FCSRetry + 1);
 }
 
 auto TFCSParametrizationBase::compare(const TFCSParametrizationBase& ref) const
@@ -51,7 +54,7 @@ auto TFCSParametrizationBase::print_options(Option_t* option) const
     -> PrintOptions
 {
   std::string optprint = option != nullptr ? option : "";
-  const bool shortprint = optprint.find("short") != std::string::npos;
+  const bool shortprint = optprint.contains("short");
   for (auto pos = optprint.find("short"); pos != std::string::npos;
        pos = optprint.find("short", pos))
   {
@@ -59,7 +62,9 @@ auto TFCSParametrizationBase::print_options(Option_t* option) const
   }
   const bool longprint = msgLvl(FastCaloSim::MSG::DEBUG)
       || (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
-  return {shortprint, longprint, std::move(optprint)};
+  return {.shortprint = shortprint,
+          .longprint = longprint,
+          .optprint = std::move(optprint)};
 }
 
 /// If called with argument "short", only a one line summary will be printed
@@ -73,11 +78,10 @@ void TFCSParametrizationBase::Print(Option_t* option) const
     if (is_match_all_pdgid()) {
       FCS_MSG(INFO) << "all";
     } else {
-      for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
-           ++it)
-      {
-        if (it != pdgid().begin())
+      for (auto it = pdgid().begin(); it != pdgid().end(); ++it) {
+        if (it != pdgid().begin()) {
           FCS_MSG(INFO) << ", ";
+        }
         FCS_MSG(INFO) << *it;
       }
     }
@@ -101,9 +105,8 @@ void TFCSParametrizationBase::Print(Option_t* option) const
 
 void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
 {
-  for (unsigned int i = 0; i < size(); ++i)
-    if ((*this)[i]) {
-      TFCSParametrizationBase* param = (*this)[i];
+  for (std::size_t i = 0; i < size(); ++i) {
+    if (TFCSParametrizationBase* param = (*this)[i]) {
       FindDuplicates_t& dup = dupclasses[param->GetName()];
       // If param is already in the duplication list, skip over
       auto checkexist = dup.find(param);
@@ -117,7 +120,8 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
         FCS_MSG_WARNING(" - Occurs in parent  : " << this << " ("
                                                   << this->ClassName() << ")"
                                                   << " index=" << i);
-        if (checkexist->second.replace) {
+        if (checkexist->second.replace != nullptr) {
+          // NOLINTNEXTLINE(misc-const-correctness): key of a map of non-const
           TFCSParametrizationBase* refparam = checkexist->second.replace;
           FCS_MSG_DEBUG("Found duplicate pointer: "
                         << refparam << "=" << refparam->GetName()
@@ -133,14 +137,17 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
       for (auto& ref : dup) {
         TFCSParametrizationBase* refparam = ref.first;
         // skip itself, as this just added above
-        if (param == refparam)
+        if (param == refparam) {
           continue;
+        }
         // skip nullptr reference
-        if (refparam == nullptr)
+        if (refparam == nullptr) {
           continue;
+        }
         // skip reference that is itself going to get replaced
-        if (ref.second.replace)
+        if (ref.second.replace != nullptr) {
           continue;
+        }
         // Check for objects with identical content
         if (*param == *refparam) {
           FCS_MSG_DEBUG("Found duplicate: "
@@ -156,6 +163,7 @@ void TFCSParametrizationBase::FindDuplicates(FindDuplicateClasses_t& dupclasses)
       // Continue for child objects in param
       param->FindDuplicates(dupclasses);
     }
+  }
 }
 
 void TFCSParametrizationBase::RemoveDuplicates()
@@ -167,15 +175,17 @@ void TFCSParametrizationBase::RemoveDuplicates()
   for (auto& dupiter : dupclasses) {
     FindDuplicates_t& dup = dupiter.second;
     for (auto onedup : dup) {
-      if (onedup.second.mother.empty())
+      if (onedup.second.mother.empty()) {
         continue;
+      }
       TFCSParametrizationBase* ref = onedup.first;
       FCS_MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
-      for (unsigned int i = 0; i < onedup.second.mother.size(); ++i) {
-        int index = onedup.second.index[i];
+      for (std::size_t i = 0; i < onedup.second.mother.size(); ++i) {
+        const std::size_t index = onedup.second.index[i];
         TFCSParametrizationBase* mother = onedup.second.mother[i];
+        // NOLINTNEXTLINE(misc-const-correctness): key of a map of non-const
         TFCSParametrizationBase* delparam = mother->operator[](index);
-        unsigned int delcount = dup[delparam].mother.size();
+        const std::size_t delcount = dup[delparam].mother.size();
         if (delcount == 0) {
           FCS_MSG_DEBUG("  - Delete object "
                         << delparam << "=" << delparam->GetName() << " index "
@@ -199,8 +209,8 @@ void TFCSParametrizationBase::RemoveDuplicates()
 
   std::map<std::string, int> ndel;
   for (auto* delparam : dellist) {
-    FindDuplicates_t& dup2 = dupclasses2[delparam->GetName()];
-    bool present = dup2.find(delparam) != dup2.end();
+    FindDuplicates_t const& dup2 = dupclasses2[delparam->GetName()];
+    bool const present = dup2.contains(delparam);
     if (present) {
       FCS_MSG_WARNING("- Delete object " << delparam << "="
                                          << delparam->GetName()
@@ -212,20 +222,21 @@ void TFCSParametrizationBase::RemoveDuplicates()
       delete delparam;
     }
   }
-  for (auto& del : ndel)
+  for (auto& del : ndel) {
     FCS_MSG_INFO("Deleted " << del.second << " duplicate objects of class "
                             << del.first);
+  }
 }
 
 void TFCSParametrizationBase::RemoveNameTitle()
 {
-  for (unsigned int i = 0; i < size(); ++i)
-    if ((*this)[i]) {
-      TFCSParametrizationBase* param = (*this)[i];
+  for (std::size_t i = 0; i < size(); ++i) {
+    if (TFCSParametrizationBase* param = (*this)[i]) {
       param->SetName("");
       param->SetTitle("");
 
       // Continue for child objects in param
       param->RemoveNameTitle();
     }
+  }
 }

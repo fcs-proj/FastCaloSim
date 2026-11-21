@@ -33,6 +33,10 @@ public:
         const std::vector<Cell>& cells);
 
   ~RTree();
+  RTree(const RTree&) = delete;
+  auto operator=(const RTree&) -> RTree& = delete;
+  RTree(RTree&&) = delete;
+  auto operator=(RTree&&) -> RTree& = delete;
 
   /**
    * @brief Find the cell for a given position

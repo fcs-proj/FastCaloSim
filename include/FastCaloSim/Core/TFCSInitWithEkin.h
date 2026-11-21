@@ -7,18 +7,19 @@
 class TFCSInitWithEkin : public TFCSParametrization
 {
 public:
-  TFCSInitWithEkin(const char* name = nullptr, const char* title = nullptr);
+  explicit TFCSInitWithEkin(const char* name = nullptr,
+                            const char* title = nullptr);
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_calosample(int /*calosample*/) const -> bool override
+  }
+  auto is_match_calosample(std::size_t /*calosample*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_all_Ekin_bin() const -> bool override { return true; };
-  auto is_match_all_calosample() const -> bool override { return true; };
+  }
+  auto is_match_all_Ekin_bin() const -> bool override { return true; }
+  auto is_match_all_calosample() const -> bool override { return true; }
 
   // Initialize simulstate with the kinetic energy Ekin from truth
   auto simulate(TFCSSimulationState& simulstate,

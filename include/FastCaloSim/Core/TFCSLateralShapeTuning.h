@@ -10,6 +10,8 @@
 /*Pieciewise linear interpolation class include*/
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 
+// Owns the interpolation objects; never copied, copy is kept for ROOT
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSLateralShapeTuning : public TFCSLateralShapeParametrizationHitBase
 {
   using interpolationMap =
@@ -17,8 +19,8 @@ class TFCSLateralShapeTuning : public TFCSLateralShapeParametrizationHitBase
 
 public:
   /// Constructor
-  TFCSLateralShapeTuning(const char* name = nullptr,
-                         const char* title = nullptr);
+  explicit TFCSLateralShapeTuning(const char* name = nullptr,
+                                  const char* title = nullptr);
   // Destructor
   ~TFCSLateralShapeTuning() override;
   // Simulation call
@@ -32,7 +34,7 @@ public:
                          int intMinEta,
                          int intMaxEta) -> FCSReturnCode;
   // Initialization from interpolation map
-  auto initFromMap(const interpolationMap&) -> FCSReturnCode;
+  auto initFromMap(const interpolationMap& /*parameters*/) -> FCSReturnCode;
   // Helper function for strip layer model
   static auto getSeriesScalingFactor(double a0,
                                      double a1,

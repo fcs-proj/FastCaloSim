@@ -11,7 +11,7 @@ TEST_F(AtlasGeoTests, PreSamplerBLookup)
   constexpr int layer = 0;
 
   // Loop over all cells in the layer
-  for (int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
+  for (unsigned int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
     const auto& cell = AtlasGeoTests::geo->get_cell_at_idx(layer, i);
 
     // Loop over random points within the cell
@@ -39,7 +39,7 @@ TEST_F(AtlasGeoTests, EME1Lookup)
   constexpr int layer = 5;
 
   // Loop over all cells in the layer
-  for (int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
+  for (unsigned int i = 0; i < AtlasGeoTests::geo->n_cells(layer); ++i) {
     const auto& cell = AtlasGeoTests::geo->get_cell_at_idx(layer, i);
 
     // Loop over random points within the cell

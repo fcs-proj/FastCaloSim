@@ -10,6 +10,8 @@
 #include <CLHEP/Random/RanluxEngine.h>
 
 
+#include <utility>
+
 #include <G4FieldTrack.hh>
 #include <G4String.hh>
 #include <G4ThreeVector.hh>
@@ -31,12 +33,16 @@ class FastSimModel : public G4VFastSimulationModel
  public:
   // The model transports particles through transportWorld, which is shared by
   // the models of all threads
-  FastSimModel(G4String, G4Region*, G4VPhysicalVolume* transportWorld);
-  ~FastSimModel();
+  FastSimModel(const G4String& /*aModelName*/, G4Region* /*aEnvelope*/, G4VPhysicalVolume* transportWorld);
+  ~FastSimModel() override;
+  FastSimModel(const FastSimModel&) = delete;
+  auto operator=(const FastSimModel&) -> FastSimModel& = delete;
+  FastSimModel(FastSimModel&&) = delete;
+  auto operator=(FastSimModel&&) -> FastSimModel& = delete;
 
-  virtual G4bool ModelTrigger(const G4FastTrack&) final;
-  virtual G4bool IsApplicable(const G4ParticleDefinition&) final;
-  virtual void DoIt(const G4FastTrack&, G4FastStep&) final;
+  auto ModelTrigger(const G4FastTrack& /*unused*/) -> G4bool final;
+  auto IsApplicable(const G4ParticleDefinition& /*unused*/) -> G4bool final;
+  void DoIt(const G4FastTrack& /*aFastTrack*/ /*unused*/, G4FastStep& /*aFastStep*/ /*unused*/) final;
   void DoStep(G4FieldTrack&, G4Navigator*);
 
   // Get the current track container
@@ -56,7 +62,7 @@ class FastSimModel : public G4VFastSimulationModel
   // Set the boolean flag whether to do simulation
   void doSimulation(G4bool doSimulation) { fDoSimulation = doSimulation; }
   // Set the extrapolator tool
-  void setExtrapolationTool(FastCaloSimCaloExtrapolation tool) { fExtrapolationTool = tool; }
+  void setExtrapolationTool(FastCaloSimCaloExtrapolation tool) { fExtrapolationTool = std::move(tool); }
   // Set debug flag
   void setDebug(bool debug) { m_debug = debug; }
   // Set FastCaloSim parametrization
@@ -75,15 +81,15 @@ class FastSimModel : public G4VFastSimulationModel
   // Current vector of simulation states
   TestHelpers::SimStateContainer fSimulationStates;
   // Core FastCaloSim API
-  TFCSParametrizationBase* fParametrization;
+  TFCSParametrizationBase* fParametrization{nullptr};
 
   // Boolean flag whether to do the simulation
-  G4bool fDoSimulation;
+  G4bool fDoSimulation{true};
 
   // Random engine
   CLHEP::RanluxEngine m_random_engine;
   // Boolean flag to enable debug output
-  bool m_debug;
+  bool m_debug{false};
 
 };
 #endif /* FASTSIMMODEL_HH */

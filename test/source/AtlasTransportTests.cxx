@@ -21,7 +21,7 @@ TEST_P(AtlasTransportTests, AtlasTransport)
   AtlasTransportTestConfig::set_output_dir(output_dir);
 
   // Retrieve the event to be transported
-  const TestHelpers::Event evt = GetParam();
+  const TestHelpers::Event& evt = GetParam();
 
   // Tell the action initialization to set the particles
   actionInitialization->set_particle_container(&evt.get_container());
@@ -34,12 +34,13 @@ TEST_P(AtlasTransportTests, AtlasTransport)
   auto* mgr = G4GlobalFastSimulationManager::GetGlobalFastSimulationManager();
   auto* model =
       dynamic_cast<FastSimModel*>(mgr->GetFastSimulationModel("model"));
+  ASSERT_NE(model, nullptr);
 
   // Reset the state of the fast simulation model
   model->Reset();
 
   // Deactivate the simulation for this test
-  model->doSimulation(false);
+  model->doSimulation(/*doSimulation=*/false);
 
   // Set the extrapolation tool
   BasicExtrapolTests::extrapolator.setLevel(
@@ -50,40 +51,43 @@ TEST_P(AtlasTransportTests, AtlasTransport)
   run_manager->BeamOn(1);
 
   // Serialize tracks to json file
-  TestHelpers::TrackContainer tracks = model->GetTransportTracks();
+  TestHelpers::TrackContainer const tracks = model->GetTransportTracks();
   tracks.serialize(AtlasTransportTestConfig::transport_output_path());
 
   // Construct the python command to plot the transport
-  std::string transport_exec =
+  std::string const transport_exec =
       AtlasTransportTestConfig::py_transport_exec(evt.get_label());
 
   // Plot the transport
+  // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): plot script
   ASSERT_TRUE(system(transport_exec.c_str()) == 0);
 
   // Serialize the extrapolation states to json file
-  TestHelpers::ExtrapStateContainer extrapolations = model->GetExtrapolations();
+  TestHelpers::ExtrapStateContainer const extrapolations =
+      model->GetExtrapolations();
   extrapolations.serialize(
       AtlasTransportTestConfig::extrapolation_output_path());
 
   // Construct the python command to plot the extrapolation
-  std::string extrapol_exec =
+  std::string const extrapol_exec =
       AtlasTransportTestConfig::py_extrapol_exec(evt.get_label());
 
   // Plot the extrapolation
+  // NOLINTNEXTLINE(bugprone-command-processor,cert-env33-c): plot script
   ASSERT_TRUE(system(extrapol_exec.c_str()) == 0);
 
   // Now compare results with references with a tolerance of 0.1 percent
   const double tol = 1e-3;
-  JsonComparer json(tol);
+  JsonComparer comparer(tol);
 
   // Compare the transport data to references
   ASSERT_TRUE(
-      json.compare(AtlasTransportTestConfig::transport_output_path(),
-                   AtlasTransportTestConfig::transport_output_ref_path()));
+      comparer.compare(AtlasTransportTestConfig::transport_output_path(),
+                       AtlasTransportTestConfig::transport_output_ref_path()));
   // Compare the extrapolation data to references
-  ASSERT_TRUE(
-      json.compare(AtlasTransportTestConfig::extrapolation_output_path(),
-                   AtlasTransportTestConfig::extrapolation_output_ref_path()));
+  ASSERT_TRUE(comparer.compare(
+      AtlasTransportTestConfig::extrapolation_output_path(),
+      AtlasTransportTestConfig::extrapolation_output_ref_path()));
 }
 
 INSTANTIATE_TEST_SUITE_P(AtlasTransport,

@@ -25,6 +25,7 @@
 #include "IMagFieldSvc.h"
 
 // STL includes
+#include <array>
 #include <iostream>
 #include <vector>
 
@@ -46,22 +47,27 @@ class AtlasFieldSvc : public IMagFieldSvc
   // IIncidentListener> {
 public:
   /** Constructor with parameters */
-  AtlasFieldSvc(bool isAscii = true);
+  explicit AtlasFieldSvc(bool isAscii = true);
 
   /** Constructor with parameters */
-  AtlasFieldSvc(const std::string& name,
-                bool isAscii = true,
-                bool solenoidOFF = false,
-                bool toroidsOFF = false);
+  explicit AtlasFieldSvc(const std::string& name,
+                         bool isAscii = true,
+                         bool solenoidOFF = false,
+                         bool toroidsOFF = false);
 
   /** Destructor */
-  virtual ~AtlasFieldSvc();
+  ~AtlasFieldSvc() override;
+  // the solenoid ZR map is owned by this object
+  AtlasFieldSvc(const AtlasFieldSvc&) = delete;
+  auto operator=(const AtlasFieldSvc&) -> AtlasFieldSvc& = delete;
+  AtlasFieldSvc(AtlasFieldSvc&&) = delete;
+  auto operator=(AtlasFieldSvc&&) -> AtlasFieldSvc& = delete;
 
   /** Athena algorithm's interface methods */
   //      virtual bool  initialize() override;
   //      virtual bool  finalize() override;
-  virtual bool initialize();
-  virtual bool finalize();
+  virtual auto initialize() -> bool;
+  virtual auto finalize() -> bool;
 
   /** Read **/
   virtual void handle();
@@ -78,21 +84,21 @@ public:
   /** get B field value at given position */
   /** xyz[3] is in mm, bxyz[3] is in kT */
   /** if deriv[9] is given, field derivatives are returned in kT/mm */
-  virtual void getField(const double* xyz,
-                        double* bxyz,
-                        double* deriv = nullptr) const override final;
-  virtual void getFieldZR(const double* xyz,
-                          double* bxyz,
-                          double* deriv = nullptr) const override final;
+  void getField(const double* xyz,
+                double* bxyz,
+                double* deriv = nullptr) const final;
+  void getFieldZR(const double* xyz,
+                  double* bxyz,
+                  double* deriv = nullptr) const final;
 
-  double GetUseSolenoidCurrent() { return m_useSoleCurrent; }
+  auto GetUseSolenoidCurrent() const -> double { return m_useSoleCurrent; }
   void SetUseSolenoidCurrent(double current) { m_useSoleCurrent = current; }
-  double GetUseToroidsCurrent() { return m_useToroCurrent; }
+  auto GetUseToroidsCurrent() const -> double { return m_useToroCurrent; }
   void SetUseToroidsCurrent(double current) { m_useToroCurrent = current; }
 
 private:
   /** Retrieve, initialize and return a thread-local storage object */
-  inline struct AtlasFieldSvcTLS& getAtlasFieldSvcTLS() const;
+  static inline auto getAtlasFieldSvcTLS() -> struct AtlasFieldSvcTLS&;
 
   /* // Methods called to get field
      // pointer to actual function
@@ -107,42 +113,45 @@ private:
 
   // Functions used by getField[ZR]
   // search for a "zone" to which the point (z,r,phi) belongs
-  inline const BFieldZone* findZone(double z, double r, double phi) const;
+  inline auto findZone(double z, double r, double phi) const
+      -> const BFieldZone*;
   // slow search is used during initialization to build the LUT
-  BFieldZone* findZoneSlow(double z, double r, double phi);
+  auto findZoneSlow(double z, double r, double phi) -> BFieldZone*;
   // fill the cache. return true if successful
   // return false if the position is outside the valid map volume
-  inline bool fillFieldCache(double z,
+  inline auto fillFieldCache(double z,
                              double r,
                              double phi,
-                             AtlasFieldSvcTLS& tls) const;
-  inline bool fillFieldCacheZR(double z, double r, AtlasFieldSvcTLS& tls) const;
+                             AtlasFieldSvcTLS& tls) const -> bool;
+  inline auto fillFieldCacheZR(double z, double r, AtlasFieldSvcTLS& tls) const
+      -> bool;
 
   // set currents from when DCS is not read
-  bool importCurrents(AtlasFieldSvcTLS& tls);
+  auto importCurrents(AtlasFieldSvcTLS& tls) -> bool;
   // initialize map
-  bool initializeMap(AtlasFieldSvcTLS& tls);
+  auto initializeMap(AtlasFieldSvcTLS& tls) -> bool;
   // read the field map from an ASCII or ROOT file
-  bool readMap(const char* filename);
-  bool readMap(std::istream& input);
+  static auto readMap(const char* filename) -> bool;
+  auto readMap(std::istream& input) -> bool;
   /** readMap, can be enabled when fROOT dependency is on **/
   // bool readMap( TFile* rootfile );
   /** read the field map from a ROOT file, no fROOT dependency needed**/
-  bool readMapRoot(std::string filename);
+  auto readMapRoot(const std::string& filename) -> bool;
 
   // translate the map from root file into ascii file and write it out
-  bool translateMap(std::string inFile,
+  auto translateMap(std::string inFile,
                     std::string outFile,
                     std::string outTreeName,
                     bool rz,
                     double bScalor = 1.,
-                    double lScalor = 1.) const;
+                    double lScalor = 1.) const -> bool;
   // clear the field map
   void clearMap(AtlasFieldSvcTLS& tls);
 
   // utility functions used by readMap
-  int read_packed_data(std::istream& input, std::vector<int>& data) const;
-  int read_packed_int(std::istream& input, int& n) const;
+  static auto read_packed_data(std::istream& input, std::vector<int>& data)
+      -> int;
+  static auto read_packed_int(std::istream& input, int& n) -> int;
   void buildLUT();
   void buildZR();
 
@@ -150,7 +159,7 @@ private:
   void scaleField();
 
   /** approximate memory footprint in bytes */
-  int memSize() const;
+  auto memSize() const -> int;
 
   /** Data Members **/
   std::string m_fullMapAscii;  // all magnets on
@@ -191,9 +200,9 @@ private:
   BFieldMeshZR* m_meshZR;
 
   // data members used in zone-finding
-  std::vector<double> m_edge[3];  // zone boundaries in z, r, phi
-  std::vector<int> m_edgeLUT[3];  // look-up table for zone edges
-  double m_invq[3];  // 1/stepsize in m_edgeLUT
+  std::array<std::vector<double>, 3> m_edge;  // zone boundaries in z, r, phi
+  std::array<std::vector<int>, 3> m_edgeLUT;  // look-up table for zone edges
+  std::array<double, 3> m_invq {};  // 1/stepsize in m_edgeLUT
   std::vector<const BFieldZone*> m_zoneLUT;  // look-up table for zones
   // more data members to speed up zone-finding
   double m_zmin;  // minimum z
@@ -214,8 +223,8 @@ private:
 //
 // Initialize and return a thread-local storage object
 //
-struct MagField::AtlasFieldSvcTLS&
-MagField::AtlasFieldSvc::getAtlasFieldSvcTLS() const
+auto MagField::AtlasFieldSvc::getAtlasFieldSvcTLS()
+    -> struct MagField::AtlasFieldSvcTLS&
 {
   static thread_local AtlasFieldSvcTLS tls = AtlasFieldSvcTLS();
   // return thread-local object
@@ -226,9 +235,8 @@ MagField::AtlasFieldSvc::getAtlasFieldSvcTLS() const
 // Search for the zone that contains a point (z, r, phi)
 // Fast version utilizing the LUT.
 //
-const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
-                                                    double r,
-                                                    double phi) const
+auto MagField::AtlasFieldSvc::findZone(double z, double r, double phi) const
+    -> const BFieldZone*
 {
   // make sure it's inside the largest zone
   // NB: the sign of the logic is chosen in order to return 0 on NaN inputs
@@ -236,41 +244,49 @@ const BFieldZone* MagField::AtlasFieldSvc::findZone(double z,
     // find the edges of the zone
     // z
     const std::vector<double>& edgez(m_edge[0]);
-    int iz = int(m_invq[0] * (z - m_zmin));  // index to LUT
-    iz = m_edgeLUT[0][iz];  // tentative index from LUT
-    if (z > edgez[iz + 1])
+    const auto lz = static_cast<int>(m_invq[0] * (z - m_zmin));  // index to LUT
+    // tentative index from LUT
+    auto iz =
+        static_cast<std::size_t>(m_edgeLUT[0][static_cast<std::size_t>(lz)]);
+    if (z > edgez[iz + 1]) {
       iz++;
+    }
     // r
     const std::vector<double>& edger(m_edge[1]);
-    int ir = int(m_invq[1] * r);  // index to LUT - note minimum r is always 0
-    ir = m_edgeLUT[1][ir];  // tentative index from LUT
-    if (r > edger[ir + 1])
+    // index to LUT - note minimum r is always 0
+    const auto lr = static_cast<int>(m_invq[1] * r);
+    // tentative index from LUT
+    auto ir =
+        static_cast<std::size_t>(m_edgeLUT[1][static_cast<std::size_t>(lr)]);
+    if (r > edger[ir + 1]) {
       ir++;
+    }
     // phi
     const std::vector<double>& edgephi(m_edge[2]);
-    int iphi =
-        int(m_invq[2] * (phi + M_PI));  // index to LUT - minimum phi is -pi
-    iphi = m_edgeLUT[2][iphi];  // tentative index from LUT
-    if (phi > edgephi[iphi + 1])
+    // index to LUT - minimum phi is -pi
+    const auto lphi = static_cast<int>(m_invq[2] * (phi + M_PI));
+    // tentative index from LUT
+    auto iphi =
+        static_cast<std::size_t>(m_edgeLUT[2][static_cast<std::size_t>(lphi)]);
+    if (phi > edgephi[iphi + 1]) {
       iphi++;
+    }
     // use LUT to get the zone
-    return m_zoneLUT[(iz * m_nr + ir) * m_nphi + iphi];
-  } else {
-    // std::cout<<"z is :"<<z<<" and should be >= "<<m_zmin<<"  && z <=
-    // "<<m_zmax<< "  && r is "<<r <<" and should be <= "<<m_rmax<<std::endl;
-    return 0;
-  }
+    return m_zoneLUT[(iz * static_cast<std::size_t>(m_nr) + ir)
+                         * static_cast<std::size_t>(m_nphi)
+                     + iphi];
+  }  // std::cout<<"z is :"<<z<<" and should be >= "<<m_zmin<<"  && z <=
+  // "<<m_zmax<< "  && r is "<<r <<" and should be <= "<<m_rmax<<std::endl;
+  return nullptr;
 }
 
 /** fill given magnetic field zone */
-bool MagField::AtlasFieldSvc::fillFieldCache(double z,
-                                             double r,
-                                             double phi,
-                                             AtlasFieldSvcTLS& tls) const
+auto MagField::AtlasFieldSvc::fillFieldCache(
+    double z, double r, double phi, AtlasFieldSvcTLS& tls) const -> bool
 {
   // search for the zone
   const BFieldZone* zone = findZone(z, r, phi);
-  if (zone == 0) {
+  if (zone == nullptr) {
     // outsize all zones
     return false;
   }
@@ -287,12 +303,13 @@ bool MagField::AtlasFieldSvc::fillFieldCache(double z,
 }
 
 /** fill Z-R cache for solenoid */
-bool MagField::AtlasFieldSvc::fillFieldCacheZR(double z,
+auto MagField::AtlasFieldSvc::fillFieldCacheZR(double z,
                                                double r,
                                                AtlasFieldSvcTLS& tls) const
+    -> bool
 {
   // is it inside the solenoid zone?
-  if (m_meshZR && m_meshZR->inside(z, r)) {
+  if (m_meshZR != nullptr && m_meshZR->inside(z, r)) {
     // fill the cache
     m_meshZR->getCache(z, r, tls.cacheZR);
   } else {

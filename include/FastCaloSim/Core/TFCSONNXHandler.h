@@ -39,6 +39,8 @@
  * such that it can be used interchangeably with other network
  * formats and libraries.
  **/
+// Custom copy constructor re-creating the session, moves fall back to it
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSONNXHandler : public VNetworkBase
 {
 public:
@@ -300,7 +302,7 @@ private:
    * for the session/net used as a member variable during setupNet.
    **/
   template<typename Tin, typename Tout>
-  auto computeTemplate(NetworkInputs const& input) -> NetworkOutputs;
+  auto computeTemplate(NetworkInputs const& inputs) -> NetworkOutputs;
 
   /**
    * @brief computeTemplate with apropreate types selected.
@@ -320,5 +322,5 @@ private:
   std::vector<std::string> m_outputLayers;  //! Do not persistify
 
   // For the streamer
-  ClassDefOverride(TFCSONNXHandler, 1);
+  ClassDefOverride(TFCSONNXHandler, 1)
 };

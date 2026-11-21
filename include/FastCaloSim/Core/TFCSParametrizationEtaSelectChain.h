@@ -8,24 +8,35 @@ class TFCSParametrizationEtaSelectChain
     : public TFCSParametrizationFloatSelectChain
 {
 public:
-  TFCSParametrizationEtaSelectChain(const char* name = nullptr,
-                                    const char* title = nullptr)
-      : TFCSParametrizationFloatSelectChain(name, title) {};
+  explicit TFCSParametrizationEtaSelectChain(const char* name = nullptr,
+                                             const char* title = nullptr)
+      : TFCSParametrizationFloatSelectChain(name, title)
+  {
+  }
   TFCSParametrizationEtaSelectChain(
       const TFCSParametrizationEtaSelectChain& ref) = default;
+  TFCSParametrizationEtaSelectChain(TFCSParametrizationEtaSelectChain&& ref) =
+      default;
+  auto operator=(const TFCSParametrizationEtaSelectChain& ref)
+      -> TFCSParametrizationEtaSelectChain& = default;
+  auto operator=(TFCSParametrizationEtaSelectChain&& ref)
+      -> TFCSParametrizationEtaSelectChain& = default;
+  ~TFCSParametrizationEtaSelectChain() override = default;
 
   using TFCSParametrizationFloatSelectChain::push_back_in_bin;
   virtual void push_back_in_bin(TFCSParametrizationBase* param);
   // selects on extrapol->IDCaloBoundary_eta()
-  // return -1 if outside range
-  auto get_bin(TFCSSimulationState&,
+  // returns no value if outside range
+  auto get_bin(TFCSSimulationState& /*simulstate*/,
                const TFCSTruthState* truth,
-               const TFCSExtrapolationState* extrapol) const -> int override;
+               const TFCSExtrapolationState* extrapol) const
+      -> std::optional<std::size_t> override;
   auto get_variable_text(TFCSSimulationState& simulstate,
-                         const TFCSTruthState*,
-                         const TFCSExtrapolationState*) const
+                         const TFCSTruthState* /*unused*/,
+                         const TFCSExtrapolationState* /*extrapol*/ /*unused*/)
+      const -> const std::string override;
+  auto get_bin_text(std::optional<std::size_t> bin) const
       -> const std::string override;
-  auto get_bin_text(int bin) const -> const std::string override;
 
 protected:
   void recalc() override;

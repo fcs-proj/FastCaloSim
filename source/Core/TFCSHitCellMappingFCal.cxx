@@ -1,11 +1,9 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHitCellMappingFCal.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 //=============================================
@@ -24,11 +22,18 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   // Position where we perform the lookup
   // The z position here is used to determine the side
   // in the custom FCAL geo handler
-  Position lookup_pos {hit.x(), hit.y(), hit.z(), 0, 0, 0};
+  Position const lookup_pos {.m_x = hit.x(),
+                             .m_y = hit.y(),
+                             .m_z = hit.z(),
+                             .m_eta = 0,
+                             .m_phi = 0,
+                             .m_r = 0};
 
   /// No match possible, retry simulation
-  if ((hit.x() == 0 && hit.y() == 0)) {
-    return (FCSReturnCode)(FCSRetry + 5);
+  if (FastCaloSim::exactly_equal(hit.x(), 0.0)
+      && FastCaloSim::exactly_equal(hit.y(), 0.0))
+  {
+    return static_cast<FCSReturnCode>(FCSRetry + 5);
   }
   // Get the best matching cell
   const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
@@ -39,13 +44,13 @@ auto TFCSHitCellMappingFCal::simulate_hit(
     FCS_MSG_WARNING("Hit in layer " << calosample() << " with E = " << hit.E()
                                     << " x = " << hit.x() << " y = " << hit.y()
                                     << " could not be matched to a cell");
-    return (FCSReturnCode)(FCSRetry + 5);
+    return static_cast<FCSReturnCode>(FCSRetry + 5);
   }
 
   // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
-  double proximity = cell.boundary_proximity(lookup_pos);
+  double const proximity = cell.boundary_proximity(lookup_pos);
 
   FCS_MSG_DEBUG("Hit-cell distance in x-y is: " << proximity);
 
@@ -56,12 +61,11 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   // FastCaloGAN the rest of the hits in the layer will be scaled up by the
   // energy renormalization step.
   if (proximity < 2.25) {
-    simulstate.deposit(cell.id(), hit.E());
+    // Cell energies are stored in single precision
+    simulstate.deposit(cell.id(), static_cast<float>(hit.E()));
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }
 
   return FCSSuccess;
 }
-
-#pragma GCC diagnostic pop

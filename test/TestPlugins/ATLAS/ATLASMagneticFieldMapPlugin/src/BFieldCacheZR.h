@@ -14,7 +14,9 @@
 #ifndef BFIELDCACHEZR_H
 #define BFIELDCACHEZR_H
 
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 
 #include "BFieldVectorZR.h"
@@ -23,14 +25,7 @@ class BFieldCacheZR
 {
 public:
   // default constructor sets unphysical boundaries, so that inside() will fail
-  BFieldCacheZR()
-      : m_zmin(0.0)
-      , m_zmax(-1.0)
-      , m_rmin(0.0)
-      , m_rmax(-1.0)
-  {
-    ;
-  }
+  BFieldCacheZR() = default;
   // invalidate this cache, so that inside() will fail
   void invalidate()
   {
@@ -44,18 +39,18 @@ public:
     m_zmax = zmax;
     m_rmin = rmin;
     m_rmax = rmax;
-    m_invz = 1.0 / (zmax - zmin);
-    m_invr = 1.0 / (rmax - rmin);
+    m_invz = static_cast<float>(1.0 / (zmax - zmin));
+    m_invr = static_cast<float>(1.0 / (rmax - rmin));
   }
   // set the field values at each corner
-  void setField(int i, const BFieldVectorZR& field)
+  void setField(std::size_t i, const BFieldVectorZR& field)
   {
     m_field[0][i] = field[0];
     m_field[1][i] = field[1];
   }
   // set the multiplicative factor for the field vectors
   // test if (z, r) is inside this bin
-  bool inside(double z, double r) const
+  auto inside(double z, double r) const -> bool
   {
     return (z >= m_zmin && z <= m_zmax && r >= m_rmin && r <= m_rmax);
   }
@@ -64,13 +59,13 @@ public:
   inline void getB(const double* xyz,
                    double r,
                    double* B,
-                   double* deriv = 0) const;
+                   double* deriv = nullptr) const;
 
 private:
-  double m_zmin, m_zmax;  // bin range in z
-  double m_rmin, m_rmax;  // bin range in r
-  float m_invz, m_invr;  // 1/(bin size) in z, r
-  float m_field[2][4];  // (Bz,Br) at 4 corners of the bin
+  double m_zmin {0.0}, m_zmax {-1.0};  // bin range in z
+  double m_rmin {0.0}, m_rmax {-1.0};  // bin range in r
+  float m_invz {}, m_invr {};  // 1/(bin size) in z, r
+  std::array<std::array<float, 4>, 2> m_field {};  // (Bz,Br) at 4 corners
 };
 
 // inline methods
@@ -84,55 +79,59 @@ void BFieldCacheZR::getB(const double* xyz,
   const double& y(xyz[1]);
   const double& z(xyz[2]);
   // fractional position inside this bin
-  float fz = (z - m_zmin) * m_invz;
-  float gz = 1.0 - fz;
-  float fr = (r - m_rmin) * m_invr;
-  float gr = 1.0 - fr;
+  // computed in double and rounded to float; 1.0F - f is identical to
+  // float(1.0 - double(f)) (double has more than 2*24+2 mantissa bits)
+  auto const fz =
+      static_cast<float>((z - m_zmin) * static_cast<double>(m_invz));
+  float const gz = 1.0F - fz;
+  auto const fr =
+      static_cast<float>((r - m_rmin) * static_cast<double>(m_invr));
+  float const gr = 1.0F - fr;
   // interpolate field values in z, r
-  float Bzr[2];
-  for (int i = 0; i < 2; i++) {  // z, r components
-    const float* field = m_field[i];
+  std::array<float, 2> Bzr {};
+  for (std::size_t i = 0; i < 2; i++) {  // z, r components
+    const auto& field = m_field[i];
     Bzr[i] = gz * (gr * field[0] + fr * field[1])
         + fz * (gr * field[2] + fr * field[3]);
   }
   // convert (Bz,Br) to (Bx,By,Bz)
-  float invr;
-  if (r > 0.0) {
-    invr = 1.0 / r;
-  } else {
-    invr = 0.0;
-  }
-  float c(x * invr);
-  float es(y * invr);
-  B[0] = Bzr[1] * c;
-  B[1] = Bzr[1] * es;
-  B[2] = Bzr[0];
+  const float invr = r > 0.0 ? static_cast<float>(1.0 / r) : 0.0F;
+  auto const c = static_cast<float>(x * static_cast<double>(invr));
+  auto const es = static_cast<float>(y * static_cast<double>(invr));
+  B[0] = static_cast<double>(Bzr[1] * c);
+  B[1] = static_cast<double>(Bzr[1] * es);
+  B[2] = static_cast<double>(Bzr[0]);
 
   // compute field derivatives if requested
-  if (deriv) {
-    float dBdz[2], dBdr[2];
-    for (int j = 0; j < 2; j++) {  // Bz, Br components
-      const float* field = m_field[j];
+  if (deriv != nullptr) {
+    std::array<float, 2> dBdz {};
+    std::array<float, 2> dBdr {};
+    for (std::size_t j = 0; j < 2; j++) {  // Bz, Br components
+      const auto& field = m_field[j];
       dBdz[j] =
           m_invz * (gr * (field[2] - field[0]) + fr * (field[3] - field[1]));
       dBdr[j] =
           m_invr * (gz * (field[1] - field[0]) + fz * (field[3] - field[2]));
     }
     // convert to cartesian coordinates
-    float cc = c * c;
-    float cs = c * es;
-    float ss = es * es;
-    float sinvr = es * invr;
-    float cinvr = c * invr;
-    deriv[0] = cc * dBdr[1] + sinvr * B[1];
-    deriv[1] = cs * dBdr[1] - cinvr * B[1];
-    deriv[2] = c * dBdz[1];
-    deriv[3] = cs * dBdr[1] - sinvr * B[0];
-    deriv[4] = ss * dBdr[1] + cinvr * B[0];
-    deriv[5] = es * dBdz[1];
-    deriv[6] = c * dBdr[0];
-    deriv[7] = es * dBdr[0];
-    deriv[8] = dBdz[0];
+    float const cc = c * c;
+    float const cs = c * es;
+    float const ss = es * es;
+    float const sinvr = es * invr;
+    float const cinvr = c * invr;
+    deriv[0] =
+        static_cast<double>(cc * dBdr[1]) + static_cast<double>(sinvr) * B[1];
+    deriv[1] =
+        static_cast<double>(cs * dBdr[1]) - static_cast<double>(cinvr) * B[1];
+    deriv[2] = static_cast<double>(c * dBdz[1]);
+    deriv[3] =
+        static_cast<double>(cs * dBdr[1]) - static_cast<double>(sinvr) * B[0];
+    deriv[4] =
+        static_cast<double>(ss * dBdr[1]) + static_cast<double>(cinvr) * B[0];
+    deriv[5] = static_cast<double>(es * dBdz[1]);
+    deriv[6] = static_cast<double>(c * dBdr[0]);
+    deriv[7] = static_cast<double>(es * dBdr[0]);
+    deriv[8] = static_cast<double>(dBdz[0]);
   }
 }
 

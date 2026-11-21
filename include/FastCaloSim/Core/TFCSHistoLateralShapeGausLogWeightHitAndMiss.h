@@ -10,9 +10,17 @@ class TFCSHistoLateralShapeGausLogWeightHitAndMiss
     : public TFCSHistoLateralShapeWeight
 {
 public:
-  TFCSHistoLateralShapeGausLogWeightHitAndMiss(const char* name = nullptr,
-                                               const char* title = nullptr);
+  explicit TFCSHistoLateralShapeGausLogWeightHitAndMiss(
+      const char* name = nullptr, const char* title = nullptr);
   ~TFCSHistoLateralShapeGausLogWeightHitAndMiss() override;
+  TFCSHistoLateralShapeGausLogWeightHitAndMiss(
+      const TFCSHistoLateralShapeGausLogWeightHitAndMiss&) = default;
+  TFCSHistoLateralShapeGausLogWeightHitAndMiss(
+      TFCSHistoLateralShapeGausLogWeightHitAndMiss&&) = default;
+  auto operator=(const TFCSHistoLateralShapeGausLogWeightHitAndMiss&)
+      -> TFCSHistoLateralShapeGausLogWeightHitAndMiss& = default;
+  auto operator=(TFCSHistoLateralShapeGausLogWeightHitAndMiss&&)
+      -> TFCSHistoLateralShapeGausLogWeightHitAndMiss& = default;
 
   /// weight the energy of one hit in order to generate fluctuations. If the hit
   /// energy is 0, discard the hit

@@ -4,10 +4,13 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <ostream>
 #include <utility>
+
+#include "FastCaloSim/Geometry/SubPos.h"
 
 struct Position
 {
@@ -39,30 +42,29 @@ struct CellData
   bool m_is_valid;
 };
 
-static_assert(std::is_trivially_copyable<CellData>::value,
+static_assert(std::is_trivially_copyable_v<CellData>,
               "CellData must be trivially copiable");
 
 class Cell
 {
 public:
-  enum SubPos
-  {
-    MID = 0,  // middle
-    ENT = 1,  // entrance
-    EXT = 2  // exit
-  };
-
   Cell()
+      : m_data {.m_id = static_cast<uint64_t>(-1),
+                .m_pos = {},
+                .m_layer = static_cast<uint32_t>(-1),
+                .m_isBarrel = false,
+                .m_isXYZ = false,
+                .m_isEtaPhiR = false,
+                .m_isEtaPhiZ = false,
+                .m_isRPhiZ = false,
+                .m_dx = 0,
+                .m_dy = 0,
+                .m_dz = 0,
+                .m_deta = 0,
+                .m_dphi = 0,
+                .m_dr = 0,
+                .m_is_valid = false}
   {
-    m_data.m_id = uint64_t(-1);
-    m_data.m_pos = {0, 0, 0, 0, 0, 0};
-    m_data.m_layer = uint32_t(-1);
-    m_data.m_isBarrel = false;
-    m_data.m_isXYZ = m_data.m_isEtaPhiR = m_data.m_isEtaPhiZ =
-        m_data.m_isRPhiZ = false;
-    m_data.m_dx = m_data.m_dy = m_data.m_dz = 0;
-    m_data.m_deta = m_data.m_dphi = m_data.m_dr = 0;
-    m_data.m_is_valid = false;
   }
 
   Cell(uint64_t id,
@@ -79,22 +81,22 @@ public:
        double deta,
        double dphi,
        double dr)
+      : m_data {.m_id = id,
+                .m_pos = pos,
+                .m_layer = layer,
+                .m_isBarrel = isBarrel,
+                .m_isXYZ = isXYZ,
+                .m_isEtaPhiR = isEtaPhiR,
+                .m_isEtaPhiZ = isEtaPhiZ,
+                .m_isRPhiZ = isRPhiZ,
+                .m_dx = dx,
+                .m_dy = dy,
+                .m_dz = dz,
+                .m_deta = deta,
+                .m_dphi = dphi,
+                .m_dr = dr,
+                .m_is_valid = true}
   {
-    m_data.m_id = id;
-    m_data.m_pos = pos;
-    m_data.m_layer = layer;
-    m_data.m_isBarrel = isBarrel;
-    m_data.m_isXYZ = isXYZ;
-    m_data.m_isEtaPhiR = isEtaPhiR;
-    m_data.m_isEtaPhiZ = isEtaPhiZ;
-    m_data.m_isRPhiZ = isRPhiZ;
-    m_data.m_dx = dx;
-    m_data.m_dy = dy;
-    m_data.m_dz = dz;
-    m_data.m_deta = deta;
-    m_data.m_dphi = dphi;
-    m_data.m_dr = dr;
-    m_data.m_is_valid = true;
   }
 
   auto id() const -> uint64_t { return m_data.m_id; }
@@ -104,7 +106,7 @@ public:
   auto eta() const -> double { return m_data.m_pos.m_eta; }
   auto phi() const -> double { return m_data.m_pos.m_phi; }
   auto r() const -> double { return m_data.m_pos.m_r; }
-  auto layer() const -> uint32_t { return m_data.m_layer; }
+  auto layer() const -> std::size_t { return m_data.m_layer; }
   auto isBarrel() const -> bool { return m_data.m_isBarrel; }
   auto isXYZ() const -> bool { return m_data.m_isXYZ; }
   auto isEtaPhiR() const -> bool { return m_data.m_isEtaPhiR; }
@@ -143,27 +145,27 @@ public:
     return z() < 0 ? z() - m_data.m_dz * 0.5 : z() + m_data.m_dz * 0.5;
   }
 
-  auto inline r(SubPos subpos) const -> double
+  auto r(FastCaloSim::SubPos subpos) const -> double
   {
     switch (subpos) {
-      case SubPos::ENT:
+      case FastCaloSim::SubPos::ENT:
         return rent();
-      case SubPos::MID:
+      case FastCaloSim::SubPos::MID:
         return r();
-      case SubPos::EXT:
+      case FastCaloSim::SubPos::EXT:
         return rext();
     }
     std::unreachable();
   }
 
-  auto inline z(SubPos subpos) const -> double
+  auto z(FastCaloSim::SubPos subpos) const -> double
   {
     switch (subpos) {
-      case SubPos::ENT:
+      case FastCaloSim::SubPos::ENT:
         return zent();
-      case SubPos::MID:
+      case FastCaloSim::SubPos::MID:
         return z();
-      case SubPos::EXT:
+      case FastCaloSim::SubPos::EXT:
         return zext();
     }
     std::unreachable();
@@ -178,7 +180,7 @@ public:
     // subtraction is exact (Sterbenz lemma), so the result is identical.
     if (angle >= two_pi && angle < 2 * two_pi) {
       angle -= two_pi;
-    } else if (!(angle > -two_pi && angle < two_pi)) {
+    } else if (angle <= -two_pi || angle >= two_pi) {
       angle = std::fmod(angle, two_pi);
     }
     if (angle < 0) {
@@ -200,13 +202,13 @@ public:
   auto boundary_proximity(const Position& pos) const -> double
   {
     if (m_data.m_isXYZ) {
-      double dx = std::abs(pos.m_x - x());
-      double dy = std::abs(pos.m_y - y());
+      double const dx = std::abs(pos.m_x - x());
+      double const dy = std::abs(pos.m_y - y());
       return std::max(dx - m_data.m_dx / 2, dy - m_data.m_dy / 2);
     }
     if (m_data.m_isEtaPhiR || m_data.m_isEtaPhiZ || m_data.m_isRPhiZ) {
-      double d_eta = std::abs(pos.m_eta - eta());
-      double d_phi = std::abs(norm_angle(pos.m_phi - phi()));
+      double const d_eta = std::abs(pos.m_eta - eta());
+      double const d_phi = std::abs(norm_angle(pos.m_phi - phi()));
       return std::max(d_eta / m_data.m_deta, d_phi / m_data.m_dphi) - 0.5;
     }
     throw std::runtime_error("Invalid coordinate system");

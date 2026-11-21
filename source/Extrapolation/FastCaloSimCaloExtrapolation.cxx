@@ -5,6 +5,7 @@
 #include <format>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "FastCaloSim/Extrapolation/FastCaloSimCaloExtrapolation.h"
 
@@ -48,9 +49,9 @@ auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track)
     const Vector3D& position = point->position;
     const bool withinPrevious = i > 0
         && std::abs(position.z())
-            < kIDCaloBoundary[i - 1].halfLength + tolerance;
+            < kIDCaloBoundary[i - 1].half_length() + tolerance;
     const bool withinNext = i + 1 < kIDCaloBoundary.size()
-        && position.perp() < kIDCaloBoundary[i + 1].radius + tolerance;
+        && position.perp() < kIDCaloBoundary[i + 1].r() + tolerance;
     if (withinPrevious || withinNext) {
       continue;
     }
@@ -61,15 +62,16 @@ auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track)
   return boundary;
 }
 
-/// The three cylinders of a layer, indexed by Cell::SubPos
+/// The three cylinders of a layer, indexed by FastCaloSim::SubPos
 template<typename CylinderOfSubPos>
-auto perSubPos(CylinderOfSubPos&& cylinder) -> std::array<Cylinder, 3>
+auto perSubPos(const CylinderOfSubPos& cylinder) -> std::array<Cylinder, 3>
 {
-  static_assert(Cell::SubPos::MID == 0 && Cell::SubPos::ENT == 1
-                && Cell::SubPos::EXT == 2);
-  return {cylinder(Cell::SubPos::MID),
-          cylinder(Cell::SubPos::ENT),
-          cylinder(Cell::SubPos::EXT)};
+  static_assert(std::to_underlying(FastCaloSim::SubPos::MID) == 0
+                && std::to_underlying(FastCaloSim::SubPos::ENT) == 1
+                && std::to_underlying(FastCaloSim::SubPos::EXT) == 2);
+  return {cylinder(FastCaloSim::SubPos::MID),
+          cylinder(FastCaloSim::SubPos::ENT),
+          cylinder(FastCaloSim::SubPos::EXT)};
 }
 
 /// The cylinders through the middle, entrance and exit of the calorimeter
@@ -81,58 +83,69 @@ class LayerCylinders
 {
 public:
   LayerCylinders(const CaloGeo& geo, const Vector3D& boundary)
-      : m_geo(geo)
-      , m_boundary {boundary.x(),
-                    boundary.y(),
-                    boundary.z(),
-                    boundary.eta(),
-                    boundary.phi(),
-                    boundary.perp()}
-      , m_farPositive {0, 0, 0, 1000, boundary.phi(), 0}
-      , m_farNegative {0, 0, 0, -1000, boundary.phi(), 0}
+      : m_geo(&geo)
+      , m_boundary {.m_x = boundary.x(),
+                    .m_y = boundary.y(),
+                    .m_z = boundary.z(),
+                    .m_eta = boundary.eta(),
+                    .m_phi = boundary.phi(),
+                    .m_r = boundary.perp()}
+      , m_farPositive {.m_x = 0,
+                       .m_y = 0,
+                       .m_z = 0,
+                       .m_eta = 1000,
+                       .m_phi = boundary.phi(),
+                       .m_r = 0}
+      , m_farNegative {.m_x = 0,
+                       .m_y = 0,
+                       .m_z = 0,
+                       .m_eta = -1000,
+                       .m_phi = boundary.phi(),
+                       .m_r = 0}
       , m_positiveSide(boundary.eta() > 0)
   {
   }
 
-  /// The cylinders of the layer, indexed by Cell::SubPos
-  auto of(unsigned int layer) -> std::array<Cylinder, 3>
+  /// The cylinders of the layer, indexed by FastCaloSim::SubPos
+  auto of(std::size_t layer) -> std::array<Cylinder, 3>
   {
-    const Cell cell = m_geo.get_cell(layer, m_boundary);
+    const Cell cell = m_geo->get_cell(layer, m_boundary);
 
-    if (m_geo.is_barrel(layer)) {
+    if (m_geo->is_barrel(layer)) {
       if (layer < 4) {
         // EMB: closed at the front of EME1 on the particle's side
         const double halfLength = embHalfLength();
-        return perSubPos(
-            [&](Cell::SubPos subpos)
-            { return Cylinder(std::abs(cell.r(subpos)), halfLength); });
+        return perSubPos([&](FastCaloSim::SubPos subpos) -> Cylinder
+                         { return {std::abs(cell.r(subpos)), halfLength}; });
       }
       // Tile: closed at the mean |z| of the layer's ends on both sides
-      const Cell positiveEnd = m_geo.get_cell(layer, m_farPositive);
-      const Cell negativeEnd = m_geo.get_cell(layer, m_farNegative);
+      const Cell positiveEnd = m_geo->get_cell(layer, m_farPositive);
+      const Cell negativeEnd = m_geo->get_cell(layer, m_farNegative);
       return perSubPos(
-          [&](Cell::SubPos subpos)
+          [&](FastCaloSim::SubPos subpos) -> Cylinder
           {
-            return Cylinder(std::abs(cell.r(subpos)),
-                            0.5
-                                * (std::abs(positiveEnd.z(subpos))
-                                   + std::abs(negativeEnd.z(subpos))));
+            return {std::abs(cell.r(subpos)),
+                    0.5
+                        * (std::abs(positiveEnd.z(subpos))
+                           + std::abs(negativeEnd.z(subpos)))};
           });
     }
 
     // Out to the radius at the layer's smallest |eta| on the particle's side
     const double eta = m_positiveSide
-        ? m_geo.min_eta(layer, CaloGeo::DetectorSide::kEtaPositive)
-        : m_geo.max_eta(layer, CaloGeo::DetectorSide::kEtaNegative);
+        ? m_geo->min_eta(layer, CaloGeo::DetectorSide::kEtaPositive)
+        : m_geo->max_eta(layer, CaloGeo::DetectorSide::kEtaNegative);
     const double theta = 2 * std::atan(std::exp(-eta));
     return perSubPos(
-        [&](Cell::SubPos subpos)
+        [&](FastCaloSim::SubPos subpos) -> Cylinder
         {
-          const auto halfLength = static_cast<float>(std::abs(cell.z(subpos)));
+          // The half length is rounded to single precision first
+          const auto halfLength =
+              static_cast<double>(static_cast<float>(std::abs(cell.z(subpos))));
           const double radius = std::abs(
               halfLength
               * std::sqrt((1 / (std::cos(theta) * std::cos(theta))) - 1));
-          return Cylinder(radius, halfLength);
+          return {radius, halfLength};
         });
   }
 
@@ -140,16 +153,18 @@ private:
   /// The z of the front of EME1 on the particle's side, looked up once
   auto embHalfLength() -> double
   {
-    if (!m_embHalfLength) {
-      m_embHalfLength =
-          std::abs(m_geo.zpos(5,
-                              m_positiveSide ? m_farPositive : m_farNegative,
-                              Cell::SubPos::ENT));
+    if (m_embHalfLength) {
+      return *m_embHalfLength;
     }
-    return *m_embHalfLength;
+    const double halfLength =
+        std::abs(m_geo->zpos(5,
+                             m_positiveSide ? m_farPositive : m_farNegative,
+                             FastCaloSim::SubPos::ENT));
+    m_embHalfLength = halfLength;
+    return halfLength;
   }
 
-  const CaloGeo& m_geo;
+  const CaloGeo* m_geo;
   /// The position on the ID-calo boundary
   Position m_boundary;
   /// Positions far out on either side of the detector, at the particle's phi
@@ -167,9 +182,9 @@ auto scaleOntoLayer(const Vector3D& position,
 {
   double scale = 1;
   if (isBarrel && position.perp() > 1e-6) {
-    scale = cylinder.radius / position.perp();
+    scale = cylinder.r() / position.perp();
   } else if (!isBarrel && std::abs(position.z()) > 1e-6) {
-    scale = cylinder.halfLength / std::abs(position.z());
+    scale = cylinder.half_length() / std::abs(position.z());
   }
   return scale * position;
 }
@@ -197,7 +212,7 @@ void FastCaloSimCaloExtrapolation::extrapolate(
     const TFCSTruthState* truth,
     const std::vector<G4FieldTrack>& caloSteps) const
 {
-  const auto reportFailure = [&](const std::string& what)
+  const auto reportFailure = [&](const std::string& what) -> void
   {
     const std::string message = what + " for " + describe(*truth);
     if (truth->Pt() < kWarningPtLimit) {
@@ -210,7 +225,8 @@ void FastCaloSimCaloExtrapolation::extrapolate(
   std::vector<TrackPoint> track;
   track.reserve(caloSteps.size());
   for (const G4FieldTrack& step : caloSteps) {
-    track.push_back({step.GetPosition(), step.GetMomentumDir()});
+    track.push_back(
+        {.position = step.GetPosition(), .direction = step.GetMomentumDir()});
   }
 
   // ID-calo boundary
@@ -252,13 +268,14 @@ void FastCaloSimCaloExtrapolation::extrapolate(
 
   // Calorimeter layers
   LayerCylinders layerCylinders(*m_geo, position);
-  for (unsigned int layer = 0; layer < m_geo->n_layers(); ++layer) {
+  for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
     const bool isBarrel = m_geo->is_barrel(layer);
     const std::array<Cylinder, 3> cylinders = layerCylinders.of(layer);
-    for (const auto subpos :
-         {Cell::SubPos::MID, Cell::SubPos::ENT, Cell::SubPos::EXT})
+    for (const auto subpos : {FastCaloSim::SubPos::MID,
+                              FastCaloSim::SubPos::ENT,
+                              FastCaloSim::SubPos::EXT})
     {
-      const Cylinder& cylinder = cylinders[subpos];
+      const Cylinder& cylinder = cylinders[std::to_underlying(subpos)];
       const auto point = extrapolateToCylinder(track, cylinder);
       if (!point) {
         reportFailure(std::format("Failed extrapolation to layer {} subpos {}",
@@ -268,13 +285,13 @@ void FastCaloSimCaloExtrapolation::extrapolate(
       }
       const Vector3D onLayer =
           scaleOntoLayer(point->position, cylinder, isBarrel);
-      result.set_OK(layer, subpos, true);
+      result.set_OK(layer, subpos, /*val=*/true);
       result.set_eta(layer, subpos, onLayer.eta());
       result.set_phi(layer, subpos, onLayer.phi());
       result.set_r(layer, subpos, onLayer.perp());
       result.set_z(layer, subpos, onLayer.z());
       FCS_MSG_DEBUG("Layer "
-                    << layer << " subpos " << subpos
+                    << layer << " subpos " << static_cast<int>(subpos)
                     << " at eta=" << onLayer.eta() << " phi=" << onLayer.phi()
                     << " r=" << onLayer.perp() << " z=" << onLayer.z());
     }

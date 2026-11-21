@@ -16,30 +16,32 @@ class CaloGeo;
 namespace lwt
 {
 class LightweightGraph;
-}
+}  // namespace lwt
 
+// No copy and move: they are implicitly deleted by the std::mutex member
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSEnergyAndHitGANV2 : public TFCSParametrizationBinnedChain
 {
 public:
-  TFCSEnergyAndHitGANV2(const char* name = nullptr,
-                        const char* title = nullptr,
-                        CaloGeo* geo = nullptr);
+  explicit TFCSEnergyAndHitGANV2(const char* name = nullptr,
+                                 const char* title = nullptr,
+                                 CaloGeo* geo = nullptr);
 
   void set_geometry(CaloGeo* geo) override
   {
     m_geo = geo;
     TFCSParametrizationBase::set_geometry(geo);
-  };
+  }
 
   ~TFCSEnergyAndHitGANV2() override;
 
-  auto is_match_Ekin_bin(int /*Ekin_bin*/) const -> bool override
+  auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {
     return true;
-  };
-  auto is_match_calosample(int calosample) const -> bool override;
-  auto is_match_all_Ekin_bin() const -> bool override { return true; };
-  auto is_match_all_calosample() const -> bool override { return false; };
+  }
+  auto is_match_calosample(std::size_t calosample) const -> bool override;
+  auto is_match_all_Ekin_bin() const -> bool override { return true; }
+  auto is_match_all_calosample() const -> bool override { return false; }
 
   /// Status bit for chain persistency
   enum FCSGANfreemem
@@ -49,9 +51,9 @@ public:
                  ///< m_input should be freed after reading in athena
   };
 
-  auto GANfreemem() const -> bool { return TestBit(kGANfreemem); };
-  void set_GANfreemem() { SetBit(kGANfreemem); };
-  void reset_GANfreemem() { ResetBit(kGANfreemem); };
+  auto GANfreemem() const -> bool { return TestBit(kGANfreemem); }
+  void set_GANfreemem() { SetBit(kGANfreemem); }
+  void reset_GANfreemem() { ResetBit(kGANfreemem); }
 
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
@@ -61,34 +63,37 @@ public:
                  ///< should only be scaled by the GAN
   };
 
-  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); };
-  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); };
-  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); };
+  auto OnlyScaleEnergy() const -> bool { return TestBit(kOnlyScaleEnergy); }
+  void set_OnlyScaleEnergy() { SetBit(kOnlyScaleEnergy); }
+  void reset_OnlyScaleEnergy() { ResetBit(kOnlyScaleEnergy); }
 
   /// use the layer to be done as binning of the GAN chain
   auto get_bin(TFCSSimulationState& simulstate,
-               const TFCSTruthState*,
-               const TFCSExtrapolationState*) const -> int override
+               const TFCSTruthState* /*unused*/,
+               const TFCSExtrapolationState* /*unused*/) const
+      -> std::optional<std::size_t> override
   {
-    return simulstate.getAuxInfo<int>("GANlayer"_FCShash);
-  };
+    // The layer is stored as int, it is a key of the (persistent) binning
+    return static_cast<std::size_t>(
+        simulstate.getAuxInfo<int>("GANlayer"_FCShash));
+  }
   auto get_variable_text(TFCSSimulationState& simulstate,
-                         const TFCSTruthState*,
-                         const TFCSExtrapolationState*) const
+                         const TFCSTruthState* /*unused*/,
+                         const TFCSExtrapolationState* /*unused*/) const
       -> const std::string override;
 
-  auto get_nr_of_init(unsigned int bin) const -> unsigned int;
-  void set_nr_of_init(unsigned int bin, unsigned int ninit);
+  auto get_nr_of_init(std::size_t bin) const -> unsigned int;
+  void set_nr_of_init(std::size_t bin, unsigned int ninit);
 
   auto get_Binning() const -> const TFCSGANXMLParameters::Binning&
   {
     return m_param.GetBinning();
-  };
+  }
   auto get_ExtrapolationWeights() const
       -> const TFCSGANEtaSlice::ExtrapolatorWeights&
   {
     return m_slice->GetExtrapolatorWeights();
-  };
+  }
 
   auto initializeNetwork(int const& pid,
                          int const& etaMin,
@@ -114,7 +119,7 @@ protected:
                                 std::string FastCaloGANInputFolderName);
 
 private:
-  static auto GetBinsInFours(double const bins) -> int;
+  static auto GetBinsInFours(double bins) -> int;
   auto GetAlphaBinsForRBin(const TAxis* x, int ix, int yBinNum) const -> int;
 
   std::vector<int> m_bin_ninit;

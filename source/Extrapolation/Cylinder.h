@@ -23,7 +23,7 @@ enum class Location
 struct Intersections
 {
   std::array<Vector3D, 2> points;
-  int count = 0;
+  std::size_t count = 0;
 };
 
 /// @brief A closed cylinder around the z axis, centered at the origin
@@ -39,6 +39,12 @@ struct Cylinder
 
   float radius;
   float halfLength;
+
+  /// The dimensions for computations in double precision
+  auto r() const -> double { return static_cast<double>(radius); }
+  auto half_length() const -> double { return static_cast<double>(halfLength); }
+  /// The squared radius, computed in single precision as it always has been
+  auto r2() const -> double { return static_cast<double>(radius * radius); }
 
   /// @brief Where the point lies; points within 1 mm of the surface are on it
   auto locate(const Vector3D& point) const -> Location;
