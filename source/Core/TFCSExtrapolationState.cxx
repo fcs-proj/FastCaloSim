@@ -17,30 +17,21 @@ void TFCSExtrapolationState::Print(Option_t* /*option*/) const
                << m_IDCaloBoundary_eta << " phi=" << m_IDCaloBoundary_phi
                << " r=" << m_IDCaloBoundary_r << " z=" << m_IDCaloBoundary_z);
 
-  // Iterate over the unordered_map to print layer/subpos info
-  for (const auto& [key, ok] : m_CaloOK) {
-    const auto& [layer, subpos] = key;
-    if (ok) {
-      FCS_MSG_INFO("  layer " << layer << " subpos " << static_cast<int>(subpos)
-                              << " MID eta=" << m_etaCalo.at(key) << " phi="
-                              << m_phiCalo.at(key) << " r=" << m_rCalo.at(key)
-                              << " z=" << m_zCalo.at(key));
+  for (std::size_t i = 0; i < m_positions.size(); ++i) {
+    const LayerPosition& pos = m_positions[i];
+    if (pos.ok) {
+      FCS_MSG_INFO("  layer " << i / NumSubPos << " subpos " << i % NumSubPos
+                              << " MID eta=" << pos.eta << " phi=" << pos.phi
+                              << " r=" << pos.r << " z=" << pos.z);
     }
   }
 }
 
 void TFCSExtrapolationState::clear()
 {
-  // Drop all stored layer/subpos entries. The getters return the default
-  // values (OK=false, eta/phi=-999, r/z/d/detaBorder=0) for entries that are
-  // not stored, so no pre-filling is needed.
-  m_CaloOK.clear();
-  m_etaCalo.clear();
-  m_phiCalo.clear();
-  m_rCalo.clear();
-  m_zCalo.clear();
-  m_dCalo.clear();
-  m_distetaCaloBorder.clear();
+  // Drop all stored positions: the getters return the defaults of a
+  // sub-position that was not reached for positions that are not stored
+  m_positions.clear();
 
   // Reset IDCaloBoundary variables
   m_IDCaloBoundary_eta = -999;
