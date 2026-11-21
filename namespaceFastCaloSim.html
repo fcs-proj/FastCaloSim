@@ -110,6 +110,16 @@
               <span class="m-doc-wrap-bumper">auto <a href="#adc6467c6456ba754dbc9bd579f8d2e1b" class="m-doc">set_log_sink</a>(</span><span class="m-doc-wrap">std::shared_ptr&lt;<a href="classFastCaloSim_1_1LogSink.html" class="m-doc">LogSink</a>&gt; sink) -&gt; FASTCALOSIM_EXPORT void</span>
             </dt>
             <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#abc72584318f59288a910a73f61e04af3" class="m-doc">dist000</a>(</span><span class="m-doc-wrap">double r,
+              double z) -&gt; float</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#ad7fb42bd4e64dcae8f8ddd8639a534f6" class="m-doc">eta_jakobi</a>(</span><span class="m-doc-wrap">T eta) -&gt; float</span>
+            </dt>
+            <dd></dd>
           </dl>
         </section>
         <section>
@@ -130,6 +140,24 @@
               <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="MLogging_8h.html">&lt;FastCaloSim/Core/MLogging.h&gt;</a></div>
             </h3>
 <p>Replace the log sink for all threads; nullptr restores the default sink, which writes each message as one decorated line to std::cout.</p>
+          </div></section>
+          <section class="m-doc-details" id="abc72584318f59288a910a73f61e04af3"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#abc72584318f59288a910a73f61e04af3" class="m-doc-self">dist000</a>(</span><span class="m-doc-wrap">double r,
+              double z) -&gt; float</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSLateralShapeParametrizationHitBase_8h.html">&lt;FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h&gt;</a></div>
+            </h3>
+<p>Distance from the origin of a point at radius r and position z along the beam</p>
+          </div></section>
+          <section class="m-doc-details" id="ad7fb42bd4e64dcae8f8ddd8639a534f6"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSLateralShapeParametrizationHitBase_8h.html">&lt;FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;typename T&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ad7fb42bd4e64dcae8f8ddd8639a534f6" class="m-doc-self">eta_jakobi</a>(</span><span class="m-doc-wrap">T eta) -&gt; float</span></span>
+            </h3>
+<p>|dtheta/deta| = 1/cosh(eta). Together with dist000 it converts a distance in eta at the given eta into mm: delta_mm = delta_eta * eta_jakobi * dist000. Evaluated in the precision of the argument (float or double).</p>
           </div></section>
         </section>
       </div>
