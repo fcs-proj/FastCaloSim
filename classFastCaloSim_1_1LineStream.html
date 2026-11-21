@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TFCS1DFunction_Numeric&lt;uint16_t, Tfloat&gt; class | FastCaloSim</title>
+  <title>FastCaloSim::LineStream class | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,49 +49,71 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCS1DFunctionTemplateHelpers_8h.html">&lt;TFCS1DFunctionTemplateHelpers.h&gt;</a></div>
-          <div class="m-doc-template">template&lt;typename Tfloat&gt;</div>
-          TFCS1DFunction_Numeric&lt;uint16_t, Tfloat&gt; <span class="m-thin">class</span>
+          <span class="m-breadcrumb"><a href="namespaceFastCaloSim.html">FastCaloSim</a>::<wbr/></span>LineStream <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="MLogging_8h.html">&lt;MLogging.h&gt;</a></div>
         </h1>
-        <p>Converter functions to store/retrieve float numbers in integers.</p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
             <li>
               Reference
               <ul>
-                <li><a href="#pub-static-attribs">Public static variables</a></li>
-                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="pub-static-attribs">
-          <h2><a href="#pub-static-attribs">Public static variables</a></h2>
+<p>Collects the text of one <a href="MLogging_8h.html#aa2fc19ef18ff93c2c0235edb22fce456" class="m-doc">FCS_<wbr />MSG(lvl)</a> &lt;&lt; ... statement and adds it to the open line of this thread when the statement ends. A statement nested in another one (a function called in the expression that streams itself) therefore finishes first and does not mix with the outer text.</p>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
-            <dt id="a918d3c515ae13df959615a0af3fe0ba3">
-              static uint16_t <a href="#a918d3c515ae13df959615a0af3fe0ba3" class="m-doc-self">MaxValue</a> <span class="m-label m-flat m-primary">constexpr</span>
+            <dt>
+              struct <a href="structFastCaloSim_1_1LineStream_1_1End.html" class="m-doc">End</a>
+            </dt>
+            <dd>Streamed by END_FCS_MSG: the line ends with this statement.</dd>
+          </dl>
+        </section>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
+          <dl class="m-doc">
+            <dt id="a312d2a29486fb769cf56eb939ae41d5e">
+              <span class="m-doc-wrap-bumper"><a href="#a312d2a29486fb769cf56eb939ae41d5e" class="m-doc-self">LineStream</a>(</span><span class="m-doc-wrap">const <a href="classFastCaloSim_1_1MLogging.html" class="m-doc">MLogging</a>* owner,
+              <a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
+              const char* file,
+              int line,
+              bool active)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="af0754b4924d42e7681e79edb7c56ec37">
-              static Tfloat <a href="#af0754b4924d42e7681e79edb7c56ec37" class="m-doc-self">MaxValueFloat</a> <span class="m-label m-flat m-primary">constexpr</span>
+            <dt id="aa8449abfedaad5788edebc5d4446b614">
+              <span class="m-doc-wrap-bumper"><a href="#aa8449abfedaad5788edebc5d4446b614" class="m-doc-self">LineStream</a>(</span><span class="m-doc-wrap">const <a href="classFastCaloSim_1_1LineStream.html" class="m-doc">LineStream</a>&amp;) <span class="m-label m-flat m-danger">deleted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a4e3563d6835a7435ea65074cbaf9e2a9">
+              <span class="m-doc-wrap-bumper"><a href="#a4e3563d6835a7435ea65074cbaf9e2a9" class="m-doc-self">~LineStream</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
         </section>
-        <section id="pub-static-methods">
-          <h2><a href="#pub-static-methods">Public static functions</a></h2>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="ac9de1ad2896d1860eb492071fb31f034">
-              <span class="m-doc-wrap-bumper">static auto <a href="#ac9de1ad2896d1860eb492071fb31f034" class="m-doc-self">MaxCeilOnlyForInt</a>(</span><span class="m-doc-wrap">const Tfloat value) -&gt; uint16_t</span>
+            <dt id="ab6fa693a1a10c4120a37254354bcce76">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab6fa693a1a10c4120a37254354bcce76" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classFastCaloSim_1_1LineStream.html" class="m-doc">LineStream</a>&amp;) -&gt; LineStream &amp; <span class="m-label m-flat m-danger">deleted</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a110c1861497c8ffd6bf4ed118e5d3922">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a110c1861497c8ffd6bf4ed118e5d3922" class="m-doc-self">ExpandToMaxRange</a>(</span><span class="m-doc-wrap">const Tfloat value) -&gt; uint16_t</span>
+            <dt id="a42fde6002ca05f0e1e6606c78b225084">
+              <div class="m-doc-template">template&lt;typename T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a42fde6002ca05f0e1e6606c78b225084" class="m-doc-self">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">const T&amp; value) -&gt; LineStream &amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a1304bc933aae2612388d4a5a40fb4a06">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a1304bc933aae2612388d4a5a40fb4a06" class="m-doc-self">ToNormalizedRange</a>(</span><span class="m-doc-wrap">const uint16_t value) -&gt; Tfloat</span>
+            <dt id="a95381e506c4bae8924e58bc2118623b9">
+              <span class="m-doc-wrap-bumper">auto <a href="#a95381e506c4bae8924e58bc2118623b9" class="m-doc-self">operator&lt;&lt;</a>(</span><span class="m-doc-wrap">std::ostream&amp;(*)(std::ostream&amp;) manipulator) -&gt; LineStream &amp;</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a6151a91b6f3b17b04c1a4931b27a29d3">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6151a91b6f3b17b04c1a4931b27a29d3" class="m-doc-self">operator&lt;&lt;</a>(</span><span class="m-doc-wrap"><a href="structFastCaloSim_1_1LineStream_1_1End.html" class="m-doc">End</a> end) -&gt; LineStream &amp;</span>
             </dt>
             <dd><span></span></dd>
           </dl>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TFCS1DFunction_Numeric&lt;uint32_t, Tfloat&gt; class | FastCaloSim</title>
+  <title>FastCaloSim::LineStream::End struct | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,49 +49,26 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCS1DFunctionTemplateHelpers_8h.html">&lt;TFCS1DFunctionTemplateHelpers.h&gt;</a></div>
-          <div class="m-doc-template">template&lt;typename Tfloat&gt;</div>
-          TFCS1DFunction_Numeric&lt;uint32_t, Tfloat&gt; <span class="m-thin">class</span>
+          <span class="m-breadcrumb"><a href="namespaceFastCaloSim.html">FastCaloSim</a>::<wbr/></span><span class="m-breadcrumb"><a href="classFastCaloSim_1_1LineStream.html">LineStream</a>::<wbr/></span>End <span class="m-thin">struct</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="MLogging_8h.html">&lt;MLogging.h&gt;</a></div>
         </h1>
-        <p>Converter functions to store/retrieve float numbers in integers.</p>
+        <p>Streamed by END_FCS_MSG: the line ends with this statement.</p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
             <li>
               Reference
               <ul>
-                <li><a href="#pub-static-attribs">Public static variables</a></li>
-                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#pub-attribs">Public variables</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="pub-static-attribs">
-          <h2><a href="#pub-static-attribs">Public static variables</a></h2>
+        <section id="pub-attribs">
+          <h2><a href="#pub-attribs">Public variables</a></h2>
           <dl class="m-doc">
-            <dt id="a421805c5d678e0dcf0a23832fd62a5c6">
-              static uint32_t <a href="#a421805c5d678e0dcf0a23832fd62a5c6" class="m-doc-self">MaxValue</a> <span class="m-label m-flat m-primary">constexpr</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a5a4f6febf25f02e82c330b5ceecf146c">
-              static Tfloat <a href="#a5a4f6febf25f02e82c330b5ceecf146c" class="m-doc-self">MaxValueFloat</a> <span class="m-label m-flat m-primary">constexpr</span>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section id="pub-static-methods">
-          <h2><a href="#pub-static-methods">Public static functions</a></h2>
-          <dl class="m-doc">
-            <dt id="a9c3f06760fdd813cac6eda274623a672">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a9c3f06760fdd813cac6eda274623a672" class="m-doc-self">MaxCeilOnlyForInt</a>(</span><span class="m-doc-wrap">const Tfloat value) -&gt; uint32_t</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a583500a2335cc2bc1ace78e6081a23de">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a583500a2335cc2bc1ace78e6081a23de" class="m-doc-self">ExpandToMaxRange</a>(</span><span class="m-doc-wrap">const Tfloat value) -&gt; uint32_t</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="aff24de6eb7fa61b6d48ad232cf83410d">
-              <span class="m-doc-wrap-bumper">static auto <a href="#aff24de6eb7fa61b6d48ad232cf83410d" class="m-doc-self">ToNormalizedRange</a>(</span><span class="m-doc-wrap">const uint32_t value) -&gt; Tfloat</span>
+            <dt id="a01bf44b8d8392589fa8ca7186c8c65f6">
+              bool <a href="#a01bf44b8d8392589fa8ca7186c8c65f6" class="m-doc-self">active</a>
             </dt>
             <dd><span></span></dd>
           </dl>

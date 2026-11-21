@@ -61,6 +61,7 @@
                 <li><a href="#namespaces">Namespaces</a></li>
                 <li><a href="#nested-classes">Classes</a></li>
                 <li><a href="#typedef-members">Typedefs</a></li>
+                <li><a href="#func-members">Functions</a></li>
               </ul>
             </li>
           </ul>
@@ -76,6 +77,18 @@
           <h2><a href="#nested-classes">Classes</a></h2>
           <dl class="m-doc">
             <dt>
+              class <a href="classFastCaloSim_1_1LineStream.html" class="m-doc">LineStream</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a href="classFastCaloSim_1_1LogMessage.html" class="m-doc">LogMessage</a>
+            </dt>
+            <dd></dd>
+            <dt>
+              class <a href="classFastCaloSim_1_1LogSink.html" class="m-doc">LogSink</a>
+            </dt>
+            <dd></dd>
+            <dt>
               class <a href="classFastCaloSim_1_1MLogging.html" class="m-doc">MLogging</a>
             </dt>
             <dd><span></span></dd>
@@ -90,6 +103,15 @@
             <dd><span></span></dd>
           </dl>
         </section>
+        <section id="func-members">
+          <h2><a href="#func-members">Functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#adc6467c6456ba754dbc9bd579f8d2e1b" class="m-doc">set_log_sink</a>(</span><span class="m-doc-wrap">std::shared_ptr&lt;<a href="classFastCaloSim_1_1LogSink.html" class="m-doc">LogSink</a>&gt; sink) -&gt; FASTCALOSIM_EXPORT void</span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
         <section>
           <h2>Typedef documentation</h2>
           <section class="m-doc-details" id="a89acd61ce7931a5f1f0101a02edd684c"><div>
@@ -98,6 +120,16 @@
               <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="MLogging_8h.html">&lt;FastCaloSim/Core/MLogging.h&gt;</a></div>
             </h3>
             <p><span></span></p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="adc6467c6456ba754dbc9bd579f8d2e1b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">FASTCALOSIM_EXPORT void FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#adc6467c6456ba754dbc9bd579f8d2e1b" class="m-doc-self">set_log_sink</a>(</span><span class="m-doc-wrap">std::shared_ptr&lt;<a href="classFastCaloSim_1_1LogSink.html" class="m-doc">LogSink</a>&gt; sink)</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="MLogging_8h.html">&lt;FastCaloSim/Core/MLogging.h&gt;</a></div>
+            </h3>
+<p>Replace the log sink for all threads; nullptr restores the default sink, which writes each message as one decorated line to std::cout.</p>
           </div></section>
         </section>
       </div>

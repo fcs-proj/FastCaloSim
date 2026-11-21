@@ -115,9 +115,9 @@
         <section id="pub-static-methods">
           <h2><a href="#pub-static-methods">Public static functions</a></h2>
           <dl class="m-doc">
-            <dt id="ad1f85b16a81fdccec138e41d28ee6757">
-              <span class="m-doc-wrap-bumper">static auto <a href="#ad1f85b16a81fdccec138e41d28ee6757" class="m-doc-self">startMsg</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
-              const std::string&amp; file,
+            <dt id="a857e7c133b408e14b9a2bb4632edf0e5">
+              <span class="m-doc-wrap-bumper">static auto <a href="#a857e7c133b408e14b9a2bb4632edf0e5" class="m-doc-self">startMsg</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
+              std::string_view file,
               int line) -&gt; std::string</span>
             </dt>
             <dd>Make a message to decorate the start of logging.</dd>
@@ -130,10 +130,10 @@
               <span class="m-doc-wrap-bumper"><a href="#a580c701ca2313944e1966ccf60c1f1d3" class="m-doc-self">MLogging</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd>Constructor.</dd>
-            <dt id="ae3133d2944a30f1bf632f274d4aca2f5">
-              <span class="m-doc-wrap-bumper"><a href="#ae3133d2944a30f1bf632f274d4aca2f5" class="m-doc-self">MLogging</a>(</span><span class="m-doc-wrap">const <a href="classFastCaloSim_1_1MLogging.html" class="m-doc">MLogging</a>&amp; other)</span>
+            <dt id="a2374d399227fdb55486d652b33c8ea17">
+              <span class="m-doc-wrap-bumper"><a href="#a2374d399227fdb55486d652b33c8ea17" class="m-doc-self">MLogging</a>(</span><span class="m-doc-wrap">const <a href="classFastCaloSim_1_1MLogging.html" class="m-doc">MLogging</a>&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
-            <dd>Copy constructor.</dd>
+            <dd><span></span></dd>
             <dt id="a5a40b712d072c3ea93e3f827c2db5ee7">
               <span class="m-doc-wrap-bumper"><a href="#a5a40b712d072c3ea93e3f827c2db5ee7" class="m-doc-self">~MLogging</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
@@ -143,10 +143,10 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="a3537ef621bb33b5f43caf78f91e68ed8">
-              <span class="m-doc-wrap-bumper">auto <a href="#a3537ef621bb33b5f43caf78f91e68ed8" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classFastCaloSim_1_1MLogging.html" class="m-doc">MLogging</a> other) -&gt; MLogging &amp;</span>
+            <dt id="aa006e00c9b4ff3ace06e8b3f67800bbe">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa006e00c9b4ff3ace06e8b3f67800bbe" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classFastCaloSim_1_1MLogging.html" class="m-doc">MLogging</a>&amp;) -&gt; MLogging &amp; <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
-            <dd>Assignment operator.</dd>
+            <dd><span></span></dd>
             <dt id="adf2223b1ebfc525396dae412064397fc">
               <span class="m-doc-wrap-bumper">auto <a href="#adf2223b1ebfc525396dae412064397fc" class="m-doc-self">level</a>(</span><span class="m-doc-wrap">) const -&gt; MSG::Level</span>
             </dt>
@@ -155,35 +155,20 @@
               <span class="m-doc-wrap-bumper">void <a href="#a9d7e434a0865a6cb97a4c98debbd246d" class="m-doc-self">setLevel</a>(</span><span class="m-doc-wrap">int level) <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd>Update outputlevel.</dd>
-            <dt id="aa12ac8bed6a72981827dcfccc40ae41d">
-              <span class="m-doc-wrap-bumper">auto <a href="#aa12ac8bed6a72981827dcfccc40ae41d" class="m-doc-self">msg</a>(</span><span class="m-doc-wrap">) const -&gt; MsgStream &amp;</span>
+            <dt id="a8079838885b8c963175c7038b2109632">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8079838885b8c963175c7038b2109632" class="m-doc-self">stream</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
+              const char* file,
+              int line) const -&gt; LineStream</span>
             </dt>
-            <dd>Return a stream for sending messages directly (no decoration)</dd>
-            <dt id="aedbf47ef3cb08fb636b92c1d9bdf5fcd">
-              <span class="m-doc-wrap-bumper">auto <a href="#aedbf47ef3cb08fb636b92c1d9bdf5fcd" class="m-doc-self">msg</a>(</span><span class="m-doc-wrap">const <a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl) const -&gt; MsgStream &amp;</span>
-            </dt>
-            <dd>Return a stream for sending messages (incomplete decoration)</dd>
-            <dt id="a3537f2fc91b9a7350a203b7f4ed78094">
-              <span class="m-doc-wrap-bumper">auto <a href="#a3537f2fc91b9a7350a203b7f4ed78094" class="m-doc-self">stream</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
-              std::string file,
-              int line) const -&gt; MsgStream &amp;</span>
-            </dt>
-            <dd>Return a decorated starting stream for sending messages.</dd>
+            <dd>Return a stream for one statement that adds to the open line (FCS_MSG)</dd>
             <dt>
               <span class="m-doc-wrap-bumper">auto <a href="#ac9a827cff6f439b76ec143f957070887" class="m-doc">msgLvl</a>(</span><span class="m-doc-wrap">const <a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl) const -&gt; bool</span>
             </dt>
             <dd></dd>
-            <dt id="a482b95f634fb23a0c1f2710c5a7478be">
-              <span class="m-doc-wrap-bumper">void <a href="#a482b95f634fb23a0c1f2710c5a7478be" class="m-doc-self">print</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
-              std::string file,
-              int line,
-              std::string message) const</span>
+            <dt id="aebe0d288fae5e04f553f6ad0ba6db800">
+              <span class="m-doc-wrap-bumper">auto <a href="#aebe0d288fae5e04f553f6ad0ba6db800" class="m-doc-self">streamerEndLine</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl) const -&gt; LineStream::End</span>
             </dt>
-            <dd>Print a whole decorated log message and then end the line.</dd>
-            <dt id="a16e0b3d3193bd9da93398d6cd08e484f">
-              <span class="m-doc-wrap-bumper">auto <a href="#a16e0b3d3193bd9da93398d6cd08e484f" class="m-doc-self">streamerEndLine</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl) const -&gt; std::string</span>
-            </dt>
-            <dd>Update and end the line if we print this level.</dd>
+            <dd>Marker that ends the line if we print this level (END_FCS_MSG)</dd>
           </dl>
         </section>
         <section>
@@ -192,7 +177,7 @@
             <h3>
               <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr />MLogging::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac9a827cff6f439b76ec143f957070887" class="m-doc-self">msgLvl</a>(</span><span class="m-doc-wrap">const <a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl) const -&gt; bool</span></span>
             </h3>
-<p>Check whether the logging system is active at the provided verbosity level: VERBOSE and DEBUG depend on the output level, all other levels are always printed</p>
+<p>Check whether messages of the given level are printed: those at or above the output level, as in Gaudi</p>
           </div></section>
         </section>
       </div>

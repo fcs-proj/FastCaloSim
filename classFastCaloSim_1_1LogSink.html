@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TFCS1DFunction_Numeric&lt;uint8_t, Tfloat&gt; class | FastCaloSim</title>
+  <title>FastCaloSim::LogSink class | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,52 +49,54 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCS1DFunctionTemplateHelpers_8h.html">&lt;TFCS1DFunctionTemplateHelpers.h&gt;</a></div>
-          <div class="m-doc-template">template&lt;typename Tfloat&gt;</div>
-          TFCS1DFunction_Numeric&lt;uint8_t, Tfloat&gt; <span class="m-thin">class</span>
+          <span class="m-breadcrumb"><a href="namespaceFastCaloSim.html">FastCaloSim</a>::<wbr/></span>LogSink <span class="m-thin">class</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="MLogging_8h.html">&lt;MLogging.h&gt;</a></div>
         </h1>
-        <p>Converter functions to store/retrieve float numbers in integers.</p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
             <li>
               Reference
               <ul>
-                <li><a href="#pub-static-attribs">Public static variables</a></li>
-                <li><a href="#pub-static-methods">Public static functions</a></li>
+                <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="pub-static-attribs">
-          <h2><a href="#pub-static-attribs">Public static variables</a></h2>
+<p>Receives every log message that passes the level check. Install one with <a href="namespaceFastCaloSim.html#adc6467c6456ba754dbc9bd579f8d2e1b" class="m-doc">set_<wbr />log_<wbr />sink()</a> to forward <a href="namespaceFastCaloSim.html" class="m-doc">FastCaloSim</a> messages to another logging system, for example a framework&#x27;s message service.</p>
+        <section id="typeless-methods">
+          <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
-            <dt id="a37e53839127a08f6b02b222b8a87cef8">
-              static uint8_t <a href="#a37e53839127a08f6b02b222b8a87cef8" class="m-doc-self">MaxValue</a> <span class="m-label m-flat m-primary">constexpr</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="aa4f50b46efefa813a876ccc6154ca1e0">
-              static Tfloat <a href="#aa4f50b46efefa813a876ccc6154ca1e0" class="m-doc-self">MaxValueFloat</a> <span class="m-label m-flat m-primary">constexpr</span>
+            <dt id="abee6575c82726e6e1d73aa199b227d02">
+              <span class="m-doc-wrap-bumper"><a href="#abee6575c82726e6e1d73aa199b227d02" class="m-doc-self">~LogSink</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
         </section>
-        <section id="pub-static-methods">
-          <h2><a href="#pub-static-methods">Public static functions</a></h2>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="a8c19ef3c5f86ac0172207ce9cf1f69df">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a8c19ef3c5f86ac0172207ce9cf1f69df" class="m-doc-self">MaxCeilOnlyForInt</a>(</span><span class="m-doc-wrap">const Tfloat value) -&gt; uint8_t</span>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#aae270e2e3e2f48d710ec5cdb6de132a5" class="m-doc">write</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
+              std::string_view file,
+              int line,
+              std::string_view text) <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
-            <dd><span></span></dd>
-            <dt id="a695eb63e5bf757e5968a7414d573c0bb">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a695eb63e5bf757e5968a7414d573c0bb" class="m-doc-self">ExpandToMaxRange</a>(</span><span class="m-doc-wrap">const Tfloat value) -&gt; uint8_t</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a95a48b53126559d93da5d75183ef92c1">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a95a48b53126559d93da5d75183ef92c1" class="m-doc-self">ToNormalizedRange</a>(</span><span class="m-doc-wrap">const uint8_t value) -&gt; Tfloat</span>
-            </dt>
-            <dd><span></span></dd>
+            <dd></dd>
           </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="aae270e2e3e2f48d710ec5cdb6de132a5"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void FastCaloSim::<wbr />LogSink::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aae270e2e3e2f48d710ec5cdb6de132a5" class="m-doc-self">write</a>(</span><span class="m-doc-wrap"><a href="namespaceFastCaloSim_1_1MSG.html#a4114e994d4b71afe4fce76c6cc1e1667" class="m-doc">MSG::<wbr />Level</a> lvl,
+              std::string_view file,
+              int line,
+              std::string_view text) <span class="m-label m-warning">pure virtual</span></span></span>
+            </h3>
+<p>One message: <code>file</code> and <code>line</code> locate the call site, <code>text</code> is the message as written at the call site, without decoration and without newlines at the end (newlines inside the text are kept). Called concurrently from all threads that log. An exception thrown here does not propagate: the message then goes to the default sink.</p>
+          </div></section>
         </section>
       </div>
     </div>

@@ -126,11 +126,11 @@
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a326ecb9d1b7124d47bfbefe5677987a7" class="m-doc">GetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a8424a0ee7d7f695221ca3963bedb4209" class="m-doc">size_<wbr />t</a> pos) const -&gt; const T</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#aea87471ad758e28f62761d7d47df4f27" class="m-doc">GetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a8424a0ee7d7f695221ca3963bedb4209" class="m-doc">size_<wbr />t</a> pos) const -&gt; T</span>
             </dt>
             <dd></dd>
-            <dt id="ae1945beecc1af546a1c5dc278d4e4981">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae1945beecc1af546a1c5dc278d4e4981" class="m-doc-self">GetBinLength</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a8424a0ee7d7f695221ca3963bedb4209" class="m-doc">size_<wbr />t</a> pos) const -&gt; const T</span>
+            <dt id="a59843eef9a9e22bc9df77a4c379272e5">
+              <span class="m-doc-wrap-bumper">auto <a href="#a59843eef9a9e22bc9df77a4c379272e5" class="m-doc-self">GetBinLength</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a8424a0ee7d7f695221ca3963bedb4209" class="m-doc">size_<wbr />t</a> pos) const -&gt; T</span>
             </dt>
             <dd>get the length of a bin</dd>
             <dt id="adc7267622fcc72767abda6fea4fa6f72">
@@ -154,8 +154,8 @@
               const T&amp; valuemax)</span>
             </dt>
             <dd>set minimum and maximum</dd>
-            <dt id="ad90aa710b7f289e417961c46f4288ec9">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad90aa710b7f289e417961c46f4288ec9" class="m-doc-self">Length</a>(</span><span class="m-doc-wrap">) const -&gt; const T</span>
+            <dt id="a41db4172727e90f3053d8413a91380a3">
+              <span class="m-doc-wrap-bumper">auto <a href="#a41db4172727e90f3053d8413a91380a3" class="m-doc-self">Length</a>(</span><span class="m-doc-wrap">) const -&gt; T</span>
             </dt>
             <dd>Get length of interval of all bins.</dd>
             <dt>
@@ -183,12 +183,12 @@
             </h3>
 <p>set position of lower edge of bins. Requires <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a3e97deaf5883bab5c8db678a982b0268" class="m-doc">GetMin()</a> and <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#ad546c94face7706643878a1e02543e14" class="m-doc">GetMax()</a> to be set and may not be changed!</p>
           </div></section>
-          <section class="m-doc-details" id="a326ecb9d1b7124d47bfbefe5677987a7"><div>
+          <section class="m-doc-details" id="aea87471ad758e28f62761d7d47df4f27"><div>
             <h3>
               <div class="m-doc-template">
                 template&lt;typename T, typename Tint, typename Trandom&gt;
               </div>
-              <span class="m-doc-wrap-bumper">auto TFCS1DFunction_<wbr />HistogramCompactBinEdges&lt;T, Tint, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a326ecb9d1b7124d47bfbefe5677987a7" class="m-doc-self">GetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a8424a0ee7d7f695221ca3963bedb4209" class="m-doc">size_<wbr />t</a> pos) const -&gt; const T</span></span>
+              <span class="m-doc-wrap-bumper">auto TFCS1DFunction_<wbr />HistogramCompactBinEdges&lt;T, Tint, Trandom&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aea87471ad758e28f62761d7d47df4f27" class="m-doc-self">GetBinLowEdge</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a8424a0ee7d7f695221ca3963bedb4209" class="m-doc">size_<wbr />t</a> pos) const -&gt; T</span></span>
             </h3>
 <p>get position of lower edge of bins. Requires <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#a3e97deaf5883bab5c8db678a982b0268" class="m-doc">GetMin()</a> and <a href="classTFCS1DFunction__HistogramCompactBinEdges.html#ad546c94face7706643878a1e02543e14" class="m-doc">GetMax()</a> to be set and may not be changed!</p>
           </div></section>
@@ -211,7 +211,7 @@
               Trandom m,
               const Trandom&amp; drnd) const -&gt; T</span></span>
             </h3>
-<p>return interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1] return linearly interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1]</p>
+<p>return linearly interpolated position for bin pos, such that histograming the position gives a linear slope m, where m is in units of the bin width for bin pos. Interpolation is done with a random value in the range [0,1]</p>
           </div></section>
         </section>
       </div>
