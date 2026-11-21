@@ -60,12 +60,16 @@ auto sink_slot() -> std::atomic<std::shared_ptr<FastCaloSim::LogSink>>&
 }
 
 // Called from destructors, so it must not throw. A message that the installed
-// sink fails to take goes to the default sink instead.
+// sink fails to take goes to the default sink instead, so that no message is
+// lost. Newlines at the end of the text are removed: sinks end lines
+// themselves.
 void send(FastCaloSim::MSG::Level lvl,
           std::string_view file,
           int line,
           std::string_view text) noexcept
 {
+  while (text.ends_with('\n'))
+    text.remove_suffix(1);
   try {
     sink_slot().load()->write(lvl, file, line, text);
     return;

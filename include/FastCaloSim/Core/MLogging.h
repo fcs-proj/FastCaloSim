@@ -38,9 +38,10 @@ class FASTCALOSIM_EXPORT LogSink
 public:
   virtual ~LogSink() = default;
   /// One message: `file` and `line` locate the call site, `text` is the
-  /// message as written at the call site, without decoration and without an
-  /// added newline. Called concurrently from all threads that log. An exception
-  /// thrown here does not propagate: the message then goes to the default sink.
+  /// message as written at the call site, without decoration and without
+  /// newlines at the end (newlines inside the text are kept). Called
+  /// concurrently from all threads that log. An exception thrown here does not
+  /// propagate: the message then goes to the default sink.
   virtual void write(MSG::Level lvl,
                      std::string_view file,
                      int line,

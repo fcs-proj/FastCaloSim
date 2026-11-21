@@ -82,6 +82,7 @@ class Logger : public FastCaloSim::MLogging
 {
 public:
   void info(int i) const { FCS_MSG_INFO("info " << i); }
+  void text(const char* text) const { FCS_MSG_INFO(text); }
   void debug(int i) const { FCS_MSG_DEBUG("debug " << i); }
   template<typename F>
   void debug_with(F f) const
@@ -159,6 +160,18 @@ TEST_F(LoggingTest, MessageReachesSinkOnce)
   EXPECT_EQ(records[0].text, "info 7");
   EXPECT_TRUE(records[0].file.ends_with("LoggingTests.cxx"));
   EXPECT_GT(records[0].line, 0);
+}
+
+// Newlines at the end are removed, newlines inside are kept
+TEST_F(LoggingTest, TrailingNewlinesRemoved)
+{
+  const Logger log;
+  log.text("a\nb\n\n");
+  log.text("\n");
+  const auto records = m_sink->records();
+  ASSERT_EQ(records.size(), 2U);
+  EXPECT_EQ(records[0].text, "a\nb");
+  EXPECT_EQ(records[1].text, "");
 }
 
 TEST_F(LoggingTest, LevelFiltersDebug)
