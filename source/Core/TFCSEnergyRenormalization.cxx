@@ -2,6 +2,8 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <array>
+
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
@@ -33,22 +35,18 @@ auto TFCSEnergyRenormalization::simulate(
   for (const auto& cell_iter : simulstate.cells()) {
     unsigned long long cell_id = cell_iter.first;
     double cell_energy = cell_iter.second;
-    // Retrieve the cell from the geometry by its identifier
-    Cell cell = m_geo->get_cell(cell_id);
-
-    // Add the energy to the corresponding layer
-    int layer = cell.layer();
+    // Add the energy to the layer of the cell
+    const int layer = m_geo->get_cell(cell_id).layer();
     energies[layer] += cell_energy;
   }
 
   std::vector<float> scalefactor(m_geo->n_layers(), 1);
 
-  const std::map<int, float> approxLayerNoise {
-      {0, 150.0},  {1, 40.0},   {2, 80.0},   {3, 40.0},   {4, 150.0},
-      {5, 40.0},   {6, 80.0},   {7, 50.0},   {8, 400.0},  {9, 400.0},
-      {10, 400.0}, {11, 400.0}, {12, 300.0}, {13, 150.0}, {14, 40.0},
-      {15, 150.0}, {16, 40.0},  {17, 400.0}, {18, 300.0}, {19, 150.0},
-      {20, 40.0},  {21, 400.0}, {22, 400.0}, {23, 400.0}};
+  // Approximate noise per calorimeter layer in MeV
+  static constexpr std::array<float, 24> approxLayerNoise {
+      150.0, 40.0,  80.0,  40.0,  150.0, 40.0,  80.0,  50.0,
+      400.0, 400.0, 400.0, 400.0, 300.0, 150.0, 40.0,  150.0,
+      40.0,  400.0, 300.0, 150.0, 40.0,  400.0, 400.0, 400.0};
 
   for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
     // catch large amounts of energy not simulated as shower is outside the
@@ -75,9 +73,7 @@ auto TFCSEnergyRenormalization::simulate(
 
   // Loop over all cells and apply the scalefactor
   for (auto& cell_iter : simulstate.cells()) {
-    unsigned long long cell_id = cell_iter.first;
-    Cell cell = m_geo->get_cell(cell_id);
-    int layer = cell.layer();
+    const int layer = m_geo->get_cell(cell_iter.first).layer();
     cell_iter.second *= scalefactor[layer];
   }
 
