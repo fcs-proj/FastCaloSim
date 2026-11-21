@@ -489,9 +489,13 @@ auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
   std::size_t const energy_index = get_energy_index(
       simulstate, layer_index, hit_index);  // Get the bin index for the hit
 
-  auto* hits_per_layer_ptr =
+  const auto* hits_per_layer_ptr =
       simulstate.getAuxObject<std::vector<std::vector<std::size_t>>>(
           "BSNHits"_FCShash);
+  if (hits_per_layer_ptr == nullptr) {
+    FCS_MSG_ERROR("No hits per layer available in get_hit_position_and_energy");
+    return std::make_tuple(0.0, 0.0, 0.0);
+  }
 
   const std::vector<std::size_t>& hits = hits_per_layer_ptr->at(layer_index);
   const std::size_t hits_per_bin = energy_index == 0
