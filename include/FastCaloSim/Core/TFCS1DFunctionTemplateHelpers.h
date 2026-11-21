@@ -14,23 +14,10 @@
 // For the purpose of FastCaloSim, 32bit are sufficient for bin counting
 using TFCS1DFunction_size_t = uint32_t;
 
-/// Converter functions that does nothing for floats
-template<typename T, typename Tfloat = float>
-class TFCS1DFunction_Numeric
-{
-public:
-  static constexpr T MaxValue = 1;
-  static constexpr Tfloat MaxValueFloat = MaxValue;
-
-  static auto MaxCeilOnlyForInt(const Tfloat value) -> T { return value; }
-  static auto ExpandToMaxRange(const Tfloat value) -> T { return value; }
-  static auto ToNormalizedRange(const T value) -> Tfloat { return value; }
-};
-
 /// Converter functions to store/retrieve float numbers in the range [0,1] as
 /// unsigned integers
 template<std::unsigned_integral T, typename Tfloat>
-class TFCS1DFunction_Numeric<T, Tfloat>
+class TFCS1DFunction_Numeric
 {
 public:
   static constexpr T MaxValue = std::numeric_limits<T>::max();
@@ -236,114 +223,6 @@ inline auto TFCS1DFunction_linear_slope_fraction(Trandom m, Trandom drnd)
       : drnd;
 }
 
-// Class to represent histogram bin edges. Trandom should be a type with a
-// floating point range [0,1]
-template<typename T, typename Trandom = float>
-class TFCS1DFunction_HistogramBinEdges
-{
-public:
-  using size_t = TFCS1DFunction_size_t;
-  using value_type = T;
-  using random_type = Trandom;
-
-  TFCS1DFunction_HistogramBinEdges(size_t nbins = 0)
-      : m_array(nbins + 1)
-  {
-  }
-  ~TFCS1DFunction_HistogramBinEdges() = default;
-
-  auto MemorySizeArray() const -> std::size_t
-  {
-    return m_array.MemorySizeArray();
-  }
-  auto MemorySize() const -> std::size_t
-  {
-    return sizeof(*this) + MemorySizeArray();
-  }
-
-  /// set number of bins
-  void set_nbins(size_t nbins) { m_array.resize(nbins + 1); }
-
-  /// return number of bins
-  auto get_nbins() const -> size_t { return size() - 1; }
-
-  /// set position of lower edge of bins
-  void SetBinLowEdge(size_t pos, const T& value) { m_array[pos] = value; }
-
-  /// get position of lower edge of bins
-  auto GetBinLowEdge(size_t pos) const -> const T& { return m_array[pos]; }
-
-  /// get the length of a bin
-  auto GetBinLength(size_t pos) const -> T
-  {
-    return GetBinLowEdge(pos + 1) - GetBinLowEdge(pos);
-  }
-
-  /// set and get minimum
-  void SetMin(const T& value) { m_array[0] = value; }
-  auto GetMin() const -> const T& { return m_array[0]; }
-
-  /// set and get maximum
-  void SetMax(const T& value) { m_array[get_nbins()] = value; }
-  auto GetMax() const -> const T& { return m_array[get_nbins()]; }
-
-  /// set minimum and maximum
-  void SetMinMax(const T& valuemin, const T& valuemax)
-  {
-    SetMin(valuemin);
-    SetMax(valuemax);
-  }
-
-  /// Get length of interval of all bins
-  auto Length() const -> T { return GetMax() - GetMin(); }
-
-  /// return linear interpolated position for bin pos. Interpolation is done
-  /// with a random value in the range [0,1]
-  auto position(size_t pos, const Trandom& drnd) const -> T
-  {
-    return (1 - drnd) * m_array[pos] + drnd * m_array[pos + 1];
-  }
-
-  /// return linearly interpolated position for bin pos, such that histograming
-  /// the position gives a linear slope m, where m is in units of the bin width
-  /// for bin pos. Interpolation is done with a random value in the range [0,1]
-  auto position_lin(size_t pos, Trandom m, const Trandom& drnd) const -> T
-  {
-    const Trandom x = TFCS1DFunction_linear_slope_fraction(m, drnd);
-    return (1 - x) * m_array[pos] + x * m_array[pos + 1];
-  }
-
-private:
-  TFCS1DFunction_Array<T> m_array;
-  auto size() const -> size_t { return m_array.size(); }
-
-  // Use ClassDef without virtual functions. Saves 8 bytes per instance
-  ClassDefNV(TFCS1DFunction_HistogramBinEdges,
-             1)  // TFCS1DFunction_HistogramBinEdges
-};
-
-class TFCS1DFunction_HistogramFloatBinEdges
-    : public TFCS1DFunction_HistogramBinEdges<float, float>
-{
-public:
-  using TFCS1DFunction_HistogramBinEdges<float, float>::
-      TFCS1DFunction_HistogramBinEdges;
-
-  ClassDefNV(TFCS1DFunction_HistogramFloatBinEdges,
-             1)  // TFCS1DFunction_HistogramFloatBinEdges
-};
-
-class TFCS1DFunction_HistogramDoubleBinEdges
-    : public TFCS1DFunction_HistogramBinEdges<double, double>
-{
-public:
-  using TFCS1DFunction_HistogramBinEdges<double, double>::
-      TFCS1DFunction_HistogramBinEdges;
-
-  ClassDefNV(TFCS1DFunction_HistogramDoubleBinEdges,
-             1)  // TFCS1DFunction_HistogramDoubleBinEdges
-};
-
 // Class to represent histogram bin edges, where the interval between GetMin()
 // and GetMax() can be stored as a different (smaller) data type Tint Trandom
 // should be a type with a floating point range [0,1]
@@ -469,17 +348,6 @@ public:
 
   ClassDefNV(TFCS1DFunction_HistogramInt8BinEdges,
              1)  // TFCS1DFunction_HistogramInt8BinEdges
-};
-
-class TFCS1DFunction_HistogramInt16BinEdges
-    : public TFCS1DFunction_HistogramCompactBinEdges<float, uint16_t, float>
-{
-public:
-  using TFCS1DFunction_HistogramCompactBinEdges::
-      TFCS1DFunction_HistogramCompactBinEdges;
-
-  ClassDefNV(TFCS1DFunction_HistogramInt16BinEdges,
-             1)  // TFCS1DFunction_HistogramInt16BinEdges
 };
 
 class TFCS1DFunction_HistogramInt32BinEdges
