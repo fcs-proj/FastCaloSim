@@ -286,9 +286,11 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   std::chrono::duration<double> elapsed = end_time - start_time;
 
   // Print timing information
-  FCS_MSG_INFO("Done building calo geometry. Took "
-               << elapsed.count() << " s (" << m_n_total_cells << " cells in "
-               << m_n_layers << " layers)");
+  // CaloGeo has no output level
+  FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::INFO,
+                    "Done building calo geometry. Took "
+                        << elapsed.count() << " s (" << m_n_total_cells
+                        << " cells in " << m_n_layers << " layers)");
 }
 
 // Method to load geometry
@@ -390,7 +392,9 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   std::chrono::duration<double> elapsed = end_time - start_time;
 
   // Print timing information
-  FCS_MSG_INFO("Done loading calo geometry. Took "
-               << elapsed.count() << " s (" << m_n_total_cells << " cells in "
-               << m_n_layers << " layers)");
+  // CaloGeo has no output level
+  FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::INFO,
+                    "Done loading calo geometry. Took "
+                        << elapsed.count() << " s (" << m_n_total_cells
+                        << " cells in " << m_n_layers << " layers)");
 }

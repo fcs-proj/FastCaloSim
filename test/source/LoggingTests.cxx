@@ -84,6 +84,8 @@ public:
   void info(int i) const { FCS_MSG_INFO("info " << i); }
   void text(const char* text) const { FCS_MSG_INFO(text); }
   void debug(int i) const { FCS_MSG_DEBUG("debug " << i); }
+  void warning(int i) const { FCS_MSG_WARNING("warning " << i); }
+  void error(int i) const { FCS_MSG_ERROR("error " << i); }
   template<typename F>
   void debug_with(F f) const
   {
@@ -160,6 +162,21 @@ TEST_F(LoggingTest, MessageReachesSinkOnce)
   EXPECT_EQ(records[0].text, "info 7");
   EXPECT_TRUE(records[0].file.ends_with("LoggingTests.cxx"));
   EXPECT_GT(records[0].line, 0);
+}
+
+// Every level follows the output level: at WARNING, INFO is not printed
+TEST_F(LoggingTest, LevelFiltersAllLevels)
+{
+  Logger log;
+  log.setLevel(FastCaloSim::MSG::WARNING);
+  log.info(1);
+  log.streamed(1);
+  log.warning(2);
+  log.error(3);
+  const auto records = m_sink->records();
+  ASSERT_EQ(records.size(), 2U);
+  EXPECT_EQ(records[0].text, "warning 2");
+  EXPECT_EQ(records[1].text, "error 3");
 }
 
 // Newlines at the end are removed, newlines inside are kept
