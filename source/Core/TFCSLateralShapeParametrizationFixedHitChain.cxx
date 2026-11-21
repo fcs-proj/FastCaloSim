@@ -4,7 +4,6 @@
 
 #include "CLHEP/Random/RandGaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSLateralShapeParametrizationFixedHitChain =========

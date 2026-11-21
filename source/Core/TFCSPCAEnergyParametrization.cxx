@@ -1,6 +1,8 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
 #include <memory>
+#include <numbers>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCSPCAEnergyParametrization.h"
@@ -14,7 +16,6 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "TKey.h"
-#include "TMath.h"
 #include "TMatrixD.h"
 #include "TMatrixDSymEigen.h"
 
@@ -179,7 +180,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     double sum_fraction = 0.0;
     for (unsigned int l = 0; l <= layerNr.size(); l++) {
       double simdata_uniform =
-          (TMath::Erf(output_data[l] / 1.414213562) + 1) / 2.f;
+          (std::erf(output_data[l] / 1.414213562) + 1) / 2.f;
 
       simdata[l] = cumulative[l]->rnd_to_fct(simdata_uniform);
 
@@ -392,8 +393,8 @@ void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
       set_total_energy_normalization(Ekin_nominal());
       // Check if min and max range is a factor 2 within 1 MeV tolerance
       // If yes, the nominal to log-avergage
-      if (TMath::Abs(Ekin_max() - 2 * Ekin_min()) < 1) {
-        set_Ekin_nominal(Ekin_max() / TMath::Sqrt(2));
+      if (std::abs(Ekin_max() - 2 * Ekin_min()) < 1) {
+        set_Ekin_nominal(Ekin_max() / std::numbers::sqrt2);
       }
     }
     if (R__v <= 2) {

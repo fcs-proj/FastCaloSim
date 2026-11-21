@@ -3,12 +3,13 @@
 
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitChain.h"
 
 #include <TClass.h>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSLateralShapeParametrizationHitChain =========
@@ -261,7 +262,7 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
   // Call get_number_of_hits() only once inside get_E_hit(...),
   // as it could contain a random number
   // TODO: should read simulate value!
-  int nhit_signed = TMath::Nint(Elayer / Ehit);
+  int nhit_signed = std::lrint(Elayer / Ehit);
   if (nhit_signed < 1)
     nhit_signed = 1;
   unsigned int nhit = (unsigned int)nhit_signed;

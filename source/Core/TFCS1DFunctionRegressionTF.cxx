@@ -3,7 +3,6 @@
 #include "FastCaloSim/Core/TFCS1DFunctionRegressionTF.h"
 
 #include "TFile.h"
-#include "TMath.h"
 #include "TString.h"
 using namespace std;
 

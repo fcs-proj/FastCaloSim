@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <numbers>
 
 #include "FastCaloSim/Core/TFCSFlatLateralShapeParametrization.h"
 
@@ -10,7 +11,6 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "TFile.h"
 #include "TH2.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSFlatLateralShapeParametrization =========
@@ -70,15 +70,16 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  if (TMath::IsNaN(center_r) or TMath::IsNaN(center_z)
-      or TMath::IsNaN(center_eta) or TMath::IsNaN(center_phi))
+  if (std::isnan(center_r) or std::isnan(center_z) or std::isnan(center_eta)
+      or std::isnan(center_phi))
   {  // Check if extrapolation fails
     return FCSFatal;
   }
 
   float alpha, r;
 
-  alpha = 2 * TMath::Pi() * CLHEP::RandFlat::shoot(simulstate.randomEngine());
+  alpha =
+      2 * std::numbers::pi * CLHEP::RandFlat::shoot(simulstate.randomEngine());
   r = m_dR * CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
   float delta_eta = r * std::cos(alpha);

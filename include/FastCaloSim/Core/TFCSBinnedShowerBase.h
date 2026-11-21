@@ -11,7 +11,6 @@
 #include <tuple>
 
 #include <RtypesCore.h>
-#include <TMath.h>
 
 class CaloGeo;
 
