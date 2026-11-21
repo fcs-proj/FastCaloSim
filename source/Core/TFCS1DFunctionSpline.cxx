@@ -154,7 +154,6 @@ auto TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
     if (hist->GetBinContent(i) > 0)
       break;
   }
-  // FCS_MSG_INFO("xmin="<<xmin<<" xmax="<<xmax);
 
   double dx = (xmax - xmin) / (nsplinepoints - 1);
 
@@ -162,7 +161,6 @@ auto TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
   std::vector<double> nx(nsplinepoints);
   nprop[0] = 0;
   nx[0] = hist_fct.rnd_to_fct(nprop[0]);
-  // FCS_MSG_INFO(0<<" p="<<nprop[0]<<" x="<<nx[0]);
   for (int i = 1; i < nsplinepoints; ++i) {
     nx[i] = xmin + i * dx;
     double p_min = 0;
@@ -179,7 +177,6 @@ auto TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
       if ((p_max - p_min) < 0.0000001)
         break;
     } while (TMath::Abs(tx - nx[i]) > dx / 10);
-    // FCS_MSG_INFO(i<<" p="<<p_test<<" x="<<tx);
     nprop[i] = p_test;
   }
 
@@ -247,21 +244,17 @@ auto TFCS1DFunctionSpline::optimize(TSpline3& sp_best,
                                     double maxeffsiggoal) -> double
 {
   int nsplinepoints = (int)nprop.size();
-  // double xmin=hist->GetXaxis()->GetXmin();
-  // double xmax=hist->GetXaxis()->GetXmax();
   std::vector<double> nx(nsplinepoints);
   std::vector<double> nprop_try = nprop;
   double max_penalty = -1;
   double p_gotobest = 0.5 / nsplinepoints;
   int ntry = 200 / p_gotobest;
-  // int itrytot=0;
   for (double dproploop = 0.4 / nsplinepoints; dproploop > 0.02 / nsplinepoints;
        dproploop /= 2)
   {
     double dprop = dproploop;
     int n_nogain = 0;
     for (int itry = 0; itry < ntry; ++itry) {
-      // itrytot++;
       for (int i = 0; i < nsplinepoints; ++i) {
         nx[i] = hist_fct.rnd_to_fct(nprop_try[i]);
       }
@@ -342,9 +335,6 @@ auto TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
   double integral = hist->IntegralAndError(1, hist->GetNbinsX(), interr);
   double effN = integral / interr;
   effN *= effN;
-  // FCS_MSG_INFO("integral="<<integral<<" +- "<<interr<<"
-  // relerr="<<interr/integral); FCS_MSG_INFO("effN="<<effN<<" +-
-  // "<<TMath::Sqrt(effN)<<" relerr="<<1/TMath::Sqrt(effN));
   double toyweight = 1.0 / ntoy;
   for (int itoy = 0; itoy < ntoy; ++itoy) {
     double prop = itoy * toyweight;
@@ -372,10 +362,6 @@ auto TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
       maxeffsig = valsig;
       p_maxeffsig = int1;
     }
-
-    // FCS_MSG_INFO(i<<": diff="<<int1-int2<<" sig(diff)="<<valsig<<"
-    // int1="<<int1<<" +- "<<int1err<<" int2="<<int2<<" maxdev="<<maxdev<<"
-    // maxeffsig="<<maxeffsig);
   }
 
   delete hist_clone;

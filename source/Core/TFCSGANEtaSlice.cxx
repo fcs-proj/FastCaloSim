@@ -230,27 +230,13 @@ auto TFCSGANEtaSlice::GetNetworkOutputs(const TFCSTruthState* truth,
         "variable_" + std::to_string(i), randUniformZ));
   }
 
-  // double e = log(truth->Ekin()/Ekin_min)/log(Ekin_max/Ekin_min) ;
-  // Could be uncommented , but would need the line above too
-  // FCS_MSG_DEBUG( "Check label: " << e <<" Ekin:" << truth->Ekin() <<" p:" <<
-  //                truth->P() <<" mass:" << truth->M() <<" Ekin_off:" <<
-  //                truth->Ekin_off() << " Ekin_min:"<<Ekin_min<<"
-  //                Ekin_max:"<<Ekin_max);
-  // inputs["mycond"].insert ( std::pair<std::string,double>("variable_0",
-  // truth->Ekin()/(std::pow(2,maxExp))) ); //Old conditioning using linear
-  // interpolation, now use logaritminc interpolation
   inputs["mycond"].insert(std::pair<std::string, double>(
       "variable_0", log(truth->Ekin() / Ekin_min) / log(Ekin_max / Ekin_min)));
 
   if (m_param.GetGANVersion() >= 2) {
-    if (false) {  // conditioning on eta, should only be needed in transition
-                  // regions and added only to the GANs that use it, for now all
-                  // GANs have 3 conditioning inputs so filling zeros
-      inputs["mycond"].insert(std::pair<std::string, double>(
-          "variable_1", std::abs(extrapol->IDCaloBoundary_eta())));
-    } else {
-      inputs["mycond"].insert(std::pair<std::string, double>("variable_1", 0));
-    }
+    // Conditioning on |eta| would only be needed in transition regions. All
+    // current GANs have this input, so it is filled with zero.
+    inputs["mycond"].insert(std::pair<std::string, double>("variable_1", 0));
   }
 
   VNetworkBase::NetworkOutputs outputs;

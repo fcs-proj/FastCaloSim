@@ -134,9 +134,6 @@ public:
       return 0;
     Trandom residual_rnd;
     size_t ibin = m_HistoContents.get_bin(rnd, residual_rnd);
-    // FCS_MSG_INFO( fx="<<m_HistoBorders.GetBinLowEdge(ibin)<<"
-    // frac="<<m_HistoContents.get_fraction(ibin)<<"
-    // residual_rnd="<<residual_rnd);
     return m_HistoBorders.position(ibin, residual_rnd);
   }
 

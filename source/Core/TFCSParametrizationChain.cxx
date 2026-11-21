@@ -202,9 +202,6 @@ void TFCSParametrizationChain::Print(Option_t* option) const
 {
   TFCSParametrization::Print(option);
   TString opt(option);
-  // bool shortprint=opt.Index("short")>=0;
-  // bool longprint=msgLvl(FastCaloSim::MSG::DEBUG) ||
-  // (msgLvl(FastCaloSim::MSG::INFO) && !shortprint);
 
   char count = 'A';
   for (const auto& param : m_chain) {

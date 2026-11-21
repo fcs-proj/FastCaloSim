@@ -48,7 +48,6 @@
 #include "FastCaloSim/Core/TFCSBinnedShowerONNX.h"
 #include "FastCaloSim/Core/TFCSMLCalorimeterSimulator.h"
 
-#ifndef __FastCaloSimNoLWTNN__
 #include "FastCaloSim/Core/TFCSGANXMLParameters.h"
 #include "FastCaloSim/Core/TFCSGANLWTNNHandler.h"
 #include "FastCaloSim/Core/TFCSGANEtaSlice.h"
@@ -59,7 +58,6 @@
 #include "FastCaloSim/Core/TFCSSimpleLWTNNHandler.h"
 #include "FastCaloSim/Core/TFCSONNXHandler.h"
 #include "FastCaloSim/Core/TFCSNetworkFactory.h"
-#endif
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/Core/TFCSHistoLateralShapeGausLogWeight.h"
@@ -371,7 +369,6 @@
 #pragma link C++ class TFCSBinnedShower - ;
 #pragma link C++ class TFCSBinnedShowerONNX - ;
 #pragma link C++ class TFCSMLCalorimeterSimulator + ;
-#ifndef __FastCaloSimNoLWTNN__
 #pragma link C++ class TFCSGANXMLParameters + ;
 #pragma link C++ class TFCSGANLWTNNHandler - ;
 #pragma link C++ class TFCSGANEtaSlice + ;
@@ -382,7 +379,6 @@
 #pragma link C++ class VNetworkLWTNN + ;
 #pragma link C++ class TFCSSimpleLWTNNHandler - ;
 #pragma link C++ class TFCSONNXHandler - ;
-#endif
 
 #pragma link C++ class TFCSLateralShapeParametrization + ;
 #pragma link C++ class TFCSLateralShapeParametrizationHitBase + ;
