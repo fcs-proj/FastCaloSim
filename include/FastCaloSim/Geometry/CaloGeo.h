@@ -27,6 +27,10 @@ public:
 
   // Default constructor
   CaloGeo() = default;
+  // Base class of alternative geometry handlers (e.g. the FCal)
+  virtual ~CaloGeo() = default;
+  CaloGeo(CaloGeo&&) = default;
+  auto operator=(CaloGeo&&) -> CaloGeo& = default;
 
   // Method to build geometry: writes the cell store into the directory
   void build(ROOT::RDataFrame& geo, const std::string& base_path);

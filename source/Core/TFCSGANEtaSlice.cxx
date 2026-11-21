@@ -193,10 +193,10 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
   }
 }
 
-auto TFCSGANEtaSlice::GetNetworkOutputs(const TFCSTruthState* truth,
-                                        const TFCSExtrapolationState* extrapol,
-                                        TFCSSimulationState& simulstate) const
-    -> VNetworkBase::NetworkOutputs
+auto TFCSGANEtaSlice::GetNetworkOutputs(
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* /*extrapol*/,
+    TFCSSimulationState& simulstate) const -> VNetworkBase::NetworkOutputs
 {
   double randUniformZ = 0.;
   NetworkInputs inputs;

@@ -656,7 +656,7 @@ void TFCSBinnedShower::load_layer_energy(const std::string& filename,
 
   for (size_t i = 0; i < data.size(); ++i) {
     long unsigned int event_index = i / dims.at(1);
-    float bin_index = i % dims.at(1);
+    const hsize_t bin_index = i % dims.at(1);
 
     if (bin_index == 0) {
       bin_index_vector.clear();

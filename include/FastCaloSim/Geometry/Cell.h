@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iostream>
 #include <ostream>
+#include <utility>
 
 struct Position
 {
@@ -152,6 +153,7 @@ public:
       case SubPos::EXT:
         return rext();
     }
+    std::unreachable();
   }
 
   auto inline z(SubPos subpos) const -> double
@@ -164,6 +166,7 @@ public:
       case SubPos::EXT:
         return zext();
     }
+    std::unreachable();
   }
 
   static auto norm_angle(double angle) -> double

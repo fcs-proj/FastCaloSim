@@ -31,9 +31,9 @@ struct Cylinder
 {
   /// The dimensions are kept in single precision, as the extrapolation has
   /// always done: double precision would move the extrapolated positions.
-  constexpr Cylinder(double radius, double halfLength)
-      : radius(static_cast<float>(radius))
-      , halfLength(static_cast<float>(halfLength))
+  constexpr Cylinder(double r, double half_length)
+      : radius(static_cast<float>(r))
+      , halfLength(static_cast<float>(half_length))
   {
   }
 
