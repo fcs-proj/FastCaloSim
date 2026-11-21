@@ -1,5 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
@@ -10,6 +8,7 @@
 
 #include "CLHEP/Random/RandPoisson.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeParametrization =========
@@ -118,9 +117,10 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::compare(
   }
   const TFCSLateralShapeParametrizationHitNumberFromE& ref_typed =
       static_cast<const TFCSLateralShapeParametrizationHitNumberFromE&>(ref);
-  if (m_stochastic != ref_typed.m_stochastic
-      || m_stochastic_hadron != ref_typed.m_stochastic_hadron
-      || m_constant != ref_typed.m_constant)
+  if (!FastCaloSim::exactly_equal(m_stochastic, ref_typed.m_stochastic)
+      || !FastCaloSim::exactly_equal(m_stochastic_hadron,
+                                     ref_typed.m_stochastic_hadron)
+      || !FastCaloSim::exactly_equal(m_constant, ref_typed.m_constant))
   {
     FCS_MSG_DEBUG("operator==(): different fluctuation model sigma^2=["
                   << m_stochastic << "/sqrt(E/GeV)]^2 + [" << m_constant
@@ -145,5 +145,3 @@ void TFCSLateralShapeParametrizationHitNumberFromE::Print(
                           << "/sqrt(E/GeV)]^2 + [" << m_constant << " + "
                           << m_stochastic_hadron << "/sqrt(E/GeV)]^2");
 }
-
-#pragma GCC diagnostic pop

@@ -1,6 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
@@ -14,6 +11,7 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "TH1.h"
 #include "TVector2.h"
 
@@ -80,7 +78,7 @@ void TFCSHitCellMappingWiggle::initialize(TH1* histogram, float xscale)
     return;
   TFCS1DFunctionInt32Histogram* func =
       new TFCS1DFunctionInt32Histogram(histogram);
-  if (xscale != 1) {
+  if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
     for (auto& ele : func->get_HistoBordersx())
       ele *= xscale;
   }
@@ -103,7 +101,7 @@ void TFCSHitCellMappingWiggle::initialize(
     if (histograms[i]) {
       TFCS1DFunctionInt32Histogram* func =
           new TFCS1DFunctionInt32Histogram(histograms[i]);
-      if (xscale != 1) {
+      if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
         for (auto& ele : func->get_HistoBordersx())
           ele *= xscale;
       }
@@ -233,5 +231,3 @@ auto TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
 
   return true;
 }
-
-#pragma GCC diagnostic pop

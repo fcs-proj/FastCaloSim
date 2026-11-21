@@ -1,11 +1,10 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
 #include <TClass.h>
+
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSParametrization =========
@@ -136,14 +135,16 @@ auto TFCSParametrization::compare(const TFCSParametrizationBase& ref) const
     FCS_MSG_DEBUG("compare(): different pdgids");
     return false;
   }
-  if (Ekin_nominal() != ref.Ekin_nominal() || Ekin_min() != ref.Ekin_min()
-      || Ekin_max() != ref.Ekin_max())
+  if (!FastCaloSim::exactly_equal(Ekin_nominal(), ref.Ekin_nominal())
+      || !FastCaloSim::exactly_equal(Ekin_min(), ref.Ekin_min())
+      || !FastCaloSim::exactly_equal(Ekin_max(), ref.Ekin_max()))
   {
     FCS_MSG_DEBUG("compare(): different Ekin range");
     return false;
   }
-  if (eta_nominal() != ref.eta_nominal() || eta_min() != ref.eta_min()
-      || eta_max() != ref.eta_max())
+  if (!FastCaloSim::exactly_equal(eta_nominal(), ref.eta_nominal())
+      || !FastCaloSim::exactly_equal(eta_min(), ref.eta_min())
+      || !FastCaloSim::exactly_equal(eta_max(), ref.eta_max()))
   {
     FCS_MSG_DEBUG("compare(): different eta range");
     return false;
@@ -151,5 +152,3 @@ auto TFCSParametrization::compare(const TFCSParametrizationBase& ref) const
 
   return true;
 }
-
-#pragma GCC diagnostic pop

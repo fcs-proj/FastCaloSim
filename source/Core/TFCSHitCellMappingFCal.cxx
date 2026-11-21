@@ -1,11 +1,9 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHitCellMappingFCal.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 //=============================================
@@ -27,7 +25,9 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   Position lookup_pos {hit.x(), hit.y(), hit.z(), 0, 0, 0};
 
   /// No match possible, retry simulation
-  if ((hit.x() == 0 && hit.y() == 0)) {
+  if (FastCaloSim::exactly_equal(hit.x(), 0.0)
+      && FastCaloSim::exactly_equal(hit.y(), 0.0))
+  {
     return static_cast<FCSReturnCode>(FCSRetry + 5);
   }
   // Get the best matching cell
@@ -65,5 +65,3 @@ auto TFCSHitCellMappingFCal::simulate_hit(
 
   return FCSSuccess;
 }
-
-#pragma GCC diagnostic pop

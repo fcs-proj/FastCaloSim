@@ -1,6 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
@@ -426,5 +423,3 @@ void TFCSLateralShapeParametrizationHitChain::Print(Option_t* option) const
     count++;
   }
 }
-
-#pragma GCC diagnostic pop

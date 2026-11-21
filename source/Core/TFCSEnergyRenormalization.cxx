@@ -1,5 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <array>
@@ -7,6 +5,7 @@
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/Cell.h"
 
@@ -52,7 +51,9 @@ auto TFCSEnergyRenormalization::simulate(
     const auto ilayer = static_cast<std::size_t>(layer);
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
-    if (energies[ilayer] == 0 && simulstate.E(layer) != 0) {
+    if (FastCaloSim::exactly_equal(energies[ilayer], 0.0)
+        && !FastCaloSim::exactly_equal(simulstate.E(layer), 0.0))
+    {
       if (simulstate.E(layer)
               > 8.0 * static_cast<double>(approxLayerNoise.at(ilayer))
           && layer != 5 && layer != 6 && layer != 7)
@@ -69,7 +70,7 @@ auto TFCSEnergyRenormalization::simulate(
             << layer << " expected: " << simulstate.E(layer)
             << " simulated: " << energies[ilayer]);
     }
-    if (energies[ilayer] != 0)
+    if (!FastCaloSim::exactly_equal(energies[ilayer], 0.0))
       scalefactor[ilayer] = simulstate.E(layer) / energies[ilayer];
   }
 
@@ -92,4 +93,3 @@ auto TFCSEnergyRenormalization::simulate(
 
   return FCSSuccess;
 }
-#pragma GCC diagnostic pop

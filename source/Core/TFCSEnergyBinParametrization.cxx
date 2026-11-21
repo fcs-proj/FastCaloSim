@@ -1,8 +1,5 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 #include <algorithm>
 #include <cstddef>
 #include <format>
@@ -231,5 +228,3 @@ auto TFCSEnergyBinParametrization::simulate(
 
   return FCSSuccess;
 }
-
-#pragma GCC diagnostic pop

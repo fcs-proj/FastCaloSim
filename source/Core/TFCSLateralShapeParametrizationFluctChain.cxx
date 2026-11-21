@@ -1,5 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
@@ -191,5 +189,3 @@ void TFCSLateralShapeParametrizationFluctChain::Print(Option_t* option) const
   if (longprint)
     FCS_MSG_INFO(optprint << "  hit energy fluctuation RMS=" << m_RMS);
 }
-
-#pragma GCC diagnostic pop

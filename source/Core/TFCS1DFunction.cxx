@@ -1,8 +1,5 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 #include <cmath>
 #include <cstddef>
 #include <iostream>
@@ -10,6 +7,7 @@
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "TH1.h"
 #include "TRandom.h"
 
@@ -85,10 +83,12 @@ auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
   }
 
   for (first = 0; first < nbins; first++)
-    if (integral_vec[static_cast<std::size_t>(first)] != 0)
+    if (!FastCaloSim::exactly_equal(
+            integral_vec[static_cast<std::size_t>(first)], 0.0))
       break;
   for (last = nbins - 1; last > 0; last--)
-    if (integral_vec[static_cast<std::size_t>(last)] != integral)
+    if (!FastCaloSim::exactly_equal(
+            integral_vec[static_cast<std::size_t>(last)], integral))
       break;
   last++;
 
@@ -129,5 +129,3 @@ auto TFCS1DFunction::generate_histogram_random_gauss(
   }
   return hist;
 }
-
-#pragma GCC diagnostic pop

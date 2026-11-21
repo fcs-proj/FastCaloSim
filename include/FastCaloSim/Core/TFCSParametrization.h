@@ -1,11 +1,9 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #pragma once
 
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 class TFCSParametrization : public ::TFCSParametrizationBase
 {
@@ -30,11 +28,13 @@ public:
 
   auto is_match_all_Ekin() const -> bool override
   {
-    return Ekin_min() == init_Ekin_min && Ekin_max() == init_Ekin_max;
+    return FastCaloSim::exactly_equal(Ekin_min(), init_Ekin_min)
+        && FastCaloSim::exactly_equal(Ekin_max(), init_Ekin_max);
   }
   auto is_match_all_eta() const -> bool override
   {
-    return eta_min() == init_eta_min && eta_max() == init_eta_max;
+    return FastCaloSim::exactly_equal(eta_min(), init_eta_min)
+        && FastCaloSim::exactly_equal(eta_max(), init_eta_max);
   }
   auto is_match_all_Ekin_bin() const -> bool override { return true; }
   auto is_match_all_calosample() const -> bool override { return true; }
@@ -74,5 +74,3 @@ private:
 
   ClassDefOverride(TFCSParametrization, 1)  // TFCSParametrization
 };
-
-#pragma GCC diagnostic pop

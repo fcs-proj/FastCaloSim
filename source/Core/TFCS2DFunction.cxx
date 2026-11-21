@@ -1,8 +1,5 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 #include <cmath>
 #include <iostream>
 
@@ -102,5 +99,3 @@ auto create_random_TH2(int nbinsx = 64, int nbinsy = 64) -> TH2*
   }
   return hist;
 }
-
-#pragma GCC diagnostic pop

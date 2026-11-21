@@ -1,5 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
@@ -8,6 +6,8 @@
 #include <iterator>
 
 #include "FastCaloSim/Core/TFCSParametrizationFloatSelectChain.h"
+
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSParametrizationFloatSelectChain =========
@@ -35,7 +35,9 @@ auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
 
   int ilow = val_to_bin(low);
   int iup = val_to_bin(up);
-  if (ilow < 0 && iup < 0 && m_bin_low_edge[get_number_of_bins()] == low) {
+  if (ilow < 0 && iup < 0
+      && FastCaloSim::exactly_equal(m_bin_low_edge[get_number_of_bins()], low))
+  {
     // special case of adding bin at the end of existing bins
     const unsigned int endbin = get_number_of_bins();
     push_back_in_bin(param, endbin);
@@ -53,15 +55,16 @@ auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
     return -1;
   }
 
-  if (iup >= 0 && ilow >= 0 && iup - ilow == 1 && edge(ilow) == low
-      && edge(iup) == up)
+  if (iup >= 0 && ilow >= 0 && iup - ilow == 1
+      && FastCaloSim::exactly_equal(edge(ilow), low)
+      && FastCaloSim::exactly_equal(edge(iup), up))
   {
     // Case of adding to an existing bin
     push_back_in_bin(param, static_cast<unsigned int>(ilow));
     return ilow;
   }
 
-  if (ilow < 0 && iup == 0 && edge(iup) == up) {
+  if (ilow < 0 && iup == 0 && FastCaloSim::exactly_equal(edge(iup), up)) {
     // Case of adding a new first bin before existing bins
     const std::size_t oldsize = m_bin_start.size();
     m_bin_start.resize(oldsize + 1, m_bin_start.back());
@@ -116,5 +119,3 @@ auto TFCSParametrizationFloatSelectChain::val_to_bin(float val) const -> int
   FCS_MSG_VERBOSE("val_to_bin(" << val << ")=" << dist);
   return dist;
 }
-
-#pragma GCC diagnostic pop

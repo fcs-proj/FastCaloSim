@@ -1,6 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
@@ -81,5 +78,3 @@ void TFCSHitCellMapping::Print(Option_t* option) const
   if (longprint)
     FCS_MSG_INFO(optprint << "  geo=" << m_geo);
 }
-
-#pragma GCC diagnostic push

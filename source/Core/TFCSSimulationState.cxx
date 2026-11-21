@@ -1,6 +1,3 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfloat-equal"
-
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cstring>
@@ -10,6 +7,7 @@
 
 #include "CLHEP/Random/RandomEngine.h"
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
 //======= TFCSSimulationState =========
@@ -40,7 +38,7 @@ void TFCSSimulationState::Print(Option_t*) const
   FCS_MSG_INFO("Ebin=" << m_Ebin << " E=" << E()
                        << " #cells=" << m_cells.size());
   for (int i = 0; i < static_cast<int>(m_E.size()); ++i)
-    if (E(i) != 0) {
+    if (!FastCaloSim::exactly_equal(E(i), 0.0)) {
       FCS_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
     }
   if (!m_AuxInfo.empty()) {
@@ -83,5 +81,3 @@ void TFCSSimulationState::DoAuxInfoCleanup()
     para->CleanAuxInfo(*this);
   }
 }
-
-#pragma GCC diagnostic pop
