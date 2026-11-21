@@ -39,9 +39,8 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  const float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi =
-      std::abs(2.0 * std::exp(-center_eta) / (1.0 + std::exp(-2 * center_eta)));
+  const float dist000 = FastCaloSim::dist000(center_r, center_z);
+  const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
   const float delta_eta = hit.eta() - center_eta;
   const float delta_phi = hit.phi() - center_phi;

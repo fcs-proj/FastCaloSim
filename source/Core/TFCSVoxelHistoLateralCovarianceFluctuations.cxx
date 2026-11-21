@@ -309,9 +309,8 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     deta_hit_minus_extrapol = -deta_hit_minus_extrapol;
 
   float phi_dist2r = 1.0;
-  float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
-  float eta_jakobi =
-      std::abs(2.0 * std::exp(-hit.eta()) / (1.0 + std::exp(-2 * hit.eta())));
+  float dist000 = FastCaloSim::dist000(center_r, center_z);
+  float eta_jakobi = FastCaloSim::eta_jakobi(hit.eta());
 
   float deta_hit_minus_extrapol_mm =
       deta_hit_minus_extrapol * eta_jakobi * dist000;

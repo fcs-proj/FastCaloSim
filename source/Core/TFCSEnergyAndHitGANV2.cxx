@@ -290,9 +290,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     FCS_MSG_VERBOSE(" Layer " << layer << " Extrap eta " << center_eta
                               << " phi " << center_phi << " R " << center_r);
 
-    const float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
-    const float eta_jakobi = std::abs(2.0 * std::exp(-center_eta)
-                                      / (1.0 + std::exp(-2 * center_eta)));
+    const float dist000 = FastCaloSim::dist000(center_r, center_z);
+    const float eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
     int nHitsAlpha {};
     int nHitsR {};
