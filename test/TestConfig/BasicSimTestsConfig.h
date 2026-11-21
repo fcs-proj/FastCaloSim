@@ -32,7 +32,16 @@ public:
           {"endcap_fcal_transition",
            std::string(TEST_BASE_DIR)
                + "/data/param/endcap_fcal_transition/"
-                 "TFCSParam_pid22_pid211_Mom16384_131072_eta_315_325.root"}};
+                 "TFCSParam_pid22_pid211_Mom16384_131072_eta_315_325.root"},
+          // Slice of the ATLAS MC23 parametrization
+          // (TFCSparam_dev_Hybrid_Ha_v5_all_baryons_0_500.root), all energies
+          // of one barrel eta bin, objects as written by the generation. It
+          // covers the GAN, the ML extrapolation weights and the pion shower
+          // shapes.
+          {"barrel_ml",
+           std::string(TEST_BASE_DIR)
+               + "/data/param/barrel_ml/"
+                 "TFCSParam_pid22_pid211_Mom64_4194304_eta_20_25.root"}};
 
   inline static auto param_file_path(const std::string& region) -> std::string
   {

@@ -26,7 +26,7 @@ struct ParticleSimParams
   {
     // Maps pid to LaTeX label
     std::map<int, std::string> pid_label = {
-        {22, R"(\gamma)"}, {11, R"(e)"}, {211, R"(\pi)"}};
+        {22, R"(\gamma)"}, {11, R"(e)"}, {211, R"(\pi)"}, {321, R"(K)"}};
 
     // Maps ekin to LaTeX label
     std::map<int, std::string> ekin_label = {{1024, R"(1\,\text{GeV})"},

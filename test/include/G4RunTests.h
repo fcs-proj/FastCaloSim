@@ -50,8 +50,15 @@ protected:
     fastSimulationPhysics->BeVerbose();
 
     // Activate fast simulation for the following particles
-    std::vector<G4String> fast_sim_particles = {
-        "e-", "e+", "gamma", "pi+", "pi-", "pi0", "proton", "anti-proton"};
+    std::vector<G4String> fast_sim_particles = {"e-",
+                                                "e+",
+                                                "gamma",
+                                                "pi+",
+                                                "pi-",
+                                                "pi0",
+                                                "kaon+",
+                                                "proton",
+                                                "anti-proton"};
     for (auto& particle : fast_sim_particles) {
       fastSimulationPhysics->ActivateFastSimulation(particle);
     }
