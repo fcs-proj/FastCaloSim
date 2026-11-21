@@ -201,13 +201,13 @@ public:
   auto boundary_proximity(const Position& pos) const -> double
   {
     if (m_data.m_isXYZ) {
-      double dx = std::abs(pos.m_x - x());
-      double dy = std::abs(pos.m_y - y());
+      double const dx = std::abs(pos.m_x - x());
+      double const dy = std::abs(pos.m_y - y());
       return std::max(dx - m_data.m_dx / 2, dy - m_data.m_dy / 2);
     }
     if (m_data.m_isEtaPhiR || m_data.m_isEtaPhiZ || m_data.m_isRPhiZ) {
-      double d_eta = std::abs(pos.m_eta - eta());
-      double d_phi = std::abs(norm_angle(pos.m_phi - phi()));
+      double const d_eta = std::abs(pos.m_eta - eta());
+      double const d_phi = std::abs(norm_angle(pos.m_phi - phi()));
       return std::max(d_eta / m_data.m_deta, d_phi / m_data.m_dphi) - 0.5;
     }
     throw std::runtime_error("Invalid coordinate system");

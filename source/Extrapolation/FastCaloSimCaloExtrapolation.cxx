@@ -104,14 +104,14 @@ public:
         // EMB: closed at the front of EME1 on the particle's side
         const double halfLength = embHalfLength();
         return perSubPos(
-            [&](Cell::SubPos subpos)
+            [&](Cell::SubPos subpos) -> Cylinder
             { return Cylinder(std::abs(cell.r(subpos)), halfLength); });
       }
       // Tile: closed at the mean |z| of the layer's ends on both sides
       const Cell positiveEnd = m_geo.get_cell(layer, m_farPositive);
       const Cell negativeEnd = m_geo.get_cell(layer, m_farNegative);
       return perSubPos(
-          [&](Cell::SubPos subpos)
+          [&](Cell::SubPos subpos) -> Cylinder
           {
             return Cylinder(std::abs(cell.r(subpos)),
                             0.5
@@ -126,7 +126,7 @@ public:
         : m_geo.max_eta(layer, CaloGeo::DetectorSide::kEtaNegative);
     const double theta = 2 * std::atan(std::exp(-eta));
     return perSubPos(
-        [&](Cell::SubPos subpos)
+        [&](Cell::SubPos subpos) -> Cylinder
         {
           // The half length is rounded to single precision first
           const auto halfLength =
@@ -199,7 +199,7 @@ void FastCaloSimCaloExtrapolation::extrapolate(
     const TFCSTruthState* truth,
     const std::vector<G4FieldTrack>& caloSteps) const
 {
-  const auto reportFailure = [&](const std::string& what)
+  const auto reportFailure = [&](const std::string& what) -> void
   {
     const std::string message = what + " for " + describe(*truth);
     if (truth->Pt() < kWarningPtLimit) {

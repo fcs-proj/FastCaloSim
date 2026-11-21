@@ -72,13 +72,13 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack,
                                  G4VPhysicalVolume* currentPhysVol)
 {
   G4double retSafety = -1.0;
-  G4double currentMinimumStep = 10.0 * CLHEP::m;
+  G4double const currentMinimumStep = 10.0 * CLHEP::m;
 
   if (FastCaloSim::exactly_equal(fieldTrack.GetCharge(), 0.0)) {
     /* Neutral particles: transport with navigator */
 
     // Compute the step length
-    G4double stepLength =
+    G4double const stepLength =
         m_navigator->ComputeStep(fieldTrack.GetPosition(),
                                  fieldTrack.GetMomentumDirection(),
                                  currentMinimumStep,
@@ -136,9 +136,9 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
       G4InputTrack.GetDynamicParticle();
   const G4ParticleDefinition* inputParticleDef =
       inputDynamicParticle->GetDefinition();
-  G4ChargeState chargeState(inputDynamicParticle->GetCharge(),
-                            inputDynamicParticle->GetMagneticMoment(),
-                            inputParticleDef->GetPDGSpin());
+  G4ChargeState const chargeState(inputDynamicParticle->GetCharge(),
+                                  inputDynamicParticle->GetMagneticMoment(),
+                                  inputParticleDef->GetPDGSpin());
   // Without a magnetic field there is no equation of motion to update
   if (G4EquationOfMotion* equation = m_propagator->GetCurrentEquationOfMotion())
   {

@@ -84,8 +84,8 @@ auto TFCSFlatLateralShapeParametrization::simulate_hit(
   r = static_cast<double>(m_dR)
       * CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
-  double delta_eta = r * std::cos(alpha);
-  double delta_phi = r * std::sin(alpha);
+  double const delta_eta = r * std::cos(alpha);
+  double const delta_phi = r * std::sin(alpha);
 
   hit.setEtaPhiZE(center_eta + delta_eta,
                   center_phi + delta_phi,

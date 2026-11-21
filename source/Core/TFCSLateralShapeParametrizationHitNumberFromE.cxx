@@ -46,7 +46,7 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> double
 {
-  std::size_t cs = calosample();
+  std::size_t const cs = calosample();
   const double energy = simulstate.E(cs);
 
   if (energy < 0) {
@@ -58,16 +58,16 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     return 1;
   }
 
-  double sqrtE = std::sqrt(energy / 1000.0);
-  double sigma_stochastic = m_stochastic / sqrtE;
-  double sigma_stochastic_hadron = m_stochastic_hadron / sqrtE;
+  double const sqrtE = std::sqrt(energy / 1000.0);
+  double const sigma_stochastic = m_stochastic / sqrtE;
+  double const sigma_stochastic_hadron = m_stochastic_hadron / sqrtE;
 
   // Attention: linear sum of "hadron" stochastic term and constant term as
   // emulation of fluctuations in EM component
-  double sigma_hadron = m_constant + sigma_stochastic_hadron;
+  double const sigma_hadron = m_constant + sigma_stochastic_hadron;
 
   // Usual quadratic sum of "hardon" component and normal stochastic term
-  double sigma2 =
+  double const sigma2 =
       sigma_stochastic * sigma_stochastic + sigma_hadron * sigma_hadron;
 
   FCS_MSG_DEBUG("sigma^2 fluctuation=" << sigma2);
@@ -116,7 +116,7 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::compare(
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSLateralShapeParametrizationHitNumberFromE& ref_typed =
+  const auto& ref_typed =
       static_cast<const TFCSLateralShapeParametrizationHitNumberFromE&>(ref);
   if (!FastCaloSim::exactly_equal(m_stochastic, ref_typed.m_stochastic)
       || !FastCaloSim::exactly_equal(m_stochastic_hadron,

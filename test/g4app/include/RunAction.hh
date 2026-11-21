@@ -13,8 +13,8 @@ public:
     RunAction();
     ~RunAction() override;
 
-    void BeginOfRunAction(const G4Run *) override;
-    void EndOfRunAction(const G4Run *) override;
+    void BeginOfRunAction(const G4Run * /*unused*/) override;
+    void EndOfRunAction(const G4Run * /*unused*/) override;
 };
 
 #endif

@@ -112,13 +112,13 @@ auto TFCSParametrization::compare(const TFCSParametrizationBase& ref) const
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  std::string name(GetName());
+  std::string const name(GetName());
   if (name != ref.GetName()) {
     FCS_MSG_DEBUG("compare(): different names " << GetName()
                                                 << " != " << ref.GetName());
     return false;
   }
-  std::string title(GetTitle());
+  std::string const title(GetTitle());
   if (title != ref.GetTitle()) {
     FCS_MSG_DEBUG("compare(): different titles " << GetTitle()
                                                  << " != " << ref.GetTitle());

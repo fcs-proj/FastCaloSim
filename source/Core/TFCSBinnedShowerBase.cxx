@@ -110,7 +110,7 @@ auto TFCSBinnedShowerBase::simulate_hit(
   const double dist000 = FastCaloSim::dist000(center_r, center_z);
   const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
-  std::size_t hit_index = hit.idx();
+  std::size_t const hit_index = hit.idx();
 
   // Get necessary the hit information
   double r;

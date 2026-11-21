@@ -18,7 +18,7 @@
 
 void TFCSNetworkFactory::resolveGlobs(std::string& filename)
 {
-  FastCaloSim::MLogging logger;
+  FastCaloSim::MLogging const logger;
   const std::string ending = ".*";
   if (filename.length() < ending.length()) {
     FCS_MSG_NOCLASS(logger, "Filename is implausably short.");
@@ -45,7 +45,7 @@ auto TFCSNetworkFactory::isOnnxFile(std::string const& filename) -> bool
 auto TFCSNetworkFactory::create(std::vector<char> const& input)
     -> std::unique_ptr<VNetworkBase>
 {
-  FastCaloSim::MLogging logger;
+  FastCaloSim::MLogging const logger;
   FCS_MSG_NOCLASS(
       logger,
       "Directly creating ONNX network from bytes length " << input.size());
@@ -55,7 +55,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& input)
 auto TFCSNetworkFactory::create(std::string input)
     -> std::unique_ptr<VNetworkBase>
 {
-  FastCaloSim::MLogging logger;
+  FastCaloSim::MLogging const logger;
   resolveGlobs(input);
   if (VNetworkBase::isFile(input) && isOnnxFile(input)) {
     FCS_MSG_NOCLASS(logger,
@@ -81,7 +81,7 @@ auto TFCSNetworkFactory::create(std::string input)
 auto TFCSNetworkFactory::create(std::string input, bool graph_form)
     -> std::unique_ptr<VNetworkBase>
 {
-  FastCaloSim::MLogging logger;
+  FastCaloSim::MLogging const logger;
   resolveGlobs(input);
   if (VNetworkBase::isFile(input) && isOnnxFile(input)) {
     FCS_MSG_NOCLASS(logger,
@@ -103,7 +103,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                 std::string string_input)
     -> std::unique_ptr<VNetworkBase>
 {
-  FastCaloSim::MLogging logger;
+  FastCaloSim::MLogging const logger;
   FCS_MSG_NOCLASS(logger, "Given both bytes and a string to create an nn.");
   resolveGlobs(string_input);
   if (!vector_input.empty()) {
@@ -128,7 +128,7 @@ auto TFCSNetworkFactory::create(std::vector<char> const& vector_input,
                                 bool graph_form)
     -> std::unique_ptr<VNetworkBase>
 {
-  FastCaloSim::MLogging logger;
+  FastCaloSim::MLogging const logger;
   FCS_MSG_NOCLASS(
       logger,
       "Given both bytes, a string and graph form specified to create an nn.");

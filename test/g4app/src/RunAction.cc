@@ -12,10 +12,10 @@ RunAction::RunAction()
 RunAction::~RunAction()
 = default;
 
-void RunAction::BeginOfRunAction(const G4Run *)
+void RunAction::BeginOfRunAction(const G4Run * /*unused*/)
 {
 }
 
-void RunAction::EndOfRunAction(const G4Run *)
+void RunAction::EndOfRunAction(const G4Run * /*unused*/)
 {
 }

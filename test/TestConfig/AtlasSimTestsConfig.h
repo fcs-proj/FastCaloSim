@@ -19,7 +19,8 @@ public:
       FastCaloSim::MSG::Level::INFO;
 
   // The list of events (event = particle container) to be simulated
-  inline static const std::vector<TestHelpers::Event> EVENTS = []()
+  inline static const std::vector<TestHelpers::Event> EVENTS =
+      []() -> std::vector<TestHelpers::Event>
   {
     // Vector of events to be processed
     std::vector<TestHelpers::Event> events;
@@ -32,7 +33,7 @@ public:
     using ParticleParamsList = std::vector<ParticleSimParams>;
 
     // Define the properties of the particles you want to test
-    ParticleParamsList params = {
+    ParticleParamsList const params = {
         // Barrel (eta = 0.2)
         {22, 16384, 0.2, "barrel"},
         {22, 131072, 0.2, "barrel"},
@@ -71,7 +72,7 @@ public:
     // Loop over the parameters and create the events
     for (const auto& ptcl : params) {
       // Create photon with speficfic PID, EKIN, and ETA
-      TestHelpers::Particle particle =
+      TestHelpers::Particle const particle =
           sampler.generate(ptcl.pid,
                            static_cast<float>(ptcl.ekin),
                            static_cast<float>(ptcl.eta));

@@ -28,7 +28,7 @@ VNetworkLWTNN::~VNetworkLWTNN() = default;
 // fill in m_json.
 void VNetworkLWTNN::setupPersistedVariables()
 {
-  if (this->isFile(m_inputFile)) {
+  if (VNetworkLWTNN::isFile(m_inputFile)) {
     FCS_MSG_DEBUG("Making an LWTNN network using a file on disk, "
                   << m_inputFile);
     m_printable_name = m_inputFile;
@@ -57,7 +57,7 @@ void VNetworkLWTNN::fillJson(std::string const& tree_name)
   if (this->isRootFile()) {
     FCS_MSG_VERBOSE("Treating input file as a root file");
     TFile tfile(this->m_inputFile.c_str(), "READ");
-    TTree* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
+    auto* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
     std::string found = this->readStringFromTTree(*tree);
     FCS_MSG_DEBUG("Read json from root file, length " << found.length());
     m_json = std::move(found);

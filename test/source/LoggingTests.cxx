@@ -219,7 +219,7 @@ TEST_F(LoggingTest, DisabledMessageIsNotEvaluated)
 {
   const Logger log;
   int calls = 0;
-  log.debug_with([&calls] { return ++calls; });
+  log.debug_with([&calls] -> int { return ++calls; });
   EXPECT_EQ(calls, 0);
   EXPECT_TRUE(m_sink->records().empty());
 }
@@ -287,9 +287,10 @@ TEST_F(LoggingTest, ThreadsSharingAnObject)
   constexpr int n_lines = 200;
   {
     std::vector<std::jthread> threads;
+    threads.reserve(n_threads);
     for (int t = 0; t < n_threads; ++t) {
       threads.emplace_back(
-          [&log]
+          [&log] -> void
           {
             for (int i = 0; i < n_lines; ++i) {
               log.streamed(5);
@@ -315,9 +316,10 @@ TEST(LoggingSinkTest, ReplaceWhileLogging)
   constexpr int n_messages = 2000;
   {
     std::vector<std::jthread> threads;
+    threads.reserve(n_threads);
     for (int t = 0; t < n_threads; ++t) {
       threads.emplace_back(
-          [&log]
+          [&log] -> void
           {
             for (int i = 0; i < n_messages; ++i) {
               log.info(i);

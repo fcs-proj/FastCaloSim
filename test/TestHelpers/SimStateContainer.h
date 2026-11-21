@@ -61,10 +61,10 @@ class SimStateContainer
     for (const auto& state : m_container) {
       TFCSSimulationState::cellmap cellmap = state.cells();
       // First order the cellmap by cell id
-      std::map<unsigned long long, float> ordered_cellmap(cellmap.begin(),
-                                                          cellmap.end());
+      std::map<unsigned long long, float> const ordered_cellmap(cellmap.begin(),
+                                                                cellmap.end());
       for (const auto& cell_map_iter : ordered_cellmap) {
-        unsigned long long cell_id = cell_map_iter.first;
+        unsigned long long const cell_id = cell_map_iter.first;
         // The stored float energy is widened exactly to double
         const auto cell_energy = static_cast<double>(cell_map_iter.second);
 

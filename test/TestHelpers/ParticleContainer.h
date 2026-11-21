@@ -34,7 +34,7 @@ public:
   // Add a particle based on pid, eta, ekin, phi, pos
   void add(int pid, float ekin, RPhiEta pos, RPhiEta dir)
   {
-    Particle particle = {pid, ekin, pos.get(), dir.get().unit()};
+    Particle const particle = {pid, ekin, pos.get(), dir.get().unit()};
     m_particles.emplace_back(particle);
   }
 

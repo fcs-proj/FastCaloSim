@@ -50,7 +50,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   model->doSimulation(true);
 
   // Set the param file path
-  std::string paramsObject {"SelPDGID"};
+  std::string const paramsObject {"SelPDGID"};
   TFCSParametrizationBase* param = static_cast<TFCSParametrizationBase*>(
       BasicSimTests::param_files[evt.get_param_file_key()]->Get(
           paramsObject.c_str()));
@@ -67,7 +67,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   G4RunTests::run_manager->BeamOn(1);
 
   // Retrieve the transportation tracks and serialize to json file
-  TestHelpers::TrackContainer tracks = model->GetTransportTracks();
+  TestHelpers::TrackContainer const tracks = model->GetTransportTracks();
   tracks.serialize(AtlasSimTestConfig::transport_output_path());
 
   // Retrieve the simulation states and serialize to json file
@@ -77,7 +77,8 @@ TEST_P(AtlasSimTests, AtlasSimulation)
   states.serialize(AtlasSimTestConfig::sim_output_path());
 
   // Plot the cells containing energy and color according to the energy
-  std::string sim_plot_exec = AtlasSimTestConfig::py_sim_exec(evt.get_label());
+  std::string const sim_plot_exec =
+      AtlasSimTestConfig::py_sim_exec(evt.get_label());
 
   ASSERT_TRUE(system(sim_plot_exec.c_str()) == 0);
 

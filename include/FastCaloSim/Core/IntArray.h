@@ -11,7 +11,7 @@ class IntArray
 {
 public:
   IntArray();
-  IntArray(int);
+  IntArray(int /*n*/);
   ~IntArray() override;
 
 private:

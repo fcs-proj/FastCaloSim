@@ -190,7 +190,7 @@ public:
     }
     T rnd = static_cast<T>(TFCS1DFunction_Numeric<T, Trandom>::MaxValueFloat
                            * drnd);
-    auto it = std::upper_bound(m_array.begin(), m_array.end(), rnd);
+    const auto* it = std::upper_bound(m_array.begin(), m_array.end(), rnd);
 
     T basecont = 0;
     if (it != m_array.begin()) {

@@ -28,7 +28,7 @@ public:
   auto compareLogs() const -> bool
   {
     const std::string diff_cmd = buildDiffCommand();
-    int diff_status = system(diff_cmd.c_str());
+    int const diff_status = system(diff_cmd.c_str());
     return diff_status == 0;  // Return true if logs match, false otherwise
   }
 
@@ -61,7 +61,7 @@ private:
   // Build the full diff command with filtering
   auto buildDiffCommand() const -> std::string
   {
-    std::string grep_filter = buildGrepFilterCommand();
+    std::string const grep_filter = buildGrepFilterCommand();
 
     std::cout << "Comparing " << ref_log_file << " and " << new_log_file
               << '\n';

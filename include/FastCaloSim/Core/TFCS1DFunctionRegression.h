@@ -19,7 +19,7 @@ public:
   auto regression_value(double uniform) const -> double;
   void set_weights(const std::vector<std::vector<double>>& fWeightMatrix0to1,
                    const std::vector<std::vector<double>>& fWeightMatrix1to2);
-  static auto sigmoid(double) -> double;
+  static auto sigmoid(double /*x*/) -> double;
 
 private:
   std::vector<std::vector<double>> m_fWeightMatrix0to1;

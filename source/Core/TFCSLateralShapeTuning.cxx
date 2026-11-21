@@ -50,10 +50,9 @@ auto TFCSLateralShapeTuning::initFromModelFile(
 
   for (auto& parameterName : parameterModelNames) {
     // interpolate the model parameters
-    TFCSEnergyInterpolationPiecewiseLinear* linModelInterpol =
-        new TFCSEnergyInterpolationPiecewiseLinear("", "");
+    auto* linModelInterpol = new TFCSEnergyInterpolationPiecewiseLinear("", "");
 
-    TGraph* modelParameterGraph = static_cast<TGraph*>(
+    TGraph const* modelParameterGraph = static_cast<TGraph*>(
         gDirectory->Get(std::format("photons/layer{}/m{}_m{}_{}_{}/{}",
                                     layer,
                                     intMaxEta,
@@ -92,11 +91,11 @@ auto TFCSLateralShapeTuning::initFromMap(const interpolationMap& parameters)
   return FCSSuccess;
 }
 
-auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
-                                          TFCSSimulationState&,
-                                          const TFCSTruthState* truth,
-                                          const TFCSExtrapolationState*)
-    -> FCSReturnCode
+auto TFCSLateralShapeTuning::simulate_hit(
+    Hit& hit,
+    TFCSSimulationState& /*simulstate*/,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* /*extrapol*/) -> FCSReturnCode
 {
   // do not do anything if the parameter interpolation map is empty
   // this means we are in an pseudorapidity region, where no tuning to data is
@@ -119,7 +118,7 @@ auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
   // retrieve truth kinetic energy for interpolation
   const double Ekin = truth->Ekin();
   // retrieve calo sample
-  std::size_t layer = TFCSLateralShapeParametrization::calosample();
+  std::size_t const layer = TFCSLateralShapeParametrization::calosample();
 
   FCS_MSG_DEBUG("[TFCSLateralShapeTuning] Initializing with pdgId="
                 << pdgId << ", charge=" << charge << ", Ekin=" << Ekin
@@ -148,8 +147,8 @@ auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
         "scaling model with eta_s="
         << etaScaleFactor << " and phi_s=" << phiScaleFactor);
 
-    double deltaEtaCorr = etaScaleFactor * deltaEta;
-    double deltaPhiCorr = phiScaleFactor * deltaPhi;
+    double const deltaEtaCorr = etaScaleFactor * deltaEta;
+    double const deltaPhiCorr = phiScaleFactor * deltaPhi;
 
     hit.setEtaPhiZE(
         centerEta + deltaEtaCorr, centerPhi + deltaPhiCorr, centerZ, hit.E());
@@ -174,7 +173,7 @@ auto TFCSLateralShapeTuning::simulate_hit(Hit& hit,
         "model with eta_s="
         << etaScaleFactor);
 
-    double deltaEtaCorr = etaScaleFactor * deltaEta;
+    double const deltaEtaCorr = etaScaleFactor * deltaEta;
 
     hit.setEtaPhiZE(
         centerEta + deltaEtaCorr, centerPhi + deltaPhi, centerZ, hit.E());
@@ -187,8 +186,9 @@ auto TFCSLateralShapeTuning::getSeriesScalingFactor(
     double a0, double a1, double a2, double a3, double distToShowerCenter)
     -> double
 {
-  double meanDistToShowerCentre = 0.0039;
-  double scaleFactor = 1 + a0 + a1 * distToShowerCenter / meanDistToShowerCentre
+  double const meanDistToShowerCentre = 0.0039;
+  double const scaleFactor = 1 + a0
+      + a1 * distToShowerCenter / meanDistToShowerCentre
       + a2 * std::pow(distToShowerCenter / meanDistToShowerCentre, 2)
       + a3 * std::pow(distToShowerCenter / meanDistToShowerCentre, 3);
 

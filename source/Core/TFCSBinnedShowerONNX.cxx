@@ -64,8 +64,7 @@ void TFCSBinnedShowerONNX::get_event(TFCSSimulationState& simulstate,
                                static_cast<float>(e_init));
 
   // Store a pointer to the event
-  TFCSMLCalorimeterSimulator::event_t* event_ptr =
-      new TFCSMLCalorimeterSimulator::event_t(event);
+  auto* event_ptr = new TFCSMLCalorimeterSimulator::event_t(event);
   simulstate.setAuxInfo<void*>("BSEventData"_FCShash, event_ptr);
   simulstate.setAuxInfo<double>("BSEinit"_FCShash, e_init);
 
@@ -82,7 +81,7 @@ void TFCSBinnedShowerONNX::load_meta_data(const std::string& filename,
   }
 
   // layer dependent variables
-  for (std::size_t layer_index : layers) {
+  for (std::size_t const layer_index : layers) {
     FCS_MSG_INFO("Loading layer " << layer_index << " from file: " << filename);
 
     // Load the bin boundaries for this layer
@@ -103,13 +102,13 @@ auto TFCSBinnedShowerONNX::load_hdf5_dataset(const std::string& filename,
         std::vector<float> {}, std::vector<hsize_t> {}, false);
   }
 
-  H5::DataSet dataset = file.openDataSet(datasetname);
+  H5::DataSet const dataset = file.openDataSet(datasetname);
 
   // Get the dataspace of the dataset
-  H5::DataSpace dataspace = dataset.getSpace();
+  H5::DataSpace const dataspace = dataset.getSpace();
 
   // Get the number of dimensions and the size of each dimension
-  int rank = dataspace.getSimpleExtentNdims();
+  int const rank = dataspace.getSimpleExtentNdims();
   std::vector<hsize_t> dims_out(static_cast<std::size_t>(rank));
   dataspace.getSimpleExtentDims(dims_out.data(), nullptr);
 
@@ -140,7 +139,8 @@ void TFCSBinnedShowerONNX::load_bin_boundaries(const std::string& filename,
                                            "binsize_alpha_layer_"};
 
   for (std::size_t i = 0; i < datasetnames.size(); i++) {
-    std::string datasetname = datasetnames.at(i) + std::to_string(layer_index);
+    std::string const datasetname =
+        datasetnames.at(i) + std::to_string(layer_index);
     std::vector<float> data;
     std::vector<hsize_t> dims;
     bool success;
@@ -204,9 +204,8 @@ void TFCSBinnedShowerONNX::set_bin_boundaries(
 void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
     TFCSSimulationState& simulstate) const
 {
-  TFCSMLCalorimeterSimulator::event_t* event =
-      static_cast<TFCSMLCalorimeterSimulator::event_t*>(
-          simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  auto* event = static_cast<TFCSMLCalorimeterSimulator::event_t*>(
+      simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
   if (!event) {
     FCS_MSG_ERROR(
         "compute_n_hits_and_elayer called without BSEventData; "
@@ -216,19 +215,19 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
   const auto e_init = simulstate.getAuxInfo<double>("BSEinit"_FCShash);
 
   // Loop over all layers
-  std::size_t n_layers = event->event_data.size();
+  std::size_t const n_layers = event->event_data.size();
   std::vector<std::vector<std::size_t>> hits_per_layer;
   std::vector<double> elayer;
   hits_per_layer.resize(n_layers);
   elayer.resize(n_layers, 0.0);
 
   for (std::size_t layer_index = 0; layer_index < n_layers; ++layer_index) {
-    TFCSMLCalorimeterSimulator::layer_t& layer =
+    TFCSMLCalorimeterSimulator::layer_t const& layer =
         event->event_data.at(layer_index);
 
     // Loop over all voxels in the layer
     std::size_t n_hits = 0;
-    for (float e_voxel : layer.E_vector) {
+    for (float const e_voxel : layer.E_vector) {
       std::size_t hits_per_bin;
       if (e_voxel > std::numeric_limits<float>::epsilon()) {
         const double e_hits = static_cast<double>(e_voxel) * e_init;
@@ -247,7 +246,7 @@ void TFCSBinnedShowerONNX::compute_n_hits_and_elayer(
     }
   }
   // Store the hits per layer vector
-  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+  auto* hits_per_layer_ptr =
       new std::vector<std::vector<std::size_t>>(std::move(hits_per_layer));
   simulstate.setAuxInfo<void*>("BSNHits"_FCShash, hits_per_layer_ptr);
 
@@ -260,7 +259,7 @@ auto TFCSBinnedShowerONNX::get_n_hits(TFCSSimulationState& simulstate,
                                       std::size_t layer_index) const
     -> std::size_t
 {
-  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+  auto* hits_per_layer_ptr =
       static_cast<std::vector<std::vector<std::size_t>>*>(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
 
@@ -297,7 +296,7 @@ auto TFCSBinnedShowerONNX::get_energy_index(TFCSSimulationState& simulstate,
                                             std::size_t hit_index) const
     -> std::size_t
 {
-  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+  auto* hits_per_layer_ptr =
       static_cast<std::vector<std::vector<std::size_t>>*>(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
   if (!hits_per_layer_ptr) {
@@ -337,7 +336,7 @@ auto TFCSBinnedShowerONNX::get_coordinates(TFCSSimulationState& simulstate,
 {
   // The bin coordinates are stored in single precision
   const auto& coordinates = m_coordinates.at(layer_index);
-  const auto at_bin = [bin_index](const std::vector<float>& values)
+  const auto at_bin = [bin_index](const std::vector<float>& values) -> double
   { return static_cast<double>(values.at(bin_index)); };
   double R_min = at_bin(coordinates.R_lower);
   double R_max = at_bin(coordinates.R_size) + at_bin(coordinates.R_lower);
@@ -371,7 +370,7 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
   const auto e_init = simulstate.getAuxInfo<double>("BSEinit"_FCShash);
   // Energies and sub-bin probabilities are stored in single precision
   const std::vector<float>& available_energies = m_upscaling_energies;
-  const auto energy = [&available_energies](std::size_t index)
+  const auto energy = [&available_energies](std::size_t index) -> double
   { return static_cast<double>(available_energies.at(index)); };
   const auto sub_bin = [this, layer_index, bin_index](
                            std::size_t index) -> const std::vector<float>&
@@ -381,7 +380,7 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
 
   std::array<double, 3> probabilities = {0.25, 0.5, 0.75};
   const auto set_probabilities =
-      [&probabilities](const std::vector<float>& sub_bin_probabilities)
+      [&probabilities](const std::vector<float>& sub_bin_probabilities) -> void
   {
     for (std::size_t i = 0; i < probabilities.size(); ++i) {
       probabilities[i] = static_cast<double>(sub_bin_probabilities[i]);
@@ -394,7 +393,7 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
         std::upper_bound(available_energies.begin(),
                          available_energies.end(),
                          e_init,
-                         [](double value, float element)
+                         [](double value, float element) -> bool
                          { return value < static_cast<double>(element); });
     if (it != available_energies.end()) {
       e_index = FastCaloSim::index_of(available_energies, it);
@@ -484,9 +483,8 @@ auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
     std::size_t layer_index,
     std::size_t hit_index) const -> std::tuple<double, double, double>
 {
-  TFCSMLCalorimeterSimulator::event_t* event =
-      static_cast<TFCSMLCalorimeterSimulator::event_t*>(
-          simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  auto* event = static_cast<TFCSMLCalorimeterSimulator::event_t*>(
+      simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
   if (!event) {
     FCS_MSG_ERROR("No BSEventData available in get_hit_position_and_energy");
     return std::make_tuple(0.0, 0.0, 0.0);
@@ -500,10 +498,10 @@ auto TFCSBinnedShowerONNX::get_hit_position_and_energy(
     return std::make_tuple(0.0, 0.0, 0.0);
   }
 
-  std::size_t energy_index = get_energy_index(
+  std::size_t const energy_index = get_energy_index(
       simulstate, layer_index, hit_index);  // Get the bin index for the hit
 
-  std::vector<std::vector<std::size_t>>* hits_per_layer_ptr =
+  auto* hits_per_layer_ptr =
       static_cast<std::vector<std::vector<std::size_t>>*>(
           simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
 
@@ -561,17 +559,17 @@ void TFCSBinnedShowerONNX::load_sub_bin_distribution(
     return;
   }
 
-  std::regex pattern(R"(probabilities_layer_(\d+)_energy_([0-9.]+))");
+  std::regex const pattern(R"(probabilities_layer_(\d+)_energy_([0-9.]+))");
   std::map<float, std::map<int, std::vector<std::vector<float>>>> temp_storage;
 
   TIter next(file->GetListOfKeys());
   TKey* key;
 
   while ((key = static_cast<TKey*>(next()))) {
-    std::string keyname = key->GetName();
+    std::string const keyname = key->GetName();
     std::smatch match;
     if (std::regex_match(keyname, match, pattern)) {
-      int layer = std::stoi(match[1].str());
+      int const layer = std::stoi(match[1].str());
       const auto energy = static_cast<float>(std::stod(match[2].str()));
 
       std::unique_ptr<TMatrixD> matrix(file->Get<TMatrixD>(keyname.c_str()));

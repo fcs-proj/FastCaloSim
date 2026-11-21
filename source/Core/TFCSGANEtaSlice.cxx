@@ -128,7 +128,7 @@ auto TFCSGANEtaSlice::LoadGAN() -> bool
 
 void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
 {
-  std::string rootFileName = m_param.GetInputFolder() + "/rootFiles/pid"
+  std::string const rootFileName = m_param.GetInputFolder() + "/rootFiles/pid"
       + std::to_string(m_pid) + "_E1048576_eta_" + std::to_string(m_etaMin)
       + "_" + std::to_string(m_etaMin + 5) + ".root";
   FCS_MSG_DEBUG("Opening file " << rootFileName);
@@ -137,7 +137,7 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
     throw std::runtime_error("Failed to open or initialize ROOT file: "
                              + rootFileName);
   }
-  for (int layer : m_param.GetRelevantLayers()) {
+  for (int const layer : m_param.GetRelevantLayers()) {
     FCS_MSG_DEBUG("Layer " << layer);
     TFCSGANXMLParameters::Binning binsInLayers = m_param.GetBinning();
     TH2D* h2 = &binsInLayers[layer];
@@ -153,7 +153,7 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
                                + " from ROOT file: " + rootFileName);
     }
 
-    TAxis* x = h2->GetXaxis();
+    TAxis const* x = h2->GetXaxis();
     for (int ix = 1; ix <= h2->GetNbinsX(); ++ix) {
       FCS_MSG_DEBUG(ix);
       h1->GetXaxis()->SetRangeUser(x->GetBinLowEdge(ix), x->GetBinUpEdge(ix));
@@ -175,7 +175,7 @@ void TFCSGANEtaSlice::CalculateMeanPointFromDistributionOfR()
 
 void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
 {
-  std::string rootFileName = m_param.GetInputFolder() + "/rootFiles/pid"
+  std::string const rootFileName = m_param.GetInputFolder() + "/rootFiles/pid"
       + std::to_string(m_pid) + "_E65536_eta_" + std::to_string(m_etaMin) + "_"
       + std::to_string(m_etaMin + 5) + "_validation.root";
   FCS_MSG_DEBUG("Opening file " << rootFileName);
@@ -188,12 +188,12 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
   if (!tree) {
     throw std::runtime_error("No rootTree in " + rootFileName);
   }
-  for (int layer : m_param.GetRelevantLayers()) {
-    std::string branchName = "extrapWeight_" + std::to_string(layer);
+  for (int const layer : m_param.GetRelevantLayers()) {
+    std::string const branchName = "extrapWeight_" + std::to_string(layer);
     // TTree::Draw fills the histogram that it finds by name in the current
     // directory (the file). Deleting it removes it from there again.
     auto h = std::make_unique<TH1D>("h", "h", 100, 0.01, 1);
-    std::string command = branchName + ">>h";
+    std::string const command = branchName + ">>h";
     tree->Draw(command.c_str());
     m_extrapolatorWeights[layer] = h->GetMean();
     FCS_MSG_DEBUG("Extrapolation: layer " << layer << " mean "
@@ -232,9 +232,9 @@ auto TFCSGANEtaSlice::GetNetworkOutputs(
   const auto p_min = static_cast<int>(std::pow(2, minExp));
   const auto p_max = static_cast<int>(std::pow(2, maxExp));
   // Keep min and max without mass offset as we do not train on antiparticles
-  double Ekin_min =
+  double const Ekin_min =
       std::sqrt(std::pow(p_min, 2) + std::pow(truth->M(), 2)) - truth->M();
-  double Ekin_max =
+  double const Ekin_max =
       std::sqrt(std::pow(p_max, 2) + std::pow(truth->M(), 2)) - truth->M();
 
   for (int i = 0; i < m_param.GetLatentSpaceSize(); i++) {

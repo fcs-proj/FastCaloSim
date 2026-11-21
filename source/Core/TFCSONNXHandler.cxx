@@ -129,7 +129,7 @@ void TFCSONNXHandler::setupNet()
   // iterate over all input nodes
   FCS_MSG_DEBUG("Getting input nodes.");
   const std::size_t num_input_nodes = m_session->GetInputCount();
-  Ort::AllocatorWithDefaultOptions allocator;
+  Ort::AllocatorWithDefaultOptions const allocator;
   for (std::size_t i = 0; i < num_input_nodes; i++) {
 #if ORT_API_VERSION > 11
     Ort::AllocatedStringPtr node_names =
@@ -142,7 +142,7 @@ void TFCSONNXHandler::setupNet()
     m_inputNodeNames.push_back(input_name);
     FCS_MSG_VERBOSE("Found input node named " << input_name);
 
-    Ort::TypeInfo type_info = m_session->GetInputTypeInfo(i);
+    Ort::TypeInfo const type_info = m_session->GetInputTypeInfo(i);
 
     // For some reason unless auto is used as the return type
     // this causes a segfault once the loop ends....
@@ -160,7 +160,7 @@ void TFCSONNXHandler::setupNet()
           "yet implemented in TFCSONNXHandler.");
     };
 
-    std::vector<int64_t> recieved_dimension = tensor_info.GetShape();
+    std::vector<int64_t> const recieved_dimension = tensor_info.GetShape();
     FCS_MSG_VERBOSE("There are " << recieved_dimension.size()
                                  << " dimensions.");
     // This vector sometimes includes a symbolic dimension
@@ -170,7 +170,7 @@ void TFCSONNXHandler::setupNet()
     // in which case it's safe to treat it as having
     // dimension 1.
     std::vector<int64_t> dimension_of_node;
-    for (int64_t node_dim : recieved_dimension) {
+    for (int64_t const node_dim : recieved_dimension) {
       if (node_dim < 1) {
         FCS_MSG_WARNING("Found symbolic dimension "
                         << node_dim << " in node named " << input_name
@@ -227,7 +227,7 @@ void TFCSONNXHandler::setupNet()
     // Again, check for symbolic dimensions
     std::vector<int64_t> dimension_of_node;
     int64_t node_size = 1;
-    for (int64_t node_dim : recieved_dimension) {
+    for (int64_t const node_dim : recieved_dimension) {
       if (node_dim < 1) {
         FCS_MSG_WARNING("Found symbolic dimension "
                         << node_dim << " in node named " << output_name
@@ -261,12 +261,12 @@ void TFCSONNXHandler::setupNet()
       && first_output_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT)
   {
     // got to capture this in the lambda so it can access class methods
-    m_computeLambda = [this](NetworkInputs const& inputs)
+    m_computeLambda = [this](NetworkInputs const& inputs) -> NetworkOutputs
     { return computeTemplate<float, float>(inputs); };
   } else if (first_input_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE
              && first_output_type == ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE)
   {
-    m_computeLambda = [this](NetworkInputs const& inputs)
+    m_computeLambda = [this](NetworkInputs const& inputs) -> NetworkOutputs
     { return computeTemplate<double, double>(inputs); };
   } else {
     throw std::runtime_error(
@@ -285,7 +285,7 @@ auto TFCSONNXHandler::getSerializedSession(const std::string& tree_name)
   if (this->isRootFile()) {
     FCS_MSG_INFO("Reading bytes from root file.");
     TFile tfile(this->m_inputFile.c_str(), "READ");
-    TTree* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
+    auto* tree = static_cast<TTree*>(tfile.Get(tree_name.c_str()));
     std::vector<char> bytes = this->readBytesFromTTree(*tree);
     FCS_MSG_DEBUG("Found bytes size " << bytes.size());
     return bytes;
@@ -323,7 +323,7 @@ void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
   char m_session_data;
   tree.Branch(
       "serialized_m_session", &m_session_data, "serialized_m_session/B");
-  for (Char_t here : bytes) {
+  for (Char_t const here : bytes) {
     m_session_data = here;
     tree.Fill();
   };
@@ -334,7 +334,7 @@ void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
 void TFCSONNXHandler::readSerializedSession()
 {
   FCS_MSG_DEBUG("Transforming bytes to session.");
-  Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
+  Ort::Env const env(ORT_LOGGING_LEVEL_WARNING, "test");
   Ort::SessionOptions opts;
   opts.SetInterOpNumThreads(1);
   opts.SetIntraOpNumThreads(1);
@@ -345,8 +345,8 @@ void TFCSONNXHandler::readSerializedSession()
 }
 
 template<typename Tin, typename Tout>
-VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
-    VNetworkBase::NetworkInputs const& inputs)
+auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
+    -> VNetworkBase::NetworkOutputs
 {
   // working from
   // https://github.com/microsoft/onnxruntime-inference-examples/blob/main/c_cxx/squeezenet/main.cpp#L71
@@ -422,7 +422,7 @@ VNetworkBase::NetworkOutputs TFCSONNXHandler::computeTemplate(
   // All inputs have been correctly formatted and the net can be run.
   auto output_tensors = m_session->Run(Ort::RunOptions {nullptr},
                                        m_inputNodeNames.data(),
-                                       &node_values[0],
+                                       node_values.data(),
                                        num_input_nodes,
                                        m_outputNodeNames.data(),
                                        m_outputNodeNames.size());

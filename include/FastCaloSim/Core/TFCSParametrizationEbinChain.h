@@ -19,15 +19,15 @@ public:
   /// current convention is to start Ebin counting at 1, to be updated to start
   /// counting with 0
   auto get_bin(TFCSSimulationState& simulstate,
-               const TFCSTruthState*,
-               const TFCSExtrapolationState*) const
+               const TFCSTruthState* /*unused*/,
+               const TFCSExtrapolationState* /*unused*/) const
       -> std::optional<std::size_t> override
   {
     return simulstate.Ebin();
   }
   auto get_variable_text(TFCSSimulationState& simulstate,
-                         const TFCSTruthState*,
-                         const TFCSExtrapolationState*) const
+                         const TFCSTruthState* /*unused*/,
+                         const TFCSExtrapolationState* /*unused*/) const
       -> const std::string override;
 
 private:

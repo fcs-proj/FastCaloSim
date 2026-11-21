@@ -53,7 +53,7 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
 auto TFCSEnergyInterpolationPiecewiseLinear::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const -> FCSReturnCode
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   const double Ekin = truth->Ekin();
   const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;

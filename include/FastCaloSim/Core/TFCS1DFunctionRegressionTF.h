@@ -11,7 +11,7 @@ class TFCS1DFunctionRegressionTF : public TFCS1DFunctionRegression
 {
 public:
   TFCS1DFunctionRegressionTF() = default;
-  TFCS1DFunctionRegressionTF(float, float);
+  TFCS1DFunctionRegressionTF(float /*rangeval*/, float /*startval*/);
   ~TFCS1DFunctionRegressionTF() override = default;
 
   using TFCS1DFunctionRegression::rnd_to_fct;

@@ -19,7 +19,7 @@ void TFCSParametrizationBinnedChain::push_before_first_bin(
   if (m_bin_start[0] == size()) {
     chain().push_back(param);
   } else {
-    Chain_t::iterator it(&chain()[m_bin_start[0]]);
+    Chain_t::iterator const it(&chain()[m_bin_start[0]]);
     chain().insert(it, param);
   }
   for (auto& ele : m_bin_start) {
@@ -38,7 +38,7 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
   if (m_bin_start[bin + 1] == size()) {
     chain().push_back(param);
   } else {
-    Chain_t::iterator it(&chain()[m_bin_start[bin + 1]]);
+    Chain_t::iterator const it(&chain()[m_bin_start[bin + 1]]);
     chain().insert(it, param);
   }
   for (std::size_t ibin = bin + 1; ibin < m_bin_start.size(); ++ibin) {
@@ -48,9 +48,10 @@ void TFCSParametrizationBinnedChain::push_back_in_bin(
 }
 
 auto TFCSParametrizationBinnedChain::get_bin(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> std::optional<std::size_t>
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* /*unused*/) const
+    -> std::optional<std::size_t>
 {
   return 0;
 }
@@ -74,9 +75,9 @@ auto TFCSParametrizationBinnedChain::bin_label(std::optional<std::size_t> bin)
 }
 
 auto TFCSParametrizationBinnedChain::get_variable_text(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> const std::string
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* /*unused*/) const -> const std::string
 {
   return std::string("NO VARIABLE DEFINED");
 }
@@ -94,7 +95,7 @@ auto TFCSParametrizationBinnedChain::simulate(
 {
   return simulate_with_restarts(
       "TFCSParametrizationBinnedChain::simulate()",
-      [&]
+      [&] -> FCSReturnCode
       {
         // Parametrizations before the bins, run for all bins
         for (std::size_t ichain = 0; ichain < m_bin_start[0]; ++ichain) {

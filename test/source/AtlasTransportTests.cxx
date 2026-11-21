@@ -50,23 +50,24 @@ TEST_P(AtlasTransportTests, AtlasTransport)
   run_manager->BeamOn(1);
 
   // Serialize tracks to json file
-  TestHelpers::TrackContainer tracks = model->GetTransportTracks();
+  TestHelpers::TrackContainer const tracks = model->GetTransportTracks();
   tracks.serialize(AtlasTransportTestConfig::transport_output_path());
 
   // Construct the python command to plot the transport
-  std::string transport_exec =
+  std::string const transport_exec =
       AtlasTransportTestConfig::py_transport_exec(evt.get_label());
 
   // Plot the transport
   ASSERT_TRUE(system(transport_exec.c_str()) == 0);
 
   // Serialize the extrapolation states to json file
-  TestHelpers::ExtrapStateContainer extrapolations = model->GetExtrapolations();
+  TestHelpers::ExtrapStateContainer const extrapolations =
+      model->GetExtrapolations();
   extrapolations.serialize(
       AtlasTransportTestConfig::extrapolation_output_path());
 
   // Construct the python command to plot the extrapolation
-  std::string extrapol_exec =
+  std::string const extrapol_exec =
       AtlasTransportTestConfig::py_extrapol_exec(evt.get_label());
 
   // Plot the extrapolation

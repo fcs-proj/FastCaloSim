@@ -52,10 +52,15 @@ public:
   auto is_match_all_Ekin_bin() const -> bool override { return true; }
   auto is_match_all_calosample() const -> bool override { return false; }
 
-  static void P2X(
-      TVectorD*, TVectorD*, TMatrixD*, int, const double*, double*, int);
+  static void P2X(TVectorD* /*SigmaValues*/,
+                  TVectorD* /*MeanValues*/,
+                  TMatrixD* /*EV*/,
+                  int /*gNVariables*/,
+                  const double* /*p*/,
+                  double* /*x*/,
+                  int /*nTest*/);
   auto loadInputs(TFile* file) -> bool;
-  auto loadInputs(TFile* file, const std::string&) -> bool;
+  auto loadInputs(TFile* file, const std::string& /*folder*/) -> bool;
 
   void clean();
 

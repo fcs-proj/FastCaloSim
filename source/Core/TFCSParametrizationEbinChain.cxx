@@ -14,8 +14,8 @@
 
 auto TFCSParametrizationEbinChain::get_variable_text(
     TFCSSimulationState& simulstate,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> const std::string
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* /*unused*/) const -> const std::string
 {
   return std::format("Ebin={}", bin_label(simulstate.Ebin()));
 }

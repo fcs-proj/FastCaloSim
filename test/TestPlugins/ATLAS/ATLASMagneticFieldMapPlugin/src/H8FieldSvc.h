@@ -39,9 +39,9 @@ public:
   ~H8FieldSvc() override;
 
   /** Athena algorithm's interface methods */
-  bool initialize();
-  bool start();
-  bool finalize();
+  auto initialize() -> bool;
+  auto start() -> bool;
+  auto finalize() -> bool;
 
   /** get B field value at given position */
   /** xyz[3] is in mm, bxyz[3] is in kT */
@@ -56,9 +56,9 @@ public:
 
 private:
   // initialize map
-  bool initializeMap();
+  auto initializeMap() -> bool;
   // read the field map
-  bool readMap(std::string mapFile);
+  auto readMap(std::string mapFile) -> bool;
 
   /** Data members **/
 

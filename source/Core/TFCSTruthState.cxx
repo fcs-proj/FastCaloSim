@@ -22,7 +22,7 @@ TFCSTruthState::TFCSTruthState(
   m_pdgid = pdgid;
 }
 
-void TFCSTruthState::Print(Option_t*) const
+void TFCSTruthState::Print(Option_t* /*option*/) const
 {
   FCS_MSG_INFO("PDGID=" << m_pdgid << " pT=" << Pt() << " eta=" << Eta()
                         << " phi=" << Phi() << " E=" << E()

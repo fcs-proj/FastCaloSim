@@ -18,7 +18,7 @@ void BFieldMeshZR::buildLUT()
 {
   for (int j = 0; j < 2; j++) {  // z, r
     // determine the unit size, q, to be used in the LUTs
-    double width = m_mesh[j].back() - m_mesh[j].front();
+    double const width = m_mesh[j].back() - m_mesh[j].front();
     double q(width);
     for (unsigned i = 0; i < m_mesh[j].size() - 1; i++) {
       q = std::min(q, m_mesh[j][i + 1] - m_mesh[j][i]);
@@ -43,7 +43,7 @@ void BFieldMeshZR::buildLUT()
   m_zoff = static_cast<int>(m_mesh[1].size());
 }
 
-int BFieldMeshZR::memSize() const
+auto BFieldMeshZR::memSize() const -> int
 {
   // accumulate in size_t; the final conversion to int gives the same value
   // as converting after every addition (modular arithmetic)

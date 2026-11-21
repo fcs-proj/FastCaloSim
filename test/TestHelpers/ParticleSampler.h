@@ -51,7 +51,7 @@ public:
   auto generate(int pid, float ekin, float eta) -> Particle override
   {
     // Detector assumed to be phi-symmetric, so pick random phi
-    float phi = 0;
+    float const phi = 0;
     G4ThreeVector direction;
     direction.setREtaPhi(1, static_cast<double>(eta), static_cast<double>(phi));
     direction = direction.unit();
@@ -88,7 +88,7 @@ public:
   {
     ParticleContainer particles;
     for (const auto& eta : etas) {
-      Particle particle = generate(pid, ekin, eta);
+      Particle const particle = generate(pid, ekin, eta);
       particles.add(particle);
     }
     return particles;
@@ -142,8 +142,8 @@ private:
 
     if (r >= cylinder.rmin && r <= cylinder.rmax) {
       // Intersection within cylinder bounds
-      double x = r * std::cos(dir.phi());
-      double y = r * std::sin(dir.phi());
+      double const x = r * std::cos(dir.phi());
+      double const y = r * std::sin(dir.phi());
 
       result.intersects = true;
       result.intersection = G4ThreeVector(x, y, z);
@@ -156,8 +156,8 @@ private:
 
     if (r >= cylinder.rmin && r <= cylinder.rmax) {
       // Intersection within cylinder bounds
-      double x = r * std::cos(dir.phi());
-      double y = r * std::sin(dir.phi());
+      double const x = r * std::cos(dir.phi());
+      double const y = r * std::sin(dir.phi());
 
       result.intersects = true;
       result.intersection = G4ThreeVector(x, y, z);
@@ -169,8 +169,8 @@ private:
     z = r / std::tan(dir.theta());
 
     if (z >= cylinder.zmin && z <= cylinder.zmax) {
-      double x = r * std::cos(dir.phi());
-      double y = r * std::sin(dir.phi());
+      double const x = r * std::cos(dir.phi());
+      double const y = r * std::sin(dir.phi());
 
       result.intersects = true;
       result.intersection = G4ThreeVector(x, y, z);
@@ -189,15 +189,15 @@ private:
     // The shifted coordinate is computed in double and rounded to float
     const auto eps = static_cast<double>(epsilon);
     if (cylinder.barrel) {
-      float new_r = static_cast<float>(particle.pos.perp() - eps);
+      auto const new_r = static_cast<float>(particle.pos.perp() - eps);
       particle.pos.setPerp(static_cast<double>(new_r));
 
     } else {
       if (particle.pos.eta() > 0) {
-        float new_z = static_cast<float>(particle.pos.z() - eps);
+        auto const new_z = static_cast<float>(particle.pos.z() - eps);
         particle.pos.setZ(static_cast<double>(new_z));
       } else {
-        float new_z = static_cast<float>(particle.pos.z() + eps);
+        auto const new_z = static_cast<float>(particle.pos.z() + eps);
         particle.pos.setZ(static_cast<double>(new_z));
       }
     }

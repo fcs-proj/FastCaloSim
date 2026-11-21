@@ -63,7 +63,7 @@ public:
   }  // set the multiplicative factor for the field vectors
   void setBscale(double bscale) { m_scale = static_cast<float>(bscale); }
   // test if (z, r, phi) is inside this bin
-  bool inside(double z, double r, double phi) const
+  auto inside(double z, double r, double phi) const -> bool
   {
     if (phi < m_phimin) {
       phi += 2.0 * M_PI;
@@ -103,13 +103,15 @@ void BFieldCache::getB(
   // fractional position inside this bin
   // computed in double and rounded to float; 1.0F - f is identical to
   // float(1.0 - double(f)) (double has more than 2*24+2 mantissa bits)
-  float fz = static_cast<float>((z - m_zmin) * static_cast<double>(m_invz));
-  float gz = 1.0F - fz;
-  float fr = static_cast<float>((r - m_rmin) * static_cast<double>(m_invr));
-  float gr = 1.0F - fr;
-  float fphi =
+  auto const fz =
+      static_cast<float>((z - m_zmin) * static_cast<double>(m_invz));
+  float const gz = 1.0F - fz;
+  auto const fr =
+      static_cast<float>((r - m_rmin) * static_cast<double>(m_invr));
+  float const gr = 1.0F - fr;
+  auto const fphi =
       static_cast<float>((phi - m_phimin) * static_cast<double>(m_invphi));
-  float gphi = 1.0F - fphi;
+  float const gphi = 1.0F - fphi;
   // interpolate field values in z, r, phi
   float Bzrphi[3];
   for (int i = 0; i < 3; i++) {  // z, r, phi components
@@ -141,9 +143,9 @@ void BFieldCache::getB(
 
   // compute field derivatives if requested
   if (deriv) {
-    float sz = m_scale * m_invz;
-    float esr = m_scale * m_invr;
-    float sphi = m_scale * m_invphi;
+    float const sz = m_scale * m_invz;
+    float const esr = m_scale * m_invr;
+    float const sphi = m_scale * m_invphi;
     float dBdz[3];
     float dBdr[3];
     float dBdphi[3];
@@ -164,14 +166,14 @@ void BFieldCache::getB(
              + fz * (gr * (field[5] - field[4]) + fr * (field[7] - field[6])));
     }
     // convert to cartesian coordinates
-    float cc = c * c;
-    float cs = c * es;
-    float ss = es * es;
-    float ccinvr = cc * invr;
-    float csinvr = cs * invr;
-    float ssinvr = ss * invr;
-    float sinvr = es * invr;
-    float cinvr = c * invr;
+    float const cc = c * c;
+    float const cs = c * es;
+    float const ss = es * es;
+    float const ccinvr = cc * invr;
+    float const csinvr = cs * invr;
+    float const ssinvr = ss * invr;
+    float const sinvr = es * invr;
+    float const cinvr = c * invr;
     // the float terms are summed in float, the B[] terms are added in double
     deriv[0] = static_cast<double>(cc * dBdr[1] - cs * dBdr[2]
                                    - csinvr * dBdphi[1] + ssinvr * dBdphi[2])

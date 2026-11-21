@@ -23,7 +23,7 @@ public:
 
 private:
   GeoPluginLoader(const GeoPluginLoader&) = delete;
-  GeoPluginLoader& operator=(const GeoPluginLoader&) = delete;
+  auto operator=(const GeoPluginLoader&) -> GeoPluginLoader& = delete;
 };
 
 template<class Plugin>
@@ -42,7 +42,7 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   bNameString =
       bNameString.substr(0, bNameString.find("."));  // Strip off extensions
 
-  std::string createFunctionName = std::string("create") + bNameString;
+  std::string const createFunctionName = std::string("create") + bNameString;
 
   //
   // Loads the library:
@@ -68,6 +68,6 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   //
   //
   //
-  Plugin* factory = static_cast<Plugin*>(F());
+  auto* factory = static_cast<Plugin*>(F());
   return factory;
 }

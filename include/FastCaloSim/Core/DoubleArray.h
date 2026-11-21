@@ -11,7 +11,7 @@ class DoubleArray
 {
 public:
   DoubleArray();
-  DoubleArray(int);
+  DoubleArray(int /*n*/);
   ~DoubleArray() override;
 
 private:

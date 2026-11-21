@@ -41,13 +41,13 @@ public:
   virtual void push_back_in_bin(TFCSParametrizationBase* param);
   // selects on truth->Ekin()
   // returns no value if outside range
-  auto get_bin(TFCSSimulationState&,
+  auto get_bin(TFCSSimulationState& /*simulstate*/,
                const TFCSTruthState* truth,
-               const TFCSExtrapolationState*) const
+               const TFCSExtrapolationState* /*unused*/) const
       -> std::optional<std::size_t> override;
   auto get_variable_text(TFCSSimulationState& simulstate,
-                         const TFCSTruthState*,
-                         const TFCSExtrapolationState*) const
+                         const TFCSTruthState* /*truth*/,
+                         const TFCSExtrapolationState* /*unused*/) const
       -> const std::string override;
   auto get_bin_text(std::optional<std::size_t> bin) const
       -> const std::string override;

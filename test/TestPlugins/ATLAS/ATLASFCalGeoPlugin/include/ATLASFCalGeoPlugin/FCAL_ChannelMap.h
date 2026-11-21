@@ -39,10 +39,10 @@ public:
                  float x,
                  float y,
                  const std::string& hvFT);  //
-    tileName_t get_tileName() const;  //
-    float x() const;  //
-    float y() const;  //
-    const std::string& getHVft() const;  // Gabe
+    auto get_tileName() const -> tileName_t;  //
+    auto x() const -> float;  //
+    auto y() const -> float;  //
+    auto getHVft() const -> const std::string&;  // Gabe
   private:  //
     tileName_t m_tileName;  //
     float m_x;  //
@@ -60,21 +60,22 @@ public:
   using tubemap_const_iterator = tubeMap_t::const_iterator;
 
   /** tubeMap access functions */
-  tubemap_const_iterator tubemap_begin(int isam) const;
-  tubemap_const_iterator tubemap_end(int isam) const;
-  tubemap_sizetype tubemap_size(int isam) const;
+  auto tubemap_begin(int isam) const -> tubemap_const_iterator;
+  auto tubemap_end(int isam) const -> tubemap_const_iterator;
+  auto tubemap_size(int isam) const -> tubemap_sizetype;
 
   // Get the tube by copy number:
-  tubemap_const_iterator getTubeByCopyNumber(int isam, int copyNo) const;
+  auto getTubeByCopyNumber(int isam, int copyNo) const
+      -> tubemap_const_iterator;
 
   /**  ---- For the new LArFCAL_ID Identifier
    */
 
-  bool getTileID(int isam, float x, float y, int& eta, int& phi) const;
+  auto getTileID(int isam, float x, float y, int& eta, int& phi) const -> bool;
 
   /** For reconstruction, decoding of tile identifiers */
-  float x(int isam, int eta, int phi) const;
-  float y(int isam, int eta, int phi) const;
+  auto x(int isam, int eta, int phi) const -> float;
+  auto y(int isam, int eta, int phi) const -> float;
 
   void tileSize(int sam, int eta, int phi, float& dx, float& dy) const;
 
@@ -86,10 +87,10 @@ public:
   /** set and get for the inversion flags
    */
 
-  bool invert_x() const;
-  bool invert_xy() const;
-  void set_invert_x(bool);
-  void set_invert_xy(bool);
+  auto invert_x() const -> bool;
+  auto invert_xy() const -> bool;
+  void set_invert_x(bool /*flag*/);
+  void set_invert_xy(bool /*flag*/);
 
   // Fill this.  The information comes from the database.
   void add_tube(const std::string& tileName,
@@ -116,9 +117,9 @@ public:
   public:
     TilePosition();
     TilePosition(float x, float y, unsigned int ntubes);
-    float x() const;
-    float y() const;
-    unsigned int ntubes() const;
+    auto x() const -> float;
+    auto y() const -> float;
+    auto ntubes() const -> unsigned int;
 
   private:
     float m_x;
@@ -133,11 +134,11 @@ public:
   using tileMap_const_iterator = tileMap_t::const_iterator;
 
   // Methods to iterate over the tile map:
-  tileMap_const_iterator begin(int isam) const
+  auto begin(int isam) const -> tileMap_const_iterator
   {
     return m_tileMap[isam - 1].begin();
   }
-  tileMap_const_iterator end(int isam) const
+  auto end(int isam) const -> tileMap_const_iterator
   {
     return m_tileMap[isam - 1].end();
   }
@@ -182,23 +183,23 @@ inline FCAL_ChannelMap::TubePosition::TubePosition(tileName_t name,
 {
 }
 
-inline FCAL_ChannelMap::tileName_t FCAL_ChannelMap::TubePosition::get_tileName()
-    const
+inline auto FCAL_ChannelMap::TubePosition::get_tileName() const
+    -> FCAL_ChannelMap::tileName_t
 {
   return m_tileName;
 }
 
-inline float FCAL_ChannelMap::TubePosition::x() const
+inline auto FCAL_ChannelMap::TubePosition::x() const -> float
 {
   return m_x;
 }
 
-inline float FCAL_ChannelMap::TubePosition::y() const
+inline auto FCAL_ChannelMap::TubePosition::y() const -> float
 {
   return m_y;
 }
 
-inline const std::string& FCAL_ChannelMap::TubePosition::getHVft() const
+inline auto FCAL_ChannelMap::TubePosition::getHVft() const -> const std::string&
 {
   return m_hvFT;
 }
@@ -221,27 +222,27 @@ inline FCAL_ChannelMap::TilePosition::TilePosition(float x,
 {
 }
 
-inline float FCAL_ChannelMap::TilePosition::x() const
+inline auto FCAL_ChannelMap::TilePosition::x() const -> float
 {
   return m_x;
 }
 
-inline float FCAL_ChannelMap::TilePosition::y() const
+inline auto FCAL_ChannelMap::TilePosition::y() const -> float
 {
   return m_y;
 }
 
-inline unsigned int FCAL_ChannelMap::TilePosition::ntubes() const
+inline auto FCAL_ChannelMap::TilePosition::ntubes() const -> unsigned int
 {
   return m_ntubes;
 }
 
-inline bool FCAL_ChannelMap::invert_x() const
+inline auto FCAL_ChannelMap::invert_x() const -> bool
 {
   return m_invert_x;
 }
 
-inline bool FCAL_ChannelMap::invert_xy() const
+inline auto FCAL_ChannelMap::invert_xy() const -> bool
 {
   return m_invert_xy;
 }

@@ -29,10 +29,10 @@ public:
     m_B[1] = Br;
   }
   // accessors
-  float z() const { return m_B[0]; }
-  float r() const { return m_B[1]; }
+  auto z() const -> float { return m_B[0]; }
+  auto r() const -> float { return m_B[1]; }
   // array-like accessor
-  float operator[](int i) const { return m_B[i]; }
+  auto operator[](int i) const -> float { return m_B[i]; }
 
 private:
   float m_B[2];

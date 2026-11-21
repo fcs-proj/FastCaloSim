@@ -15,10 +15,10 @@ TFCSInitWithEkin::TFCSInitWithEkin(const char* name, const char* title)
   set_match_all_pdgid();
 }
 
-auto TFCSInitWithEkin::simulate(TFCSSimulationState& simulstate,
-                                const TFCSTruthState* truth,
-                                const TFCSExtrapolationState*) const
-    -> FCSReturnCode
+auto TFCSInitWithEkin::simulate(
+    TFCSSimulationState& simulstate,
+    const TFCSTruthState* truth,
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   FCS_MSG_DEBUG("set E to Ekin=" << truth->Ekin());
   simulstate.set_E(truth->Ekin());

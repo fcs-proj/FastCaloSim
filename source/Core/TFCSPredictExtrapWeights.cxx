@@ -64,8 +64,7 @@ auto TFCSPredictExtrapWeights::operator==(
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSPredictExtrapWeights& ref_typed =
-      static_cast<const TFCSPredictExtrapWeights&>(ref);
+  const auto& ref_typed = static_cast<const TFCSPredictExtrapWeights&>(ref);
 
   if (TFCSParametrizationBase::compare(ref)) {
     return true;
@@ -77,7 +76,7 @@ auto TFCSPredictExtrapWeights::operator==(
     return false;
   }
 
-  return (m_input->compare(*ref_typed.m_input) == 0);
+  return (*m_input == *ref_typed.m_input);
 }
 
 // getNormInputs()
@@ -104,7 +103,7 @@ auto TFCSPredictExtrapWeights::getNormInputs(
   } else {
     m_normStdDevs = new std::vector<float>();
   }
-  std::string inputFileName = FastCaloTXTInputFolderName
+  std::string const inputFileName = FastCaloTXTInputFolderName
       + "MeanStdDevEnergyFractions_eta_" + etaBin + ".txt";
   FCS_MSG_DEBUG(" Opening " << inputFileName);
   std::ifstream inputTXT(inputFileName);
@@ -118,7 +117,7 @@ auto TFCSPredictExtrapWeights::getNormInputs(
         getline(ss, substr, ' ');
         if (counter == 0) {  // Get index (#layer or -1 if var == etrue)
           if (substr != "etrue") {
-            int index = std::stoi(substr.substr(substr.find('_') + 1));
+            int const index = std::stoi(substr.substr(substr.find('_') + 1));
             m_normLayers->push_back(index);
           } else {  // etrue
             m_normLayers->push_back(-1);
@@ -147,7 +146,7 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
     -> std::map<std::string, double>
 {
   // The normalization constants are stored in single precision
-  const auto normalize = [this](double value, std::size_t index)
+  const auto normalize = [this](double value, std::size_t index) -> double
   {
     return (value - static_cast<double>(std::as_const(m_normMeans)->at(index)))
         / static_cast<double>(std::as_const(m_normStdDevs)->at(index));
@@ -192,7 +191,7 @@ auto TFCSPredictExtrapWeights::simulate(
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   // Get inputs to Neural Network
-  std::map<std::string, double> inputVariables =
+  std::map<std::string, double> const inputVariables =
       prepareInputs(simulstate, truth->E() * 0.001);
 
   // Get predicted extrapolation weights
@@ -307,7 +306,7 @@ auto TFCSPredictExtrapWeights::initializeNetwork(
       "Using FastCaloNNInputFolderName: " << FastCaloNNInputFolderName);
   set_pdgid(pid);
 
-  std::string inputFileName =
+  std::string const inputFileName =
       FastCaloNNInputFolderName + "NN_" + etaBin + ".json";
   FCS_MSG_DEBUG("Will read JSON file: " << inputFileName);
   if (inputFileName.empty()) {
@@ -330,7 +329,7 @@ auto TFCSPredictExtrapWeights::initializeNetwork(
     // Extract relevant layers from the outputs
     m_relevantLayers = new std::vector<int>();
     for (auto name : config.outputs) {
-      int layer = std::stoi(
+      int const layer = std::stoi(
           name.erase(0, 13));  // remove "extrapWeight_" and convert to int
       m_relevantLayers->push_back(layer);
     }

@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 
@@ -161,9 +162,7 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
 
   r *= static_cast<double>(m_r_scale);
   r += static_cast<double>(m_r_offset);
-  if (r < 0) {
-    r = 0;
-  }
+  r = std::max<double>(r, 0);
 
   double delta_eta_mm = r * std::cos(alpha);
   double delta_phi_mm = r * std::sin(alpha);
@@ -227,7 +226,7 @@ auto TFCSHistoLateralShapeParametrization::Initialize(const char* filepath,
     return false;
   }
 
-  bool OK = Initialize(inputShape);
+  bool const OK = Initialize(inputShape);
 
   inputfile->Close();
 

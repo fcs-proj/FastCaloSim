@@ -31,7 +31,7 @@ public:
     }
   }
   // read/write map from/to file
-  int readMap(std::istream& input);
+  auto readMap(std::istream& input) -> int;
   // int readMap( TFile* rootfile );
   // void writeMap( TFile* rootfile, bool tilted = false );
   //  move and tilt the map
@@ -39,7 +39,7 @@ public:
   // compute magnetic field
   void getB(const double* xyz, double* B, double* deriv = nullptr) const;
   // accessor
-  const BFieldMesh<double>* tiltedMap() const { return m_tilt; }
+  auto tiltedMap() const -> const BFieldMesh<double>* { return m_tilt; }
 
 private:
   // data members

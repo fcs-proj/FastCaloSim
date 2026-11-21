@@ -35,7 +35,8 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInLogEkin(Int_t np,
                                                            Double_t valbeg,
                                                            Double_t valend)
 {
-  TSpline3 initspline(GetName(), logEkin, response, np, opt, valbeg, valend);
+  TSpline3 const initspline(
+      GetName(), logEkin, response, np, opt, valbeg, valend);
   m_spline = initspline;
 }
 
@@ -56,7 +57,7 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInEkin(Int_t np,
 auto TFCSEnergyInterpolationSpline::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const -> FCSReturnCode
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   double Emean;
   double Einit;

@@ -132,7 +132,7 @@ auto thread_state() -> ThreadState&
     // Deleted when the thread exits. State created while the thread exits
     // (logging from later destructors) is not deleted.
     if (!t_exiting) {
-      [[maybe_unused]] thread_local ThreadStateOwner owner;
+      [[maybe_unused]] thread_local ThreadStateOwner const owner;
     }
   }
   return *t_state;

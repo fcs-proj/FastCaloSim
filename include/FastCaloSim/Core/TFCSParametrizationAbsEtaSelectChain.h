@@ -18,7 +18,7 @@ public:
 
   // selects on |extrapol->IDCaloBoundary_eta()|
   // returns no value if outside range
-  auto get_bin(TFCSSimulationState&,
+  auto get_bin(TFCSSimulationState& /*unused*/,
                const TFCSTruthState* truth,
                const TFCSExtrapolationState* extrapol) const
       -> std::optional<std::size_t> override;

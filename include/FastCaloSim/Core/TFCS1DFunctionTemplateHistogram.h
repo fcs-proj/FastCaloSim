@@ -54,7 +54,7 @@ public:
     std::vector<double> temp_HistoContents;
     int first;
     int last;
-    double integral =
+    double const integral =
         CheckAndIntegrate1DHistogram(hist, temp_HistoContents, first, last);
     if (integral <= 0) {
       set_nbins(0);
@@ -65,9 +65,9 @@ public:
     // The bin edges are stored with the precision of Txvec
     using edge_type = typename Txvec::value_type;
     const TAxis* axis = hist->GetXaxis();
-    const auto low_edge = [axis](int bin)
+    const auto low_edge = [axis](int bin) -> auto
     { return static_cast<edge_type>(axis->GetBinLowEdge(bin)); };
-    const auto up_edge = [axis](int bin)
+    const auto up_edge = [axis](int bin) -> auto
     { return static_cast<edge_type>(axis->GetBinUpEdge(bin)); };
 
     m_HistoBorders.SetMinMax(low_edge(first + 1), up_edge(last + 1));
@@ -139,7 +139,7 @@ public:
       return 0;
     }
     Trandom residual_rnd;
-    size_t ibin =
+    size_t const ibin =
         m_HistoContents.get_bin(static_cast<Trandom>(rnd), residual_rnd);
     return static_cast<double>(m_HistoBorders.position(ibin, residual_rnd));
   }

@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
@@ -29,7 +30,7 @@ auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
   double maxdev = 0.0;
 
   // normalize the histos to the same area:
-  double integral_input = h_input->Integral();
+  double const integral_input = h_input->Integral();
   double integral_approx = 0.0;
   for (int b = 1; b <= h_input->GetNbinsX(); b++) {
     integral_approx +=
@@ -40,16 +41,14 @@ auto TFCS1DFunction::get_maxdev(TH1* h_input1, TH1* h_approx1) -> double
   }
   h_approx->Scale(integral_input / integral_approx);
 
-  double ymax = h_approx->GetBinContent(h_approx->GetNbinsX())
+  double const ymax = h_approx->GetBinContent(h_approx->GetNbinsX())
       - h_approx->GetBinContent(h_approx->GetMinimumBin());
   for (int i = 1; i <= h_input->GetNbinsX(); i++) {
-    double val = std::abs(h_approx->GetBinContent(
-                              h_approx->FindBin(h_input->GetBinCenter(i)))
-                          - h_input->GetBinContent(i))
+    double const val = std::abs(h_approx->GetBinContent(
+                                    h_approx->FindBin(h_input->GetBinCenter(i)))
+                                - h_input->GetBinContent(i))
         / ymax;
-    if (val > maxdev) {
-      maxdev = val;
-    }
+    maxdev = std::max(val, maxdev);
   }
 
   return maxdev * 100.0;
@@ -59,8 +58,8 @@ auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
     const TH1* hist, std::vector<double>& integral_vec, int& first, int& last)
     -> double
 {
-  FastCaloSim::MLogging logger;
-  Int_t nbins = hist->GetNbinsX();
+  FastCaloSim::MLogging const logger;
+  Int_t const nbins = hist->GetNbinsX();
 
   double integral = 0;
   integral_vec.resize(static_cast<std::size_t>(nbins));
@@ -68,7 +67,7 @@ auto TFCS1DFunction::CheckAndIntegrate1DHistogram(
     double binval = hist->GetBinContent(ix);
     if (binval < 0) {
       // Can't work if a bin is negative, forcing bins to 0 in this case
-      double fraction = binval / hist->Integral();
+      double const fraction = binval / hist->Integral();
       if (std::abs(fraction) > 1e-5) {
         FCS_MSG_NOCLASS(logger,
                         "Warning: bin content is negative in histogram "
@@ -131,7 +130,7 @@ auto TFCS1DFunction::generate_histogram_random_gauss(
   TH1* hist = new TH1D("test_gauss1D", "test_gauss1D", nbinsx, xmin, xmax);
   hist->Sumw2();
   for (int i = 1; i <= ntoy; ++i) {
-    double x = gRandom->Gaus(xpeak, sigma);
+    double const x = gRandom->Gaus(xpeak, sigma);
     if (x >= xmin && x < xmax) {
       hist->Fill(x);
     }

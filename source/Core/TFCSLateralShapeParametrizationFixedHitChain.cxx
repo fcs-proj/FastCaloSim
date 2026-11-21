@@ -39,7 +39,8 @@ auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
     return true;
   }
 
-  int nhit_signed = simulstate.getAuxInfo<int>("FCSHitChainNHits"_FCShash);
+  int const nhit_signed =
+      simulstate.getAuxInfo<int>("FCSHitChainNHits"_FCShash);
 
   if (nhit_signed < 0) {
     FCS_MSG_ERROR(
@@ -47,13 +48,13 @@ auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
     return true;
   }
 
-  unsigned int nhit = static_cast<unsigned int>(nhit_signed);
+  auto const nhit = static_cast<unsigned int>(nhit_signed);
 
-  long unsigned int current_hit = hit.idx();
+  long unsigned int const current_hit = hit.idx();
 
   // Take care of layer energy updating.
   // Needed for the phi modulation!
-  bool done = current_hit >= nhit;
+  bool const done = current_hit >= nhit;
   if (!done) {
     double sumEhit = 0;
     if (simulstate.hasAuxInfo("FCSFixedHitChainEnergySum"_FCShash)
@@ -70,11 +71,11 @@ auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
       simulstate.setAuxInfo<double>("FCSFixedHitChainEnergySum"_FCShash, 0.);
     }
 
-    double old_energy = simulstate.E(calosample());
-    double new_energy =
+    double const old_energy = simulstate.E(calosample());
+    auto const new_energy =
         simulstate.getAuxInfo<double>("FCSFixedHitChainEnergySum"_FCShash);
 
-    double energy_difference = new_energy - old_energy;
+    double const energy_difference = new_energy - old_energy;
 
     simulstate.set_E(simulstate.E() + energy_difference);
     simulstate.set_E(calosample(), new_energy);

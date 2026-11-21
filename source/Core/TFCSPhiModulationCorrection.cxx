@@ -76,21 +76,21 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
                                  eta_min);
   auto eta_index = FastCaloSim::index_of(m_min_eta.at(layer_index), eta_it) - 1;
   // Iterator to the element after eta_index
-  const auto after_eta_index = [&eta_index](auto& vec)
+  const auto after_eta_index = [&eta_index](auto& vec) -> auto
   { return vec.begin() + static_cast<std::ptrdiff_t>(eta_index) + 1; };
 
   // Check if we have to append further boundaries
   if (eta_index >= eta_mins.size() - 1) {
     if (eta_min > eta_mins.at(eta_mins.size() - 1)) {
       eta_mins.push_back(eta_min);
-      phi_mins.push_back(std::vector<float>());
-      modulation.push_back(std::vector<float>());
+      phi_mins.emplace_back();
+      modulation.emplace_back();
       energy_shifts.push_back(-1.0);
       eta_index++;
     }
     eta_mins.push_back(eta_max);
-    phi_mins.push_back(std::vector<float>());
-    modulation.push_back(std::vector<float>());
+    phi_mins.emplace_back();
+    modulation.emplace_back();
     energy_shifts.push_back(-1.0);
   } else {
     // Check if we need to insert a new eta_min
@@ -126,7 +126,7 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
     return;
   }
 
-  int n_bins = muon_corr_hist->GetNbinsX();
+  int const n_bins = muon_corr_hist->GetNbinsX();
 
   for (int i = 1; i <= n_bins; i++) {
     phi_mins.at(eta_index).push_back(
@@ -140,7 +140,7 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
         static_cast<float>(muon_corr_hist->GetBinContent(i)));
   }
 
-  TParameter<double>* param =
+  auto const* param =
       dynamic_cast<TParameter<double>*>(muon_corr->Get("energy_shift"));
   if (param) {
     energy_shifts.at(eta_index) = static_cast<float>(param->GetVal());
@@ -154,7 +154,7 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
     -> std::tuple<int, std::size_t, std::size_t>
 {
   // The bin boundaries are stored in single precision
-  const auto less = [](double value, float boundary)
+  const auto less = [](double value, float boundary) -> bool
   { return value < static_cast<double>(boundary); };
 
   const double eta_abs = std::abs(eta);

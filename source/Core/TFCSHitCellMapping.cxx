@@ -28,7 +28,7 @@ auto TFCSHitCellMapping::simulate_hit(
                                   << " phi=" << hit.phi());
 
   // Position where we will perform the lookup
-  Position lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
+  Position const lookup_pos {0, 0, 0, hit.eta(), hit.phi(), 0};
 
   // Get the best matching cell
   const auto& cell = m_geo->get_cell(calosample(), lookup_pos);
@@ -37,7 +37,7 @@ auto TFCSHitCellMapping::simulate_hit(
   // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
-  double proximity = cell.boundary_proximity(lookup_pos);
+  double const proximity = cell.boundary_proximity(lookup_pos);
 
   FCS_MSG_DEBUG("Hit-cell distance in eta-phi is: " << proximity);
 

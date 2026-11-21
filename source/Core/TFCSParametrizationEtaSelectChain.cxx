@@ -36,8 +36,8 @@ void TFCSParametrizationEtaSelectChain::push_back_in_bin(
 }
 
 auto TFCSParametrizationEtaSelectChain::get_bin(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
+    TFCSSimulationState& /*simulstate*/,
+    const TFCSTruthState* /*unused*/,
     const TFCSExtrapolationState* extrapol) const -> std::optional<std::size_t>
 {
   // The bin edges are single precision, so is the binning variable
@@ -45,8 +45,8 @@ auto TFCSParametrizationEtaSelectChain::get_bin(
 }
 
 auto TFCSParametrizationEtaSelectChain::get_variable_text(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*unused*/,
     const TFCSExtrapolationState* extrapol) const -> const std::string
 {
   return std::format("eta={:2.2f}", extrapol->IDCaloBoundary_eta());

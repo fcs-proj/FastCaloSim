@@ -39,10 +39,10 @@ public:
   // scale the current wrt the nominal current
   void scaleCurrent(double factor) { m_curr = factor * m_nomCurr; }
   // accessors
-  bool finite() const { return m_finite; }
-  double p1(int i) const { return m_p1[i]; }
-  double p2(int i) const { return m_p2[i]; }
-  double curr() const { return m_curr; }
+  auto finite() const -> bool { return m_finite; }
+  auto p1(int i) const -> double { return m_p1[i]; }
+  auto p2(int i) const -> double { return m_p2[i]; }
+  auto curr() const -> double { return m_curr; }
 
 private:
   bool m_finite;  // true if the conductor is finite in length

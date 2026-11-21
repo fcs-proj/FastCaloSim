@@ -22,7 +22,7 @@ TFCSEnergyInterpolationLinear::TFCSEnergyInterpolationLinear(const char* name,
 auto TFCSEnergyInterpolationLinear::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const -> FCSReturnCode
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   const double Emean = static_cast<double>(m_slope) * truth->Ekin()
       + static_cast<double>(m_offset);

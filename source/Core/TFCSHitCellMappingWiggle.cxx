@@ -79,8 +79,7 @@ void TFCSHitCellMappingWiggle::initialize(TH1* histogram, float xscale)
   if (!histogram) {
     return;
   }
-  TFCS1DFunctionInt32Histogram* func =
-      new TFCS1DFunctionInt32Histogram(histogram);
+  auto* func = new TFCS1DFunctionInt32Histogram(histogram);
   if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
     for (auto& ele : func->get_HistoBordersx()) {
       ele *= xscale;
@@ -103,8 +102,7 @@ void TFCSHitCellMappingWiggle::initialize(
   std::vector<const TFCS1DFunction*> functions(histograms.size());
   for (std::size_t i = 0; i < histograms.size(); ++i) {
     if (histograms[i]) {
-      TFCS1DFunctionInt32Histogram* func =
-          new TFCS1DFunctionInt32Histogram(histograms[i]);
+      auto* func = new TFCS1DFunctionInt32Histogram(histograms[i]);
       if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
         for (auto& ele : func->get_HistoBordersx()) {
           ele *= xscale;
@@ -141,15 +139,15 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
       std::upper_bound(m_bin_low_edge.begin(),
                        m_bin_low_edge.end(),
                        eta,
-                       [](double value, float edge)
+                       [](double value, float edge) -> bool
                        { return value < static_cast<double>(edge); });
   const std::size_t bin = FastCaloSim::index_of(m_bin_low_edge, it) - 1;
 
   const TFCS1DFunction* func = get_function(bin);
   if (func) {
-    double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+    double const rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
 
-    double wiggle = func->rnd_to_fct(rnd);
+    double const wiggle = func->rnd_to_fct(rnd);
 
     FCS_MSG_DEBUG("HIT: E=" << hit.E() << " cs=" << calosample()
                             << " eta=" << hit.eta() << " phi=" << hit.phi()
@@ -157,7 +155,7 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
                             << get_bin_low_edge(bin) << ","
                             << get_bin_up_edge(bin) << "] func=" << func);
 
-    double hit_phi_shifted = hit.phi() + wiggle;
+    double const hit_phi_shifted = hit.phi() + wiggle;
     hit.set_phi_y(TVector2::Phi_mpi_pi(hit_phi_shifted));
   }
 
@@ -204,8 +202,7 @@ auto TFCSHitCellMappingWiggle::compare(const TFCSParametrizationBase& ref) const
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSHitCellMappingWiggle& ref_typed =
-      static_cast<const TFCSHitCellMappingWiggle&>(ref);
+  const auto& ref_typed = static_cast<const TFCSHitCellMappingWiggle&>(ref);
 
   if (m_bin_low_edge != ref_typed.m_bin_low_edge) {
     FCS_MSG_DEBUG("operator==(): different bin edges");

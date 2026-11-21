@@ -44,30 +44,30 @@ MagField::H8FieldSvc::H8FieldSvc(const std::string& /* name,ISvcLocator* svc */)
 MagField::H8FieldSvc::~H8FieldSvc() = default;
 
 /** framework methods */
-bool MagField::H8FieldSvc::initialize()
+auto MagField::H8FieldSvc::initialize() -> bool
 {
   // ATH_MSG_INFO( "initialize() ..." );
   return true;
 }
 
-bool MagField::H8FieldSvc::start()
+auto MagField::H8FieldSvc::start() -> bool
 {
   // ATH_MSG_INFO( "start() ..." );
   return readMap(m_H8MapFilename);
 }
 
-bool MagField::H8FieldSvc::finalize()
+auto MagField::H8FieldSvc::finalize() -> bool
 {
   // ATH_MSG_INFO( "finalize() ..." );
   return true;
 }
 
-bool MagField::H8FieldSvc::readMap(const std::string mapFile)
+auto MagField::H8FieldSvc::readMap(const std::string mapFile) -> bool
 {
   // find the path to the map file
   // std::string resolvedMapFile = PathResolver::find_file( mapFile.c_str(),
   // "DATAPATH" );
-  std::string resolvedMapFile = mapFile.c_str();
+  std::string const resolvedMapFile = mapFile.c_str();
   if (resolvedMapFile.empty()) {
     // ATH_MSG_ERROR( "Field map file " << mapFile << " not found" );
     return false;
@@ -135,10 +135,10 @@ void MagField::H8FieldSvc::getField(const double* xyz,
                                     double* B,
                                     double* deriv) const
 {
-  for (unsigned i = 0; i < m_grid.size(); i++) {
+  for (const auto& i : m_grid) {
     // find the grid that contains xyz
-    if (m_grid[i].inside(xyz)) {
-      m_grid[i].getB(xyz, B, deriv);
+    if (i.inside(xyz)) {
+      i.getB(xyz, B, deriv);
       return;
     }
   }

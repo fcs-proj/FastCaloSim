@@ -33,12 +33,12 @@ public:
   /// that the simulate method can call the appropriate TFCSParametrizationBase
   /// simulations; returns no value if no bin matches
   virtual auto get_bin(TFCSSimulationState& simulstate,
-                       const TFCSTruthState*,
-                       const TFCSExtrapolationState*) const
+                       const TFCSTruthState* /*unused*/,
+                       const TFCSExtrapolationState* /*unused*/) const
       -> std::optional<std::size_t>;
-  virtual auto get_variable_text(TFCSSimulationState&,
-                                 const TFCSTruthState*,
-                                 const TFCSExtrapolationState*) const
+  virtual auto get_variable_text(TFCSSimulationState& /*unused*/,
+                                 const TFCSTruthState* /*unused*/,
+                                 const TFCSExtrapolationState* /*unused*/) const
       -> const std::string;
   /// print the range of a bin; for no bin or a bin out of range, print the
   /// allowed range

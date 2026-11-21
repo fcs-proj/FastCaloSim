@@ -48,7 +48,7 @@ public:
   }
   // set the multiplicative factor for the field vectors
   // test if (z, r) is inside this bin
-  bool inside(double z, double r) const
+  auto inside(double z, double r) const -> bool
   {
     return (z >= m_zmin && z <= m_zmax && r >= m_rmin && r <= m_rmax);
   }
@@ -79,10 +79,12 @@ void BFieldCacheZR::getB(const double* xyz,
   // fractional position inside this bin
   // computed in double and rounded to float; 1.0F - f is identical to
   // float(1.0 - double(f)) (double has more than 2*24+2 mantissa bits)
-  float fz = static_cast<float>((z - m_zmin) * static_cast<double>(m_invz));
-  float gz = 1.0F - fz;
-  float fr = static_cast<float>((r - m_rmin) * static_cast<double>(m_invr));
-  float gr = 1.0F - fr;
+  auto const fz =
+      static_cast<float>((z - m_zmin) * static_cast<double>(m_invz));
+  float const gz = 1.0F - fz;
+  auto const fr =
+      static_cast<float>((r - m_rmin) * static_cast<double>(m_invr));
+  float const gr = 1.0F - fr;
   // interpolate field values in z, r
   float Bzr[2];
   for (int i = 0; i < 2; i++) {  // z, r components
@@ -97,8 +99,8 @@ void BFieldCacheZR::getB(const double* xyz,
   } else {
     invr = 0.0;
   }
-  float c = static_cast<float>(x * static_cast<double>(invr));
-  float es = static_cast<float>(y * static_cast<double>(invr));
+  auto const c = static_cast<float>(x * static_cast<double>(invr));
+  auto const es = static_cast<float>(y * static_cast<double>(invr));
   B[0] = static_cast<double>(Bzr[1] * c);
   B[1] = static_cast<double>(Bzr[1] * es);
   B[2] = static_cast<double>(Bzr[0]);
@@ -115,11 +117,11 @@ void BFieldCacheZR::getB(const double* xyz,
           m_invr * (gz * (field[1] - field[0]) + fz * (field[3] - field[2]));
     }
     // convert to cartesian coordinates
-    float cc = c * c;
-    float cs = c * es;
-    float ss = es * es;
-    float sinvr = es * invr;
-    float cinvr = c * invr;
+    float const cc = c * c;
+    float const cs = c * es;
+    float const ss = es * es;
+    float const sinvr = es * invr;
+    float const cinvr = c * invr;
     deriv[0] =
         static_cast<double>(cc * dBdr[1]) + static_cast<double>(sinvr) * B[1];
     deriv[1] =

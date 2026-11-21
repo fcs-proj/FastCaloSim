@@ -13,7 +13,7 @@ TFCSExtrapolationState::TFCSExtrapolationState()
   clear();
 }
 
-void TFCSExtrapolationState::Print(Option_t*) const
+void TFCSExtrapolationState::Print(Option_t* /*option*/) const
 {
   // Print the IDCaloBoundary information
   FCS_MSG_INFO("IDCalo: eta="

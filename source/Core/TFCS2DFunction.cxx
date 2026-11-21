@@ -30,10 +30,10 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
     const TH2* hist, std::vector<double>& integral_vec, int& first, int& last)
     -> double
 {
-  FastCaloSim::MLogging logger;
-  Int_t nbinsx = hist->GetNbinsX();
-  Int_t nbinsy = hist->GetNbinsY();
-  Int_t nbins = nbinsx * nbinsy;
+  FastCaloSim::MLogging const logger;
+  Int_t const nbinsx = hist->GetNbinsX();
+  Int_t const nbinsy = hist->GetNbinsY();
+  Int_t const nbins = nbinsx * nbinsy;
 
   double integral = 0.0;
   const double hint = hist->Integral();
@@ -46,7 +46,7 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
       double binval = hist->GetBinContent(ix, iy);
       if (binval < 0) {
         // Can't work if a bin is negative, forcing bins to 0 in this case
-        double fraction = binval / hint;
+        double const fraction = binval / hint;
         if (std::abs(fraction) > 1e-5) {
           FCS_MSG_NOCLASS(logger,
                           "Warning: bin content is negative in histogram "
@@ -62,7 +62,7 @@ auto TFCS2DFunction::CheckAndIntegrate2DHistogram(
     }
   }
 
-  const auto integral_at = [&integral_vec](int bin)
+  const auto integral_at = [&integral_vec](int bin) -> double
   { return integral_vec[static_cast<std::size_t>(bin)]; };
   for (first = 0; first < nbins; first++) {
     if (!FastCaloSim::exactly_equal(integral_at(first), 0.0)) {

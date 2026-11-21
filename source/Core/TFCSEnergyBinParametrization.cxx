@@ -33,7 +33,7 @@ auto TFCSEnergyBinParametrization::is_match_Ekin_bin(std::size_t Ekin_bin) const
 
 void TFCSEnergyBinParametrization::resize()
 {
-  for (int id : pdgid()) {
+  for (int const id : pdgid()) {
     FCS_MSG_VERBOSE("PDGid=" << id << " resize to " << n_bins() + 1);
     m_pdgid_Ebin_probability[id].resize(n_bins() + 1);
   }
@@ -162,16 +162,14 @@ void TFCSEnergyBinParametrization::Print(Option_t* option) const
   const auto [shortprint, longprint, optprint] = print_options(option);
   TFCSEnergyParametrization::Print(option);
   if (longprint) {
-    for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
-         ++it)
-    {
-      FCS_MSG(INFO) << optprint << "  PDGID=" << *it << " : ";
+    for (int it : pdgid()) {
+      FCS_MSG(INFO) << optprint << "  PDGID=" << it << " : ";
       float p = 0;
       for (std::size_t iEbin = 0; iEbin <= n_bins(); ++iEbin) {
         if (iEbin > 0) {
           FCS_MSG(INFO) << ", ";
         }
-        auto mapit = m_pdgid_Ebin_probability.find(*it);
+        auto mapit = m_pdgid_Ebin_probability.find(it);
         FCS_MSG(INFO) << "b" << iEbin << "="
                       << (mapit->second[iEbin] - p) / mapit->second.back() * 100
                       << "%";

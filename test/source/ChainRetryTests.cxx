@@ -58,7 +58,7 @@ auto simulate(TFCSParametrizationBase& chain) -> FCSReturnCode
   return chain.simulate(simulstate, &truth, nullptr);
 }
 
-constexpr int retry(int n)
+constexpr auto retry(int n) -> int
 {
   return FCSRetry + n;
 }

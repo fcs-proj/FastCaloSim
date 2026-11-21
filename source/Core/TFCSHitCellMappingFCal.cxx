@@ -22,7 +22,7 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   // Position where we perform the lookup
   // The z position here is used to determine the side
   // in the custom FCAL geo handler
-  Position lookup_pos {hit.x(), hit.y(), hit.z(), 0, 0, 0};
+  Position const lookup_pos {hit.x(), hit.y(), hit.z(), 0, 0, 0};
 
   /// No match possible, retry simulation
   if (FastCaloSim::exactly_equal(hit.x(), 0.0)
@@ -45,7 +45,7 @@ auto TFCSHitCellMappingFCal::simulate_hit(
   // Get hit-cell boundary proximity
   // < 0 means we are inside the cell
   // > 0 means we are outside the cell
-  double proximity = cell.boundary_proximity(lookup_pos);
+  double const proximity = cell.boundary_proximity(lookup_pos);
 
   FCS_MSG_DEBUG("Hit-cell distance in x-y is: " << proximity);
 

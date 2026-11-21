@@ -107,8 +107,8 @@ auto TFCSEnergyAndHitGANV2::initializeNetwork(
 
 auto TFCSEnergyAndHitGANV2::get_variable_text(
     TFCSSimulationState& simulstate,
-    const TFCSTruthState*,
-    const TFCSExtrapolationState*) const -> const std::string
+    const TFCSTruthState* /*unused*/,
+    const TFCSExtrapolationState* /*unused*/) const -> const std::string
 {
   return std::format("layer={}",
                      simulstate.getAuxInfo<int>("GANlayer"_FCShash));
@@ -191,7 +191,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
     // First fill energies
     for (int ix = 1; ix <= xBinNum; ++ix) {
-      double binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
+      double const binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
       for (int iy = 1; iy <= binsInAlphaInRBin; ++iy) {
         const double energyInVoxel = outputs.at(std::to_string(vox));
         FCS_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
@@ -253,9 +253,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           if (chain()[ichain]->InheritsFrom(
                   TFCSLateralShapeParametrizationHitBase::Class()))
           {
-            TFCSLateralShapeParametrizationHitBase* sim =
-                static_cast<TFCSLateralShapeParametrizationHitBase*>(
-                    chain()[ichain]);
+            auto* sim = static_cast<TFCSLateralShapeParametrizationHitBase*>(
+                chain()[ichain]);
             if (sim->simulate_hit(hit, simulstate, truth, extrapol)
                 != FCSSuccess)
             {
@@ -325,9 +324,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           // maximum 10 MeV per hit, equally distributed in alpha and r
           int maxHitsInVoxel =
               static_cast<int>(energyInVoxel * truth->Ekin() / 10);
-          if (maxHitsInVoxel < 1) {
-            maxHitsInVoxel = 1;
-          }
+          maxHitsInVoxel = std::max(maxHitsInVoxel, 1);
           nHitsAlpha = static_cast<int>(std::sqrt(maxHitsInVoxel));
           nHitsR = static_cast<int>(std::sqrt(maxHitsInVoxel));
         } else {
@@ -485,7 +482,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                   if (chain()[ichain]->InheritsFrom(
                           TFCSLateralShapeParametrizationHitBase::Class()))
                   {
-                    TFCSLateralShapeParametrizationHitBase* sim =
+                    auto* sim =
                         static_cast<TFCSLateralShapeParametrizationHitBase*>(
                             chain()[ichain]);
                     if (sim->simulate_hit(hit, simulstate, truth, extrapol)

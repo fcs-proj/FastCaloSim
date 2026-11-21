@@ -33,11 +33,11 @@ public:
     m_B[2] = Bphi;
   }
   // accessors
-  T z() const { return m_B[0]; }
-  T r() const { return m_B[1]; }
-  T phi() const { return m_B[2]; }
+  auto z() const -> T { return m_B[0]; }
+  auto r() const -> T { return m_B[1]; }
+  auto phi() const -> T { return m_B[2]; }
   // array-like accessor
-  T operator[](int i) const { return m_B[i]; }
+  auto operator[](int i) const -> T { return m_B[i]; }
 
 private:
   T m_B[3];

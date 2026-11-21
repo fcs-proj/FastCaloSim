@@ -80,7 +80,7 @@ auto circleIntersections(const Cylinder& cylinder,
   const double qc = a.x() * a.x() + a.y() * a.y() - cylinder.r2();
   const double discriminant = qb * qb - 4 * qa * qc;
 
-  const auto pointAt = [&](double t, double z)
+  const auto pointAt = [&](double t, double z) -> Vector3D
   { return Vector3D(a.x() + t * dx, a.y() + t * dy, z); };
 
   Intersections result;

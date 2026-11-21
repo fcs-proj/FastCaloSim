@@ -16,7 +16,7 @@ public:
     PrimaryGeneratorAction();
     ~PrimaryGeneratorAction() override;
 
-    void GeneratePrimaries(G4Event *) override;
+    void GeneratePrimaries(G4Event * /*anEvent*/) override;
 
     void configure_gun(const TestHelpers::Particle* particle);
     void set_particle_container(const TestHelpers::ParticleContainer* container){fParticleContainer = container;}

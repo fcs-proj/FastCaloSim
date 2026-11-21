@@ -67,8 +67,8 @@ public:
 
   /// use the layer to be done as binning of the GAN chain
   auto get_bin(TFCSSimulationState& simulstate,
-               const TFCSTruthState*,
-               const TFCSExtrapolationState*) const
+               const TFCSTruthState* /*unused*/,
+               const TFCSExtrapolationState* /*unused*/) const
       -> std::optional<std::size_t> override
   {
     // The layer is stored as int, it is a key of the (persistent) binning
@@ -76,8 +76,8 @@ public:
         simulstate.getAuxInfo<int>("GANlayer"_FCShash));
   }
   auto get_variable_text(TFCSSimulationState& simulstate,
-                         const TFCSTruthState*,
-                         const TFCSExtrapolationState*) const
+                         const TFCSTruthState* /*unused*/,
+                         const TFCSExtrapolationState* /*unused*/) const
       -> const std::string override;
 
   auto get_nr_of_init(std::size_t bin) const -> unsigned int;

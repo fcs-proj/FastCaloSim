@@ -46,7 +46,7 @@ public:
 
 protected:
   // Overriding virtual function
-  G4MagneticField* getField() override;
+  auto getField() -> G4MagneticField* override;
 
 private:
   MagField::IMagFieldSvc* m_magFieldSvc;
@@ -62,9 +62,9 @@ ATLASMagneticFieldMapPlugin::~ATLASMagneticFieldMapPlugin()
   std::cout << "GOODBYE from Atlas Magnetic Field Plugin" << '\n';
 }
 
-G4MagneticField* ATLASMagneticFieldMapPlugin::getField()
+auto ATLASMagneticFieldMapPlugin::getField() -> G4MagneticField*
 {
-  MagField::AtlasFieldSvc* atlasFieldSvs = new MagField::AtlasFieldSvc(
+  auto* atlasFieldSvs = new MagField::AtlasFieldSvc(
       (TEST_BASE_DIR
        + std::string("data/fieldmap/bmagatlas_09_fullAsym20400.data"))
           .c_str(),
@@ -77,7 +77,8 @@ G4MagneticField* ATLASMagneticFieldMapPlugin::getField()
   return new AtlasField(&*m_magFieldSvc);
 }
 
-extern "C" ATLASMagneticFieldMapPlugin* createATLASMagneticFieldMapPlugin()
+extern "C" auto createATLASMagneticFieldMapPlugin()
+    -> ATLASMagneticFieldMapPlugin*
 {
   return new ATLASMagneticFieldMapPlugin;
 }

@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <cmath>
@@ -81,7 +82,7 @@ auto CaloGeo::get_cell_at_idx(std::size_t layer, size_t idx) const
     throw std::runtime_error("Invalid layer ID or index out of bounds");
   }
 
-  unsigned long long cell_id = layer_it->second[idx];
+  unsigned long long const cell_id = layer_it->second[idx];
   return m_cell_store.get(cell_id);
 }
 
@@ -153,17 +154,13 @@ void CaloGeo::set_alt_geo_handler(std::size_t ilayer,
 
 void CaloGeo::update_eta_extremes(std::size_t layer, const Cell& cell)
 {
-  DetectorSide side = cell.eta() > 0 ? kEtaPositive : kEtaNegative;
-  double half_width = cell.deta() / 2;
-  double min_eta = cell.eta() - half_width;
-  double max_eta = cell.eta() + half_width;
+  DetectorSide const side = cell.eta() > 0 ? kEtaPositive : kEtaNegative;
+  double const half_width = cell.deta() / 2;
+  double const min_eta = cell.eta() - half_width;
+  double const max_eta = cell.eta() + half_width;
   auto& eta_extremes = m_layer_flags.at(layer).eta_extensions.at(side);
-  if (max_eta > eta_extremes.eta_max) {
-    eta_extremes.eta_max = max_eta;
-  }
-  if (min_eta < eta_extremes.eta_min) {
-    eta_extremes.eta_min = min_eta;
-  }
+  eta_extremes.eta_max = std::max(max_eta, eta_extremes.eta_max);
+  eta_extremes.eta_min = std::min(min_eta, eta_extremes.eta_min);
 }
 
 // Method to build geometry
@@ -251,7 +248,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
     }
 
     // The geometry is stored in single precision
-    const auto value = [i](auto& column)
+    const auto value = [i](auto& column) -> auto
     { return static_cast<double>(column->at(i)); };
     pos.m_x = value(x);
     pos.m_y = value(y);
@@ -260,20 +257,20 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
     pos.m_phi = value(phi);
     pos.m_r = value(r);
 
-    Cell cell(id->at(i),
-              pos,
-              layer_id,
-              isBarrel->at(i),
-              isXYZ->at(i),
-              isEtaPhiR->at(i),
-              isEtaPhiZ->at(i),
-              isRPhiZ->at(i),
-              value(dx),
-              value(dy),
-              value(dz),
-              value(deta),
-              value(dphi),
-              value(dr));
+    Cell const cell(id->at(i),
+                    pos,
+                    layer_id,
+                    isBarrel->at(i),
+                    isXYZ->at(i),
+                    isEtaPhiR->at(i),
+                    isEtaPhiZ->at(i),
+                    isRPhiZ->at(i),
+                    value(dx),
+                    value(dy),
+                    value(dz),
+                    value(deta),
+                    value(dphi),
+                    value(dr));
 
     update_eta_extremes(layer_id, cell);
     m_layer_cell_ids[layer_id].push_back(cell.id());
@@ -286,7 +283,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   cell_store_builder.write(base_path + "/cellstore");
 
   auto end_time = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed = end_time - start_time;
+  std::chrono::duration<double> const elapsed = end_time - start_time;
 
   // Print timing information
   // CaloGeo has no output level
@@ -304,7 +301,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
 
   // Invalidate the layer lookups before the cell store is replaced, so that a
   // failed load leaves none that point into the new store
-  const auto invalidate = [](LayerLookup& lookup)
+  const auto invalidate = [](LayerLookup& lookup) -> void
   {
     lookup.rtree = nullptr;
     lookup.store_index.clear();
@@ -329,7 +326,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     if (!cell.is_valid()) {
       throw std::runtime_error("Invalid cell found in cell store");
     }
-    std::size_t layer_id = cell.layer();
+    std::size_t const layer_id = cell.layer();
     unique_layers.insert(layer_id);
     m_layer_cell_ids[layer_id].push_back(cell.id());
     layer_store_index[layer_id].push_back(static_cast<std::uint32_t>(i));
@@ -392,7 +389,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   }
 
   auto end_time = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed = end_time - start_time;
+  std::chrono::duration<double> const elapsed = end_time - start_time;
 
   // Print timing information
   // CaloGeo has no output level

@@ -41,7 +41,7 @@ auto TFCSLateralShapeParametrization::compare(
                   << IsA()->GetName() << " != " << ref.IsA()->GetName());
     return false;
   }
-  const TFCSLateralShapeParametrization& ref_typed =
+  const auto& ref_typed =
       static_cast<const TFCSLateralShapeParametrization&>(ref);
   if (m_Ekin_bin != ref_typed.m_Ekin_bin) {
     FCS_MSG_DEBUG("compare(): different Ekin bin");

@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeWeightHitAndMiss.h"
@@ -52,15 +53,11 @@ auto TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
   // TODO: delta_r_mm should perhaps be cached in hit
 
   Int_t bin = m_hist->FindBin(delta_r_mm);
-  if (bin < 1) {
-    bin = 1;
-  }
-  if (bin > m_hist->GetNbinsX()) {
-    bin = m_hist->GetNbinsX();
-  }
-  double meanweight = m_hist->GetBinContent(bin);
+  bin = std::max(bin, 1);
+  bin = std::min(bin, m_hist->GetNbinsX());
+  double const meanweight = m_hist->GetBinContent(bin);
   double weight = meanweight;
-  double RMS = m_hist->GetBinError(bin);
+  double const RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
     weight =
         FastCaloSim::gauss_ziggurat(simulstate.randomEngine(), meanweight, RMS);
@@ -86,8 +83,8 @@ auto TFCSHistoLateralShapeWeightHitAndMiss::simulate_hit(
   if (meanweight >= static_cast<double>(m_maxWeight)) {
     weight = static_cast<double>(m_maxWeight);
   } else if (meanweight > static_cast<double>(m_minWeight)) {
-    double prob = static_cast<double>(m_minWeight) / meanweight;
-    double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+    double const prob = static_cast<double>(m_minWeight) / meanweight;
+    double const rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
     if (rnd >= prob) {
       weight = 0.;
     }

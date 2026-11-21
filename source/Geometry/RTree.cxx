@@ -66,7 +66,7 @@ public:
 
     // Bins about the size of a typical rectangle, but never more bins than a
     // few per rectangle
-    const auto median = [](std::vector<double>& v)
+    const auto median = [](std::vector<double>& v) -> double
     {
       const auto middle = v.begin() + static_cast<std::ptrdiff_t>(v.size() / 2);
       std::nth_element(v.begin(), middle, v.end());
@@ -116,7 +116,7 @@ public:
     // List the rectangles of each bin contiguously (compressed row storage)
     m_bin_begin.assign(m_nx * m_ny + 1, 0);
     for_each_bin_of(entries,
-                    [&](std::size_t bin, const Entry&)
+                    [&](std::size_t bin, const Entry&) -> void
                     { ++m_bin_begin[bin + 1]; });
     for (std::size_t bin = 0; bin < m_nx * m_ny; ++bin) {
       m_bin_begin[bin + 1] += m_bin_begin[bin];
@@ -124,7 +124,7 @@ public:
     m_entries.resize(m_bin_begin.back());
     std::vector<std::size_t> next(m_bin_begin.begin(), m_bin_begin.end() - 1);
     for_each_bin_of(entries,
-                    [&](std::size_t bin, const Entry& entry)
+                    [&](std::size_t bin, const Entry& entry) -> void
                     { m_entries[next[bin]++] = entry; });
   }
 
@@ -185,7 +185,7 @@ public:
     const std::size_t iy = clamped_bin((y - m_y0) * m_inv_wy, m_ny);
 
     double best = std::numeric_limits<double>::infinity();
-    const auto visit_bin = [&](std::size_t bx, std::size_t by)
+    const auto visit_bin = [&](std::size_t bx, std::size_t by) -> auto
     {
       const std::size_t bin = by * m_nx + bx;
       for (std::size_t i = m_bin_begin[bin]; i < m_bin_begin[bin + 1]; ++i) {
@@ -198,7 +198,7 @@ public:
         } else if (FastCaloSim::exactly_equal(d, best)
                    && std::none_of(candidates.begin(),
                                    candidates.end(),
-                                   [&](const Entry& c)
+                                   [&](const Entry& c) -> auto
                                    {
                                      return c.second == entry.second
                                          && bg::equals(c.first, entry.first);
@@ -245,7 +245,7 @@ public:
       }
       double bound = std::numeric_limits<double>::infinity();
       const auto beyond =
-          [&](double xmin, double ymin, double xmax, double ymax)
+          [&](double xmin, double ymin, double xmax, double ymax) -> auto
       {
         bound = std::min(bound,
                          bg::comparable_distance(
@@ -292,7 +292,7 @@ private:
     m_wy = (m_y1 - m_y0) / static_cast<double>(ny);
     // Far larger than the rounding of the bin computation, far smaller than
     // a bin
-    const auto margin = [](double lo, double hi, double w)
+    const auto margin = [](double lo, double hi, double w) -> double
     { return 1e-9 * std::max({std::abs(lo), std::abs(hi), w}); };
     m_margin_x = margin(m_x0, m_x1, m_wx);
     m_margin_y = margin(m_y0, m_y1, m_wy);
@@ -419,7 +419,8 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
   // Of several candidates, take the cell whose rectangle center is nearest
   // (and the smaller cell ID on an exact tie)
   const auto& ids = m_impl->ids;
-  const auto center_distance_and_id = [&point, &ids](const Entry& entry)
+  const auto center_distance_and_id =
+      [&point, &ids](const Entry& entry) -> std::pair<double, unsigned long>
   {
     const auto center = bg::return_centroid<Point>(entry.first);
     return std::pair(bg::comparable_distance(point, center), ids[entry.second]);
@@ -427,7 +428,7 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
   const auto best = std::min_element(
       candidates.begin(),
       candidates.end(),
-      [&](const Entry& a, const Entry& b)
+      [&](const Entry& a, const Entry& b) -> bool
       { return center_distance_and_id(a) < center_distance_and_id(b); });
   return best->second;
 }

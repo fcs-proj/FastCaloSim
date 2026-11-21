@@ -32,7 +32,7 @@ public:
                          int intMinEta,
                          int intMaxEta) -> FCSReturnCode;
   // Initialization from interpolation map
-  auto initFromMap(const interpolationMap&) -> FCSReturnCode;
+  auto initFromMap(const interpolationMap& /*parameters*/) -> FCSReturnCode;
   // Helper function for strip layer model
   static auto getSeriesScalingFactor(double a0,
                                      double a1,

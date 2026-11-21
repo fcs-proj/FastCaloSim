@@ -49,14 +49,17 @@ public:
     }
   }
   // accessors
-  int id() const { return m_id; }
-  unsigned ncond() const { return static_cast<unsigned>(m_cond.size()); }
-  const BFieldCond& cond(int i) const
+  auto id() const -> int { return m_id; }
+  auto ncond() const -> unsigned
+  {
+    return static_cast<unsigned>(m_cond.size());
+  }
+  auto cond(int i) const -> const BFieldCond&
   {
     return m_cond[static_cast<std::size_t>(i)];
   }
-  const std::vector<BFieldCond>* condVector() const { return &m_cond; }
-  int memSize() const
+  auto condVector() const -> const std::vector<BFieldCond>* { return &m_cond; }
+  auto memSize() const -> int
   {
     return static_cast<int>(
         static_cast<std::size_t>(BFieldMesh<short>::memSize()) + sizeof(int)
@@ -88,8 +91,8 @@ void BFieldZone::addBiotSavart(const double* xyz,
                                double* B,
                                double* deriv) const
 {
-  for (unsigned i = 0; i < m_cond.size(); i++) {
-    m_cond[i].addBiotSavart(xyz, B, deriv);
+  for (const auto& i : m_cond) {
+    i.addBiotSavart(xyz, B, deriv);
   }
 }
 

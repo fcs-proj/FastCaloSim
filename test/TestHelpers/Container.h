@@ -61,7 +61,7 @@ public:
    */
   void serialize(const std::string& filename) const
   {
-    nlohmann::json j = flatten();
+    nlohmann::json const j = flatten();
     if (j.empty()) {
       throw std::runtime_error("JSON serialization failed. Object is empty!");
     }

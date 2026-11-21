@@ -41,20 +41,20 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
 {
   TFCSSimulationState sim_state;
   // Define a new dummy cell
-  Cell cell(0,
-            Position {0, 0, 0, 0, 0, 0},
-            0,
-            /*isBarrel=*/true,
-            /*isXYZ=*/false,
-            /*isEtaPhiR=*/true,
-            /*isEtaPhiZ=*/false,
-            /*isRPhiZ=*/false,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0);
+  Cell const cell(0,
+                  Position {0, 0, 0, 0, 0, 0},
+                  0,
+                  /*isBarrel=*/true,
+                  /*isXYZ=*/false,
+                  /*isEtaPhiR=*/true,
+                  /*isEtaPhiZ=*/false,
+                  /*isRPhiZ=*/false,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0);
 
   // Deposit 10 MeV in that cell
   sim_state.deposit(cell.id(), 10.0);
@@ -70,7 +70,7 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)
 {
   TFCSSimulationState sim_state;
-  uint32_t hash = TFCSSimulationState::getAuxIndex("testInfo");
+  uint32_t const hash = TFCSSimulationState::getAuxIndex("testInfo");
   sim_state.setAuxInfo<double>(hash, 123.456);
   EXPECT_DOUBLE_EQ(sim_state.getAuxInfo<double>(hash), 123.456);
 }

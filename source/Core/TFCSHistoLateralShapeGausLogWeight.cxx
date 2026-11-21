@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeGausLogWeight.h"
@@ -52,16 +53,12 @@ auto TFCSHistoLateralShapeGausLogWeight::simulate_hit(
   // TODO: delta_r_mm should perhaps be cached in hit
 
   Int_t bin = m_hist->FindBin(delta_r_mm);
-  if (bin < 1) {
-    bin = 1;
-  }
-  if (bin > m_hist->GetNbinsX()) {
-    bin = m_hist->GetNbinsX();
-  }
+  bin = std::max(bin, 1);
+  bin = std::min(bin, m_hist->GetNbinsX());
   double weight = m_hist->GetBinContent(bin);
-  double RMS = m_hist->GetBinError(bin);
+  double const RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
-    double logweight = FastCaloSim::gauss_ziggurat(
+    double const logweight = FastCaloSim::gauss_ziggurat(
         simulstate.randomEngine(), -0.5 * RMS * RMS, RMS);
     weight *= std::exp(logweight);
   }

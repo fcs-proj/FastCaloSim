@@ -21,7 +21,7 @@ public:
   DetectorConstruction();
   ~DetectorConstruction() override;
 
-  G4VPhysicalVolume* Construct() override;
+  auto Construct() -> G4VPhysicalVolume* override;
   void ConstructSDandField() override;
 
   // Interface to access the name of the fast simulation trigger region

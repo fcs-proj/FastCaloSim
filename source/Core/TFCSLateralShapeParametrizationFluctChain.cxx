@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFluctChain.h"
@@ -52,7 +53,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  FastCaloSim::MSG::Level old_level = level();
+  FastCaloSim::MSG::Level const old_level = level();
   const bool debug = msgLvl(FastCaloSim::MSG::DEBUG);
 
   // Execute the first get_nr_of_init() simulate calls only once. Used for
@@ -82,9 +83,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
 
   // Limit to relative precision of 10^-4=0.01%. ATLAS calorimeter is ~0.1% at
   // best
-  if (sigma2 < 1e-8) {
-    sigma2 = 1e-8;
-  }
+  sigma2 = std::max(sigma2, 1e-8);
 
   // Make a good guess of the needed hit energy, assuming all hits would have
   // the same energy
@@ -124,7 +123,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
     for (auto hititr = hitloopstart; hititr != m_chain.end(); ++hititr) {
       TFCSLateralShapeParametrizationHitBase* hitsim = *hititr;
 
-      FCSReturnCode status =
+      FCSReturnCode const status =
           hitsim->simulate_hit(hit, simulstate, truth, extrapol);
 
       if (status == FCSSuccess) {
@@ -141,9 +140,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
       ++itotalfail;
       retry = status - FCSRetry;
       retry_warning = retry >> 1;
-      if (retry_warning < 1) {
-        retry_warning = 1;
-      }
+      retry_warning = std::max(retry_warning, 1);
       break;
     }
     if (!failed) {
@@ -151,7 +148,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
       ++ihit;
       const double Ehit = hit.E();
       sumEhit += Ehit;
-      double sumEhit2 = sumEhit * sumEhit;
+      double const sumEhit2 = sumEhit * sumEhit;
       error2_sumEhit += Ehit * Ehit;
       if (sumEhit2 > 0) {
         error2 = error2_sumEhit / sumEhit2;

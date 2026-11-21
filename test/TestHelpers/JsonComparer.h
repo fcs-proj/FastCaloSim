@@ -44,7 +44,7 @@ public:
       return false;
     }
 
-    bool are_equal = compare_json(json1, json2, "");
+    bool const are_equal = compare_json(json1, json2, "");
     if (!are_equal) {
       std::cout << "Differences found:\n";
     }
@@ -114,7 +114,8 @@ private:
   {
     bool are_equal = true;
     for (auto it = json1.begin(); it != json1.end(); ++it) {
-      std::string new_path = path.empty() ? it.key() : path + "." + it.key();
+      std::string const new_path =
+          path.empty() ? it.key() : path + "." + it.key();
       if (json2.contains(it.key())) {
         if (!compare_json(it.value(), json2.at(it.key()), new_path)) {
           are_equal = false;
@@ -126,7 +127,8 @@ private:
       }
     }
     for (auto it = json2.begin(); it != json2.end(); ++it) {
-      std::string new_path = path.empty() ? it.key() : path + "." + it.key();
+      std::string const new_path =
+          path.empty() ? it.key() : path + "." + it.key();
       if (!json1.contains(it.key())) {
         print_difference("Extra key in second JSON", "", it.value(), new_path);
         are_equal = false;
@@ -140,7 +142,7 @@ private:
                       const std::string& path) -> bool
   {
     bool are_equal = true;
-    size_t min_size = std::min(json1.size(), json2.size());
+    size_t const min_size = std::min(json1.size(), json2.size());
     for (size_t i = 0; i < min_size; ++i) {
       if (!compare_json(
               json1[i], json2[i], path + "[" + std::to_string(i) + "]"))
@@ -172,9 +174,9 @@ private:
                        const json& json2,
                        const std::string& path) -> bool
   {
-    double val1 = json1.get<double>();
-    double val2 = json2.get<double>();
-    double percent_diff =
+    double const val1 = json1.get<double>();
+    double const val2 = json2.get<double>();
+    double const percent_diff =
         std::fabs(val1 - val2) / std::max(std::fabs(val1), std::fabs(val2));
     if (percent_diff > m_tolerance) {
       print_difference("Value mismatch", val1, val2, path, percent_diff * 100);

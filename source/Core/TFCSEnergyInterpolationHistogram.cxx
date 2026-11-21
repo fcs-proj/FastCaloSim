@@ -23,7 +23,7 @@ TFCSEnergyInterpolationHistogram::TFCSEnergyInterpolationHistogram(
 auto TFCSEnergyInterpolationHistogram::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
-    const TFCSExtrapolationState*) const -> FCSReturnCode
+    const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
   double Emean;
   double Einit;

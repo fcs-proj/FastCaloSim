@@ -22,10 +22,10 @@ public:
   static auto non_linear(double y1, double y2, double x1, double x2, double x)
       -> double;
 
-  static auto get_maxdev(TH1*, TH1D*) -> double;
-  void smart_rebin_loop(TH1* hist, double);
-  static auto get_change(TH1*) -> double;
-  static auto smart_rebin(TH1D*) -> std::unique_ptr<TH1D>;
+  static auto get_maxdev(TH1* /*h_in*/, TH1D* /*h_out*/) -> double;
+  void smart_rebin_loop(TH1* hist, double /*cut_maxdev*/);
+  static auto get_change(TH1* /*histo*/) -> double;
+  static auto smart_rebin(TH1D* /*h_input*/) -> std::unique_ptr<TH1D>;
 
   auto get_HistoBorders() const -> const std::vector<float>&
   {

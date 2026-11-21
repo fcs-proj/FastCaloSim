@@ -31,12 +31,12 @@ class FastSimModel : public G4VFastSimulationModel
  public:
   // The model transports particles through transportWorld, which is shared by
   // the models of all threads
-  FastSimModel(G4String, G4Region*, G4VPhysicalVolume* transportWorld);
+  FastSimModel(G4String /*aModelName*/, G4Region* /*aEnvelope*/, G4VPhysicalVolume* transportWorld);
   ~FastSimModel() override;
 
-  G4bool ModelTrigger(const G4FastTrack&) final;
-  G4bool IsApplicable(const G4ParticleDefinition&) final;
-  void DoIt(const G4FastTrack&, G4FastStep&) final;
+  auto ModelTrigger(const G4FastTrack& /*unused*/) -> G4bool final;
+  auto IsApplicable(const G4ParticleDefinition& /*unused*/) -> G4bool final;
+  void DoIt(const G4FastTrack& /*aFastTrack*/ /*unused*/, G4FastStep& /*aFastStep*/ /*unused*/) final;
   void DoStep(G4FieldTrack&, G4Navigator*);
 
   // Get the current track container

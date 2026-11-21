@@ -25,9 +25,9 @@ public:
   // compute magnetic field + derivatives
   void getB(const double* xyz, double* B, double* deriv = nullptr) const;
   // true if the grid has been defined
-  bool defined() const { return (m_n[0] > 0); }
+  auto defined() const -> bool { return (m_n[0] > 0); }
   // true if xyz[3] is inside this grid
-  bool inside(const double* xyz) const
+  auto inside(const double* xyz) const -> bool
   {
     return (xyz[0] >= m_min[0] && xyz[0] <= m_max[0] && xyz[1] >= m_min[1]
             && xyz[1] <= m_max[1] && xyz[2] >= m_min[2] && xyz[2] <= m_max[2]);

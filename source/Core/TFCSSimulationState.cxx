@@ -33,7 +33,7 @@ void TFCSSimulationState::deposit(const unsigned long long cell_id, float E)
   m_cells[cell_id] += E;
 }
 
-void TFCSSimulationState::Print(Option_t*) const
+void TFCSSimulationState::Print(Option_t* /*option*/) const
 {
   FCS_MSG_INFO("Ebin=" << (m_Ebin ? std::to_string(*m_Ebin) : "none")
                        << " E=" << E() << " #cells=" << m_cells.size());

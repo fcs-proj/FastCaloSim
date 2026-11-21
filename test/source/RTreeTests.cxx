@@ -32,8 +32,8 @@ auto eta_phi_cell(uint64_t id, double eta, double phi, double deta, double dphi)
     -> Cell
 {
   const Position center {0, 0, 0, eta, phi, 0};
-  return Cell(
-      id, center, 0, true, false, true, false, false, 0, 0, 0, deta, dphi, 0);
+  return {
+      id, center, 0, true, false, true, false, false, 0, 0, 0, deta, dphi, 0};
 }
 
 auto at_eta_phi(double eta, double phi) -> Position
@@ -304,16 +304,16 @@ TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
             {u_mid + 2 * du * gauss(rng), v_mid + 2 * dv * gauss(rng)});
       }
       points.push_back({u_mid + 50 * du, v_mid});
-      for (double u : {r.u_min, u_mid, r.u_max}) {
-        for (double v : {r.v_min, v_mid, r.v_max}) {
+      for (double const u : {r.u_min, u_mid, r.u_max}) {
+        for (double const v : {r.v_min, v_mid, r.v_max}) {
           points.push_back({u, v});
         }
       }
-      for (double u : {r.u_min, r.u_max}) {
+      for (double const u : {r.u_min, r.u_max}) {
         points.push_back({std::nextafter(u, -inf), v_mid});
         points.push_back({std::nextafter(u, inf), v_mid});
       }
-      for (double v : {r.v_min, r.v_max}) {
+      for (double const v : {r.v_min, r.v_max}) {
         points.push_back({u_mid, std::nextafter(v, -inf)});
         points.push_back({u_mid, std::nextafter(v, inf)});
       }

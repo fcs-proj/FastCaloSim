@@ -58,11 +58,11 @@ public:
     // Release any mappings from a previous load() so reloading does not leak
     unmap();
 
-    std::string data_path = base_path + ".data";
-    std::string index_path = base_path + ".index";
+    std::string const data_path = base_path + ".data";
+    std::string const index_path = base_path + ".index";
 
     // Verify the index file exists/opens before mapping anything
-    std::ifstream index_file(index_path, std::ios::binary);
+    std::ifstream const index_file(index_path, std::ios::binary);
     if (!index_file) {
       throw std::runtime_error("Failed to open index file: " + index_path);
     }
@@ -165,8 +165,8 @@ private:
       uint64_t offset;
     };
 
-    const IdOffsetPair* pairs = static_cast<const IdOffsetPair*>(m_index_data);
-    size_t num_pairs = m_index_size / sizeof(IdOffsetPair);
+    const auto* pairs = static_cast<const IdOffsetPair*>(m_index_data);
+    size_t const num_pairs = m_index_size / sizeof(IdOffsetPair);
 
     // Binary search (we know the index is sorted by ID thanks to
     // CellStoreBuilder)
@@ -174,7 +174,7 @@ private:
     size_t right = num_pairs;
 
     while (left < right) {
-      size_t mid = left + (right - left) / 2;
+      size_t const mid = left + (right - left) / 2;
       if (pairs[mid].id == id) {
         return pairs[mid].offset;
       }
@@ -211,7 +211,7 @@ private:
   /// @brief Get a cell at the specified offset in the data file
   auto getCellAtOffset(uint64_t offset) const -> const Cell&
   {
-    const CellData* cell_data = reinterpret_cast<const CellData*>(
+    const auto* cell_data = reinterpret_cast<const CellData*>(
         static_cast<const char*>(m_data) + offset);
 
     // Use thread-local Cell to avoid lifetime issues

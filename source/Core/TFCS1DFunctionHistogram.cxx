@@ -79,11 +79,10 @@ auto TFCS1DFunctionHistogram::get_maxdev(TH1* h_in, TH1D* h_out) -> double
 {
   double maxdev = 0;
   for (int i = 1; i <= h_in->GetNbinsX(); i++) {
-    int bin = h_out->FindBin(h_in->GetBinCenter(i));
-    double val = std::fabs(h_out->GetBinContent(bin) - h_in->GetBinContent(i));
-    if (val > maxdev) {
-      maxdev = val;
-    }
+    int const bin = h_out->FindBin(h_in->GetBinCenter(i));
+    double const val =
+        std::fabs(h_out->GetBinContent(bin) - h_in->GetBinContent(i));
+    maxdev = std::max(val, maxdev);
   }
   return maxdev;
 }
@@ -94,7 +93,7 @@ auto TFCS1DFunctionHistogram::get_change(TH1* histo) -> double
   // bin, because that one never gets merged
   double minchange = 100.0;
   for (int b = 2; b < histo->GetNbinsX(); b++) {
-    double diff = histo->GetBinContent(b) - histo->GetBinContent(b - 1);
+    double const diff = histo->GetBinContent(b) - histo->GetBinContent(b - 1);
     if (diff < minchange && diff > 0) {
       minchange = diff;
     }
@@ -109,7 +108,7 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
   std::unique_ptr<TH1D> h_out1(static_cast<TH1D*>(h_input->Clone("h_out1")));
 
   // get the smallest change
-  double change = get_change(h_out1.get()) * 1.00001;
+  double const change = get_change(h_out1.get()) * 1.00001;
 
   std::vector<double> content;
   std::vector<double> binborder;
@@ -121,19 +120,19 @@ auto TFCS1DFunctionHistogram::smart_rebin(TH1D* h_input)
   int secondlastbin_merge = 0;
   for (int b = 1; b < h_out1->GetNbinsX() - 1; b++)  // never touch the last bin
   {
-    double thisBin = h_out1->GetBinContent(b);
-    double nextBin = h_out1->GetBinContent(b + 1);
-    double width = h_out1->GetBinWidth(b);
-    double nextwidth = h_out1->GetBinWidth(b + 1);
-    double diff = std::fabs(nextBin - thisBin);
+    double const thisBin = h_out1->GetBinContent(b);
+    double const nextBin = h_out1->GetBinContent(b + 1);
+    double const width = h_out1->GetBinWidth(b);
+    double const nextwidth = h_out1->GetBinWidth(b + 1);
+    double const diff = std::fabs(nextBin - thisBin);
     if (!skip && (diff > change || merged)) {
       binborder.push_back(h_out1->GetBinLowEdge(b + 1));
       content.push_back(thisBin);
     }
     skip = 0;
     if (diff <= change && !merged) {
-      double sum = thisBin * width + nextBin * nextwidth;
-      double sumwidth = width + nextwidth;
+      double const sum = thisBin * width + nextBin * nextwidth;
+      double const sumwidth = width + nextwidth;
       binborder.push_back(h_out1->GetBinLowEdge(b + 2));
       content.push_back(sum / sumwidth);
       merged = 1;
@@ -168,12 +167,12 @@ auto TFCS1DFunctionHistogram::non_linear(
     double y1, double y2, double x1, double x2, double y) -> double
 {
   double x = -1;
-  double eps = 0.0000000001;
+  double const eps = 0.0000000001;
   if ((y2 - y1) < eps) {
     x = x1;
   } else {
-    double b = (x1 - x2) / (std::sqrt(y1) - std::sqrt(y2));
-    double a = x1 - b * std::sqrt(y1);
+    double const b = (x1 - x2) / (std::sqrt(y1) - std::sqrt(y2));
+    double const a = x1 - b * std::sqrt(y1);
     x = a + b * std::sqrt(y);
   }
   return x;
@@ -182,19 +181,19 @@ auto TFCS1DFunctionHistogram::non_linear(
 auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
 {
   // The histogram is stored in single precision
-  const auto content = [this](std::size_t i)
+  const auto content = [this](std::size_t i) -> double
   { return static_cast<double>(m_HistoContents[i]); };
-  const auto border = [this](std::size_t i)
+  const auto border = [this](std::size_t i) -> double
   { return static_cast<double>(m_HistoBorders[i]); };
 
   double value = 0.;
 
   if (rnd < content(0)) {
-    double x1 = border(0);
-    double x2 = border(1);
-    double y1 = 0;
-    double y2 = content(0);
-    double x = non_linear(y1, y2, x1, x2, rnd);
+    double const x1 = border(0);
+    double const x2 = border(1);
+    double const y1 = 0;
+    double const y2 = content(0);
+    double const x = non_linear(y1, y2, x1, x2, rnd);
     value = x;
   } else {
     // find the first HistoContent element that is larger than rnd:
@@ -204,16 +203,16 @@ auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
     if (index >= m_HistoContents.size()) {
       --index;
     }
-    double y = content(index);
-    double x1 = border(index);
+    double const y = content(index);
+    double const x1 = border(index);
     double x2 = border(index + 1);
-    double y1 = content(index - 1);
+    double const y1 = content(index - 1);
     double y2 = y;
     if ((index + 1) == (m_HistoContents.size() - 1)) {
       x2 = border(m_HistoBorders.size() - 1);
       y2 = content(m_HistoContents.size() - 1);
     }
-    double x = non_linear(y1, y2, x1, x2, rnd);
+    double const x = non_linear(y1, y2, x1, x2, rnd);
     value = x;
   }
 

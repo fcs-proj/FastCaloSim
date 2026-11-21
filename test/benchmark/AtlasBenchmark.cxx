@@ -42,7 +42,8 @@ auto env_int(const char* name, int fallback) -> int
 // BENCH_DUMP is not set
 auto dump_file() -> FILE*
 {
-  static std::unique_ptr<FILE, int (*)(FILE*)> file = []()
+  static std::unique_ptr<FILE, int (*)(FILE*)> const file =
+      []() -> std::unique_ptr<FILE, int (*)(FILE*)>
   {
     const char* path = std::getenv("BENCH_DUMP");
     FILE* f = path != nullptr ? std::fopen(path, "w") : nullptr;

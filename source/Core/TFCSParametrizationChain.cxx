@@ -43,7 +43,7 @@ auto combined_range(const TFCSParametrizationChain::Chain_t& chain,
                     bool intersect) -> Range
 {
   Range range = range_of(*chain[0]);
-  const auto nominal_outside = [&range]
+  const auto nominal_outside = [&range] -> bool
   { return range.nominal < range.min || range.nominal > range.max; };
   for (const auto* param : chain) {
     const Range other = range_of(*param);
@@ -180,7 +180,7 @@ auto TFCSParametrizationChain::simulate(
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   return simulate_with_restarts("TFCSParametrizationChain::simulate()",
-                                [&]
+                                [&] -> FCSReturnCode
                                 {
                                   for (const auto& param : m_chain) {
                                     const FCSReturnCode status =
@@ -215,7 +215,7 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
   TDirectory* dir = nullptr;
 
   if (R__b.IsReading()) {
-    Version_t R__v = R__b.ReadVersion(&R__s, &R__c);
+    Version_t const R__v = R__b.ReadVersion(&R__s, &R__c);
     if (R__v == 1) {
       R__b.SetBufferOffset(static_cast<Int_t>(R__s));
       R__b.ReadClassBuffer(TFCSParametrizationChain::Class(), this);
@@ -231,7 +231,7 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
 
       TFCSParametrizationChain::Chain_t& R__stl = m_chain;
       R__stl.clear();
-      TClass* R__tcl1 = TFCSParametrizationBase::Class();
+      TClass const* R__tcl1 = TFCSParametrizationBase::Class();
       if (R__tcl1 == nullptr) {
         Error("m_chain streamer",
               "Missing the TClass object for class TFCSParametrizationBase *!");
@@ -290,15 +290,16 @@ void TFCSParametrizationChain::Streamer(TBuffer& R__b)
     }
 
     TFCSParametrizationChain::Chain_t& R__stl = m_chain;
-    int R__n = static_cast<int>(R__stl.size());
+    int const R__n = static_cast<int>(R__stl.size());
     R__b << R__n;
     if (R__n) {
       TFCSParametrizationChain::Chain_t::iterator R__k;
       for (R__k = R__stl.begin(); R__k != R__stl.end(); ++R__k) {
-        TFCSParametrizationBase* R__t = *R__k;  // Ownership stays with m_chain
+        TFCSParametrizationBase const* R__t =
+            *R__k;  // Ownership stays with m_chain
         if (dir && R__t != nullptr) {
           dir->WriteTObject(R__t);
-          TFCSParametrizationPlaceholder tmp(
+          TFCSParametrizationPlaceholder const tmp(
               R__t->GetName(), TString("Placeholder for: ") + R__t->GetTitle());
           R__b.WriteObject(&tmp, false);  // tell R__b object with same address
                                           // are actually different

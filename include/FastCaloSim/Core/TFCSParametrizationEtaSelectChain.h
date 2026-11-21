@@ -20,14 +20,14 @@ public:
   virtual void push_back_in_bin(TFCSParametrizationBase* param);
   // selects on extrapol->IDCaloBoundary_eta()
   // returns no value if outside range
-  auto get_bin(TFCSSimulationState&,
+  auto get_bin(TFCSSimulationState& /*simulstate*/,
                const TFCSTruthState* truth,
                const TFCSExtrapolationState* extrapol) const
       -> std::optional<std::size_t> override;
   auto get_variable_text(TFCSSimulationState& simulstate,
-                         const TFCSTruthState*,
-                         const TFCSExtrapolationState*) const
-      -> const std::string override;
+                         const TFCSTruthState* /*unused*/,
+                         const TFCSExtrapolationState* /*extrapol*/ /*unused*/)
+      const -> const std::string override;
   auto get_bin_text(std::optional<std::size_t> bin) const
       -> const std::string override;
 

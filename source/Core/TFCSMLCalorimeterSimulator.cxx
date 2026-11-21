@@ -39,8 +39,8 @@ auto TFCSMLCalorimeterSimulator::predictVoxels(TFCSSimulationState& simulstate,
 
   // Initialize the energy and eta input vectors
   const auto n_events = static_cast<std::size_t>(m_nEvents);
-  std::vector<float> eta_vector(n_events, eta);
-  std::vector<float> energy_vector(n_events, energy);
+  std::vector<float> const eta_vector(n_events, eta);
+  std::vector<float> const energy_vector(n_events, energy);
 
   // sample the z vectors according to a standard normal distribution, in the
   // single precision of the network inputs
@@ -59,28 +59,28 @@ auto TFCSMLCalorimeterSimulator::predictVoxels(TFCSSimulationState& simulstate,
   VNetworkBase::NetworkInputs inputs;
 
   int i = 0;
-  for (float thisEta : eta_vector) {
+  for (float const thisEta : eta_vector) {
     inputs["inn_eta_in"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), thisEta));
     i++;
   }
 
   i = 0;
-  for (float thisEnergy : energy_vector) {
+  for (float const thisEnergy : energy_vector) {
     inputs["inn_einc_in"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), thisEnergy));
     i++;
   }
 
   i = 0;
-  for (float z_shape : z_shape_vector) {
+  for (float const z_shape : z_shape_vector) {
     inputs["cfm_z_shape"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), z_shape));
     i++;
   }
 
   i = 0;
-  for (float z_energy : z_energy_vector) {
+  for (float const z_energy : z_energy_vector) {
     inputs["inn_z_energy"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), z_energy));
     i++;
@@ -111,7 +111,7 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
   }
 
   // Check if any output contains NaN; retry up to 5 times if so
-  auto has_nan = [](const VNetworkBase::NetworkOutputs& out)
+  auto has_nan = [](const VNetworkBase::NetworkOutputs& out) -> bool
   {
     for (const auto& kv : out) {
       if (std::isnan(kv.second)) {
@@ -139,8 +139,8 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
   }
 
   // Fill the event structure with the voxel energies
-  std::vector<unsigned int> bin_index_vector;
-  std::vector<float> E_vector;
+  std::vector<unsigned int> const bin_index_vector;
+  std::vector<float> const E_vector;
 
   event_t event;
 
@@ -192,36 +192,36 @@ auto TFCSMLCalorimeterSimulator::predictVoxels() const
   const std::size_t nVoxels = 382;
   const std::size_t nLayers = 5;
 
-  std::vector<float> eta_vector(nEvents, 2.0);
-  std::vector<float> energy_vector(nEvents, 65536.0);
-  std::vector<float> z_shape_vector(nEvents * nVoxels, 0.5);
-  std::vector<float> z_energy_vector(nEvents * nLayers, 0.5);
+  std::vector<float> const eta_vector(nEvents, 2.0);
+  std::vector<float> const energy_vector(nEvents, 65536.0);
+  std::vector<float> const z_shape_vector(nEvents * nVoxels, 0.5);
+  std::vector<float> const z_energy_vector(nEvents * nLayers, 0.5);
 
   VNetworkBase::NetworkInputs inputs;
 
   int i = 0;
-  for (float thisEta : eta_vector) {
+  for (float const thisEta : eta_vector) {
     inputs["inn_eta_in"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), thisEta));
     i++;
   }
 
   i = 0;
-  for (float thisEnergy : energy_vector) {
+  for (float const thisEnergy : energy_vector) {
     inputs["inn_einc_in"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), thisEnergy));
     i++;
   }
 
   i = 0;
-  for (float z_shape : z_shape_vector) {
+  for (float const z_shape : z_shape_vector) {
     inputs["cfm_z_shape"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), z_shape));
     i++;
   }
 
   i = 0;
-  for (float z_energy : z_energy_vector) {
+  for (float const z_energy : z_energy_vector) {
     inputs["inn_z_energy"].insert(std::pair<std::string, double>(
         "variable_" + std::to_string(i), z_energy));
     i++;

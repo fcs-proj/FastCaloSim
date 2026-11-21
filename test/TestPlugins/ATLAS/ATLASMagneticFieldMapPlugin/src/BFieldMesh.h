@@ -80,7 +80,7 @@ public:
   // build LUT
   void buildLUT();
   // test if a point is inside this zone
-  inline bool inside(double z, double r, double phi) const;
+  inline auto inside(double z, double r, double phi) const -> bool;
   // find the bin
   inline void getCache(double z,
                        double r,
@@ -89,33 +89,36 @@ public:
   // get the B field
   void getB(const double* xyz, double* B, double* deriv = nullptr) const;
   // accessors
-  double min(int i) const { return m_min[i]; }
-  double max(int i) const { return m_max[i]; }
-  double zmin() const { return m_min[0]; }
-  double zmax() const { return m_max[0]; }
-  double rmin() const { return m_min[1]; }
-  double rmax() const { return m_max[1]; }
-  double phimin() const { return m_min[2]; }
-  double phimax() const { return m_max[2]; }
-  unsigned nmesh(int i) const
+  auto min(int i) const -> double { return m_min[i]; }
+  auto max(int i) const -> double { return m_max[i]; }
+  auto zmin() const -> double { return m_min[0]; }
+  auto zmax() const -> double { return m_max[0]; }
+  auto rmin() const -> double { return m_min[1]; }
+  auto rmax() const -> double { return m_max[1]; }
+  auto phimin() const -> double { return m_min[2]; }
+  auto phimax() const -> double { return m_max[2]; }
+  auto nmesh(int i) const -> unsigned
   {
     return static_cast<unsigned>(m_mesh[i].size());
   }
-  double mesh(int i, int j) const
+  auto mesh(int i, int j) const -> double
   {
     return m_mesh[i][static_cast<std::size_t>(j)];
   }
-  unsigned nfield() const { return static_cast<unsigned>(m_field.size()); }
-  const BFieldVector<T>& field(int i) const
+  auto nfield() const -> unsigned
+  {
+    return static_cast<unsigned>(m_field.size());
+  }
+  auto field(int i) const -> const BFieldVector<T>&
   {
     return m_field[static_cast<std::size_t>(i)];
   }
-  double bscale() const { return m_scale; }
+  auto bscale() const -> double { return m_scale; }
   int memSize() const;
 
 private:
   // tentative mesh index in dimension j from the LUT, x = coordinate - min(j)
-  std::size_t lutLookup(int j, double x) const
+  auto lutLookup(int j, double x) const -> std::size_t
   {
     const auto ilut = static_cast<int>(x * m_invUnit[j]);  // index to LUT
     return static_cast<std::size_t>(m_LUT[j][static_cast<std::size_t>(ilut)]);
@@ -155,7 +158,7 @@ void BFieldMesh<T>::reserve(int nz, int nr, int nphi, int nfield)
 // Test if a point (z,r,phi) is inside this mesh region.
 //
 template<class T>
-bool BFieldMesh<T>::inside(double z, double r, double phi) const
+auto BFieldMesh<T>::inside(double z, double r, double phi) const -> bool
 {
   // assume phi is in [-pi,pi].
   // phimax() is in [0,2pi], but phimin() may be < 0 if the range crosses phi =
@@ -206,7 +209,8 @@ void BFieldMesh<T>::getCache(double z,
   // store the B field at the 8 corners
   const auto roff = static_cast<std::size_t>(m_roff);
   const auto zoff = static_cast<std::size_t>(m_zoff);
-  std::size_t im0 = iz * zoff + ir * roff + iphi;  // index of the first corner
+  std::size_t const im0 =
+      iz * zoff + ir * roff + iphi;  // index of the first corner
   cache.setField(0, m_field[im0]);
   cache.setField(1, m_field[im0 + 1]);
   cache.setField(2, m_field[im0 + roff]);
@@ -226,10 +230,10 @@ template<class T>
 void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
 {
   // cylindrical coordinates
-  double x = xyz[0];
-  double y = xyz[1];
-  double z = xyz[2];
-  double r = sqrt(x * x + y * y);
+  double const x = xyz[0];
+  double const y = xyz[1];
+  double const z = xyz[2];
+  double const r = sqrt(x * x + y * y);
   double phi = atan2(y, x);
   if (phi < phimin()) {
     phi += 2.0 * M_PI;
@@ -267,7 +271,8 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
   // get the B field at the 8 corners
   const auto roff = static_cast<std::size_t>(m_roff);
   const auto zoff = static_cast<std::size_t>(m_zoff);
-  std::size_t im0 = iz * zoff + ir * roff + iphi;  // index of the first corner
+  std::size_t const im0 =
+      iz * zoff + ir * roff + iphi;  // index of the first corner
   BFieldVector<T> field[8];
   field[0] = m_field[im0];
   field[1] = m_field[im0 + 1];
@@ -278,12 +283,12 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
   field[6] = m_field[im0 + zoff + roff];
   field[7] = m_field[im0 + zoff + roff + 1];
   // fractional position inside this mesh
-  double fz = (z - mz[iz]) / (mz[iz + 1] - mz[iz]);
-  double gz = 1.0 - fz;
-  double fr = (r - mr[ir]) / (mr[ir + 1] - mr[ir]);
-  double gr = 1.0 - fr;
-  double fphi = (phi - mphi[iphi]) / (mphi[iphi + 1] - mphi[iphi]);
-  double gphi = 1.0 - fphi;
+  double const fz = (z - mz[iz]) / (mz[iz + 1] - mz[iz]);
+  double const gz = 1.0 - fz;
+  double const fr = (r - mr[ir]) / (mr[ir + 1] - mr[ir]);
+  double const gr = 1.0 - fr;
+  double const fphi = (phi - mphi[iphi]) / (mphi[iphi + 1] - mphi[iphi]);
+  double const gphi = 1.0 - fphi;
   // interpolate field values in z, r, phi
   double Bzrphi[3];
   for (int i = 0; i < 3; i++) {  // z, r, phi
@@ -296,17 +301,17 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
                   + fr * (gphi * field[6][i] + fphi * field[7][i])));
   }
   // convert (Bz,Br,Bphi) to (Bx,By,Bz)
-  double c = (r > 0.0) ? x / r : cos(mphi[iphi]);
-  double es = (r > 0.0) ? y / r : sin(mphi[iphi]);
+  double const c = (r > 0.0) ? x / r : cos(mphi[iphi]);
+  double const es = (r > 0.0) ? y / r : sin(mphi[iphi]);
   B[0] = Bzrphi[1] * c - Bzrphi[2] * es;
   B[1] = Bzrphi[1] * es + Bzrphi[2] * c;
   B[2] = Bzrphi[0];
 
   // compute field derivatives if requested
   if (deriv) {
-    double sz = m_scale / (mz[iz + 1] - mz[iz]);
-    double esr = m_scale / (mr[ir + 1] - mr[ir]);
-    double sphi = m_scale / (mphi[iphi + 1] - mphi[iphi]);
+    double const sz = m_scale / (mz[iz + 1] - mz[iz]);
+    double const esr = m_scale / (mr[ir + 1] - mr[ir]);
+    double const sphi = m_scale / (mphi[iphi + 1] - mphi[iphi]);
     double dBdz[3];
     double dBdr[3];
     double dBdphi[3];
@@ -334,9 +339,9 @@ void BFieldMesh<T>::getB(const double* xyz, double* B, double* deriv) const
                     + fr * (field[7][j] - field[6][j])));
     }
     // convert to cartesian coordinates
-    double cc = c * c;
-    double cs = c * es;
-    double ss = es * es;
+    double const cc = c * c;
+    double const cs = c * es;
+    double const ss = es * es;
     deriv[0] = cc * dBdr[1] - cs * dBdr[2] - cs * dBdphi[1] / r
         + ss * dBdphi[2] / r + es * B[1] / r;
     deriv[1] = cs * dBdr[1] - ss * dBdr[2] + cc * dBdphi[1] / r
@@ -362,7 +367,7 @@ void BFieldMesh<T>::buildLUT()
     m_mesh[j].front() = m_min[j];
     m_mesh[j].back() = m_max[j];
     // determine the unit size, q, to be used in the LUTs
-    double width = m_mesh[j].back() - m_mesh[j].front();
+    double const width = m_mesh[j].back() - m_mesh[j].front();
     double q(width);
     for (unsigned i = 0; i < m_mesh[j].size() - 1; i++) {
       q = std::min(q, m_mesh[j][i + 1] - m_mesh[j][i]);

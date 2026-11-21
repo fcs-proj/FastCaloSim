@@ -96,9 +96,9 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       FCS_MSG_ERROR("covMatrix" + label + " not found");
       return false;
     }
-    TMatrixTSym<double> covMatrix =
+    TMatrixTSym<double> const covMatrix =
         *dynamic_cast<TMatrixTSym<double>*>(obj.get());
-    TMatrixDSymEigen eigenvariances = TMatrixDSymEigen(covMatrix);
+    TMatrixDSymEigen const eigenvariances = TMatrixDSymEigen(covMatrix);
     EigenVectors.ResizeTo(eigenvariances.GetEigenVectors());
     EigenVectors = eigenvariances.GetEigenVectors();
     m_EigenVectors.push_back(EigenVectors);
@@ -126,14 +126,13 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       transform[x].resize(n_y);
       for (std::size_t y = 0; y < n_y; ++y) {
         // Naming of hists is hist_xy where x, y are indices of cells
-        std::string histname = std::format("hist_{}_{}{}", x, y, label);
-        TH1* hist = static_cast<TH1*>(inputfile->Get(histname.c_str()));
+        std::string const histname = std::format("hist_{}_{}{}", x, y, label);
+        TH1 const* hist = static_cast<TH1*>(inputfile->Get(histname.c_str()));
         if (!hist) {
           FCS_MSG_ERROR("Histogram " << histname << " not found");
           return false;
         }
-        TFCS1DFunctionInt32Int32Histogram* func =
-            new TFCS1DFunctionInt32Int32Histogram();
+        auto* func = new TFCS1DFunctionInt32Int32Histogram();
         func->Initialize(hist, false);
         transform[x][y] = func;
       }
@@ -153,7 +152,7 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
   // Only called for a valid Ebin, see simulate()
   const std::size_t ibin = simulstate.Ebin().value() - 1;
 
-  int nPars = m_parMeans[ibin].GetNrows();
+  int const nPars = m_parMeans[ibin].GetNrows();
   genPars.ResizeTo(nPars);
 
   TVectorD rotParMeans = m_EigenVectors[ibin] * m_parMeans[ibin];
@@ -249,11 +248,11 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   for (std::size_t x = 0; x < n_x; ++x) {
     for (std::size_t y = 0; y < n_y; ++y) {
       // Get value of CDF corresponding to generated Gauss random
-      double cdf_val =
+      double const cdf_val =
           (std::erf(genPars[count] * 2.0 / std::numbers::pi) + 1) / 2.0;
 
       // Map that cdf value to input bin and value
-      double orig_val = m_transform[ibin][x][y]->rnd_to_fct(cdf_val);
+      double const orig_val = m_transform[ibin][x][y]->rnd_to_fct(cdf_val);
 
       // Fill hist, keep linear count
       (*weightvec)[x][y] = orig_val;
@@ -339,7 +338,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
                 + deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
 
   int ix;
-  int iy = voxel_template->GetYaxis()->FindBin(radius_mm) - 1;
+  int const iy = voxel_template->GetYaxis()->FindBin(radius_mm) - 1;
 
   // Treat core as one bin for simulation
   if (iy == 0) {
@@ -362,7 +361,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     }
   }
 
-  double new_E = hit.E() * weight;
+  double const new_E = hit.E() * weight;
   hit.set_E(new_E);
 
   FCS_MSG_DEBUG("HIT: E=" << hit.E() << ", alpha = " << alpha_mm

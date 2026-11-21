@@ -14,8 +14,8 @@
 //=============================================
 
 auto TFCSParametrizationAbsEtaSelectChain::get_bin(
-    TFCSSimulationState&,
-    const TFCSTruthState*,
+    TFCSSimulationState& /*unused*/,
+    const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* extrapol) const -> std::optional<std::size_t>
 {
   // The bin edges are single precision, so is the binning variable

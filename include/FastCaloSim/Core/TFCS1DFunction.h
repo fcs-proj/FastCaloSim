@@ -34,7 +34,7 @@ public:
     return this == &ref;
   }
 
-  static auto get_maxdev(TH1*, TH1*) -> double;
+  static auto get_maxdev(TH1* /*h_input1*/, TH1* /*h_approx1*/) -> double;
 
   static auto CheckAndIntegrate1DHistogram(const TH1* hist,
                                            std::vector<double>& integral_vec,

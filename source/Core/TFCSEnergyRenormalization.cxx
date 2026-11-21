@@ -32,7 +32,7 @@ auto TFCSEnergyRenormalization::simulate(
 
   // Loop over all cells containing energy and sum up energies
   for (const auto& cell_iter : simulstate.cells()) {
-    unsigned long long cell_id = cell_iter.first;
+    unsigned long long const cell_id = cell_iter.first;
     const auto cell_energy = static_cast<double>(cell_iter.second);
     // Add the energy to the layer of the cell
     const auto layer = m_geo->get_cell(cell_id).layer();

@@ -28,14 +28,14 @@ void BFieldH8Grid::readMap(std::istream& input)
   double cor;
   m_n[0] = 0;
   input >> name;
-  for (int i = 0; i < 3; i++) {
-    input >> m_n[i];
+  for (int& i : m_n) {
+    input >> i;
   }
   for (int i = 0; i < 3; i++) {
     input >> m_min[i] >> m_max[i];
   }
-  for (int i = 0; i < 3; i++) {
-    input >> m_d[i];
+  for (double& i : m_d) {
+    input >> i;
   }
   input >> cor;
   // anything read?
@@ -50,9 +50,9 @@ void BFieldH8Grid::readMap(std::istream& input)
     m_d[i] *= meter;
   }
   // prepare space for the field data
-  int nxyz = m_n[0] * m_n[1] * m_n[2];
-  for (int i = 0; i < 3; i++) {
-    m_B[i].resize(static_cast<std::size_t>(nxyz));
+  int const nxyz = m_n[0] * m_n[1] * m_n[2];
+  for (auto& i : m_B) {
+    i.resize(static_cast<std::size_t>(nxyz));
   }
   // read the field data
   double xyz[3];
@@ -104,7 +104,7 @@ void BFieldH8Grid::getB(const double* xyz, double* B, double* deriv) const
   double g[3];
   for (int i = 0; i < 3; i++) {
     invunit[i] = (m_n[i] - 1) / (m_max[i] - m_min[i]);
-    double a = (xyz[i] - m_min[i]) * invunit[i];
+    double const a = (xyz[i] - m_min[i]) * invunit[i];
     j[i] = int(a);
     f[i] = a - j[i];
     g[i] = 1.0 - f[i];

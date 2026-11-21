@@ -31,7 +31,7 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
     double binval = hist->GetBinContent(ix);
     if (binval < 0) {
       // Can't work if a bin is negative, forcing bins to 0 in this case
-      double fraction = binval / hist->Integral();
+      double const fraction = binval / hist->Integral();
       if (std::abs(fraction) > 1e-5) {
         FCS_MSG_WARNING("bin content is negative in histogram "
                         << hist->GetName() << " : " << hist->GetTitle()
@@ -102,8 +102,7 @@ auto TFCS1DFunctionInt32Histogram::operator==(const TFCS1DFunction& ref) const
   if (IsA() != ref.IsA()) {
     return false;
   }
-  const TFCS1DFunctionInt32Histogram& ref_typed =
-      static_cast<const TFCS1DFunctionInt32Histogram&>(ref);
+  const auto& ref_typed = static_cast<const TFCS1DFunctionInt32Histogram&>(ref);
 
   if (m_HistoBorders != ref_typed.m_HistoBorders) {
     return false;

@@ -43,37 +43,40 @@ public:
   // build LUT
   void buildLUT();
   // test if a point is inside this zone
-  bool inside(double z, double r) const
+  auto inside(double z, double r) const -> bool
   {
     return (z >= zmin() && z <= zmax() && r >= rmin() && r <= rmax());
   }
   // find the bin
   inline void getCache(double z, double r, BFieldCacheZR& cache) const;
   // accessors
-  double min(int i) const { return m_min[i]; }
-  double max(int i) const { return m_max[i]; }
-  double zmin() const { return m_min[0]; }
-  double zmax() const { return m_max[0]; }
-  double rmin() const { return m_min[1]; }
-  double rmax() const { return m_max[1]; }
-  unsigned nmesh(int i) const
+  auto min(int i) const -> double { return m_min[i]; }
+  auto max(int i) const -> double { return m_max[i]; }
+  auto zmin() const -> double { return m_min[0]; }
+  auto zmax() const -> double { return m_max[0]; }
+  auto rmin() const -> double { return m_min[1]; }
+  auto rmax() const -> double { return m_max[1]; }
+  auto nmesh(int i) const -> unsigned
   {
     return static_cast<unsigned>(m_mesh[i].size());
   }
-  double mesh(int i, int j) const
+  auto mesh(int i, int j) const -> double
   {
     return m_mesh[i][static_cast<std::size_t>(j)];
   }
-  unsigned nfield() const { return static_cast<unsigned>(m_field.size()); }
-  const BFieldVectorZR& field(int i) const
+  auto nfield() const -> unsigned
+  {
+    return static_cast<unsigned>(m_field.size());
+  }
+  auto field(int i) const -> const BFieldVectorZR&
   {
     return m_field[static_cast<std::size_t>(i)];
   }
-  int memSize() const;
+  auto memSize() const -> int;
 
 private:
   // tentative mesh index in dimension j from the LUT, x = coordinate - min(j)
-  std::size_t lutLookup(int j, double x) const
+  auto lutLookup(int j, double x) const -> std::size_t
   {
     const auto ilut = static_cast<int>(x * m_invUnit[j]);  // index to LUT
     return static_cast<std::size_t>(m_LUT[j][static_cast<std::size_t>(ilut)]);
@@ -112,7 +115,7 @@ inline void BFieldMeshZR::getCache(double z,
   cache.setRange(mz[iz], mz[iz + 1], mr[ir], mr[ir + 1]);
   // store the B field at the 8 corners
   const auto zoff = static_cast<std::size_t>(m_zoff);
-  std::size_t im0 = iz * zoff + ir;  // index of the first corner
+  std::size_t const im0 = iz * zoff + ir;  // index of the first corner
   cache.setField(0, m_field[im0]);
   cache.setField(1, m_field[im0 + 1]);
   cache.setField(2, m_field[im0 + zoff]);

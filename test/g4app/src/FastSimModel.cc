@@ -28,12 +28,12 @@ FastSimModel::FastSimModel(G4String aModelName,
 
 FastSimModel::~FastSimModel() = default;
 
-G4bool FastSimModel::IsApplicable(const G4ParticleDefinition& /*aParticleType*/)
+auto FastSimModel::IsApplicable(const G4ParticleDefinition& /*aParticleType*/) -> G4bool
 {
   return true;
 }
 
-G4bool FastSimModel::ModelTrigger(const G4FastTrack& /*aFastTrack*/)
+auto FastSimModel::ModelTrigger(const G4FastTrack& /*aFastTrack*/) -> G4bool
 {
   return true;
 }
@@ -76,10 +76,10 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
   }
 
   // Perform the FastCaloSim transportation
-  std::vector<G4FieldTrack> step_vector =
+  std::vector<G4FieldTrack> const step_vector =
       fTransportTool.transport(*aFastTrack.GetPrimaryTrack());
   // Add the track to the vector of tracks
-  TestHelpers::Track trk(step_vector);
+  TestHelpers::Track const trk(step_vector);
   fTransportTracks.add(trk);
 
   // Do the extrapolation

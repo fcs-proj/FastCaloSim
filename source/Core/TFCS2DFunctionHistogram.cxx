@@ -15,9 +15,9 @@
 
 void TFCS2DFunctionHistogram::Initialize(TH2* hist)
 {
-  Int_t nbinsx = hist->GetNbinsX();
-  Int_t nbinsy = hist->GetNbinsY();
-  Int_t nbins = nbinsx * nbinsy;
+  Int_t const nbinsx = hist->GetNbinsX();
+  Int_t const nbinsy = hist->GetNbinsY();
+  Int_t const nbins = nbinsx * nbinsy;
 
   // Accumulated in double precision, stored in single precision
   double integral = 0;
@@ -32,7 +32,7 @@ void TFCS2DFunctionHistogram::Initialize(TH2* hist)
       double binval = hist->GetBinContent(ix, iy);
       if (binval < 0) {
         // Can't work if a bin is negative, forcing bins to 0 in this case
-        double fraction = binval / hist->Integral();
+        double const fraction = binval / hist->Integral();
         if (std::abs(fraction) > 1e-5) {
           FCS_MSG_WARNING("bin content is negative in histogram "
                           << hist->GetName() << " : " << hist->GetTitle()
@@ -84,17 +84,17 @@ void TFCS2DFunctionHistogram::rnd_to_fct(double& valuex,
     return;
   }
   // The bin borders and contents are stored in single precision
-  const auto content = [this](std::size_t bin)
+  const auto content = [this](std::size_t bin) -> double
   { return static_cast<double>(m_HistoContents[bin]); };
-  const auto border_x = [this](std::size_t bin)
+  const auto border_x = [this](std::size_t bin) -> double
   { return static_cast<double>(m_HistoBorders[bin]); };
-  const auto border_y = [this](std::size_t bin)
+  const auto border_y = [this](std::size_t bin) -> double
   { return static_cast<double>(m_HistoBordersy[bin]); };
 
   const auto it = std::upper_bound(m_HistoContents.begin(),
                                    m_HistoContents.end(),
                                    rnd0,
-                                   [](double r, float c)
+                                   [](double r, float c) -> bool
                                    { return r < static_cast<double>(c); });
   std::size_t ibin = FastCaloSim::index_of(m_HistoContents, it);
   if (ibin >= m_HistoContents.size()) {

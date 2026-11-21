@@ -60,7 +60,7 @@ auto TFCSLateralShapeParametrizationHitBase::simulate_hit(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* extrapol) -> FCSReturnCode
 {
-  std::size_t cs = calosample();
+  std::size_t const cs = calosample();
   hit.set_eta_x(0.5
                 * (extrapol->eta(cs, Cell::SubPos::ENT)
                    + extrapol->eta(cs, Cell::SubPos::EXT)));

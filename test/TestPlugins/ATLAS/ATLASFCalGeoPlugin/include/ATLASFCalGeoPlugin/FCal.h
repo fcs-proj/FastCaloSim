@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cfloat>
 #include <cmath>
@@ -35,11 +36,11 @@ public:
   auto get_cell(std::size_t layer, const Position& pos) const
       -> const Cell& override
   {
-    unsigned long long cell_id = this->get_fcal_cell_id(
+    unsigned long long const cell_id = this->get_fcal_cell_id(
         static_cast<int>(layer), pos.x(), pos.y(), pos.z());
 
     if (cell_id == static_cast<unsigned long long>(-1)) {
-      static Cell invalid_cell;
+      static Cell const invalid_cell;
       return invalid_cell;
     }
     // This will get the cell directly from the cell store
@@ -100,7 +101,7 @@ public:
         electrode >> ninth_column;
 
         tubeName.ReplaceAll("'", "");
-        std::string tubeNamestring = tubeName.Data();
+        std::string const tubeNamestring = tubeName.Data();
 
         std::istringstream tileStream1(std::string(tubeNamestring, 1, 1));
         std::istringstream tileStream2(std::string(tubeNamestring, 3, 2));
@@ -118,7 +119,7 @@ public:
           tileStream3 >> a3;
         }
 
-        std::stringstream s;
+        std::stringstream const s;
 
         m_FCal_ChannelMap.add_tube(tubeNamestring,
                                    imodule,
@@ -157,12 +158,8 @@ public:
         x = static_cast<double>(it->second.x());
         y = static_cast<double>(it->second.y());
         r = std::sqrt(x * x + y * y);
-        if (r < m_FCal_rmin[idx]) {
-          m_FCal_rmin[idx] = r;
-        }
-        if (r > m_FCal_rmax[idx]) {
-          m_FCal_rmax[idx] = r;
-        }
+        m_FCal_rmin[idx] = std::min(r, m_FCal_rmin[idx]);
+        m_FCal_rmax[idx] = std::max(r, m_FCal_rmax[idx]);
       }
     }
   }
@@ -171,9 +168,9 @@ public:
       int layer, float x, float y, int& ieta, int& iphi, int* steps) const
       -> bool
   {
-    double rmin = m_FCal_rmin[static_cast<std::size_t>(layer - 21)];
-    double rmax = m_FCal_rmax[static_cast<std::size_t>(layer - 21)];
-    int isam = layer - 20;
+    double const rmin = m_FCal_rmin[static_cast<std::size_t>(layer - 21)];
+    double const rmax = m_FCal_rmax[static_cast<std::size_t>(layer - 21)];
+    int const isam = layer - 20;
     double a = 1.;
     const double b = 0.01;
     const int nmax = 100;
@@ -187,7 +184,7 @@ public:
     const double r_inverse = 1. / r;
 
     // Scale a float coordinate in double precision, round back to float
-    auto scaled = [](double s, float v)
+    auto scaled = [](double s, float v) -> float
     { return static_cast<float>(s * static_cast<double>(v)); };
 
     if ((r / rmax) > (rmin * r_inverse)) {
@@ -225,15 +222,15 @@ public:
                         int* steps = nullptr) const -> unsigned long long
   {
     // The FCal modules are the layers 21, 22 and 23
-    int isam = layer - 20;
+    int const isam = layer - 20;
     if (isam < 1 || isam > 3) {
       std::cout << "Error: Layer " << layer << " is not an FCal layer!" << '\n';
       return static_cast<unsigned long long>(-1);
     }
     int iphi(-100000);
     int ieta(-100000);
-    Long64_t mask1[] {0x34, 0x34, 0x35};
-    Long64_t mask2[] {0x36, 0x36, 0x37};
+    Long64_t const mask1[] {0x34, 0x34, 0x35};
+    Long64_t const mask2[] {0x36, 0x36, 0x37};
     // The channel map works in single precision
     const auto xf = static_cast<float>(x);
     const auto yf = static_cast<float>(y);

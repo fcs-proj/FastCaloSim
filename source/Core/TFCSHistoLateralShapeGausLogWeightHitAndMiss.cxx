@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cmath>
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeGausLogWeightHitAndMiss.h"
@@ -53,17 +54,13 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
   // TODO: delta_r_mm should perhaps be cached in hit
 
   Int_t bin = m_hist->FindBin(delta_r_mm);
-  if (bin < 1) {
-    bin = 1;
-  }
-  if (bin > m_hist->GetNbinsX()) {
-    bin = m_hist->GetNbinsX();
-  }
-  double meanweight = m_hist->GetBinContent(bin);
+  bin = std::max(bin, 1);
+  bin = std::min(bin, m_hist->GetNbinsX());
+  double const meanweight = m_hist->GetBinContent(bin);
   double weight = meanweight;
-  double RMS = m_hist->GetBinError(bin);
+  double const RMS = m_hist->GetBinError(bin);
   if (RMS > 0) {
-    double logweight = FastCaloSim::gauss_ziggurat(
+    double const logweight = FastCaloSim::gauss_ziggurat(
         simulstate.randomEngine(), -0.5 * RMS * RMS, RMS);
     weight *= std::exp(logweight);
   }
@@ -76,8 +73,8 @@ auto TFCSHistoLateralShapeGausLogWeightHitAndMiss::simulate_hit(
     // if meanweight>1, accept only 1/meanweight events, but give them a higher
     // energy increased by weight. This leads to larger fluctuations, while
     // keeping the shape unchanged.
-    double prob = 1.0 / meanweight;
-    double rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
+    double const prob = 1.0 / meanweight;
+    double const rnd = CLHEP::RandFlat::shoot(simulstate.randomEngine());
     if (rnd < prob) {
       hit.set_E(weight * hit.E());
     } else {

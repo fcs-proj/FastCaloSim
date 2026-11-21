@@ -12,13 +12,13 @@ EventAction::EventAction()
 EventAction::~EventAction()
 = default;
 
-void EventAction::BeginOfEventAction(const G4Event *)
+void EventAction::BeginOfEventAction(const G4Event * /*anEvent*/)
 {
 }
 
 void EventAction::EndOfEventAction(const G4Event *anEvent)
 {
-    auto HCE = anEvent->GetHCofThisEvent();
+    auto *HCE = anEvent->GetHCofThisEvent();
     if (!HCE) {
         return;
 }

@@ -48,7 +48,7 @@ auto TFCSPCAEnergyParametrization::is_match_calosample(
     std::size_t calosample) const -> bool
 {
   return std::ranges::any_of(m_RelevantLayers,
-                             [calosample](int layer)
+                             [calosample](int layer) -> bool
                              { return std::cmp_equal(layer, calosample); });
 }
 
@@ -85,7 +85,7 @@ auto interpolate_get_y(TH1* hist, double x) -> double
     return hist->GetBinContent(hist->GetNbinsX());
   }
 
-  int bin = hist->FindBin(x);
+  int const bin = hist->FindBin(x);
   // is x above the bin center -> interpolate with next bin
   if (x > hist->GetBinCenter(bin)) {
     x1 = hist->GetBinCenter(bin);
@@ -159,17 +159,17 @@ auto TFCSPCAEnergyParametrization::simulate(
 
     const std::vector<int>& layerNr = m_RelevantLayers;
 
-    double* vals_gauss_means =
+    auto const* vals_gauss_means =
         static_cast<double*>(Gauss_means->GetMatrixArray());
-    double* vals_gauss_rms = Gauss_rms->GetMatrixArray();
+    double const* vals_gauss_rms = Gauss_rms->GetMatrixArray();
 
     std::vector<double> output_data(layerNr.size() + 1);
     std::vector<double> input_data(layerNr.size() + 1);
 
     for (std::size_t l = 0; l <= layerNr.size(); l++) {
-      double mean = vals_gauss_means[l];
-      double rms = vals_gauss_rms[l];
-      double gauszz =
+      double const mean = vals_gauss_means[l];
+      double const rms = vals_gauss_rms[l];
+      double const gauszz =
           FastCaloSim::gauss_ziggurat(simulstate.randomEngine(), mean, rms);
       input_data[l] = gauszz;
     }
@@ -187,7 +187,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     std::vector<double> simdata(layerNr.size() + 1);
     double sum_fraction = 0.0;
     for (std::size_t l = 0; l <= layerNr.size(); l++) {
-      double simdata_uniform =
+      double const simdata_uniform =
           (std::erf(output_data[l] / std::numbers::sqrt2) + 1) / 2.0;
 
       simdata[l] = cumulative[l]->rnd_to_fct(simdata_uniform);
@@ -224,7 +224,7 @@ auto TFCSPCAEnergyParametrization::simulate(
       }
     }
 
-    double total_energy = simdata[layerNr.size()] * simulstate.E()
+    double const total_energy = simdata[layerNr.size()] * simulstate.E()
         / static_cast<double>(m_total_energy_normalization);
     simulstate.set_E(total_energy);
     FCS_MSG_DEBUG("set E to total_energy=" << total_energy);
@@ -284,7 +284,7 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
   m_numberpcabins -= 1;
 
   file->cd((x + "1/pca").c_str());
-  IntArray* RelevantLayers =
+  IntArray const* RelevantLayers =
       static_cast<IntArray*>(gDirectory->Get("RelevantLayers"));
   if (RelevantLayers == nullptr) {
     FCS_MSG_ERROR(
@@ -305,7 +305,8 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
   for (int bin = 1; bin <= m_numberpcabins; bin++) {
     file->cd(std::format("{}{}/pca", x, bin).c_str());
 
-    TMatrixDSym* symCov = static_cast<TMatrixDSym*>(gDirectory->Get("symCov"));
+    TMatrixDSym const* symCov =
+        static_cast<TMatrixDSym*>(gDirectory->Get("symCov"));
     TVectorD* MeanValues =
         static_cast<TVectorD*>(gDirectory->Get("MeanValues"));
     TVectorD* SigmaValues =
@@ -344,8 +345,8 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
       return false;
     }
 
-    TMatrixDSymEigen cov_eigen(*symCov);
-    TMatrixD* EV = new TMatrixD(cov_eigen.GetEigenVectors());
+    TMatrixDSymEigen const cov_eigen(*symCov);
+    auto* EV = new TMatrixD(cov_eigen.GetEigenVectors());
     m_EV.push_back(EV);
     m_MeanValues.push_back(MeanValues);
     m_SigmaValues.push_back(SigmaValues);
@@ -355,16 +356,17 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     std::vector<std::string> layer;
     const std::vector<int>& layerNr = m_RelevantLayers;
 
-    for (std::size_t i = 0; i < layerNr.size(); ++i) {
-      layer.emplace_back(std::format("layer{}", layerNr[i]));
+    layer.reserve(layerNr.size());
+    for (int i : layerNr) {
+      layer.emplace_back(std::format("layer{}", i));
     }
     layer.emplace_back("totalE");
 
     std::vector<TFCS1DFunction*> cumulative;
     cumulative.reserve(layer.size());
 
-    for (std::size_t l = 0; l < layer.size(); ++l) {
-      file->cd(std::format("{}/bin{}/{}", folder, bin, layer[l]).c_str());
+    for (auto& l : layer) {
+      file->cd(std::format("{}/bin{}/{}", folder, bin, l).c_str());
 
       TFCS1DFunction* fct;
       fct = static_cast<TFCS1DFunction*>(
@@ -390,8 +392,8 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 
 void TFCSPCAEnergyParametrization::clean()
 {
-  for (std::size_t i = 0; i < m_EV.size(); ++i) {
-    delete m_EV[i];
+  for (auto& i : m_EV) {
+    delete i;
   }
 }
 
@@ -402,7 +404,7 @@ void TFCSPCAEnergyParametrization::Streamer(TBuffer& R__b)
   if (R__b.IsReading()) {
     UInt_t R__s;
     UInt_t R__c;
-    Version_t R__v = R__b.ReadVersion(&R__s, &R__c);
+    Version_t const R__v = R__b.ReadVersion(&R__s, &R__c);
     R__b.SetBufferOffset(static_cast<Int_t>(R__s));
 
     R__b.ReadClassBuffer(TFCSPCAEnergyParametrization::Class(), this);

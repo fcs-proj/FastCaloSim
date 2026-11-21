@@ -76,9 +76,7 @@ void TFCSParametrizationBase::Print(Option_t* option) const
     if (is_match_all_pdgid()) {
       FCS_MSG(INFO) << "all";
     } else {
-      for (std::set<int>::iterator it = pdgid().begin(); it != pdgid().end();
-           ++it)
-      {
+      for (auto it = pdgid().begin(); it != pdgid().end(); ++it) {
         if (it != pdgid().begin()) {
           FCS_MSG(INFO) << ", ";
         }
@@ -207,8 +205,8 @@ void TFCSParametrizationBase::RemoveDuplicates()
 
   std::map<std::string, int> ndel;
   for (auto* delparam : dellist) {
-    FindDuplicates_t& dup2 = dupclasses2[delparam->GetName()];
-    bool present = dup2.contains(delparam);
+    FindDuplicates_t const& dup2 = dupclasses2[delparam->GetName()];
+    bool const present = dup2.contains(delparam);
     if (present) {
       FCS_MSG_WARNING("- Delete object " << delparam << "="
                                          << delparam->GetName()

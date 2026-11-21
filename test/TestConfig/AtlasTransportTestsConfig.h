@@ -31,7 +31,8 @@ public:
   inline static const std::string PYTHON_SCRIPT_DIR = "test/python/scripts/";
 
   // The list of events (event = particle container) to be transported
-  inline static const std::vector<TestHelpers::Event> EVENTS = []()
+  inline static const std::vector<TestHelpers::Event> EVENTS =
+      []() -> std::vector<TestHelpers::Event>
   {
     // Vector of events to be processed
     std::vector<TestHelpers::Event> events;
@@ -41,7 +42,7 @@ public:
     const float max_eta = 5;  // 5
     const float step_size = 0.05F;  // 0.5
     const float energy = 50 * CLHEP::MeV;
-    std::vector<TestHelpers::ParticleType> ptype = {
+    std::vector<TestHelpers::ParticleType> const ptype = {
         TestHelpers::ParticleTypes::Photon,
         TestHelpers::ParticleTypes::Electron,
         TestHelpers::ParticleTypes::Positron,
@@ -51,18 +52,18 @@ public:
     TestHelpers::IDCaloBoundarySampler sampler;
 
     for (const auto& type : ptype) {
-      TestHelpers::ParticleContainer particles = sampler.uniformEtaSample(
+      TestHelpers::ParticleContainer const particles = sampler.uniformEtaSample(
           type.pid, energy, min_eta, max_eta, step_size);
 
       // Plot label rounded to 2 decimal places
       std::stringstream estring;
       estring << std::fixed << std::setprecision(2) << energy;
-      std::string evt_label = "$ E=" + estring.str() + R"(\,\text{MeV}\,)"
+      std::string const evt_label = "$ E=" + estring.str() + R"(\,\text{MeV}\,)"
           + std::string(type.label) + "$";
       // Construct the event with the particle container and event label
       TestHelpers::Event evt(particles, evt_label);
       // How should the test for this event be printed?
-      std::string ptcl_name = std::string(type.name);
+      std::string const ptcl_name = std::string(type.name);
       evt.set_print_string(ptcl_name);
 
       events.emplace_back(evt);
