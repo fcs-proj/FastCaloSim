@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <numbers>
 
 #include "FastCaloSim/Core/TFCSVoxelHistoLateralCovarianceFluctuations.h"
 
@@ -12,7 +13,6 @@
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TFile.h"
 #include "TH2.h"
-#include "TMath.h"
 #include "TMatrixDSym.h"
 #include "TMatrixDSymEigen.h"
 #include "TVector2.h"
@@ -237,7 +237,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     for (int y = 0; y < m_nDim_y; ++y) {
       // Get value of CDF corresponding to generated Gauss random
       double cdf_val =
-          (TMath::Erf(genPars[count] * 2.0 / TMath::Pi()) + 1) / 2.0;
+          (std::erf(genPars[count] * 2.0 / std::numbers::pi) + 1) / 2.0;
 
       // Map that cdf value to input bin and value
       double orig_val = m_transform[Ebin - 1][x][y]->rnd_to_fct(cdf_val);
@@ -329,7 +329,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
     ix = 0;
   } else {
     if (alpha_mm < 0)
-      ix = voxel_template->GetXaxis()->FindBin(2 * TMath::Pi()
+      ix = voxel_template->GetXaxis()->FindBin(2 * std::numbers::pi
                                                - std::fabs(alpha_mm))
           - 1;
     else

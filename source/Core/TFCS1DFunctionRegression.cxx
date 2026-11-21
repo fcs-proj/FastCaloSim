@@ -1,9 +1,10 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCS1DFunctionRegression.h"
 
 #include "TFile.h"
-#include "TMath.h"
 #include "TString.h"
 
 using namespace std;
@@ -7086,7 +7087,7 @@ auto TFCS1DFunctionRegression::sigmoid(double x) -> double
 
   Int_t i = (Int_t)(10 * x + 350.5);
   if (i < 0)
-    return TMath::Exp(x);
+    return std::exp(x);
   if (i > 699)
     return 1;
   const Double_t* basePoint = sigval + (10 * i);
@@ -7106,9 +7107,9 @@ auto TFCS1DFunctionRegression::sigmoid(double x) -> double
                                              * (basePoint[7]
                                                 + res * (basePoint[8])))))));
   /*
-  if(x<-15) return TMath::Exp(x);
+  if(x<-15) return std::exp(x);
   if(x> 15) return 1;
-  return (1/(1+TMath::Exp(-x)));
+  return (1/(1+std::exp(-x)));
   */
   return res;
 }

@@ -10,7 +10,6 @@
 
 #include "CLHEP/Random/RandPoisson.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeParametrization =========
@@ -55,7 +54,7 @@ auto TFCSLateralShapeParametrizationHitNumberFromE::get_sigma2_fluctuation(
     return 1;
   }
 
-  if (TMath::IsNaN(energy)) {
+  if (std::isnan(energy)) {
     FCS_MSG_DEBUG("Energy is NaN");
     return 1;
   }

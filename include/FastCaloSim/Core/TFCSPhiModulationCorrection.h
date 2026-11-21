@@ -7,12 +7,12 @@
 
 // External includes
 #include <cmath>
+#include <numbers>
 #include <string>
 #include <tuple>
 #include <vector>
 
 #include <RtypesCore.h>
-#include <TMath.h>
 
 class CaloGeo;
 
@@ -68,11 +68,11 @@ public:
   static auto get_phi_cell_size(long unsigned int layer, float eta) -> float
   {
     if (layer <= 3) {
-      return 2 * TMath::Pi() / 1024;
+      return 2 * std::numbers::pi / 1024;
     } else if (std::abs(eta) < 2.5) {
-      return 2 * TMath::Pi() / 768;
+      return 2 * std::numbers::pi / 768;
     } else {
-      return 2 * TMath::Pi() / 256;
+      return 2 * std::numbers::pi / 256;
     }
   }
 

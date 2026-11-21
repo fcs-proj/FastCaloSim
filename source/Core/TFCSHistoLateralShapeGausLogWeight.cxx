@@ -1,12 +1,13 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSHistoLateralShapeGausLogWeight.h"
 
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "TH1.h"
-#include "TMath.h"
 #include "TVector2.h"
 
 //=============================================
@@ -37,16 +38,16 @@ auto TFCSHistoLateralShapeGausLogWeight::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
-                                      / (1.0 + TMath::Exp(-2 * center_eta)));
+  const float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
+  const float eta_jakobi =
+      std::abs(2.0 * std::exp(-center_eta) / (1.0 + std::exp(-2 * center_eta)));
 
   const float delta_eta = hit.eta() - center_eta;
   const float delta_phi = hit.phi() - center_phi;
   const float delta_eta_mm = delta_eta * eta_jakobi * dist000;
   const float delta_phi_mm = delta_phi * center_r;
   const float delta_r_mm =
-      TMath::Sqrt(delta_eta_mm * delta_eta_mm + delta_phi_mm * delta_phi_mm);
+      std::sqrt(delta_eta_mm * delta_eta_mm + delta_phi_mm * delta_phi_mm);
 
   // TODO: delta_r_mm should perhaps be cached in hit
 
@@ -60,7 +61,7 @@ auto TFCSHistoLateralShapeGausLogWeight::simulate_hit(
   if (RMS > 0) {
     float logweight = CLHEP::RandGaussZiggurat::shoot(
         simulstate.randomEngine(), -0.5 * RMS * RMS, RMS);
-    weight *= TMath::Exp(logweight);
+    weight *= std::exp(static_cast<double>(logweight));
   }
   hit.set_E(weight * hit.E());
 

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include <RtypesCore.h>
-#include <TMath.h>
 #include <hdf5.h>
 
 #include "FastCaloSim/Core/TFCSBinnedShowerBase.h"

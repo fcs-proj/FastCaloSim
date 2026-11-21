@@ -9,7 +9,6 @@
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeParametrizationFCal =========
@@ -59,7 +58,7 @@ auto TFCSHistoLateralShapeParametrizationFCal::simulate_hit(
   } else {
     m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
   }
-  if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
+  if (std::isnan(alpha) || std::isnan(r)) {
     FCS_MSG_ERROR("  Histogram: "
                   << m_hist.get_HistoBordersx().size() - 1 << "*"
                   << m_hist.get_HistoBordersy().size() - 1

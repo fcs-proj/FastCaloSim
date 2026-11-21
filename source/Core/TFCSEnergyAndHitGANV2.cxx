@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <numbers>
 
 #include "FastCaloSim/Core/TFCSEnergyAndHitGANV2.h"
 
@@ -17,7 +18,6 @@
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TF1.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSEnergyAndHitGANV2 =========
@@ -327,7 +327,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           if (yBinNum == 1) {
             // nbins in alpha depend on circumference length
             const double r = x->GetBinUpEdge(ix);
-            nHitsAlpha = std::ceil(2 * TMath::Pi() * r / binResolution);
+            nHitsAlpha = std::ceil(2 * std::numbers::pi * r / binResolution);
           } else {
             // d = 2*r*sin (a/2r) this distance at the upper r must be 1mm for
             // layer 1 or 5, 5mm otherwise.
@@ -387,16 +387,18 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
             double alpha;
             if (binsInAlphaInRBin == 1) {
-              alpha = CLHEP::RandFlat::shoot(
-                  simulstate.randomEngine(), -TMath::Pi(), TMath::Pi());
+              alpha = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
+                                             -std::numbers::pi,
+                                             std::numbers::pi);
             } else {
               alpha = y->GetBinLowEdge(lowEdgeIndex)
                   + y->GetBinWidth(iy) * binsToMerge / (nHitsAlpha + 1)
                       * ialpha;
 
               if (m_param.IsSymmetrisedAlpha()) {
-                if (CLHEP::RandFlat::shoot(
-                        simulstate.randomEngine(), -TMath::Pi(), TMath::Pi())
+                if (CLHEP::RandFlat::shoot(simulstate.randomEngine(),
+                                           -std::numbers::pi,
+                                           std::numbers::pi)
                     < 0)
                 {
                   alpha = -alpha;
@@ -601,9 +603,9 @@ auto TFCSEnergyAndHitGANV2::GetAlphaBinsForRBin(const TAxis* x,
     FCS_MSG_DEBUG("yBinNum is special value 32");
     const double widthX = x->GetBinWidth(ix);
     const double radious = x->GetBinCenter(ix);
-    double circumference = radious * 2. * TMath::Pi();
+    double circumference = radious * 2. * std::numbers::pi;
     if (m_param.IsSymmetrisedAlpha()) {
-      circumference = radious * TMath::Pi();
+      circumference = radious * std::numbers::pi;
     }
 
     const double bins = circumference / widthX;

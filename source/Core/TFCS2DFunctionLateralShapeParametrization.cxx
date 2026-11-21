@@ -11,7 +11,6 @@
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "TFile.h"
 #include "TH2.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCS2DFunctionLateralShapeParametrization =========
@@ -82,8 +81,8 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  if (TMath::IsNaN(center_r) or TMath::IsNaN(center_z)
-      or TMath::IsNaN(center_eta) or TMath::IsNaN(center_phi))
+  if (std::isnan(center_r) or std::isnan(center_z) or std::isnan(center_eta)
+      or std::isnan(center_phi))
   {  // Check if extrapolation fails
     return FCSFatal;
   }
@@ -104,7 +103,7 @@ auto TFCS2DFunctionLateralShapeParametrization::simulate_hit(
   } else {
     m_function->rnd_to_fct(alpha, r, rnd1, rnd2);
   }
-  if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
+  if (std::isnan(alpha) || std::isnan(r)) {
     FCS_MSG_ERROR("  2D function, #hits=" << m_nhits << " alpha=" << alpha
                                           << " r=" << r << " rnd1=" << rnd1
                                           << " rnd2=" << rnd2);

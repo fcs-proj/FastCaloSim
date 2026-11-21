@@ -11,7 +11,6 @@
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "TFile.h"
 #include "TH2.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSHistoLateralShapeParametrization =========
@@ -118,8 +117,8 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
   const double center_r = hit.center_r();
   const double center_z = hit.center_z();
 
-  if (TMath::IsNaN(center_r) or TMath::IsNaN(center_z)
-      or TMath::IsNaN(center_eta) or TMath::IsNaN(center_phi))
+  if (std::isnan(center_r) or std::isnan(center_z) or std::isnan(center_eta)
+      or std::isnan(center_phi))
   {  // Check if extrapolation fails
     return FCSFatal;
   }
@@ -140,7 +139,7 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
   } else {
     m_hist.rnd_to_fct(alpha, r, rnd1, rnd2);
   }
-  if (TMath::IsNaN(alpha) || TMath::IsNaN(r)) {
+  if (std::isnan(alpha) || std::isnan(r)) {
     FCS_MSG_ERROR("  Histogram: "
                   << m_hist.get_HistoBordersx().size() - 1 << "*"
                   << m_hist.get_HistoBordersy().size() - 1
@@ -171,9 +170,9 @@ auto TFCSHistoLateralShapeParametrization::simulate_hit(
   if ((charge < 0. && pdgId != 11) || pdgId == -11)
     delta_phi_mm = -delta_phi_mm;
 
-  const float dist000 = TMath::Sqrt(center_r * center_r + center_z * center_z);
-  const float eta_jakobi = TMath::Abs(2.0 * TMath::Exp(-center_eta)
-                                      / (1.0 + TMath::Exp(-2 * center_eta)));
+  const float dist000 = std::sqrt(center_r * center_r + center_z * center_z);
+  const float eta_jakobi =
+      std::abs(2.0 * std::exp(-center_eta) / (1.0 + std::exp(-2 * center_eta)));
 
   const float delta_eta = delta_eta_mm / eta_jakobi / dist000;
   const float delta_phi = delta_phi_mm / center_r;

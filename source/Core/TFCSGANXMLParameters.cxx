@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <numbers>
 #include <sstream>
 
 #include "FastCaloSim/Core/TFCSGANXMLParameters.h"
@@ -15,7 +16,6 @@
 #include <libxml/parser.h>
 
 #include "RVersion.h"
-#include "TMath.h"
 #include "TObject.h"
 
 namespace
@@ -135,7 +135,7 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                       } else {
                         m_relevantlayers.push_back(layer);
                       }
-                      double minAlpha = -TMath::Pi();
+                      double minAlpha = -std::numbers::pi;
                       if (m_symmetrisedAlpha && binsInAlpha > 1) {
                         minAlpha = 0;
                       }
@@ -145,7 +145,7 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                                                         edges.data(),
                                                         binsInAlpha,
                                                         minAlpha,
-                                                        TMath::Pi());
+                                                        std::numbers::pi);
                       // Detach from any ROOT directory: the histogram is
                       // owned by this object and must not be registered in
                       // the (thread-unsafe) global directory

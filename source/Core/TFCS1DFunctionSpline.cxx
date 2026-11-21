@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
 #include <iostream>
 #include <memory>
 
@@ -7,7 +8,6 @@
 
 #include "FastCaloSim/Core/TFCS1DFunctionInt32Histogram.h"
 #include "TH1.h"
-#include "TMath.h"
 #include "TRandom.h"
 
 //=============================================
@@ -177,7 +177,7 @@ auto TFCS1DFunctionSpline::InitializeEqualDistance(TH1* hist,
         p_min = p_test;
       if ((p_max - p_min) < 0.0000001)
         break;
-    } while (TMath::Abs(tx - nx[i]) > dx / 10);
+    } while (std::abs(tx - nx[i]) > dx / 10);
     nprop[i] = p_test;
   }
 
@@ -347,7 +347,7 @@ auto TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
   for (int i = 0; i <= hist->GetNbinsX() + 1; i++) {
     int1 += hist->GetBinContent(i) / integral;
     int2 += hist_clone->GetBinContent(i);
-    double val = TMath::Abs(int1 - int2);
+    double val = std::abs(int1 - int2);
     if (val > maxdev) {
       maxdev = val;
       p_maxdev = int1;
@@ -355,7 +355,7 @@ auto TFCS1DFunctionSpline::get_maxdev(const TH1* hist,
 
     // now view the normalized integral as selection efficiency from a total
     // sample of sizze effN
-    double int1err = TMath::Sqrt(int1 * (1 - int1) / effN);
+    double int1err = std::sqrt(int1 * (1 - int1) / effN);
     double valsig = 0;
     if (int1err > 0)
       valsig = val / int1err;

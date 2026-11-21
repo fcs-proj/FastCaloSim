@@ -3,13 +3,14 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
+#include <algorithm>
+
 #include "FastCaloSim/Core/TFCSEnergyBinParametrization.h"
 
 #include "CLHEP/Random/RandFlat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "TFile.h"
-#include "TMath.h"
 #include "TVectorF.h"
 
 //=============================================
@@ -206,22 +207,10 @@ auto TFCSEnergyBinParametrization::simulate(
 
   const float searchRand = CLHEP::RandFlat::shoot(simulstate.randomEngine());
   const auto& Ebin_probability = m_pdgid_Ebin_probability.at(pdgid);
+  const auto first = Ebin_probability.begin();
   int chosenBin =
-      TMath::BinarySearch(n_bins() + 1, Ebin_probability.data(), searchRand)
-      + 1;
-  if (chosenBin < 0) {
-    FCS_MSG_WARNING(
-        "TFCSEnergyBinParametrization::simulate(): chosenBin<0 "
-        "(will use chosenBin=0)");
-    std::string array = "";
-    for (const auto& prob : Ebin_probability) {
-      array += prob;
-      array += " ";
-    }
-    FCS_MSG_WARNING(" E=" << simulstate.E() << " Ebin=" << chosenBin
-                          << " rnd=" << searchRand << " array=" << array);
-    chosenBin = 0;
-  } else if (chosenBin > n_bins()) {
+      std::upper_bound(first, first + n_bins() + 1, searchRand) - first;
+  if (chosenBin > n_bins()) {
     FCS_MSG_WARNING(
         "TFCSEnergyBinParametrization::simulate(): "
         "chosenBin>n_bins() (will use chosenBin=n_bins())");

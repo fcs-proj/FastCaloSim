@@ -2,11 +2,12 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFluctChain.h"
 
 #include "CLHEP/Random/RandGaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "TMath.h"
 
 //=============================================
 //======= TFCSLateralShapeParametrizationFluctChain =========
@@ -168,11 +169,11 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
   if (debug) {
     PropagateMSGLevel(old_level);
     FCS_MSG_DEBUG("E(" << calosample() << ")=" << Elayer << " sumE=" << sumEhit
-                       << "+-" << TMath::Sqrt(error2_sumEhit) << " ~ "
-                       << TMath::Sqrt(error2_sumEhit) / sumEhit * 100
+                       << "+-" << std::sqrt(error2_sumEhit) << " ~ "
+                       << std::sqrt(error2_sumEhit) / sumEhit * 100
                        << "% rel error^2=" << error2 << " sigma^2=" << sigma2
-                       << " ~ " << TMath::Sqrt(sigma2) * 100
-                       << "% hits=" << ihit << " fail=" << itotalfail);
+                       << " ~ " << std::sqrt(sigma2) * 100 << "% hits=" << ihit
+                       << " fail=" << itotalfail);
   }
 
   return FCSSuccess;
