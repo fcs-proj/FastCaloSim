@@ -36,8 +36,10 @@ the simulate_hit method. Hit level simulation is controlled through the special
 chain TFCSLateralShapeParametrizationHitChain.
 */
 
-/// Return codes for the simulate function
-enum FCSReturnCode
+/// Return codes for the simulate function. FCSRetry + n asks for up to n
+/// retries, so the underlying type is fixed to int to make all those values
+/// valid return codes.
+enum FCSReturnCode : int
 {
   FCSFatal = 0,
   FCSSuccess = 1,

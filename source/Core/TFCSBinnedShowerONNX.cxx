@@ -386,10 +386,11 @@ void TFCSBinnedShowerONNX::upscale(TFCSSimulationState& simulstate,
   std::size_t e_index = 0;
 
   std::array<double, 3> probabilities = {0.25, 0.5, 0.75};
-  const auto set_probabilities = [&probabilities](const std::vector<float>& p)
+  const auto set_probabilities =
+      [&probabilities](const std::vector<float>& sub_bin_probabilities)
   {
     for (std::size_t i = 0; i < probabilities.size(); ++i)
-      probabilities[i] = static_cast<double>(p[i]);
+      probabilities[i] = static_cast<double>(sub_bin_probabilities[i]);
   };
 
   if (available_energies.size() > 1) {

@@ -77,8 +77,8 @@ auto TFCSEnergyRenormalization::simulate(
   for (auto& cell_iter : simulstate.cells()) {
     const auto layer = m_geo->get_cell(cell_iter.first).layer();
     // Cell energies are stored in single precision
-    cell_iter.second =
-        static_cast<float>(cell_iter.second * scalefactor[layer]);
+    cell_iter.second = static_cast<float>(static_cast<double>(cell_iter.second)
+                                          * scalefactor[layer]);
   }
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {

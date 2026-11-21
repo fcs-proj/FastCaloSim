@@ -67,7 +67,8 @@ public:
     // few per rectangle
     const auto median = [](std::vector<double>& v)
     {
-      std::nth_element(v.begin(), v.begin() + v.size() / 2, v.end());
+      const auto middle = v.begin() + static_cast<std::ptrdiff_t>(v.size() / 2);
+      std::nth_element(v.begin(), middle, v.end());
       return v[v.size() / 2];
     };
     const double width = median(widths);
