@@ -12,16 +12,13 @@ class TFCS1DFunctionHistogram : public TFCS1DFunction
 {
 public:
   TFCS1DFunctionHistogram() = default;
-  TFCS1DFunctionHistogram(TH1* hist, double);
+  TFCS1DFunctionHistogram(TH1* hist, double cut_maxdev);
 
-  void Initialize(TH1* hist, double);
+  void Initialize(TH1* hist, double cut_maxdev);
 
   using TFCS1DFunction::rnd_to_fct;
   auto rnd_to_fct(double rnd) const -> double override;
-  auto vector_to_histo() -> std::unique_ptr<TH1>;
   auto get_inverse(double rnd) const -> double;
-  static auto linear(double y1, double y2, double x1, double x2, double x)
-      -> double;
   static auto non_linear(double y1, double y2, double x1, double x2, double x)
       -> double;
 
@@ -29,18 +26,15 @@ public:
   void smart_rebin_loop(TH1* hist, double);
   static auto get_change(TH1*) -> double;
   static auto smart_rebin(TH1D*) -> std::unique_ptr<TH1D>;
-  static auto histo_to_array(TH1*) -> std::unique_ptr<double[]>;
-  static auto sample_from_histo(TH1* hist, double) -> double;
-  auto sample_from_histovalues(double) -> double;
 
   auto get_HistoBorders() const -> const std::vector<float>&
   {
     return m_HistoBorders;
-  };
+  }
   auto get_HistoContents() const -> const std::vector<float>&
   {
     return m_HistoContents;
-  };
+  }
 
 protected:
   std::vector<float> m_HistoBorders;
