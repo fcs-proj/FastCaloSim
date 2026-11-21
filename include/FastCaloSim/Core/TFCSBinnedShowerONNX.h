@@ -34,11 +34,10 @@ public:
                                 const char* title = nullptr);
 
   ~TFCSBinnedShowerONNX() override;
-  TFCSBinnedShowerONNX(const TFCSBinnedShowerONNX&) = default;
-  TFCSBinnedShowerONNX(TFCSBinnedShowerONNX&&) = default;
-  auto operator=(const TFCSBinnedShowerONNX&)
-      -> TFCSBinnedShowerONNX& = default;
-  auto operator=(TFCSBinnedShowerONNX&&) -> TFCSBinnedShowerONNX& = default;
+  TFCSBinnedShowerONNX(const TFCSBinnedShowerONNX&) = delete;
+  TFCSBinnedShowerONNX(TFCSBinnedShowerONNX&&) = delete;
+  auto operator=(const TFCSBinnedShowerONNX&) -> TFCSBinnedShowerONNX& = delete;
+  auto operator=(TFCSBinnedShowerONNX&&) -> TFCSBinnedShowerONNX& = delete;
 
   auto is_match_Ekin_bin(std::size_t /*Ekin_bin*/) const -> bool override
   {

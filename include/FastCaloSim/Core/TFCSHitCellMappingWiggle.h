@@ -14,12 +14,12 @@ public:
                                     const char* title = nullptr,
                                     CaloGeo* geo = nullptr);
   ~TFCSHitCellMappingWiggle() override;
-  TFCSHitCellMappingWiggle(const TFCSHitCellMappingWiggle&) = default;
-  TFCSHitCellMappingWiggle(TFCSHitCellMappingWiggle&&) = default;
+  TFCSHitCellMappingWiggle(const TFCSHitCellMappingWiggle&) = delete;
+  TFCSHitCellMappingWiggle(TFCSHitCellMappingWiggle&&) = delete;
   auto operator=(const TFCSHitCellMappingWiggle&)
-      -> TFCSHitCellMappingWiggle& = default;
+      -> TFCSHitCellMappingWiggle& = delete;
   auto operator=(TFCSHitCellMappingWiggle&&)
-      -> TFCSHitCellMappingWiggle& = default;
+      -> TFCSHitCellMappingWiggle& = delete;
 
   void initialize(TFCS1DFunction* func);
   void initialize(const std::vector<const TFCS1DFunction*>& functions,

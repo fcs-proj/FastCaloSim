@@ -13,12 +13,12 @@ public:
   explicit TFCSHistoLateralShapeWeight(const char* name = nullptr,
                                        const char* title = nullptr);
   ~TFCSHistoLateralShapeWeight() override;
-  TFCSHistoLateralShapeWeight(const TFCSHistoLateralShapeWeight&) = default;
-  TFCSHistoLateralShapeWeight(TFCSHistoLateralShapeWeight&&) = default;
+  TFCSHistoLateralShapeWeight(const TFCSHistoLateralShapeWeight&) = delete;
+  TFCSHistoLateralShapeWeight(TFCSHistoLateralShapeWeight&&) = delete;
   auto operator=(const TFCSHistoLateralShapeWeight&)
-      -> TFCSHistoLateralShapeWeight& = default;
+      -> TFCSHistoLateralShapeWeight& = delete;
   auto operator=(TFCSHistoLateralShapeWeight&&)
-      -> TFCSHistoLateralShapeWeight& = default;
+      -> TFCSHistoLateralShapeWeight& = delete;
 
   /// weight the energy of one hit in order to generate fluctuations
   auto simulate_hit(Hit& hit,

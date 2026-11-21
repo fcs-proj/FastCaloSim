@@ -14,8 +14,6 @@ namespace lwt
 class LightweightNeuralNetwork;
 }  // namespace lwt
 
-// Owns the persistent pointers; never copied, copy is kept for ROOT
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSPredictExtrapWeights : public TFCSLateralShapeParametrizationHitBase
 {
 public:
@@ -26,6 +24,13 @@ public:
   void set_geometry(CaloGeo* geo) override { m_geo = geo; }
 
   ~TFCSPredictExtrapWeights() override;
+  // Owns its pointers: a copy would delete them twice
+  TFCSPredictExtrapWeights(const TFCSPredictExtrapWeights&) = delete;
+  TFCSPredictExtrapWeights(TFCSPredictExtrapWeights&&) = delete;
+  auto operator=(const TFCSPredictExtrapWeights&)
+      -> TFCSPredictExtrapWeights& = delete;
+  auto operator=(TFCSPredictExtrapWeights&&)
+      -> TFCSPredictExtrapWeights& = delete;
 
   auto operator==(const TFCSParametrizationBase& ref) const -> bool override;
 

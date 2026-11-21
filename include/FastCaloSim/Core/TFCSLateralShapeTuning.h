@@ -10,8 +10,6 @@
 /*Pieciewise linear interpolation class include*/
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 
-// Owns the interpolation objects; never copied, copy is kept for ROOT
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSLateralShapeTuning : public TFCSLateralShapeParametrizationHitBase
 {
   using interpolationMap =
@@ -23,6 +21,12 @@ public:
                                   const char* title = nullptr);
   // Destructor
   ~TFCSLateralShapeTuning() override;
+  // Owns its pointers: a copy would delete them twice
+  TFCSLateralShapeTuning(const TFCSLateralShapeTuning&) = delete;
+  TFCSLateralShapeTuning(TFCSLateralShapeTuning&&) = delete;
+  auto operator=(const TFCSLateralShapeTuning&)
+      -> TFCSLateralShapeTuning& = delete;
+  auto operator=(TFCSLateralShapeTuning&&) -> TFCSLateralShapeTuning& = delete;
   // Simulation call
   auto simulate_hit(Hit& hit,
                     TFCSSimulationState& simulstate,
