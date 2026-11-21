@@ -72,91 +72,56 @@ auto TFCSParametrizationBinnedChain::simulate(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
-  Int_t retry = 0;
-  Int_t retry_warning = 1;
-
-  FCSReturnCode status = FCSSuccess;
-  for (int i = 0; i <= retry; i++) {
-    if (i >= retry_warning)
-      FCS_MSG_WARNING(
-          "TFCSParametrizationBinnedChain::simulate(): Retry simulate call "
-          << i << "/" << retry);
-
-    for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
-      FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
-      status = simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
-      if (status >= FCSRetry) {
-        retry = status - FCSRetry;
-        retry_warning = retry >> 1;
-        if (retry_warning < 1)
-          retry_warning = 1;
-        break;
-      }
-      if (status == FCSFatal)
-        return FCSFatal;
-    }
-    if (status >= FCSRetry)
-      continue;
-
-    if (get_number_of_bins() > 0) {
-      const int bin = get_bin(simulstate, truth, extrapol);
-      if (bin >= 0 && bin < (int)get_number_of_bins()) {
-        for (unsigned int ichain = m_bin_start[bin];
-             ichain < m_bin_start[bin + 1];
-             ++ichain)
-        {
-          FCS_MSG_DEBUG("for " << get_variable_text(simulstate, truth, extrapol)
-                               << " run " << get_bin_text(bin) << ": "
-                               << chain()[ichain]->GetName());
-          status =
+  return simulate_with_restarts(
+      "TFCSParametrizationBinnedChain::simulate()",
+      [&]
+      {
+        // Parametrizations before the bins, run for all bins
+        for (unsigned int ichain = 0; ichain < m_bin_start[0]; ++ichain) {
+          FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
+          const FCSReturnCode status =
               simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
-          if (status >= FCSRetry) {
-            retry = status - FCSRetry;
-            retry_warning = retry >> 1;
-            if (retry_warning < 1)
-              retry_warning = 1;
-            break;
-          }
-          if (status == FCSFatal)
-            return FCSFatal;
+          if (status != FCSSuccess)
+            return status;
         }
-      } else {
-        FCS_MSG_WARNING("for " << get_variable_text(simulstate, truth, extrapol)
-                               << ": " << get_bin_text(bin));
-      }
-    } else {
-      FCS_MSG_WARNING("no bins defined, is this intended?");
-    }
-    if (status >= FCSRetry)
-      continue;
 
-    for (unsigned int ichain = m_bin_start.back(); ichain < size(); ++ichain) {
-      FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
-      status = simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
-      if (status >= FCSRetry) {
-        retry = status - FCSRetry;
-        retry_warning = retry >> 1;
-        if (retry_warning < 1)
-          retry_warning = 1;
-        break;
-      }
-      if (status == FCSFatal)
-        return FCSFatal;
-    }
+        // Parametrizations of the bin of this particle
+        if (get_number_of_bins() > 0) {
+          const int bin = get_bin(simulstate, truth, extrapol);
+          if (bin >= 0 && bin < (int)get_number_of_bins()) {
+            for (unsigned int ichain = m_bin_start[bin];
+                 ichain < m_bin_start[bin + 1];
+                 ++ichain)
+            {
+              FCS_MSG_DEBUG("for "
+                            << get_variable_text(simulstate, truth, extrapol)
+                            << " run " << get_bin_text(bin) << ": "
+                            << chain()[ichain]->GetName());
+              const FCSReturnCode status = simulate_and_retry(
+                  chain()[ichain], simulstate, truth, extrapol);
+              if (status != FCSSuccess)
+                return status;
+            }
+          } else {
+            FCS_MSG_WARNING("for "
+                            << get_variable_text(simulstate, truth, extrapol)
+                            << ": " << get_bin_text(bin));
+          }
+        } else {
+          FCS_MSG_WARNING("no bins defined, is this intended?");
+        }
 
-    if (status == FCSSuccess)
-      break;
-  }
-
-  if (status != FCSSuccess) {
-    FCS_MSG_FATAL(
-        "TFCSParametrizationBinnedChain::simulate(): Simulate call "
-        "failed after "
-        << retry << " retries");
-    return FCSFatal;
-  }
-
-  return FCSSuccess;
+        // Parametrizations after the bins, run for all bins
+        for (unsigned int ichain = m_bin_start.back(); ichain < size();
+             ++ichain) {
+          FCS_MSG_DEBUG("now run for all bins: " << chain()[ichain]->GetName());
+          const FCSReturnCode status =
+              simulate_and_retry(chain()[ichain], simulstate, truth, extrapol);
+          if (status != FCSSuccess)
+            return status;
+        }
+        return FCSSuccess;
+      });
 }
 
 void TFCSParametrizationBinnedChain::Print(Option_t* option) const
