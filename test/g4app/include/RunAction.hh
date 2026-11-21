@@ -10,15 +10,15 @@ class G4Run;
 class RunAction : public G4UserRunAction
 {
 public:
-    RunAction();
-    ~RunAction() override;
-    RunAction(const RunAction&) = delete;
-    auto operator=(const RunAction&) -> RunAction& = delete;
-    RunAction(RunAction&&) = delete;
-    auto operator=(RunAction&&) -> RunAction& = delete;
+  RunAction();
+  ~RunAction() override;
+  RunAction(const RunAction&) = delete;
+  auto operator=(const RunAction&) -> RunAction& = delete;
+  RunAction(RunAction&&) = delete;
+  auto operator=(RunAction&&) -> RunAction& = delete;
 
-    void BeginOfRunAction(const G4Run * /*unused*/) override;
-    void EndOfRunAction(const G4Run * /*unused*/) override;
+  void BeginOfRunAction(const G4Run* /*unused*/) override;
+  void EndOfRunAction(const G4Run* /*unused*/) override;
 };
 
 #endif

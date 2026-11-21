@@ -21,14 +21,15 @@ FastSimModel::FastSimModel(const G4String& aModelName,
                            G4VPhysicalVolume* transportWorld)
     : G4VFastSimulationModel(aModelName, aEnvelope)
     , fTransportTool(transportWorld)
-     
+
 {
   m_random_engine.setSeed(42);
 }
 
 FastSimModel::~FastSimModel() = default;
 
-auto FastSimModel::IsApplicable(const G4ParticleDefinition& /*aParticleType*/) -> G4bool
+auto FastSimModel::IsApplicable(const G4ParticleDefinition& /*aParticleType*/)
+    -> G4bool
 {
   return true;
 }

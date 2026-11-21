@@ -14,7 +14,6 @@ class G4GlobalMagFieldMessenger;
 class G4MagneticField;
 class G4Region;
 
-
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
@@ -35,10 +34,7 @@ public:
   }
   // Set the use of the ATLAS magnetic field
   // If set to false, a uniform magnetic field is used
-  void setUseAtlasField(bool useAtlasField)
-  {
-    fUseAtlasField = useAtlasField;
-  }
+  void setUseAtlasField(bool useAtlasField) { fUseAtlasField = useAtlasField; }
   // Set the magnetic field strength of the uniform magnetic field
   // Only used if ATLAS magnetic field is not used
   void setMagFieldStrength(G4double magFieldStrength)
@@ -60,7 +56,8 @@ private:
                            const std::string& name);
   // Use ATLAS magnetic field
   bool fUseAtlasField = true;
-  // Magnetic field strength of uniform magnetic field if ATLAS field is not used
+  // Magnetic field strength of uniform magnetic field if ATLAS field is not
+  // used
   G4double fMagFieldStrength = 1 * CLHEP::tesla;
 };
 
