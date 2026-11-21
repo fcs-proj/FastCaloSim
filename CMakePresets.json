@@ -34,7 +34,7 @@
       "name": "cppcheck",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr;--suppress=*:*/_deps/*;--error-exitcode=1"
+        "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr;--suppress=*:*/_deps/*;--suppress=normalCheckLevelMaxBranches;--error-exitcode=1"
       }
     },
     {
