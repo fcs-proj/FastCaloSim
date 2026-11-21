@@ -33,7 +33,7 @@ auto TFCSEnergyRenormalization::simulate(
   // Loop over all cells containing energy and sum up energies
   for (const auto& cell_iter : simulstate.cells()) {
     unsigned long long const cell_id = cell_iter.first;
-    const auto cell_energy = static_cast<double>(cell_iter.second);
+    const double cell_energy = cell_iter.second;
     // Add the energy to the layer of the cell
     const auto layer = m_geo->get_cell(cell_id).layer();
     energies[layer] += cell_energy;
@@ -81,9 +81,7 @@ auto TFCSEnergyRenormalization::simulate(
   // Loop over all cells and apply the scalefactor
   for (auto& cell_iter : simulstate.cells()) {
     const auto layer = m_geo->get_cell(cell_iter.first).layer();
-    // Cell energies are stored in single precision
-    cell_iter.second = static_cast<float>(static_cast<double>(cell_iter.second)
-                                          * scalefactor[layer]);
+    cell_iter.second *= scalefactor[layer];
   }
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {

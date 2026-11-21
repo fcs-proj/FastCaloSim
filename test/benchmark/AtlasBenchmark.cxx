@@ -129,11 +129,11 @@ void dump(FILE* out, const std::string& label, FastSimModel& model)
       std::fprintf(
           out, "E %zu %a %a\n", sample, state.E(sample), state.Efrac(sample));
     }
-    const std::map<unsigned long long, float> cells(state.cells().begin(),
-                                                    state.cells().end());
+    const std::map<unsigned long long, double> cells(state.cells().begin(),
+                                                     state.cells().end());
     for (const auto& [id, energy] : cells) {
       // NOLINTNEXTLINE(modernize-use-std-print,cert-err33-c): %a, see above
-      std::fprintf(out, "%llu %a\n", id, static_cast<double>(energy));
+      std::fprintf(out, "%llu %a\n", id, energy);
     }
   }
 }
