@@ -180,7 +180,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     double sum_fraction = 0.0;
     for (unsigned int l = 0; l <= layerNr.size(); l++) {
       double simdata_uniform =
-          (std::erf(output_data[l] / 1.414213562) + 1) / 2.f;
+          (std::erf(output_data[l] / std::numbers::sqrt2) + 1) / 2.f;
 
       simdata[l] = cumulative[l]->rnd_to_fct(simdata_uniform);
 

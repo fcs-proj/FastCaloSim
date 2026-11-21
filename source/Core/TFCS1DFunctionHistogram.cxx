@@ -3,13 +3,13 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS1DFunctionHistogram.h"
 
 #include "TFile.h"
-#include "TMath.h"
 using namespace std;
 
 //=============================================
@@ -48,9 +48,10 @@ auto TFCS1DFunctionHistogram::sample_from_histo(TH1* hist, double random)
 {
   auto histoVals = histo_to_array(hist);
   double value = 0.0;
-  int chosenBin =
-      (int)TMath::BinarySearch(hist->GetNbinsX(), histoVals.get(), random);
-  value = hist->GetBinCenter(chosenBin + 2);
+  const double* first = histoVals.get();
+  const int bin =
+      std::upper_bound(first, first + hist->GetNbinsX(), random) - first;
+  value = hist->GetBinCenter(bin + 1);
 
   return value;
 }
@@ -62,9 +63,10 @@ auto TFCS1DFunctionHistogram::sample_from_histovalues(double random) -> double
   std::unique_ptr<TH1> hist = vector_to_histo();
   hist->SetName("hist");
   auto histoVals = histo_to_array(hist.get());
-  int chosenBin =
-      (int)TMath::BinarySearch(hist->GetNbinsX(), histoVals.get(), random);
-  value = hist->GetBinCenter(chosenBin + 2);
+  const double* first = histoVals.get();
+  const int bin =
+      std::upper_bound(first, first + hist->GetNbinsX(), random) - first;
+  value = hist->GetBinCenter(bin + 1);
 
   return value;
 }

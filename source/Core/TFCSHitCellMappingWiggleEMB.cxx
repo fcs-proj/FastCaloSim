@@ -1,10 +1,11 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
+
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggleEMB.h"
 
 #include "CLHEP/Random/RandFlat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
-#include "TMath.h"
 #include "TVector2.h"
 
 //=============================================
@@ -71,20 +72,23 @@ auto TFCSHitCellMappingWiggleEMB::doWiggle(double searchRand) -> double
 
   // Now for layer dependent approach
   if (layer == 1) {
-    int chosenBin = (Int_t)TMath::BinarySearch(50, m_wiggleLayer1, searchRand);
-    double x_wigg = ((-0.98) + (chosenBin + 1) * 0.04) / 2;
+    const int bin =
+        std::ranges::upper_bound(m_wiggleLayer1, searchRand) - m_wiggleLayer1;
+    double x_wigg = ((-0.98) + bin * 0.04) / 2;
     wiggle = x_wigg * cell_dphi / 4;
   }
 
   if (layer == 2) {
-    int chosenBin = (Int_t)TMath::BinarySearch(50, m_wiggleLayer2, searchRand);
-    double x_wigg = ((-0.98) + (chosenBin + 1) * 0.04) / 2;
+    const int bin =
+        std::ranges::upper_bound(m_wiggleLayer2, searchRand) - m_wiggleLayer2;
+    double x_wigg = ((-0.98) + bin * 0.04) / 2;
     wiggle = x_wigg * cell_dphi;
   }
 
   if (layer == 3) {
-    int chosenBin = (Int_t)TMath::BinarySearch(50, m_wiggleLayer3, searchRand);
-    double x_wigg = ((-0.98) + (chosenBin + 1) * 0.04) / 2;
+    const int bin =
+        std::ranges::upper_bound(m_wiggleLayer3, searchRand) - m_wiggleLayer3;
+    double x_wigg = ((-0.98) + bin * 0.04) / 2;
     wiggle = x_wigg * cell_dphi;
   }
 
