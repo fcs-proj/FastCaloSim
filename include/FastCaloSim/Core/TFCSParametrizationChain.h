@@ -99,9 +99,10 @@ protected:
   virtual void recalc();
 
   /// Simulate one parametrization of the chain. A parametrization asks to be
-  /// simulated again by returning FCSRetry + n, which allows up to n retries.
-  /// With RetryChainFromStart(), that request is returned to the caller
-  /// instead, which then restarts the whole chain (simulate_with_restarts).
+  /// simulated again by returning FCSReturnCode::retry(n), which allows up to n
+  /// retries. With RetryChainFromStart(), that request is returned to the
+  /// caller instead, which then restarts the whole chain
+  /// (simulate_with_restarts).
   auto simulate_and_retry(TFCSParametrizationBase* parametrization,
                           TFCSSimulationState& simulstate,
                           const TFCSTruthState* truth,
@@ -109,8 +110,8 @@ protected:
       -> FCSReturnCode;
 
   /// Run one pass over the chain, pass() -> FCSReturnCode, and repeat it from
-  /// the start as long as it returns FCSRetry + n, at most n times. `name`
-  /// identifies the caller in the log messages.
+  /// the start as long as it returns FCSReturnCode::retry(n), at most n times.
+  /// `name` identifies the caller in the log messages.
   template<typename Pass>
   auto simulate_with_restarts(const char* name, Pass pass) const
       -> FCSReturnCode;

@@ -29,7 +29,7 @@ inline auto TFCSParametrizationChain::simulate_and_retry(
       return status;
 }
 
-    max_retries = status - FCSRetry;
+    max_retries = status.max_retries();
     if (RetryChainFromStart()) {
       return status;
 }
@@ -59,7 +59,7 @@ auto TFCSParametrizationChain::simulate_with_restarts(const char* name,
       return status;
 }
 
-    max_retries = status - FCSRetry;
+    max_retries = status.max_retries();
   }
 
   FCS_MSG_FATAL(name << ": Simulate call failed after " << max_retries

@@ -9,6 +9,7 @@
 
 #include <FastCaloSim/FastCaloSim_export.h>
 
+#include "FastCaloSim/Core/FCSReturnCode.h"
 #include "FastCaloSim/Core/MLogging.h"
 
 class CaloGeo;
@@ -35,18 +36,6 @@ TFCSLateralShapeParametrizationHitBase for hit level shape simulation through
 the simulate_hit method. Hit level simulation is controlled through the special
 chain TFCSLateralShapeParametrizationHitChain.
 */
-
-/// Return codes for the simulate function. FCSRetry + n asks for up to n
-/// retries, so the underlying type is fixed to int to make all those values
-/// valid return codes.
-enum FCSReturnCode : int
-{
-  FCSFatal = 0,
-  FCSSuccess = 1,
-  FCSRetry = 2
-};
-
-constexpr int FCS_RETRY_COUNT = 3;
 
 class FASTCALOSIM_EXPORT TFCSParametrizationBase
     : public TNamed
