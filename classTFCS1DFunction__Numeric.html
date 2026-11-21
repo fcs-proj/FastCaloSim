@@ -50,10 +50,9 @@
       <div class="m-col-l-10 m-push-l-1">
         <h1>
           <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCS1DFunctionTemplateHelpers_8h.html">&lt;TFCS1DFunctionTemplateHelpers.h&gt;</a></div>
-          <div class="m-doc-template">template&lt;typename T, typename Tfloat = float&gt;</div>
+          <div class="m-doc-template">template&lt;std::unsigned_integral T, typename Tfloat&gt;</div>
           TFCS1DFunction_Numeric <span class="m-thin">class</span>
         </h1>
-        <p>Converter functions that does nothing for floats.</p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
@@ -66,6 +65,7 @@
             </li>
           </ul>
         </div>
+<p>Converter functions to store/retrieve float numbers in the range [0,1] as unsigned integers</p>
         <section id="pub-static-attribs">
           <h2><a href="#pub-static-attribs">Public static variables</a></h2>
           <dl class="m-doc">
