@@ -39,6 +39,12 @@ class IMagFieldManipulator
 public:
   /** constructor */
   IMagFieldManipulator() { ; }
+  virtual ~IMagFieldManipulator() = default;
+  IMagFieldManipulator(const IMagFieldManipulator&) = default;
+  IMagFieldManipulator(IMagFieldManipulator&&) = default;
+  auto operator=(const IMagFieldManipulator&)
+      -> IMagFieldManipulator& = default;
+  auto operator=(IMagFieldManipulator&&) -> IMagFieldManipulator& = default;
 
   /** Retrieve interface ID */
   //        static const InterfaceID& interfaceID() {

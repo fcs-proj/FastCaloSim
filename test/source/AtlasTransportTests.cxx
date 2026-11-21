@@ -74,16 +74,16 @@ TEST_P(AtlasTransportTests, AtlasTransport)
 
   // Now compare results with references with a tolerance of 0.1 percent
   const double tol = 1e-3;
-  JsonComparer json(tol);
+  JsonComparer comparer(tol);
 
   // Compare the transport data to references
   ASSERT_TRUE(
-      json.compare(AtlasTransportTestConfig::transport_output_path(),
-                   AtlasTransportTestConfig::transport_output_ref_path()));
+      comparer.compare(AtlasTransportTestConfig::transport_output_path(),
+                       AtlasTransportTestConfig::transport_output_ref_path()));
   // Compare the extrapolation data to references
-  ASSERT_TRUE(
-      json.compare(AtlasTransportTestConfig::extrapolation_output_path(),
-                   AtlasTransportTestConfig::extrapolation_output_ref_path()));
+  ASSERT_TRUE(comparer.compare(
+      AtlasTransportTestConfig::extrapolation_output_path(),
+      AtlasTransportTestConfig::extrapolation_output_ref_path()));
 }
 
 INSTANTIATE_TEST_SUITE_P(AtlasTransport,

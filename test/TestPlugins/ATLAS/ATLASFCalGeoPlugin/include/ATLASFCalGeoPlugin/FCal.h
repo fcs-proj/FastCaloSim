@@ -15,6 +15,7 @@
 #include <TString.h>
 
 #include "FCAL_ChannelMap.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 
 class FCal : public CaloGeo
@@ -77,11 +78,9 @@ public:
     std::string eight_column;
     int ninth_column;
 
-    int i;
     for (int imodule = 1; imodule <= 3; imodule++) {
       // std::cout << "Loading FCal electrode #" << imodule << std::endl;
 
-      i = 0;
       while (1) {
         (*electrodes[imodule - 1]) >> tubeName;
         if (electrodes[imodule - 1]->eof())
@@ -119,8 +118,6 @@ public:
                                    thisTubeX,
                                    thisTubeY,
                                    seventh_column);
-
-        i++;
       }
     }
 
@@ -167,7 +164,7 @@ public:
     int i = 0;
 
     const double r = sqrt(x * x + y * y);
-    if (r == 0.)
+    if (FastCaloSim::exactly_equal(r, 0.))
       return false;
     const double r_inverse = 1. / r;
 

@@ -80,7 +80,8 @@ auto TFCSBinnedShowerBase::simulate(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+    for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer)
+    {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }

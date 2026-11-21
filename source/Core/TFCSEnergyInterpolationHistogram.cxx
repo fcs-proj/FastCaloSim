@@ -10,13 +10,6 @@
 #include "TAxis.h"
 #include "TGraph.h"
 
-namespace Gaudi::Units
-{
-constexpr double megaelectronvolt = 1.;
-constexpr double kiloelectronvolt = 1.e-3 * megaelectronvolt;
-constexpr double keV = kiloelectronvolt;
-}  // namespace Gaudi::Units
-
 //=============================================
 //======= TFCSEnergyInterpolation =========
 //=============================================

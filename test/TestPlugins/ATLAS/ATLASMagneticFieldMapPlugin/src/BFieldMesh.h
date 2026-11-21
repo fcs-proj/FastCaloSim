@@ -104,17 +104,17 @@ public:
   int memSize() const;
 
 protected:
-  double m_min[3], m_max[3];
+  double m_min[3] {}, m_max[3] {};
   std::vector<double> m_mesh[3];
 
 private:
   std::vector<BFieldVector<T> > m_field;
   double m_scale;
-  double m_nomScale;  // nominal m_scale from the map
+  double m_nomScale {};  // nominal m_scale from the map
   // look-up table and related variables
   std::vector<int> m_LUT[3];
-  double m_invUnit[3];  // inverse unit size in the LUT
-  int m_roff, m_zoff;
+  double m_invUnit[3] {};  // inverse unit size in the LUT
+  int m_roff {}, m_zoff {};
 };
 
 //

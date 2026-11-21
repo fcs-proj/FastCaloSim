@@ -16,6 +16,7 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TF1.h"
@@ -236,7 +237,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
     if (get_number_of_bins() > 0) {
       const int bin = get_bin(simulstate, truth, extrapol);
-      if (bin >= 0 && bin < (int)get_number_of_bins()) {
+      if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
         for (unsigned int ichain = m_bin_start[bin];
              ichain < std::min(m_bin_start[bin] + get_nr_of_init(bin),
                                m_bin_start[bin + 1]);
@@ -353,7 +354,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
           for (int ialpha = 1; ialpha <= nHitsAlpha; ++ialpha) {
             if (ganVersion > 1) {
-              if (fitResults.at(layer)[ix - 1] != 0) {
+              if (!FastCaloSim::exactly_equal(fitResults.at(layer)[ix - 1],
+                                              0.0))
+              {
                 int tries = 0;
                 double a = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
                                                   x->GetBinLowEdge(ix),
@@ -457,7 +460,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
             if (get_number_of_bins() > 0) {
               const int bin = get_bin(simulstate, truth, extrapol);
-              if (bin >= 0 && bin < (int)get_number_of_bins()) {
+              if (bin >= 0 && bin < static_cast<int>(get_number_of_bins())) {
                 for (unsigned int ichain =
                          m_bin_start[bin] + get_nr_of_init(bin);
                      ichain < m_bin_start[bin + 1];
@@ -513,7 +516,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+    for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer)
+    {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }

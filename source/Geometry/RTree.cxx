@@ -15,6 +15,8 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/index/rtree.hpp>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
+
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
 
@@ -191,7 +193,7 @@ public:
           best = d;
           candidates.clear();
           candidates.push_back(entry);
-        } else if (d == best
+        } else if (FastCaloSim::exactly_equal(d, best)
                    && std::none_of(candidates.begin(),
                                    candidates.end(),
                                    [&](const Entry& c)
@@ -397,7 +399,7 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
          ++it)
     {
       const double d = bg::comparable_distance(point, it->first);
-      if (!candidates.empty() && d != min_distance) {
+      if (!candidates.empty() && !FastCaloSim::exactly_equal(d, min_distance)) {
         break;
       }
       min_distance = d;

@@ -41,6 +41,11 @@ public:
   {
     ;
   }
+  virtual ~IMagFieldSvc() = default;
+  IMagFieldSvc(const IMagFieldSvc&) = default;
+  IMagFieldSvc(IMagFieldSvc&&) = default;
+  auto operator=(const IMagFieldSvc&) -> IMagFieldSvc& = default;
+  auto operator=(IMagFieldSvc&&) -> IMagFieldSvc& = default;
 
   /** get B field value at given position */
   /** xyz[3] is in mm, bxyz[3] is in kT */

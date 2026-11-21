@@ -201,7 +201,8 @@ public:
     this->setLevel(level);
     if (recursive)
       for (unsigned int i = 0; i < size(); ++i)
-        (*this)[i]->setLevel(level, recursive);
+        if (TFCSParametrizationBase* param = (*this)[i])
+          param->setLevel(level, recursive);
   }
 
 private:

@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
 #include "TestConfig/AtlasGeoTestsConfig.h"
@@ -266,7 +267,9 @@ protected:
       min_distance2 = std::min(min_distance2, r.distance2(u, v));
     }
     for (const auto& r : rects) {
-      if (r.cell_id == cell_id && r.distance2(u, v) == min_distance2) {
+      if (r.cell_id == cell_id
+          && FastCaloSim::exactly_equal(r.distance2(u, v), min_distance2))
+      {
         return true;
       }
     }

@@ -147,7 +147,7 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
     -> std::map<std::string, double>
 {
   std::map<std::string, double> inputVariables;
-  for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+  for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer) {
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
         != m_relevantLayers->cend())
     {
@@ -192,7 +192,7 @@ auto TFCSPredictExtrapWeights::simulate(
 
   // Get predicted extrapolation weights
   auto outputs = m_nn->compute(inputVariables);
-  for (int ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+  for (int ilayer = 0; ilayer < static_cast<int>(m_geo->n_layers()); ++ilayer) {
     if (std::find(m_relevantLayers->cbegin(), m_relevantLayers->cend(), ilayer)
         != m_relevantLayers->cend())
     {
@@ -369,5 +369,6 @@ void TFCSPredictExtrapWeights::Print(Option_t* option) const
     FCS_MSG_INFO(optprint << "  m_input (TFCSPredictExtrapWeights): "
                           << m_input);
   if (longprint)
-    FCS_MSG_INFO(optprint << "  Address of m_nn: " << (void*)m_nn.get());
+    FCS_MSG_INFO(optprint << "  Address of m_nn: "
+                          << static_cast<const void*>(m_nn.get()));
 }

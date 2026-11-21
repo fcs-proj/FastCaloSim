@@ -7,7 +7,7 @@
 #include "TFile.h"
 #include "TestConfig/BasicSimTestsConfig.h"
 
-class BasicSimTests : public AtlasGeoTests
+class BasicSimTests : public virtual AtlasGeoTests
 {
 protected:
   static std::map<std::string, TFile*> param_files;

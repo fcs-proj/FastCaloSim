@@ -138,7 +138,7 @@ public:
     inline auto y() const -> const auto& { return m_phi_y; }
     inline auto E() const -> const auto& { return m_E; }
     inline auto z() const -> const auto& { return m_z; }
-    inline auto r() const -> const auto
+    inline auto r() const
     {
       if (m_useXYZ)
         return std::sqrt(m_eta_x * m_eta_x + m_phi_y * m_phi_y);

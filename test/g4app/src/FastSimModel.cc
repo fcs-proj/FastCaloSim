@@ -1,84 +1,76 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include "FastSimModel.hh"
+
 #include <G4FastStep.hh>
 #include <G4FastTrack.hh>
+#include <G4Region.hh>
 #include <G4Track.hh>
 #include <G4VFastSimulationModel.hh>
-#include <G4Region.hh>
-#include "G4FieldTrackUpdator.hh"
-#include "G4FieldTrack.hh"
-#include "G4RunManager.hh"
-#include "FastCaloSim/Core/TFCSTruthState.h"
-#include "FastCaloSim/Core/TFCSExtrapolationState.h"
 
+#include "FastCaloSim/Core/TFCSExtrapolationState.h"
+#include "FastCaloSim/Core/TFCSTruthState.h"
+#include "G4FieldTrack.hh"
+#include "G4FieldTrackUpdator.hh"
+#include "G4RunManager.hh"
 
 class G4ParticleDefinition;
-
 
 FastSimModel::FastSimModel(G4String aModelName,
                            G4Region* aEnvelope,
                            G4VPhysicalVolume* transportWorld)
-  : G4VFastSimulationModel(aModelName, aEnvelope)
-  , fTransportTool(transportWorld)
-  , fDoSimulation(true)
-  , m_debug(false)
-  , fParametrization(nullptr)
+    : G4VFastSimulationModel(aModelName, aEnvelope)
+    , fTransportTool(transportWorld)
+    , fParametrization(nullptr)
+    , fDoSimulation(true)
+    , m_debug(false)
 {
   m_random_engine.setSeed(42);
 }
 
 FastSimModel::~FastSimModel() {}
 
-
-G4bool FastSimModel::IsApplicable(const G4ParticleDefinition& aParticleType)
+G4bool FastSimModel::IsApplicable(const G4ParticleDefinition& /*aParticleType*/)
 {
   return true;
 }
 
-
-G4bool FastSimModel::ModelTrigger(const G4FastTrack& aFastTrack)
+G4bool FastSimModel::ModelTrigger(const G4FastTrack& /*aFastTrack*/)
 {
   return true;
 }
-
-
 
 void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
 {
-
   // Get Geant4 primary track
-  const G4Track * track = aFastTrack.GetPrimaryTrack();
+  const G4Track* track = aFastTrack.GetPrimaryTrack();
 
   // Set the FastCaloSim truth state
   TFCSTruthState truth;
-  truth.set_pdgid( track -> GetDefinition() -> GetPDGEncoding());
+  truth.set_pdgid(track->GetDefinition()->GetPDGEncoding());
 
   // Set the kinematics of the FastCaloSim truth state
-  truth.SetPtEtaPhiM(track -> GetMomentum().perp(),
-                    track -> GetMomentum().eta(),
-                    track -> GetMomentum().phi(),
-                      track -> GetDefinition() -> GetPDGMass());
+  truth.SetPtEtaPhiM(track->GetMomentum().perp(),
+                     track->GetMomentum().eta(),
+                     track->GetMomentum().phi(),
+                     track->GetDefinition()->GetPDGMass());
 
   // Set the vertex of the FastCaloSim truth state
-  truth.set_vertex( track -> GetPosition().x(),
-                    track -> GetPosition().y(),
-                    track -> GetPosition().z());
+  truth.set_vertex(track->GetPosition().x(),
+                   track->GetPosition().y(),
+                   track->GetPosition().z());
 
-  if(m_debug){
+  if (m_debug) {
     std::cout << "[FastSimModel::DoIt] Received particle with pid="
               << truth.pdgid() << std::endl;
 
     std::cout << "[FastSimModel::DoIt] Particle has position x=" << truth.X()
-              << " y=" << truth.Y()
-              << " z=" << truth.Z()
-              << " eta=" << truth.Eta()
-              << " phi=" << truth.Phi()
-              << " r=" << truth.Perp()
-              << " ekin=" << truth.Ekin() << std::endl;
+              << " y=" << truth.Y() << " z=" << truth.Z()
+              << " eta=" << truth.Eta() << " phi=" << truth.Phi()
+              << " r=" << truth.Perp() << " ekin=" << truth.Ekin() << std::endl;
 
-    std::cout << "[FastSimModel::DoIt] Particle has momentum px=" << track->GetMomentum().x()
-              << " py=" << track->GetMomentum().y()
+    std::cout << "[FastSimModel::DoIt] Particle has momentum px="
+              << track->GetMomentum().x() << " py=" << track->GetMomentum().y()
               << " pz=" << track->GetMomentum().z()
               << " p=" << track->GetMomentum().mag()
               << " pt=" << track->GetMomentum().perp()
@@ -86,9 +78,10 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
   }
 
   // Perform the FastCaloSim transportation
-  std::vector<G4FieldTrack> step_vector = fTransportTool.transport(*aFastTrack.GetPrimaryTrack());
+  std::vector<G4FieldTrack> step_vector =
+      fTransportTool.transport(*aFastTrack.GetPrimaryTrack());
   // Add the track to the vector of tracks
-  TestHelpers::Track trk( step_vector );
+  TestHelpers::Track trk(step_vector);
   fTransportTracks.add(trk);
 
   // Do the extrapolation
@@ -98,8 +91,7 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
 
   // Do the simulation if requested
   if (fDoSimulation) {
-
-    if(!fParametrization){
+    if (!fParametrization) {
       std::cerr << "[FastSimModel::DoIt] No parametrization set!" << std::endl;
       return;
     }
@@ -116,6 +108,5 @@ void FastSimModel::DoIt(const G4FastTrack& aFastTrack, G4FastStep& aFastStep)
 
   // Kill particle
   aFastStep.KillPrimaryTrack();
-  aFastStep.SetPrimaryTrackPathLength(0.0);
-
+  aFastStep.ProposePrimaryTrackPathLength(0.0);
 }

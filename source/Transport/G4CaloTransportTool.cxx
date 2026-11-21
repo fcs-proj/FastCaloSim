@@ -3,6 +3,7 @@
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
 
 // Geant4 includes for particle extrapolation
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "G4ChargeState.hh"
 #include "G4DynamicParticle.hh"
 #include "G4EquationOfMotion.hh"
@@ -73,7 +74,7 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack,
   G4double retSafety = -1.0;
   G4double currentMinimumStep = 10.0 * CLHEP::m;
 
-  if (fieldTrack.GetCharge() == 0) {
+  if (FastCaloSim::exactly_equal(fieldTrack.GetCharge(), 0.0)) {
     /* Neutral particles: transport with navigator */
 
     // Compute the step length
@@ -138,10 +139,11 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
   G4ChargeState chargeState(inputDynamicParticle->GetCharge(),
                             inputDynamicParticle->GetMagneticMoment(),
                             inputParticleDef->GetPDGSpin());
-  m_propagator->GetCurrentEquationOfMotion()->SetChargeMomentumMass(
-      chargeState,
-      inputDynamicParticle->GetTotalMomentum(),
-      inputDynamicParticle->GetMass());
+  // Without a magnetic field there is no equation of motion to update
+  if (G4EquationOfMotion* equation = m_propagator->GetCurrentEquationOfMotion())
+    equation->SetChargeMomentumMass(chargeState,
+                                    inputDynamicParticle->GetTotalMomentum(),
+                                    inputDynamicParticle->GetMass());
 
   // The chord finder lives on the (thread-local) field manager, not on the
   // propagator. Clear its cached last step-size estimate so field propagation

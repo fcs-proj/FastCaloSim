@@ -48,7 +48,7 @@ auto TFCSEnergyRenormalization::simulate(
       400.0, 400.0, 400.0, 400.0, 300.0, 150.0, 40.0,  150.0,
       40.0,  400.0, 300.0, 150.0, 40.0,  400.0, 400.0, 400.0};
 
-  for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
+  for (int layer = 0; layer < static_cast<int>(m_geo->n_layers()); ++layer) {
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
     if (energies[layer] == 0 && simulstate.E(layer) != 0) {
@@ -79,7 +79,7 @@ auto TFCSEnergyRenormalization::simulate(
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("Apply scale factors : ");
-    for (int layer = 0; layer < m_geo->n_layers(); ++layer) {
+    for (int layer = 0; layer < static_cast<int>(m_geo->n_layers()); ++layer) {
       FCS_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
                          << energies[layer] << " -> " << simulstate.E(layer));
     }

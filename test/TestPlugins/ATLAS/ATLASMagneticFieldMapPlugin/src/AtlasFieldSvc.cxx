@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 #include "AtlasFieldSvc.h"
 
@@ -1858,6 +1859,11 @@ void MagField::AtlasFieldSvc::buildZR()
   // solenoid zone always covers 100 < R < 1000, but not necessarily R < 100
   // so we search for the zone that contains a point at R = 200, Z = 0
   const BFieldZone* solezone = findZone(0.0, 200.0, 0.0);
+  if (solezone == nullptr) {
+    m_meshZR = nullptr;
+    throw std::runtime_error(
+        "AtlasFieldSvc::buildZR: no field zone contains the solenoid");
+  }
 
   // instantiate the new ZR map with the same external coverage as the solenoid
   // zone make sure R = 0 is covered

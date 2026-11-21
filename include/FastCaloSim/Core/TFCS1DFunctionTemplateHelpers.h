@@ -172,7 +172,8 @@ public:
     if (drnd <= 0)
       drnd = 0;
     if (drnd >= 1)
-      drnd = std::nextafter((Trandom)1.0, (Trandom)0.0);
+      drnd =
+          std::nextafter(static_cast<Trandom>(1.0), static_cast<Trandom>(0.0));
     if (size() == 0) {
       residual_rnd = drnd;
       return 0;
@@ -190,9 +191,10 @@ public:
 
     T dcont = fullcont - basecont;
     if (dcont > 0) {
-      residual_rnd = ((Trandom)(rnd - basecont)) / dcont;
+      residual_rnd = static_cast<Trandom>(rnd - basecont) / dcont;
       if (residual_rnd > 1)
-        residual_rnd = std::nextafter((Trandom)1.0, (Trandom)0.0);
+        residual_rnd = std::nextafter(static_cast<Trandom>(1.0),
+                                      static_cast<Trandom>(0.0));
     } else {
       residual_rnd = 0.5;
     }

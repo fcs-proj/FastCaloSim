@@ -22,6 +22,7 @@
 #include "FastCaloSim/Core/TFCSPhiModulationCorrection.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TBuffer.h"
@@ -664,7 +665,7 @@ void TFCSBinnedShower::load_layer_energy(const std::string& filename,
       E_vector.clear();
     }
 
-    if (data.at(i) != 0.0) {
+    if (!FastCaloSim::exactly_equal(data.at(i), 0.0F)) {
       bin_index_vector.push_back(bin_index);
       E_vector.push_back(data.at(i));
     }

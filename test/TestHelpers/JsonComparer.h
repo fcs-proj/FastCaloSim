@@ -10,6 +10,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
+
 // for convenience
 using json = nlohmann::json;
 
@@ -26,8 +28,8 @@ class JsonComparer
 {
 public:
   JsonComparer(double tolerance = 0.0, int print_limit = 50)
-      : m_tolerance(tolerance)
-      , m_print_limit(print_limit)
+      : m_print_limit(print_limit)
+      , m_tolerance(tolerance)
   {
   }
 
@@ -50,8 +52,8 @@ public:
   }
 
 private:
-  int m_print_limit, m_print_count;
-  bool m_output_suppressed;
+  int m_print_limit, m_print_count = 0;
+  bool m_output_suppressed = false;
   double m_tolerance;
 
   static auto read_json(const std::string& file_path, json& json_obj) -> bool
@@ -203,7 +205,7 @@ private:
     } else {
       std::cout << message << " at " << path << ": " << json1 << " vs "
                 << json2;
-      if (percent_diff != 0.0) {
+      if (!FastCaloSim::exactly_equal(percent_diff, 0.0)) {
         std::cout << " (difference: " << percent_diff << "%)";
       }
       std::cout << "\n";

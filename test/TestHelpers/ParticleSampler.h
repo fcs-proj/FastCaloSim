@@ -4,6 +4,7 @@
 
 #include <G4ThreeVector.hh>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "G4ThreeVector.hh"
 #include "IDCaloBoundary.h"
 #include "ParticleContainer.h"
@@ -49,7 +50,6 @@ public:
   {
     // Detector assumed to be phi-symmetric, so pick random phi
     float phi = 0;
-    float theta = 2 * std::atan(std::exp(-eta));
     G4ThreeVector direction;
     direction.setREtaPhi(1, eta, phi);
     direction = direction.unit();
@@ -111,7 +111,7 @@ public:
     // Calculate the number of steps
     // If min_eta == max_eta, we still want to sample at least once
     int n_steps = 1;
-    if (!(min_eta == max_eta)) {
+    if (!FastCaloSim::exactly_equal(min_eta, max_eta)) {
       n_steps =
           static_cast<int>(std::floor((max_eta - min_eta) / step_size)) + 1;
     }

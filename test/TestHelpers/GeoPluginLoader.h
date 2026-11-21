@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include <filesystem>
 #include <iostream>
 #include <string>
 
 #include <dlfcn.h>
-#include <libgen.h>
 
 template<class Plugin>
 class GeoPluginLoader
@@ -39,8 +39,9 @@ GeoPluginLoader<Plugin>::~GeoPluginLoader()
 template<class Plugin>
 Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
 {
-  std::string bNameString =
-      basename((char*)pString.c_str());  // Strip off the directory
+  std::string bNameString = std::filesystem::path(pString)
+                                .filename()
+                                .string();  // Strip off the directory
   bNameString = bNameString.substr(3);  // Strip off leading "lib"
   bNameString =
       bNameString.substr(0, bNameString.find("."));  // Strip off extensions
@@ -66,11 +67,11 @@ Plugin* GeoPluginLoader<Plugin>::load(const std::string& pString) const
   }
 
   typedef void* (*CreationMethod)();
-  CreationMethod F = (CreationMethod)f;
+  auto F = reinterpret_cast<CreationMethod>(f);
 
   //
   //
   //
-  Plugin* factory = (Plugin*)F();
+  Plugin* factory = static_cast<Plugin*>(F());
   return factory;
 }

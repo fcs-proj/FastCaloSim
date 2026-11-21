@@ -6,6 +6,8 @@
 
 #include "Cylinder.h"
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
+
 namespace FastCaloSim::Extrapolation
 {
 
@@ -25,7 +27,7 @@ auto coverIntersections(const Cylinder& cylinder,
   const Vector3D diffXY = aXY - bXY;
   const double norm2 = diffXY.dot(diffXY);
   // A line parallel to the z axis does not cross the cover in a point
-  if (norm2 == 0) {
+  if (FastCaloSim::exactly_equal(norm2, 0.0)) {
     return {};
   }
   const double t = aXY.dot(diffXY) / norm2;

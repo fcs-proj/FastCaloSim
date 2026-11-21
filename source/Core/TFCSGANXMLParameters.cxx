@@ -20,10 +20,17 @@
 
 namespace
 {
+// libxml2 strings are unsigned char; libxml2's own BAD_CAST would cast away
+// const
+auto xml_string(const char* text) -> const xmlChar*
+{
+  return reinterpret_cast<const xmlChar*>(text);
+}
+
 // Read an XML attribute and free the memory allocated by xmlGetProp
 auto getXmlAttr(xmlNodePtr node, const char* name) -> std::string
 {
-  xmlChar* prop = xmlGetProp(node, BAD_CAST name);
+  xmlChar* prop = xmlGetProp(node, xml_string(name));
   if (!prop)
     return {};
   std::string value(reinterpret_cast<const char*>(prop));
@@ -73,12 +80,12 @@ void TFCSGANXMLParameters::InitialiseFromXML(
   for (xmlNodePtr nodeRoot = doc->children; nodeRoot != nullptr;
        nodeRoot = nodeRoot->next)
   {
-    if (xmlStrEqual(nodeRoot->name, BAD_CAST "Bins")) {
+    if (xmlStrEqual(nodeRoot->name, xml_string("Bins"))) {
       for (xmlNodePtr nodeParticle = nodeRoot->children;
            nodeParticle != nullptr;
            nodeParticle = nodeParticle->next)
       {
-        if (xmlStrEqual(nodeParticle->name, BAD_CAST "Particle")) {
+        if (xmlStrEqual(nodeParticle->name, xml_string("Particle"))) {
           int nodePid = getXmlAttrInt(nodeParticle, "pid");
 
           if (nodePid == pid) {
@@ -86,7 +93,7 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                  nodeBin != nullptr;
                  nodeBin = nodeBin->next)
             {
-              if (xmlStrEqual(nodeBin->name, BAD_CAST "Bin")) {
+              if (xmlStrEqual(nodeBin->name, xml_string("Bin"))) {
                 int nodeEtaMin = getXmlAttrInt(nodeBin, "etaMin");
                 int nodeEtaMax = getXmlAttrInt(nodeBin, "etaMax");
                 int regionId = getXmlAttrInt(nodeBin, "regionId");
@@ -103,7 +110,7 @@ void TFCSGANXMLParameters::InitialiseFromXML(
                        nodeLayer != nullptr;
                        nodeLayer = nodeLayer->next)
                   {
-                    if (xmlStrEqual(nodeLayer->name, BAD_CAST "Layer")) {
+                    if (xmlStrEqual(nodeLayer->name, xml_string("Layer"))) {
                       std::vector<double> edges;
                       std::string s(getXmlAttr(nodeLayer, "r_edges"));
 

@@ -83,14 +83,15 @@ TEST_P(AtlasSimTests, AtlasSimulation)
 
   // Now compare results with references with a tolerance of 0.1 percent
   const double tol = 1e-3;
-  JsonComparer json(tol);
+  JsonComparer comparer(tol);
 
   // Compare the transport data to references
-  ASSERT_TRUE(json.compare(AtlasSimTestConfig::transport_output_path(),
-                           AtlasSimTestConfig::transport_output_ref_path()));
+  ASSERT_TRUE(
+      comparer.compare(AtlasSimTestConfig::transport_output_path(),
+                       AtlasSimTestConfig::transport_output_ref_path()));
   // Compare the simulation data to references
-  ASSERT_TRUE(json.compare(AtlasSimTestConfig::sim_output_path(),
-                           AtlasSimTestConfig::sim_output_ref_path()));
+  ASSERT_TRUE(comparer.compare(AtlasSimTestConfig::sim_output_path(),
+                               AtlasSimTestConfig::sim_output_ref_path()));
 }
 
 INSTANTIATE_TEST_SUITE_P(AtlasSimulation,

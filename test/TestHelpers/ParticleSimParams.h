@@ -18,11 +18,14 @@ struct ParticleSimParams
   std::string latex_label;
   std::string print_label;
 
-  ParticleSimParams(int pid, int ekin, double eta, std::string param_file_key)
-      : pid(pid)
-      , ekin(ekin)
-      , eta(eta)
-      , param_file_key(std::move(param_file_key))
+  ParticleSimParams(int pdg_id,
+                    int kinetic_energy,
+                    double eta_value,
+                    std::string file_key)
+      : pid(pdg_id)
+      , ekin(kinetic_energy)
+      , eta(eta_value)
+      , param_file_key(std::move(file_key))
   {
     // Maps pid to LaTeX label
     std::map<int, std::string> pid_label = {

@@ -18,6 +18,11 @@ class Container
 {
 public:
   Container() = default;
+  virtual ~Container() = default;
+  Container(const Container&) = default;
+  Container(Container&&) noexcept = default;
+  auto operator=(const Container&) -> Container& = default;
+  auto operator=(Container&&) noexcept -> Container& = default;
 
   explicit Container(std::vector<ElementType> container)
       : m_container(std::move(container))
