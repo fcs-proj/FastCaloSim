@@ -221,9 +221,11 @@ private:
 
 /// Fraction x in [0,1] of the way through a bin for a random number drnd in
 /// [0,1], such that histogramming x gives a density with linear slope m (in
-/// units of the bin width, limited to [-2,2])
+/// units of the bin width, limited to [-2,2]). Declared inline so that it is
+/// inlined into position_lin in the shared library (per-hit code).
 template<typename Trandom>
-auto TFCS1DFunction_linear_slope_fraction(Trandom m, Trandom drnd) -> Trandom
+inline auto TFCS1DFunction_linear_slope_fraction(Trandom m, Trandom drnd)
+    -> Trandom
 {
   if (m > 2)
     m = 2;
