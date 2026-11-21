@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <set>
+#include <utility>
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
 
@@ -12,74 +14,102 @@
 #include "TBuffer.h"
 #include "TDirectory.h"
 
-//=============================================
-//======= TFCSParametrizationChain =========
-//=============================================
+namespace
+{
+// Kinetic energy or eta range that a parametrization covers
+struct Range
+{
+  double nominal;
+  double min;
+  double max;
+};
+
+auto Ekin_range(const TFCSParametrizationBase& param) -> Range
+{
+  return {param.Ekin_nominal(), param.Ekin_min(), param.Ekin_max()};
+}
+
+auto eta_range(const TFCSParametrizationBase& param) -> Range
+{
+  return {param.eta_nominal(), param.eta_min(), param.eta_max()};
+}
+
+// Intersection or union of the ranges of all parametrizations in a chain. The
+// nominal value of the first parametrization is kept as long as it lies inside
+// the combined range, otherwise the nominal value of the parametrization just
+// added is taken. If it is still outside at the end, the center is taken.
+auto combined_range(const TFCSParametrizationChain::Chain_t& chain,
+                    Range (*range_of)(const TFCSParametrizationBase&),
+                    bool intersect) -> Range
+{
+  Range range = range_of(*chain[0]);
+  const auto nominal_outside = [&range]
+  { return range.nominal < range.min || range.nominal > range.max; };
+  for (const auto* param : chain) {
+    const Range other = range_of(*param);
+    if (intersect ? other.min > range.min : other.min < range.min)
+      range.min = other.min;
+    if (intersect ? other.max < range.max : other.max > range.max)
+      range.max = other.max;
+    if (nominal_outside())
+      range.nominal = other.nominal;
+  }
+  if (nominal_outside())
+    range.nominal = 0.5 * (range.min + range.max);
+  return range;
+}
+
+void set_Ekin_range(TFCSParametrization& param, const Range& range)
+{
+  param.set_Ekin_nominal(range.nominal);
+  param.set_Ekin_min(range.min);
+  param.set_Ekin_max(range.max);
+}
+
+void set_eta_range(TFCSParametrization& param, const Range& range)
+{
+  param.set_eta_nominal(range.nominal);
+  param.set_eta_min(range.min);
+  param.set_eta_max(range.max);
+}
+
+// Intersection or union of the particle IDs of all parametrizations in a chain
+auto combined_pdgids(const TFCSParametrizationChain::Chain_t& chain,
+                     bool intersect) -> std::set<int>
+{
+  std::set<int> pdgids = chain[0]->pdgid();
+  for (const auto* param : chain) {
+    std::set<int> combined;
+    if (intersect)
+      std::ranges::set_intersection(
+          pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
+    else
+      std::ranges::set_union(
+          pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
+    pdgids = std::move(combined);
+  }
+  return pdgids;
+}
+}  // namespace
 
 void TFCSParametrizationChain::recalc_pdgid_intersect()
 {
-  set_pdgid(m_chain[0]->pdgid());
-
-  for (const auto& param : m_chain) {
-    std::set<int> tmp;
-
-    std::set_intersection(pdgid().begin(),
-                          pdgid().end(),
-                          param->pdgid().begin(),
-                          param->pdgid().end(),
-                          std::inserter(tmp, tmp.begin()));
-    set_pdgid(tmp);
-  }
+  set_pdgid(combined_pdgids(m_chain, true));
 }
 
 void TFCSParametrizationChain::recalc_pdgid_union()
 {
-  set_pdgid(chain()[0]->pdgid());
-
-  for (const auto& param : chain()) {
-    std::set<int> tmp;
-
-    std::set_union(pdgid().begin(),
-                   pdgid().end(),
-                   param->pdgid().begin(),
-                   param->pdgid().end(),
-                   std::inserter(tmp, tmp.begin()));
-    set_pdgid(tmp);
-  }
+  set_pdgid(combined_pdgids(m_chain, false));
 }
 
 void TFCSParametrizationChain::recalc_Ekin_intersect()
 {
-  set_Ekin(*m_chain[0]);
-
-  for (const auto& param : m_chain) {
-    if (param->Ekin_min() > Ekin_min())
-      set_Ekin_min(param->Ekin_min());
-    if (param->Ekin_max() < Ekin_max())
-      set_Ekin_max(param->Ekin_max());
-    if (Ekin_nominal() < Ekin_min() || Ekin_nominal() > Ekin_max())
-      set_Ekin_nominal(param->Ekin_nominal());
-  }
-
-  if (Ekin_nominal() < Ekin_min() || Ekin_nominal() > Ekin_max())
-    set_Ekin_nominal(0.5 * (Ekin_min() + Ekin_max()));
+  set_Ekin_range(*this, combined_range(m_chain, Ekin_range, true));
 }
 
 void TFCSParametrizationChain::recalc_eta_intersect()
 {
-  set_eta(*m_chain[0]);
-
-  for (const auto& param : m_chain) {
-    if (param->eta_min() > eta_min())
-      set_eta_min(param->eta_min());
-    if (param->eta_max() < eta_max())
-      set_eta_max(param->eta_max());
-    if (eta_nominal() < eta_min() || eta_nominal() > eta_max())
-      set_eta_nominal(param->eta_nominal());
-  }
-
-  if (eta_nominal() < eta_min() || eta_nominal() > eta_max())
-    set_eta_nominal(0.5 * (eta_min() + eta_max()));
+  set_eta_range(*this, combined_range(m_chain, eta_range, true));
 }
 
 void TFCSParametrizationChain::recalc_Ekin_eta_intersect()
@@ -90,36 +120,12 @@ void TFCSParametrizationChain::recalc_Ekin_eta_intersect()
 
 void TFCSParametrizationChain::recalc_Ekin_union()
 {
-  set_Ekin(*m_chain[0]);
-
-  for (const auto& param : m_chain) {
-    if (param->Ekin_min() < Ekin_min())
-      set_Ekin_min(param->Ekin_min());
-    if (param->Ekin_max() > Ekin_max())
-      set_Ekin_max(param->Ekin_max());
-    if (Ekin_nominal() < Ekin_min() || Ekin_nominal() > Ekin_max())
-      set_Ekin_nominal(param->Ekin_nominal());
-  }
-
-  if (Ekin_nominal() < Ekin_min() || Ekin_nominal() > Ekin_max())
-    set_Ekin_nominal(0.5 * (Ekin_min() + Ekin_max()));
+  set_Ekin_range(*this, combined_range(m_chain, Ekin_range, false));
 }
 
 void TFCSParametrizationChain::recalc_eta_union()
 {
-  set_eta(*m_chain[0]);
-
-  for (const auto& param : m_chain) {
-    if (param->eta_min() < eta_min())
-      set_eta_min(param->eta_min());
-    if (param->eta_max() > eta_max())
-      set_eta_max(param->eta_max());
-    if (eta_nominal() < eta_min() || eta_nominal() > eta_max())
-      set_eta_nominal(param->eta_nominal());
-  }
-
-  if (eta_nominal() < eta_min() || eta_nominal() > eta_max())
-    set_eta_nominal(0.5 * (eta_min() + eta_max()));
+  set_eta_range(*this, combined_range(m_chain, eta_range, false));
 }
 
 void TFCSParametrizationChain::recalc_Ekin_eta_union()
