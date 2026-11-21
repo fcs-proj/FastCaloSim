@@ -27,7 +27,8 @@
       "inherits": "cmake-pedantic",
       "cacheVariables": {
         "FastCaloSim_DEVELOPER_MODE": "ON",
-        "FastCaloSim_PARAM_MODE": "ON"
+        "FastCaloSim_PARAM_MODE": "ON",
+        "FastCaloSim_BUILD_BENCHMARK": "ON"
       }
     },
     {
