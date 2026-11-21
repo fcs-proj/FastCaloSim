@@ -237,9 +237,9 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
   FCS_MSG_DEBUG("Using event index " << event_index << " for eta " << eta_center
                                      << " and phi " << phi_center);
 
-  // Store a pointer to the event
-  auto* event_ptr = new event_t(m_eventlibrary.at(event_index));
-  simulstate.setAuxInfo<void*>("BSEventData"_FCShash, event_ptr);
+  // Store a copy of the event
+  simulstate.setAuxObject("BSEventData"_FCShash,
+                          m_eventlibrary.at(event_index));
 
   compute_n_hits_and_elayer(simulstate);
 }
@@ -247,8 +247,7 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
 void TFCSBinnedShower::compute_n_hits_and_elayer(
     TFCSSimulationState& simulstate) const
 {
-  auto* event = static_cast<event_t*>(
-      simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  auto* event = simulstate.getAuxObject<event_t>("BSEventData"_FCShash);
   if (event == nullptr) {
     FCS_MSG_ERROR(
         "compute_n_hits_and_elayer called without BSEventData; "
@@ -284,22 +283,17 @@ void TFCSBinnedShower::compute_n_hits_and_elayer(
       hits_per_layer.at(layer_index).push_back(n_hits);
     }
   }
-  // Store the hits per layer vector
-  auto* hits_per_layer_ptr =
-      new std::vector<std::vector<std::size_t>>(std::move(hits_per_layer));
-  simulstate.setAuxInfo<void*>("BSNHits"_FCShash, hits_per_layer_ptr);
-
-  // Store the energy per layer
-  auto* elayer_ptr = new std::vector<double>(std::move(elayer));
-  simulstate.setAuxInfo<void*>("BSELayer"_FCShash, elayer_ptr);
+  // Store the hits per layer vector and the energy per layer
+  simulstate.setAuxObject("BSNHits"_FCShash, std::move(hits_per_layer));
+  simulstate.setAuxObject("BSELayer"_FCShash, std::move(elayer));
 }
 
 auto TFCSBinnedShower::get_n_hits(TFCSSimulationState& simulstate,
                                   std::size_t layer_index) const -> std::size_t
 {
   auto* hits_per_layer_ptr =
-      static_cast<std::vector<std::vector<std::size_t>>*>(
-          simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
+      simulstate.getAuxObject<std::vector<std::vector<std::size_t>>>(
+          "BSNHits"_FCShash);
 
   if (hits_per_layer_ptr == nullptr) {
     FCS_MSG_ERROR("Invalid hits per layer information");
@@ -312,8 +306,8 @@ auto TFCSBinnedShower::get_n_hits(TFCSSimulationState& simulstate,
 auto TFCSBinnedShower::get_layer_energy(TFCSSimulationState& simulstate,
                                         std::size_t layer_index) const -> double
 {
-  auto* elayer_ptr = static_cast<std::vector<double>*>(
-      simulstate.getAuxInfo<void*>("BSELayer"_FCShash));
+  auto* elayer_ptr =
+      simulstate.getAuxObject<std::vector<double>>("BSELayer"_FCShash);
   if (elayer_ptr == nullptr) {
     FCS_MSG_ERROR("Invalid layer energy information");
     return 0.0;
@@ -330,8 +324,8 @@ auto TFCSBinnedShower::get_energy_index(TFCSSimulationState& simulstate,
     -> std::size_t
 {
   auto* hits_per_layer_ptr =
-      static_cast<std::vector<std::vector<std::size_t>>*>(
-          simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
+      simulstate.getAuxObject<std::vector<std::vector<std::size_t>>>(
+          "BSNHits"_FCShash);
   if (hits_per_layer_ptr == nullptr) {
     FCS_MSG_ERROR("Invalid hits per layer information");
     return 0;
@@ -519,8 +513,7 @@ auto TFCSBinnedShower::get_hit_position_and_energy(
     std::size_t layer_index,
     std::size_t hit_index) const -> std::tuple<double, double, double>
 {
-  auto* event = static_cast<event_t*>(
-      simulstate.getAuxInfo<void*>("BSEventData"_FCShash));
+  auto* event = simulstate.getAuxObject<event_t>("BSEventData"_FCShash);
   if (event == nullptr) {
     FCS_MSG_ERROR("No BSEventData available in get_hit_position_and_energy");
     return std::make_tuple(0.0, 0.0, 0.0);
@@ -538,8 +531,8 @@ auto TFCSBinnedShower::get_hit_position_and_energy(
       simulstate, layer_index, hit_index);  // Get the bin index for the hit
 
   auto* hits_per_layer_ptr =
-      static_cast<std::vector<std::vector<std::size_t>>*>(
-          simulstate.getAuxInfo<void*>("BSNHits"_FCShash));
+      simulstate.getAuxObject<std::vector<std::vector<std::size_t>>>(
+          "BSNHits"_FCShash);
 
   const std::vector<std::size_t>& hits = hits_per_layer_ptr->at(layer_index);
   const std::size_t hits_per_bin = energy_index == 0
@@ -555,28 +548,6 @@ auto TFCSBinnedShower::get_hit_position_and_energy(
       / static_cast<double>(hits_per_bin);
 
   return std::make_tuple(r, alpha, E);
-}
-
-void TFCSBinnedShower::delete_event(TFCSSimulationState& simulstate) const
-{
-  // Delete the event data
-  void* event_ptr = simulstate.getAuxInfo<void*>("BSEventData"_FCShash);
-  if (event_ptr != nullptr) {
-    delete static_cast<event_t*>(event_ptr);
-    simulstate.setAuxInfo<void*>("BSEventData"_FCShash, nullptr);
-  }
-
-  void* n_hits_ptr = simulstate.getAuxInfo<void*>("BSNHits"_FCShash);
-  if (n_hits_ptr != nullptr) {
-    delete static_cast<std::vector<std::vector<std::size_t>>*>(n_hits_ptr);
-    simulstate.setAuxInfo<void*>("BSNHits"_FCShash, nullptr);
-  }
-
-  void* elayer_ptr = simulstate.getAuxInfo<void*>("BSELayer"_FCShash);
-  if (elayer_ptr != nullptr) {
-    delete static_cast<std::vector<double>*>(elayer_ptr);
-    simulstate.setAuxInfo<void*>("BSELayer"_FCShash, nullptr);
-  }
 }
 
 void TFCSBinnedShower::load_event_library(const std::string& filename,

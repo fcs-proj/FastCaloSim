@@ -26,14 +26,10 @@
 
 namespace
 {
-// AuxInfo indices of the weights and of the voxel histogram of a layer
+// AuxInfo index of the weights of a layer
 auto layer_hash(std::size_t layer) -> std::uint32_t
 {
   return TFCSSimulationState::layerAuxIndex("VoxelFluctWeights"_FCShash, layer);
-}
-auto layer_hash_geo(std::size_t layer) -> std::uint32_t
-{
-  return TFCSSimulationState::layerAuxIndex("VoxelFluctGeo"_FCShash, layer);
 }
 }  // namespace
 
@@ -192,22 +188,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   const auto Ebin = simulstate.Ebin();
 
   for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
-    if (simulstate.hasAuxInfo(layer_hash(ilayer))) {
-      auto* weightvec = static_cast<weight_t*>(
-          simulstate.getAuxInfo<void*>(layer_hash(ilayer)));
-      if (weightvec != nullptr) {
-        delete weightvec;
-        simulstate.setAuxInfo<void*>(layer_hash(ilayer), nullptr);
-      }
-    }
-    if (simulstate.hasAuxInfo(layer_hash_geo(ilayer))) {
-      auto* voxel_temp = static_cast<TH2*>(
-          simulstate.getAuxInfo<void*>(layer_hash_geo(ilayer)));
-      if (voxel_temp != nullptr) {
-        delete voxel_temp;
-        simulstate.setAuxInfo<void*>(layer_hash_geo(ilayer), nullptr);
-      }
-    }
+    simulstate.eraseAuxObject(layer_hash(ilayer));
   }
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
@@ -232,10 +213,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
   const std::size_t ibin = *Ebin - 1;
   const auto n_x = static_cast<std::size_t>(m_nDim_x);
   const auto n_y = static_cast<std::size_t>(m_nDim_y);
-  auto* weightvec = new weight_t(n_x);
-  for (std::size_t x = 0; x < n_x; ++x) {
-    (*weightvec)[x].resize(n_y);
-  }
+  weight_t weightvec(n_x, std::vector<double>(n_y));
 
   TVectorD genPars(m_parMeans[ibin].GetNrows());
 
@@ -254,7 +232,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
       double const orig_val = m_transform[ibin][x][y]->rnd_to_fct(cdf_val);
 
       // Fill hist, keep linear count
-      (*weightvec)[x][y] = orig_val;
+      weightvec[x][y] = orig_val;
       ++count;
 
       FCS_MSG_DEBUG("CELL x=" << x << " y=" << y << " : cdf_val=" << cdf_val
@@ -262,16 +240,11 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
     }
   }
 
-  auto* voxel_temp = static_cast<TH2*>(m_voxel_template[0]->Clone());
-
   // For now simulating only the layer calosample()
-  const std::size_t cs = calosample();
-  simulstate.setAuxInfo<void*>(layer_hash(cs), weightvec);
-  simulstate.setAuxInfo<void*>(layer_hash_geo(cs), voxel_temp);
+  simulstate.setAuxObject(layer_hash(calosample()), std::move(weightvec));
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
-    FCS_MSG_DEBUG("simulstate after storing weight " << weightvec
-                                                     << " in AuxInfo");
+    FCS_MSG_DEBUG("simulstate after storing the weights in AuxInfo");
     simulstate.Print();
   }
 
@@ -290,28 +263,17 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
   const double center_z = hit.center_z();
 
   const std::size_t cs = calosample();
-  weight_t* weightvec = nullptr;
-  if (simulstate.hasAuxInfo(layer_hash(cs))) {
-    weightvec =
-        static_cast<weight_t*>(simulstate.getAuxInfo<void*>(layer_hash(cs)));
-  }
-
+  const auto* weightvec = simulstate.getAuxObject<weight_t>(layer_hash(cs));
   if (weightvec == nullptr) {
     FCS_MSG_ERROR("Weights not stored in simulstate for calosample=" << cs);
     return FCSFatal;
   }
 
-  TH2* voxel_template = nullptr;
-  if (simulstate.hasAuxInfo(layer_hash_geo(cs))) {
-    voxel_template =
-        static_cast<TH2*>(simulstate.getAuxInfo<void*>(layer_hash_geo(cs)));
-  }
-
-  if (voxel_template == nullptr) {
-    FCS_MSG_ERROR(
-        "Voxel geometry not stored in simulstate for calosample=" << cs);
+  if (m_voxel_template.empty()) {
+    FCS_MSG_ERROR("No voxel template for calosample=" << cs);
     return FCSFatal;
   }
+  const TH2* voxel_template = m_voxel_template[0];
 
   double deta_hit_minus_extrapol = hit.eta() - center_eta;
   const double dphi_hit_minus_extrapol =
@@ -336,17 +298,17 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate_hit(
       std::sqrt(dphi_hit_minus_extrapol_mm * dphi_hit_minus_extrapol_mm
                 + deta_hit_minus_extrapol_mm * deta_hit_minus_extrapol_mm);
 
-  int const iy = voxel_template->GetYaxis()->FindBin(radius_mm) - 1;
+  int const iy = voxel_template->GetYaxis()->FindFixBin(radius_mm) - 1;
 
   // Treat core as one bin for simulation
   int ix = 0;
   if (iy != 0) {
     if (alpha_mm < 0) {
-      ix = voxel_template->GetXaxis()->FindBin(2 * std::numbers::pi
-                                               - std::fabs(alpha_mm))
+      ix = voxel_template->GetXaxis()->FindFixBin(2 * std::numbers::pi
+                                                  - std::fabs(alpha_mm))
           - 1;
     } else {
-      ix = voxel_template->GetXaxis()->FindBin(alpha_mm) - 1;
+      ix = voxel_template->GetXaxis()->FindFixBin(alpha_mm) - 1;
     }
   }
 

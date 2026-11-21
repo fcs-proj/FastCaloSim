@@ -117,8 +117,9 @@ protected:
                                            std::size_t hit_index) const
       -> std::tuple<double, double, double> = 0;
 
-  // Delete all pointers that were created in get_event()
-  virtual void delete_event(TFCSSimulationState& simulstate) const = 0;
+  // Destroy the data of the previous event that get_event() stored in
+  // simulstate
+  static void delete_event(TFCSSimulationState& simulstate);
 
   // What should be the average energy per hit in the library
   float m_default_hit_energy = 4.;

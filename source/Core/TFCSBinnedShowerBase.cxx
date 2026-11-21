@@ -32,6 +32,13 @@ TFCSBinnedShowerBase::TFCSBinnedShowerBase(const char* name, const char* title)
 
 TFCSBinnedShowerBase::~TFCSBinnedShowerBase() = default;
 
+void TFCSBinnedShowerBase::delete_event(TFCSSimulationState& simulstate)
+{
+  simulstate.eraseAuxObject("BSEventData"_FCShash);
+  simulstate.eraseAuxObject("BSNHits"_FCShash);
+  simulstate.eraseAuxObject("BSELayer"_FCShash);
+}
+
 auto TFCSBinnedShowerBase::simulate(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,

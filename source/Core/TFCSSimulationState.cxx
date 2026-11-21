@@ -8,7 +8,6 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
 #include "CLHEP/Random/RandomEngine.h"
-#include "FastCaloSim/Core/TFCSParametrizationBase.h"
 #include "FastCaloSim/Definitions/FloatCompare.h"
 
 //=============================================
@@ -62,6 +61,12 @@ void TFCSSimulationState::Print(Option_t* /*option*/) const
           a.second);
     }
   }
+  if (!m_AuxObjects.empty()) {
+    FCS_MSG_INFO("  AuxObjects has " << m_AuxObjects.size() << " elements");
+    for (const auto& a : m_AuxObjects) {
+      FCS_MSG_INFO("    " << a.first);
+    }
+  }
 }
 
 auto TFCSSimulationState::getAuxIndex(const std::string& s) -> std::uint32_t
@@ -72,16 +77,4 @@ auto TFCSSimulationState::getAuxIndex(const std::string& s) -> std::uint32_t
 auto TFCSSimulationState::getAuxIndex(const char* s) -> std::uint32_t
 {
   return TFCSSimulationState::fnv1a_32(s, std::strlen(s));
-}
-
-void TFCSSimulationState::AddAuxInfoCleanup(const TFCSParametrizationBase* para)
-{
-  m_AuxInfoCleanup.insert(para);
-}
-
-void TFCSSimulationState::DoAuxInfoCleanup()
-{
-  for (const auto* para : m_AuxInfoCleanup) {
-    para->CleanAuxInfo(*this);
-  }
 }

@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <set>
+#include <vector>
 
 #include "SimStateTests.h"
 
@@ -88,8 +89,7 @@ TEST_F(TFCSSimulationStateTest, LayerAuxIndicesAreDistinct)
   // numbers and from the other named entries
   constexpr std::size_t n_layers = 24;
   const std::array layer_names {"ExtrapWeight"_FCShash,
-                                "VoxelFluctWeights"_FCShash,
-                                "VoxelFluctGeo"_FCShash};
+                                "VoxelFluctWeights"_FCShash};
   const std::array other_names {"BSEinit"_FCShash,
                                 "BSELayer"_FCShash,
                                 "BSEventData"_FCShash,
@@ -113,20 +113,79 @@ TEST_F(TFCSSimulationStateTest, LayerAuxIndicesAreDistinct)
   EXPECT_EQ(indices.size(),
             other_names.size() + ((1 + layer_names.size()) * n_layers));
 
-  // Entries of different types for the same layer no longer overwrite each
-  // other
+  // A value and an object for the same layer do not overwrite each other
   TFCSSimulationState sim_state;
-  int voxel_data = 0;
   sim_state.setAuxInfo<double>(
       TFCSSimulationState::layerAuxIndex("ExtrapWeight"_FCShash, 2), 0.25);
-  sim_state.setAuxInfo<void*>(
+  sim_state.setAuxObject(
       TFCSSimulationState::layerAuxIndex("VoxelFluctWeights"_FCShash, 2),
-      &voxel_data);
+      std::vector<double> {1.0, 2.0});
   EXPECT_DOUBLE_EQ(
       sim_state.getAuxInfo<double>(
           TFCSSimulationState::layerAuxIndex("ExtrapWeight"_FCShash, 2)),
       0.25);
-  EXPECT_EQ(sim_state.getAuxInfo<void*>(TFCSSimulationState::layerAuxIndex(
-                "VoxelFluctWeights"_FCShash, 2)),
-            &voxel_data);
+  const auto* weights = sim_state.getAuxObject<std::vector<double>>(
+      TFCSSimulationState::layerAuxIndex("VoxelFluctWeights"_FCShash, 2));
+  ASSERT_NE(weights, nullptr);
+  EXPECT_EQ(weights->size(), 2U);
+}
+
+namespace
+{
+// Counts its live instances, to check who destroys the stored objects
+struct Counted
+{
+  static inline int live = 0;
+  int value = 0;
+  explicit Counted(int v)
+      : value(v)
+  {
+    ++live;
+  }
+  Counted(const Counted& other)
+      : value(other.value)
+  {
+    ++live;
+  }
+  Counted(Counted&& other) noexcept
+      : value(other.value)
+  {
+    ++live;
+  }
+  auto operator=(const Counted&) -> Counted& = default;
+  auto operator=(Counted&&) noexcept -> Counted& = default;
+  ~Counted() { --live; }
+};
+}  // namespace
+
+TEST_F(TFCSSimulationStateTest, AuxObjectsAreOwned)
+{
+  Counted::live = 0;
+  {
+    TFCSSimulationState sim_state;
+    const auto index = "TestObject"_FCShash;
+    EXPECT_EQ(sim_state.getAuxObject<Counted>(index), nullptr);
+
+    sim_state.setAuxObject(index, Counted(1));
+    EXPECT_EQ(Counted::live, 1);
+    ASSERT_NE(sim_state.getAuxObject<Counted>(index), nullptr);
+    EXPECT_EQ(sim_state.getAuxObject<Counted>(index)->value, 1);
+    // An object of another type is not returned
+    EXPECT_EQ(sim_state.getAuxObject<int>(index), nullptr);
+
+    // Replacing destroys the old object
+    sim_state.setAuxObject(index, Counted(2));
+    EXPECT_EQ(Counted::live, 1);
+    EXPECT_EQ(sim_state.getAuxObject<Counted>(index)->value, 2);
+
+    // Erasing destroys it
+    sim_state.eraseAuxObject(index);
+    EXPECT_EQ(Counted::live, 0);
+    EXPECT_EQ(sim_state.getAuxObject<Counted>(index), nullptr);
+
+    // The state destroys what is still stored
+    sim_state.setAuxObject(index, Counted(3));
+    EXPECT_EQ(Counted::live, 1);
+  }
+  EXPECT_EQ(Counted::live, 0);
 }

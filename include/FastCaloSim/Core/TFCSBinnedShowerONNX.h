@@ -134,7 +134,6 @@ protected:
       -> std::tuple<double, double, double> override;
 
   // Delete all pointers that were created in get_event()
-  void delete_event(TFCSSimulationState& simulstate) const override;
 
 private:
   // Store the used event library
