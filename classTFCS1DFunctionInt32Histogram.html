@@ -100,11 +100,19 @@
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
             <dt id="a7caf7e1a96e8eef5e03176b100eade8b">
-              <span class="m-doc-wrap-bumper"><a href="#a7caf7e1a96e8eef5e03176b100eade8b" class="m-doc-self">TFCS1DFunctionInt32Histogram</a>(</span><span class="m-doc-wrap">const TH1* hist = nullptr)</span>
+              <span class="m-doc-wrap-bumper"><a href="#a7caf7e1a96e8eef5e03176b100eade8b" class="m-doc-self">TFCS1DFunctionInt32Histogram</a>(</span><span class="m-doc-wrap">const TH1* hist = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
             <dt id="a81bb1e13faf590c609d046435d71bef2">
               <span class="m-doc-wrap-bumper"><a href="#a81bb1e13faf590c609d046435d71bef2" class="m-doc-self">~TFCS1DFunctionInt32Histogram</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ade40d7ff0d8e8496ba539cdd02c3b2f8">
+              <span class="m-doc-wrap-bumper"><a href="#ade40d7ff0d8e8496ba539cdd02c3b2f8" class="m-doc-self">TFCS1DFunctionInt32Histogram</a>(</span><span class="m-doc-wrap">const <a href="classTFCS1DFunctionInt32Histogram.html" class="m-doc">TFCS1DFunctionInt32Histogram</a>&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aae71edbf351d68e94e01b0caf5cbb347">
+              <span class="m-doc-wrap-bumper"><a href="#aae71edbf351d68e94e01b0caf5cbb347" class="m-doc-self">TFCS1DFunctionInt32Histogram</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunctionInt32Histogram.html" class="m-doc">TFCS1DFunctionInt32Histogram</a>&amp;&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -112,6 +120,14 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="a80840785b36b10342f37fc44e15c794a">
+              <span class="m-doc-wrap-bumper">auto <a href="#a80840785b36b10342f37fc44e15c794a" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classTFCS1DFunctionInt32Histogram.html" class="m-doc">TFCS1DFunctionInt32Histogram</a>&amp;) -&gt; TFCS1DFunctionInt32Histogram &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a66d592666d9a0e8395dc5ee4dbf0f4d9">
+              <span class="m-doc-wrap-bumper">auto <a href="#a66d592666d9a0e8395dc5ee4dbf0f4d9" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunctionInt32Histogram.html" class="m-doc">TFCS1DFunctionInt32Histogram</a>&amp;&amp;) -&gt; TFCS1DFunctionInt32Histogram &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="adef38153886e51ea73e1cf0eec4cd719">
               <span class="m-doc-wrap-bumper">void <a href="#adef38153886e51ea73e1cf0eec4cd719" class="m-doc-self">Initialize</a>(</span><span class="m-doc-wrap">const TH1* hist)</span>
             </dt>
@@ -141,7 +157,7 @@
             </dt>
             <dd><span></span></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a5a96f26f83dd0ff708056c36cc6419e0" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">void <a href="#a3fe236205fd6fd911be0ceac105caeb7" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
             <dt>
@@ -177,9 +193,9 @@
             </h3>
 <p>The == operator compares the content of instances. The implementation in the base class only returns true for a comparison with itself</p>
           </div></section>
-          <section class="m-doc-details" id="a5a96f26f83dd0ff708056c36cc6419e0"><div>
+          <section class="m-doc-details" id="a3fe236205fd6fd911be0ceac105caeb7"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void TFCS1DFunctionInt32Histogram::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a5a96f26f83dd0ff708056c36cc6419e0" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper">void TFCS1DFunctionInt32Histogram::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3fe236205fd6fd911be0ceac105caeb7" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-warning">override</span></span></span>
             </h3>
 <p>Function gets array of random numbers rnd[] in the range [0,1) as arguments and returns function value in array value. For a n-dimensional function, value and rnd should both have n elements.</p>
           </div></section>

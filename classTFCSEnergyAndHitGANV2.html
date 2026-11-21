@@ -99,7 +99,7 @@
             <dt id="a921e93f46b85499d259ae969c2433376">
               <span class="m-doc-wrap-bumper"><a href="#a921e93f46b85499d259ae969c2433376" class="m-doc-self">TFCSEnergyAndHitGANV2</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
               const char* title = nullptr,
-              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr)</span>
+              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
             <dt id="a98e556c97ac50f856285714b9632d47b">
@@ -115,12 +115,12 @@
               <span class="m-doc-wrap-bumper">void <a href="#adec7b86b363c10d16abe7d65f945fa6e" class="m-doc">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
-            <dt id="a9b4194334f7fdc7b36bbf24aa5f2e33a">
-              <span class="m-doc-wrap-bumper">auto <a href="#a9b4194334f7fdc7b36bbf24aa5f2e33a" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a50ee92bfbadf0b9ff8d7e50670046999">
+              <span class="m-doc-wrap-bumper">auto <a href="#a50ee92bfbadf0b9ff8d7e50670046999" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="abd45900867dd583e987938bd586d7e0a">
-              <span class="m-doc-wrap-bumper">auto <a href="#abd45900867dd583e987938bd586d7e0a" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">int calosample) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="aa83540b766352af4a56a6ddddbcf8a13">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa83540b766352af4a56a6ddddbcf8a13" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">std::size_t calosample) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="a0ebd8417720900b04462d74afa122b89">
@@ -155,10 +155,10 @@
               <span class="m-doc-wrap-bumper">void <a href="#a51430bf45b35f68189be8f7e5cdc84f0" class="m-doc-self">reset_OnlyScaleEnergy</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a014a1bc42506b999d60b6155b9a896a0">
-              <span class="m-doc-wrap-bumper">auto <a href="#a014a1bc42506b999d60b6155b9a896a0" class="m-doc-self">get_bin</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+            <dt id="a6f4ee7de438ed540aa6c8ff7027a66a0">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6f4ee7de438ed540aa6c8ff7027a66a0" class="m-doc-self">get_bin</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>*,
-              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; int <span class="m-label m-flat m-warning">override</span></span>
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; std::optional&lt; std::size_t &gt; <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>use the layer to be done as binning of the GAN chain</dd>
             <dt id="aa280e0132d9a00083430368042974f58">
@@ -167,12 +167,12 @@
               const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; const std::string <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a742809f3c611ddf5166e41b9b4ad1701">
-              <span class="m-doc-wrap-bumper">auto <a href="#a742809f3c611ddf5166e41b9b4ad1701" class="m-doc-self">get_nr_of_init</a>(</span><span class="m-doc-wrap">unsigned int bin) const -&gt; unsigned int</span>
+            <dt id="a1da406e53d22376e59e9d6955ac84812">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1da406e53d22376e59e9d6955ac84812" class="m-doc-self">get_nr_of_init</a>(</span><span class="m-doc-wrap">std::size_t bin) const -&gt; unsigned int</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae5fea0aeb6a3fb2debf9c87c311bc5fd">
-              <span class="m-doc-wrap-bumper">void <a href="#ae5fea0aeb6a3fb2debf9c87c311bc5fd" class="m-doc-self">set_nr_of_init</a>(</span><span class="m-doc-wrap">unsigned int bin,
+            <dt id="a020d128058b25a8cd0b61d2b80cab85e">
+              <span class="m-doc-wrap-bumper">void <a href="#a020d128058b25a8cd0b61d2b80cab85e" class="m-doc-self">set_nr_of_init</a>(</span><span class="m-doc-wrap">std::size_t bin,
               unsigned int ninit)</span>
             </dt>
             <dd><span></span></dd>

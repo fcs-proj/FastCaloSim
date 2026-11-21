@@ -100,11 +100,27 @@
               <span class="m-doc-wrap-bumper"><a href="#a8ae36cf1530ecaa3a1dcf5a39b590d40" class="m-doc-self">~TFCSFunction</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
+            <dt id="a430d921c9cd5919731ea6b7ea1f6dae9">
+              <span class="m-doc-wrap-bumper"><a href="#a430d921c9cd5919731ea6b7ea1f6dae9" class="m-doc-self">TFCSFunction</a>(</span><span class="m-doc-wrap">const <a href="classTFCSFunction.html" class="m-doc">TFCSFunction</a>&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae834d64092480a5245fa4996c419d9fb">
+              <span class="m-doc-wrap-bumper"><a href="#ae834d64092480a5245fa4996c419d9fb" class="m-doc-self">TFCSFunction</a>(</span><span class="m-doc-wrap"><a href="classTFCSFunction.html" class="m-doc">TFCSFunction</a>&amp;&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
           </dl>
         </section>
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="aceed1d281e7b29800b2e3bc71daa31a3">
+              <span class="m-doc-wrap-bumper">auto <a href="#aceed1d281e7b29800b2e3bc71daa31a3" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classTFCSFunction.html" class="m-doc">TFCSFunction</a>&amp;) -&gt; TFCSFunction &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a4095f899c77d18430dbf71b7e8e02e7e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a4095f899c77d18430dbf71b7e8e02e7e" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCSFunction.html" class="m-doc">TFCSFunction</a>&amp;&amp;) -&gt; TFCSFunction &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt>
               <span class="m-doc-wrap-bumper">auto <a href="#a4d73ba5cd65f9464ccc1dd8a1c63a195" class="m-doc">MemorySize</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
@@ -114,8 +130,8 @@
             </dt>
             <dd>Return the number of dimensions for the function.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a73088675ef270f8a0628f4960928e3a3" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const <span class="m-label m-flat m-warning">pure virtual</span></span>
+              <span class="m-doc-wrap-bumper">void <a href="#af5bb4c4810601c2a4f3c113f81a38c92" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">float* value,
+              const float* rnd) const <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd></dd>
           </dl>
@@ -128,10 +144,10 @@
             </h3>
 <p>Gives the total memory size, including the size of additional memory allocated inside the class</p>
           </div></section>
-          <section class="m-doc-details" id="a73088675ef270f8a0628f4960928e3a3"><div>
+          <section class="m-doc-details" id="af5bb4c4810601c2a4f3c113f81a38c92"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void TFCSFunction::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a73088675ef270f8a0628f4960928e3a3" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const <span class="m-label m-warning">pure virtual</span></span></span>
+              <span class="m-doc-wrap-bumper">void TFCSFunction::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af5bb4c4810601c2a4f3c113f81a38c92" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float* value,
+              const float* rnd) const <span class="m-label m-warning">pure virtual</span></span></span>
             </h3>
 <p>Function gets array of random numbers rnd[] in the range [0,1) as arguments and returns function value in array value. For a n-dimensional function, value and rnd should both have n elements.</p>
           </div></section>

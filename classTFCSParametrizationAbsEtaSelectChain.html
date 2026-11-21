@@ -80,11 +80,19 @@
           <dl class="m-doc">
             <dt id="a034fe63df0e4bfdb134e3025f8db2784">
               <span class="m-doc-wrap-bumper"><a href="#a034fe63df0e4bfdb134e3025f8db2784" class="m-doc-self">TFCSParametrizationAbsEtaSelectChain</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+              const char* title = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
             <dt id="aee72ad846aa49c698ae2093ad779458d">
               <span class="m-doc-wrap-bumper"><a href="#aee72ad846aa49c698ae2093ad779458d" class="m-doc-self">TFCSParametrizationAbsEtaSelectChain</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationAbsEtaSelectChain.html" class="m-doc">TFCSParametrizationAbsEtaSelectChain</a>&amp; ref) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a1ab2c9b49cda44626d58ec0065acc985">
+              <span class="m-doc-wrap-bumper"><a href="#a1ab2c9b49cda44626d58ec0065acc985" class="m-doc-self">TFCSParametrizationAbsEtaSelectChain</a>(</span><span class="m-doc-wrap"><a href="classTFCSParametrizationAbsEtaSelectChain.html" class="m-doc">TFCSParametrizationAbsEtaSelectChain</a>&amp;&amp; ref) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a078449f3c7dc332284092d0a40a07d3c">
+              <span class="m-doc-wrap-bumper"><a href="#a078449f3c7dc332284092d0a40a07d3c" class="m-doc-self">~TFCSParametrizationAbsEtaSelectChain</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -92,27 +100,41 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="ad4c693158c839db704e34d348b31e4f7">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad4c693158c839db704e34d348b31e4f7" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationAbsEtaSelectChain.html" class="m-doc">TFCSParametrizationAbsEtaSelectChain</a>&amp; ref) -&gt; TFCSParametrizationAbsEtaSelectChain &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a587eac6fda479faa38e15bc29e3c6c72">
+              <span class="m-doc-wrap-bumper">auto <a href="#a587eac6fda479faa38e15bc29e3c6c72" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCSParametrizationAbsEtaSelectChain.html" class="m-doc">TFCSParametrizationAbsEtaSelectChain</a>&amp;&amp; ref) -&gt; TFCSParametrizationAbsEtaSelectChain &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#ac8ea82ee093d18eddb8d77ba76c71db3" class="m-doc">get_bin</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              <span class="m-doc-wrap-bumper">auto <a href="#a8cb61a31726beac1840c19137fa60346" class="m-doc">get_bin</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>*,
-              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; int <span class="m-label m-flat m-warning">override</span></span>
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; std::optional&lt; std::size_t &gt; <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
-            <dt id="a1a592b7328be408d9d795db3be2edd82">
-              <span class="m-doc-wrap-bumper">auto <a href="#a1a592b7328be408d9d795db3be2edd82" class="m-doc-self">get_bin_text</a>(</span><span class="m-doc-wrap">int bin) const -&gt; const std::string <span class="m-label m-flat m-warning">override</span></span>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a66473fc52d8f09b855e91e0efd319488" class="m-doc">get_bin_text</a>(</span><span class="m-doc-wrap">std::optional&lt;std::size_t&gt; bin) const -&gt; const std::string <span class="m-label m-flat m-warning">override</span></span>
             </dt>
-            <dd>print the range of a bin; for bin -1, print the allowed range</dd>
+            <dd></dd>
           </dl>
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="ac8ea82ee093d18eddb8d77ba76c71db3"><div>
+          <section class="m-doc-details" id="a8cb61a31726beac1840c19137fa60346"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">auto TFCSParametrizationAbsEtaSelectChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac8ea82ee093d18eddb8d77ba76c71db3" class="m-doc-self">get_bin</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              <span class="m-doc-wrap-bumper">auto TFCSParametrizationAbsEtaSelectChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8cb61a31726beac1840c19137fa60346" class="m-doc-self">get_bin</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>*,
-              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; int <span class="m-label m-warning">override</span></span></span>
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>*) const -&gt; std::optional&lt; std::size_t &gt; <span class="m-label m-warning">override</span></span></span>
             </h3>
-<p>this method should determine in derived classes which bin to simulate, so that the simulate method can call the appropriate <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> simulations return -1 if no bin matches</p>
+<p>this method should determine in derived classes which bin to simulate, so that the simulate method can call the appropriate <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> simulations; returns no value if no bin matches</p>
+          </div></section>
+          <section class="m-doc-details" id="a66473fc52d8f09b855e91e0efd319488"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto TFCSParametrizationAbsEtaSelectChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a66473fc52d8f09b855e91e0efd319488" class="m-doc-self">get_bin_text</a>(</span><span class="m-doc-wrap">std::optional&lt;std::size_t&gt; bin) const -&gt; const std::string <span class="m-label m-warning">override</span></span></span>
+            </h3>
+<p>print the range of a bin; for no bin or a bin out of range, print the allowed range</p>
           </div></section>
         </section>
       </div>

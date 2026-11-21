@@ -87,6 +87,10 @@
               <span class="m-doc-wrap-bumper"><a href="#ae85a1a337d3da5a180fbbad251718f5d" class="m-doc-self">~CaloGeo</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd><span></span></dd>
+            <dt id="aad1584fc04d97ba2116adfe95180397d">
+              <span class="m-doc-wrap-bumper"><a href="#aad1584fc04d97ba2116adfe95180397d" class="m-doc-self">CaloGeo</a>(</span><span class="m-doc-wrap">const <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&amp;) <span class="m-label m-flat m-danger">deleted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a7351a2879c5f82c2713537b70d26cdcd">
               <span class="m-doc-wrap-bumper"><a href="#a7351a2879c5f82c2713537b70d26cdcd" class="m-doc-self">CaloGeo</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&amp;&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
@@ -96,6 +100,10 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="adcf5ee959ecc570c6caa0c69f420331a">
+              <span class="m-doc-wrap-bumper">auto <a href="#adcf5ee959ecc570c6caa0c69f420331a" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&amp;) -&gt; CaloGeo &amp; <span class="m-label m-flat m-danger">deleted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="ae60bef54d7b9cee083d734731034902c">
               <span class="m-doc-wrap-bumper">auto <a href="#ae60bef54d7b9cee083d734731034902c" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&amp;&amp;) -&gt; CaloGeo &amp; <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
@@ -105,89 +113,89 @@
               const std::string&amp; base_path)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a066e52dd32bf7f1f7fb025663821cb16">
-              <span class="m-doc-wrap-bumper">void <a href="#a066e52dd32bf7f1f7fb025663821cb16" class="m-doc-self">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path,
-              size_t rtree_cache_size = 5*1024*1024)</span>
+            <dt id="ae54016d0fe8e29d7cf208f281eadfb47">
+              <span class="m-doc-wrap-bumper">void <a href="#ae54016d0fe8e29d7cf208f281eadfb47" class="m-doc-self">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path,
+              size_t rtree_cache_size = std::size_t {5}*1024*1024)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a78292c212db3e9d2b6d75ede58a4374f">
-              <span class="m-doc-wrap-bumper">auto <a href="#a78292c212db3e9d2b6d75ede58a4374f" class="m-doc-self">get_cell</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="aa9e6099e52eccfaa4efc4ffa55e43509">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa9e6099e52eccfaa4efc4ffa55e43509" class="m-doc-self">get_cell</a>(</span><span class="m-doc-wrap">std::size_t layer,
               const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos) const -&gt; const Cell &amp; <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aa9593c44f1e3a745f4c2f1c74d4bba6c">
-              <span class="m-doc-wrap-bumper">auto <a href="#aa9593c44f1e3a745f4c2f1c74d4bba6c" class="m-doc-self">get_cell_id</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="a72e1cf820ba5ce4da2cd9059062a4506">
+              <span class="m-doc-wrap-bumper">auto <a href="#a72e1cf820ba5ce4da2cd9059062a4506" class="m-doc-self">get_cell_id</a>(</span><span class="m-doc-wrap">std::size_t layer,
               const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos) const -&gt; unsigned long long</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a4603e294dac6c2bb8324d9d7ebbf855c">
-              <span class="m-doc-wrap-bumper">auto <a href="#a4603e294dac6c2bb8324d9d7ebbf855c" class="m-doc-self">n_cells</a>(</span><span class="m-doc-wrap">unsigned int layer) const -&gt; unsigned int</span>
+            <dt id="a8b5b476afe115cf829c719bfa602c0e4">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8b5b476afe115cf829c719bfa602c0e4" class="m-doc-self">n_cells</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; std::size_t</span>
             </dt>
             <dd>Get the number of cells in a layer.</dd>
-            <dt id="a8daf0f2100c24248258f7fc4ed22712a">
-              <span class="m-doc-wrap-bumper">auto <a href="#a8daf0f2100c24248258f7fc4ed22712a" class="m-doc-self">n_cells</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned int</span>
+            <dt id="a455d44369c1ad0c024a2e8c1d6e601a1">
+              <span class="m-doc-wrap-bumper">auto <a href="#a455d44369c1ad0c024a2e8c1d6e601a1" class="m-doc-self">n_cells</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
             </dt>
             <dd>Get the total number of cells.</dd>
-            <dt id="ad47dc031edc507f8df79279aabe3d190">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad47dc031edc507f8df79279aabe3d190" class="m-doc-self">n_layers</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned int</span>
+            <dt id="aecbf9b7dc28de10ffaea3f542fee45ef">
+              <span class="m-doc-wrap-bumper">auto <a href="#aecbf9b7dc28de10ffaea3f542fee45ef" class="m-doc-self">n_layers</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
             </dt>
             <dd>Get the number of layers.</dd>
             <dt id="ab5474dd023dbbd4da15c1cc20fc7d4e2">
               <span class="m-doc-wrap-bumper">auto <a href="#ab5474dd023dbbd4da15c1cc20fc7d4e2" class="m-doc-self">get_cell</a>(</span><span class="m-doc-wrap">unsigned long long id) const -&gt; const Cell &amp;</span>
             </dt>
             <dd>Get a cell by its ID.</dd>
-            <dt id="a3d5d2b446f28a3ece635897173667822">
-              <span class="m-doc-wrap-bumper">auto <a href="#a3d5d2b446f28a3ece635897173667822" class="m-doc-self">get_cell_at_idx</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="afa2612671e2118699e032a48e598c25f">
+              <span class="m-doc-wrap-bumper">auto <a href="#afa2612671e2118699e032a48e598c25f" class="m-doc-self">get_cell_at_idx</a>(</span><span class="m-doc-wrap">std::size_t layer,
               size_t idx) const -&gt; const Cell &amp;</span>
             </dt>
             <dd>Get a cell by its index in a layer.</dd>
-            <dt id="a138c227f56635348d195dbc0c85760e6">
-              <span class="m-doc-wrap-bumper">auto <a href="#a138c227f56635348d195dbc0c85760e6" class="m-doc-self">is_barrel</a>(</span><span class="m-doc-wrap">unsigned int layer) const -&gt; bool</span>
+            <dt id="a1ff4e4ae540f66310d990e678bf66e04">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1ff4e4ae540f66310d990e678bf66e04" class="m-doc-self">is_barrel</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; bool</span>
             </dt>
             <dd>Check if a layer is a barrel layer.</dd>
-            <dt id="a26194f240de22b8f239e38607bbfd846">
-              <span class="m-doc-wrap-bumper">auto <a href="#a26194f240de22b8f239e38607bbfd846" class="m-doc-self">is_xyz</a>(</span><span class="m-doc-wrap">unsigned int layer) const -&gt; bool</span>
+            <dt id="afdb1e8574892c159679040a2982ba2d4">
+              <span class="m-doc-wrap-bumper">auto <a href="#afdb1e8574892c159679040a2982ba2d4" class="m-doc-self">is_xyz</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; bool</span>
             </dt>
             <dd>Check if cuboid cells in a layer are described by (x, y, z)</dd>
-            <dt id="ad35e5068fa2799c6f38c11d6ddac0933">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad35e5068fa2799c6f38c11d6ddac0933" class="m-doc-self">is_eta_phi_r</a>(</span><span class="m-doc-wrap">unsigned int layer) const -&gt; bool</span>
+            <dt id="ab1dd2f9a8575825a3d281b368ee0e490">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab1dd2f9a8575825a3d281b368ee0e490" class="m-doc-self">is_eta_phi_r</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; bool</span>
             </dt>
             <dd>Check if cuboid cells in a layer are described by (eta, phi, r)</dd>
-            <dt id="a054e821b595936412e6edbcf4b23cc56">
-              <span class="m-doc-wrap-bumper">auto <a href="#a054e821b595936412e6edbcf4b23cc56" class="m-doc-self">is_eta_phi_z</a>(</span><span class="m-doc-wrap">unsigned int layer) const -&gt; bool</span>
+            <dt id="ace95d526132c9f53a89b2c7f766629fa">
+              <span class="m-doc-wrap-bumper">auto <a href="#ace95d526132c9f53a89b2c7f766629fa" class="m-doc-self">is_eta_phi_z</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; bool</span>
             </dt>
             <dd>Check if cuboid cells in a layer are described by (eta, phi, z)</dd>
-            <dt id="afeb1b2c0e4a632cc2472ff74bc4a8b95">
-              <span class="m-doc-wrap-bumper">auto <a href="#afeb1b2c0e4a632cc2472ff74bc4a8b95" class="m-doc-self">zpos</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="a07fe4e943baac76311e4495d68df6c9a">
+              <span class="m-doc-wrap-bumper">auto <a href="#a07fe4e943baac76311e4495d68df6c9a" class="m-doc-self">zpos</a>(</span><span class="m-doc-wrap">std::size_t layer,
               const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos,
-              <a href="classCell.html#ac848db07efd3827fa2c4a7029b8bd7ae" class="m-doc">Cell::<wbr />SubPos</a> subpos) const -&gt; double</span>
+              <a href="namespaceFastCaloSim.html#a1d0207721669291bab66ab73a208d10c" class="m-doc">FastCaloSim::<wbr />SubPos</a> subpos) const -&gt; double</span>
             </dt>
             <dd>Get the z position of a cell in a layer at a given position.</dd>
-            <dt id="a614f8601ad6ef2b73e5e3490bd119b1c">
-              <span class="m-doc-wrap-bumper">auto <a href="#a614f8601ad6ef2b73e5e3490bd119b1c" class="m-doc-self">rpos</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="afa2e58d50696ef1f9236aa06218c58b4">
+              <span class="m-doc-wrap-bumper">auto <a href="#afa2e58d50696ef1f9236aa06218c58b4" class="m-doc-self">rpos</a>(</span><span class="m-doc-wrap">std::size_t layer,
               const <a href="structPosition.html" class="m-doc">Position</a>&amp; pos,
-              <a href="classCell.html#ac848db07efd3827fa2c4a7029b8bd7ae" class="m-doc">Cell::<wbr />SubPos</a> subpos) const -&gt; double</span>
+              <a href="namespaceFastCaloSim.html#a1d0207721669291bab66ab73a208d10c" class="m-doc">FastCaloSim::<wbr />SubPos</a> subpos) const -&gt; double</span>
             </dt>
             <dd>Get the r position of a cell in a layer at a given position.</dd>
-            <dt id="a36fd13ddee432e5853b9bc5875e06f8c">
-              <span class="m-doc-wrap-bumper">auto <a href="#a36fd13ddee432e5853b9bc5875e06f8c" class="m-doc-self">min_eta</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="aa80c4e28be20539d7d7052322386ef3d">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa80c4e28be20539d7d7052322386ef3d" class="m-doc-self">min_eta</a>(</span><span class="m-doc-wrap">std::size_t layer,
               <a href="classCaloGeo.html#a1689ddc45ed40fac4a36ba64f472236f" class="m-doc">DetectorSide</a> side) const -&gt; double</span>
             </dt>
             <dd>Get the min eta extent of a layer on a given detector side.</dd>
-            <dt id="aefbbd91e665028e5745b96aac07b5b72">
-              <span class="m-doc-wrap-bumper">auto <a href="#aefbbd91e665028e5745b96aac07b5b72" class="m-doc-self">max_eta</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="a2fa7aa15ddc2edb0ae1f01935931f71b">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2fa7aa15ddc2edb0ae1f01935931f71b" class="m-doc-self">max_eta</a>(</span><span class="m-doc-wrap">std::size_t layer,
               <a href="classCaloGeo.html#a1689ddc45ed40fac4a36ba64f472236f" class="m-doc">DetectorSide</a> side) const -&gt; double</span>
             </dt>
             <dd>Get the max eta extent of a layer on a given detector side.</dd>
-            <dt id="af5225bb2b150ab464db50c99cdd21b34">
-              <span class="m-doc-wrap-bumper">void <a href="#af5225bb2b150ab464db50c99cdd21b34" class="m-doc-self">set_alt_geo_handler</a>(</span><span class="m-doc-wrap">unsigned int layer,
+            <dt id="ad7ad55e206592d32bb6ef280d9defc7a">
+              <span class="m-doc-wrap-bumper">void <a href="#ad7ad55e206592d32bb6ef280d9defc7a" class="m-doc-self">set_alt_geo_handler</a>(</span><span class="m-doc-wrap">std::size_t layer,
               std::shared_ptr&lt;<a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&gt; handler)</span>
             </dt>
             <dd>Set an alternative geometry handler for a layer.</dd>
-            <dt id="ae71625f0a49bd28ebd38c06bafc45e0b">
-              <span class="m-doc-wrap-bumper">void <a href="#ae71625f0a49bd28ebd38c06bafc45e0b" class="m-doc-self">set_alt_geo_handler</a>(</span><span class="m-doc-wrap">unsigned int first_layer,
-              unsigned int last_layer,
-              std::shared_ptr&lt;<a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&gt; handler)</span>
+            <dt id="a68aedb477f7ab4a2549128ebedb34b4e">
+              <span class="m-doc-wrap-bumper">void <a href="#a68aedb477f7ab4a2549128ebedb34b4e" class="m-doc-self">set_alt_geo_handler</a>(</span><span class="m-doc-wrap">std::size_t first_layer,
+              std::size_t last_layer,
+              const std::shared_ptr&lt;<a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&gt;&amp; handler)</span>
             </dt>
             <dd>Set an alternative geometry handler for a range of layers.</dd>
           </dl>

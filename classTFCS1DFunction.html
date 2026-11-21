@@ -173,18 +173,34 @@
               <span class="m-doc-wrap-bumper"><a href="#a42693c38c6978a8a472358438b3d18a3" class="m-doc-self">~TFCS1DFunction</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
+            <dt id="a2a54671eff7eb8dcff0b646bfa809548">
+              <span class="m-doc-wrap-bumper"><a href="#a2a54671eff7eb8dcff0b646bfa809548" class="m-doc-self">TFCS1DFunction</a>(</span><span class="m-doc-wrap">const <a href="classTFCS1DFunction.html" class="m-doc">TFCS1DFunction</a>&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aefb5e478f4e934e59260bc907044e935">
+              <span class="m-doc-wrap-bumper"><a href="#aefb5e478f4e934e59260bc907044e935" class="m-doc-self">TFCS1DFunction</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction.html" class="m-doc">TFCS1DFunction</a>&amp;&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
           </dl>
         </section>
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="ae400be44b343f6ea19e98059923ff475">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae400be44b343f6ea19e98059923ff475" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classTFCS1DFunction.html" class="m-doc">TFCS1DFunction</a>&amp;) -&gt; TFCS1DFunction &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a29ed7d624af062b343bd45df7ed4c481">
+              <span class="m-doc-wrap-bumper">auto <a href="#a29ed7d624af062b343bd45df7ed4c481" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction.html" class="m-doc">TFCS1DFunction</a>&amp;&amp;) -&gt; TFCS1DFunction &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a685c39c7ba14a85b56c621aaa7f9bb75">
               <span class="m-doc-wrap-bumper">auto <a href="#a685c39c7ba14a85b56c621aaa7f9bb75" class="m-doc-self">ndim</a>(</span><span class="m-doc-wrap">) const -&gt; int <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Return the number of dimensions for the function.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a5a96f26f83dd0ff708056c36cc6419e0" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">void <a href="#a3fe236205fd6fd911be0ceac105caeb7" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">float* value,
+              const float* rnd) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
             <dt>
@@ -199,10 +215,10 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a5a96f26f83dd0ff708056c36cc6419e0"><div>
+          <section class="m-doc-details" id="a3fe236205fd6fd911be0ceac105caeb7"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void TFCS1DFunction::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a5a96f26f83dd0ff708056c36cc6419e0" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float value[],
-              const float rnd[]) const <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper">void TFCS1DFunction::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3fe236205fd6fd911be0ceac105caeb7" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float* value,
+              const float* rnd) const <span class="m-label m-warning">override</span></span></span>
             </h3>
 <p>Function gets array of random numbers rnd[] in the range [0,1) as arguments and returns function value in array value. For a n-dimensional function, value and rnd should both have n elements.</p>
           </div></section>

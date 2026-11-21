@@ -82,11 +82,19 @@
             <dt id="abf2e1e2b83691de00be7b1c8b1a6e945">
               <span class="m-doc-wrap-bumper"><a href="#abf2e1e2b83691de00be7b1c8b1a6e945" class="m-doc-self">TFCSHitCellMappingWiggle</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
               const char* title = nullptr,
-              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr)</span>
+              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
             <dt id="a4cbbc303540c47f2ed981bf2f1c215de">
               <span class="m-doc-wrap-bumper"><a href="#a4cbbc303540c47f2ed981bf2f1c215de" class="m-doc-self">~TFCSHitCellMappingWiggle</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a41cc0a18d6520e94a0e63c15f74ec050">
+              <span class="m-doc-wrap-bumper"><a href="#a41cc0a18d6520e94a0e63c15f74ec050" class="m-doc-self">TFCSHitCellMappingWiggle</a>(</span><span class="m-doc-wrap">const <a href="classTFCSHitCellMappingWiggle.html" class="m-doc">TFCSHitCellMappingWiggle</a>&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5d73db95a5f3563b144e0170e1949918">
+              <span class="m-doc-wrap-bumper"><a href="#a5d73db95a5f3563b144e0170e1949918" class="m-doc-self">TFCSHitCellMappingWiggle</a>(</span><span class="m-doc-wrap"><a href="classTFCSHitCellMappingWiggle.html" class="m-doc">TFCSHitCellMappingWiggle</a>&amp;&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -94,6 +102,14 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="ab8b1246c31c2d05d25d689de7d20de90">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab8b1246c31c2d05d25d689de7d20de90" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classTFCSHitCellMappingWiggle.html" class="m-doc">TFCSHitCellMappingWiggle</a>&amp;) -&gt; TFCSHitCellMappingWiggle &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a88541eed289dc95a4eba46915a6fcfa4">
+              <span class="m-doc-wrap-bumper">auto <a href="#a88541eed289dc95a4eba46915a6fcfa4" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCSHitCellMappingWiggle.html" class="m-doc">TFCSHitCellMappingWiggle</a>&amp;&amp;) -&gt; TFCSHitCellMappingWiggle &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a0f5dd2eb892e084ede76f49d77c95a3f">
               <span class="m-doc-wrap-bumper">void <a href="#a0f5dd2eb892e084ede76f49d77c95a3f" class="m-doc-self">initialize</a>(</span><span class="m-doc-wrap"><a href="classTFCS1DFunction.html" class="m-doc">TFCS1DFunction</a>* func)</span>
             </dt>
@@ -118,20 +134,20 @@
               <span class="m-doc-wrap-bumper">void <a href="#a1561f93b2eba002348f5084301e21987" class="m-doc-self">clear</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae5bc68cc9283bff362ce93b0b4647a04">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae5bc68cc9283bff362ce93b0b4647a04" class="m-doc-self">get_number_of_bins</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned int</span>
+            <dt id="a26b231828a4144536093720fad8a8116">
+              <span class="m-doc-wrap-bumper">auto <a href="#a26b231828a4144536093720fad8a8116" class="m-doc-self">get_number_of_bins</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a77bc8ad8c9b4c646862adffdd5dda75b">
-              <span class="m-doc-wrap-bumper">auto <a href="#a77bc8ad8c9b4c646862adffdd5dda75b" class="m-doc-self">get_bin_low_edge</a>(</span><span class="m-doc-wrap">int bin) const -&gt; double</span>
+            <dt id="a4861e47163035b4c00497d29463e604e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a4861e47163035b4c00497d29463e604e" class="m-doc-self">get_bin_low_edge</a>(</span><span class="m-doc-wrap">std::size_t bin) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ac3597e54c0d6bcaa24bed53b7f1905c2">
-              <span class="m-doc-wrap-bumper">auto <a href="#ac3597e54c0d6bcaa24bed53b7f1905c2" class="m-doc-self">get_bin_up_edge</a>(</span><span class="m-doc-wrap">int bin) const -&gt; double</span>
+            <dt id="a307e177260ce853617671d24d8c728cf">
+              <span class="m-doc-wrap-bumper">auto <a href="#a307e177260ce853617671d24d8c728cf" class="m-doc-self">get_bin_up_edge</a>(</span><span class="m-doc-wrap">std::size_t bin) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a2df0cb017a1a43bff951d52a0500896f">
-              <span class="m-doc-wrap-bumper">auto <a href="#a2df0cb017a1a43bff951d52a0500896f" class="m-doc-self">get_function</a>(</span><span class="m-doc-wrap">int bin) const -&gt; const TFCS1DFunction *</span>
+            <dt id="a3010926cea1fd82c620b703b3ef26cdf">
+              <span class="m-doc-wrap-bumper">auto <a href="#a3010926cea1fd82c620b703b3ef26cdf" class="m-doc-self">get_function</a>(</span><span class="m-doc-wrap">std::size_t bin) const -&gt; const TFCS1DFunction *</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a08849f854f2dcea577124290da72785d">

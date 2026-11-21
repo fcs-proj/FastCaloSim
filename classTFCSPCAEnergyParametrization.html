@@ -109,7 +109,7 @@
             <dt id="a575bcf9f70e00945de99b8c8c8eb5715">
               <span class="m-doc-wrap-bumper"><a href="#a575bcf9f70e00945de99b8c8c8eb5715" class="m-doc-self">TFCSPCAEnergyParametrization</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
               const char* title = nullptr,
-              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr)</span>
+              <a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -127,24 +127,24 @@
               const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; FCSReturnCode <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Method in all derived classes to do some simulation.</dd>
-            <dt id="afb2f91e5508dd2b79e8d1b138aa86344">
-              <span class="m-doc-wrap-bumper">auto <a href="#afb2f91e5508dd2b79e8d1b138aa86344" class="m-doc-self">n_pcabins</a>(</span><span class="m-doc-wrap">) const -&gt; int</span>
+            <dt id="adee075bfb6bf9b3fae2cf19dd3923d1b">
+              <span class="m-doc-wrap-bumper">auto <a href="#adee075bfb6bf9b3fae2cf19dd3923d1b" class="m-doc-self">n_pcabins</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae0cfb6b69dee73fa1a6004d9ae9a8343">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae0cfb6b69dee73fa1a6004d9ae9a8343" class="m-doc-self">n_bins</a>(</span><span class="m-doc-wrap">) const -&gt; int <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="aff414ea52f62dabb3faf9398868a88a0">
+              <span class="m-doc-wrap-bumper">auto <a href="#aff414ea52f62dabb3faf9398868a88a0" class="m-doc-self">n_bins</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="abf2898387c9e3a554bfc70817111b738">
               <span class="m-doc-wrap-bumper">auto <a href="#abf2898387c9e3a554bfc70817111b738" class="m-doc-self">get_layers</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt; int &gt; &amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="acddf445a056b42ac55432746e3853c55">
-              <span class="m-doc-wrap-bumper">auto <a href="#acddf445a056b42ac55432746e3853c55" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int Ekin_bin) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a2d061de7e4fe8a52aed2d873d440aec0">
+              <span class="m-doc-wrap-bumper">auto <a href="#a2d061de7e4fe8a52aed2d873d440aec0" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t Ekin_bin) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a1dfec38afb724ac7540fdafba9fa64aa">
-              <span class="m-doc-wrap-bumper">auto <a href="#a1dfec38afb724ac7540fdafba9fa64aa" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">int calosample) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="ad6e2c3b4e241a0c4364240ce3a09fbb4">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad6e2c3b4e241a0c4364240ce3a09fbb4" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">std::size_t calosample) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="a4a084de5e24dc68d6fab3505826fc624">
@@ -180,13 +180,13 @@
               <span class="m-doc-wrap-bumper">void <a href="#a3004fb69647f0830c6ffaeff5df6419c" class="m-doc-self">set_total_energy_normalization</a>(</span><span class="m-doc-wrap">float norm)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aa681934469dbdbd4c41ebfe974f555fe">
-              <span class="m-doc-wrap-bumper">void <a href="#aa681934469dbdbd4c41ebfe974f555fe" class="m-doc-self">set_totalE_probability_ratio</a>(</span><span class="m-doc-wrap">int Ekin_bin,
+            <dt id="aedd77cbfcaf8ebdaf5734d8db256f647">
+              <span class="m-doc-wrap-bumper">void <a href="#aedd77cbfcaf8ebdaf5734d8db256f647" class="m-doc-self">set_totalE_probability_ratio</a>(</span><span class="m-doc-wrap">std::size_t Ekin_bin,
               TH1* hist)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="af08e8e312a683b5db6d15908c2bd1209">
-              <span class="m-doc-wrap-bumper">auto <a href="#af08e8e312a683b5db6d15908c2bd1209" class="m-doc-self">get_totalE_probability_ratio</a>(</span><span class="m-doc-wrap">int Ekin_bin) const -&gt; TH1 *</span>
+            <dt id="a9662e5247afba4faa01c8d5ee371510e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9662e5247afba4faa01c8d5ee371510e" class="m-doc-self">get_totalE_probability_ratio</a>(</span><span class="m-doc-wrap">std::size_t Ekin_bin) const -&gt; TH1 *</span>
             </dt>
             <dd><span></span></dd>
           </dl>

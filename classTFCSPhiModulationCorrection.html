@@ -80,9 +80,9 @@
         <section id="pub-static-methods">
           <h2><a href="#pub-static-methods">Public static functions</a></h2>
           <dl class="m-doc">
-            <dt id="a88dfec42d0648b377c7a17d4bed6ca5e">
-              <span class="m-doc-wrap-bumper">static auto <a href="#a88dfec42d0648b377c7a17d4bed6ca5e" class="m-doc-self">get_phi_cell_size</a>(</span><span class="m-doc-wrap">long unsigned int layer,
-              float eta) -&gt; float</span>
+            <dt id="a6200ef145b1043b5c31b92c1cf5357a6">
+              <span class="m-doc-wrap-bumper">static auto <a href="#a6200ef145b1043b5c31b92c1cf5357a6" class="m-doc-self">get_phi_cell_size</a>(</span><span class="m-doc-wrap">std::size_t layer,
+              double eta) -&gt; double</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -92,11 +92,19 @@
           <dl class="m-doc">
             <dt id="a7559e4f6e8022433f8c554ca4364eee2">
               <span class="m-doc-wrap-bumper"><a href="#a7559e4f6e8022433f8c554ca4364eee2" class="m-doc-self">TFCSPhiModulationCorrection</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+              const char* title = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
             <dt id="ab2551128a7f6c18ce3694d65cadd82f7">
               <span class="m-doc-wrap-bumper"><a href="#ab2551128a7f6c18ce3694d65cadd82f7" class="m-doc-self">~TFCSPhiModulationCorrection</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a09fcfae0b23aa93076f292e0b5ce0e86">
+              <span class="m-doc-wrap-bumper"><a href="#a09fcfae0b23aa93076f292e0b5ce0e86" class="m-doc-self">TFCSPhiModulationCorrection</a>(</span><span class="m-doc-wrap">const <a href="classTFCSPhiModulationCorrection.html" class="m-doc">TFCSPhiModulationCorrection</a>&amp; ref) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ae2c12f7d0efe291ea4d1b2ef58eafbc7">
+              <span class="m-doc-wrap-bumper"><a href="#ae2c12f7d0efe291ea4d1b2ef58eafbc7" class="m-doc-self">TFCSPhiModulationCorrection</a>(</span><span class="m-doc-wrap"><a href="classTFCSPhiModulationCorrection.html" class="m-doc">TFCSPhiModulationCorrection</a>&amp;&amp; ref) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -104,9 +112,17 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="a159590f15b235429ffceccd118643dde">
-              <span class="m-doc-wrap-bumper">void <a href="#a159590f15b235429ffceccd118643dde" class="m-doc-self">load_phi_modulation</a>(</span><span class="m-doc-wrap">const std::string&amp; filename,
-              long unsigned int layer_index,
+            <dt id="a9637070f7f9361b9560cada7d9723a55">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9637070f7f9361b9560cada7d9723a55" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classTFCSPhiModulationCorrection.html" class="m-doc">TFCSPhiModulationCorrection</a>&amp; ref) -&gt; TFCSPhiModulationCorrection &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a46e311466507e26555ce3d3ca7efae9f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a46e311466507e26555ce3d3ca7efae9f" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCSPhiModulationCorrection.html" class="m-doc">TFCSPhiModulationCorrection</a>&amp;&amp; ref) -&gt; TFCSPhiModulationCorrection &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9f5db764046f9944691f4d514a4360d4">
+              <span class="m-doc-wrap-bumper">void <a href="#a9f5db764046f9944691f4d514a4360d4" class="m-doc-self">load_phi_modulation</a>(</span><span class="m-doc-wrap">const std::string&amp; filename,
+              std::size_t layer_index,
               float eta_min,
               float eta_max,
               float energy_shift = 1.0)</span>
@@ -140,42 +156,42 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a9d7008a1cd59dbc181a2eceae3db6dc2" class="m-doc-self">get_phi_modulation_scale</a>(</span><span class="m-doc-wrap">) const -&gt; float</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a66dc537a1637091dac763321f948ac68">
-              <span class="m-doc-wrap-bumper">auto <a href="#a66dc537a1637091dac763321f948ac68" class="m-doc-self">add_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit) const -&gt; float</span>
+            <dt id="a3b6995c180ee3fa027f854ae3245d75e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a3b6995c180ee3fa027f854ae3245d75e" class="m-doc-self">add_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a96771e4aa620afdc5a04b7560ed607d5">
-              <span class="m-doc-wrap-bumper">auto <a href="#a96771e4aa620afdc5a04b7560ed607d5" class="m-doc-self">add_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit,
-              long unsigned int layer_index) const -&gt; float</span>
+            <dt id="a72688a4cb15ea88ec3a19bc8dd8e7575">
+              <span class="m-doc-wrap-bumper">auto <a href="#a72688a4cb15ea88ec3a19bc8dd8e7575" class="m-doc-self">add_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit,
+              std::size_t layer_index) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aca378f9f61a30f6f1c9e16a4e1c3fda2">
-              <span class="m-doc-wrap-bumper">auto <a href="#aca378f9f61a30f6f1c9e16a4e1c3fda2" class="m-doc-self">add_phi_modulation</a>(</span><span class="m-doc-wrap">float energy,
-              float phi,
-              float eta,
-              long unsigned int layer_index) const -&gt; float</span>
+            <dt id="a9cc8490a963d1dbe8bfa0b866e8383b3">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9cc8490a963d1dbe8bfa0b866e8383b3" class="m-doc-self">add_phi_modulation</a>(</span><span class="m-doc-wrap">double energy,
+              double phi,
+              double eta,
+              std::size_t layer_index) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae50fe73f5e8848b454d89a5fe52459df">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae50fe73f5e8848b454d89a5fe52459df" class="m-doc-self">remove_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit) const -&gt; float</span>
+            <dt id="a746b93adfdaff3846172b8b44a8eaca3">
+              <span class="m-doc-wrap-bumper">auto <a href="#a746b93adfdaff3846172b8b44a8eaca3" class="m-doc-self">remove_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a3257964bed9d7c595651ca6c4ffda6ed">
-              <span class="m-doc-wrap-bumper">auto <a href="#a3257964bed9d7c595651ca6c4ffda6ed" class="m-doc-self">remove_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit,
-              long unsigned int layer_index) const -&gt; float</span>
+            <dt id="a167b53b111cfa9149f9585df596300e0">
+              <span class="m-doc-wrap-bumper">auto <a href="#a167b53b111cfa9149f9585df596300e0" class="m-doc-self">remove_phi_modulation</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase_1_1Hit.html" class="m-doc">Hit</a>&amp; hit,
+              std::size_t layer_index) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="affb0ca923673bf3b0bf6d4a0bb3b5c51">
-              <span class="m-doc-wrap-bumper">auto <a href="#affb0ca923673bf3b0bf6d4a0bb3b5c51" class="m-doc-self">remove_phi_modulation</a>(</span><span class="m-doc-wrap">float energy,
-              float phi,
-              float eta,
-              long unsigned int layer_index) const -&gt; float</span>
+            <dt id="ac3fb611465eaeceb8b55d267d33057f7">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac3fb611465eaeceb8b55d267d33057f7" class="m-doc-self">remove_phi_modulation</a>(</span><span class="m-doc-wrap">double energy,
+              double phi,
+              double eta,
+              std::size_t layer_index) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a97e6c97e3e56fd7cc205904c38eacd80">
-              <span class="m-doc-wrap-bumper">auto <a href="#a97e6c97e3e56fd7cc205904c38eacd80" class="m-doc-self">get_eta_and_phi_index</a>(</span><span class="m-doc-wrap">float phi,
-              float eta,
-              long unsigned int layer_index) const -&gt; std::tuple&lt; int, long unsigned int, long unsigned int &gt;</span>
+            <dt id="a81fdc4f264bea87e1bd695b071875381">
+              <span class="m-doc-wrap-bumper">auto <a href="#a81fdc4f264bea87e1bd695b071875381" class="m-doc-self">get_eta_and_phi_index</a>(</span><span class="m-doc-wrap">double phi,
+              double eta,
+              std::size_t layer_index) const -&gt; std::tuple&lt; int, std::size_t, std::size_t &gt;</span>
             </dt>
             <dd><span></span></dd>
             <dt>

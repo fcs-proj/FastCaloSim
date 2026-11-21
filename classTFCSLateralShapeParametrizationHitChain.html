@@ -105,8 +105,8 @@
         <section id="pub-static-attribs">
           <h2><a href="#pub-static-attribs">Public static variables</a></h2>
           <dl class="m-doc">
-            <dt id="ab45275cc9bb741a303d4f0e87926dcb7">
-              static float <a href="#ab45275cc9bb741a303d4f0e87926dcb7" class="m-doc-self">s_max_sigma2_fluctuation</a> <span class="m-label m-flat m-primary">constexpr</span>
+            <dt id="a75589ca9224c0b68072bb0a62d986af9">
+              static double <a href="#a75589ca9224c0b68072bb0a62d986af9" class="m-doc-self">s_max_sigma2_fluctuation</a> <span class="m-label m-flat m-primary">constexpr</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -116,11 +116,11 @@
           <dl class="m-doc">
             <dt id="a57c86eb0a639d167a6281e83568ea145">
               <span class="m-doc-wrap-bumper"><a href="#a57c86eb0a639d167a6281e83568ea145" class="m-doc-self">TFCSLateralShapeParametrizationHitChain</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+              const char* title = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
             <dt id="a03df7b5dd3b71a0eaad1a4ebfa402704">
-              <span class="m-doc-wrap-bumper"><a href="#a03df7b5dd3b71a0eaad1a4ebfa402704" class="m-doc-self">TFCSLateralShapeParametrizationHitChain</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase.html" class="m-doc">TFCSLateralShapeParametrizationHitBase</a>* hitsim)</span>
+              <span class="m-doc-wrap-bumper"><a href="#a03df7b5dd3b71a0eaad1a4ebfa402704" class="m-doc-self">TFCSLateralShapeParametrizationHitChain</a>(</span><span class="m-doc-wrap"><a href="classTFCSLateralShapeParametrizationHitBase.html" class="m-doc">TFCSLateralShapeParametrizationHitBase</a>* hitsim) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -142,19 +142,19 @@
             </dt>
             <dd>Method in all derived classes to do some simulation.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#accfc193e47ca50e02fd2e618f8d6d342" class="m-doc">size</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned int <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#ac90b51df98b2c2d4f14a2fa68460c9ec" class="m-doc">size</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a3bc7ede2795d6f8b0c038222be00c857" class="m-doc">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) const -&gt; const TFCSParametrizationBase * <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a7447945e7841d03bfde57aea962b354c" class="m-doc">operator[]</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; const TFCSParametrizationBase * <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a400c05dff81de6f5f37e3e05cd689ef8" class="m-doc">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) -&gt; TFCSParametrizationBase * <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#aa675fdfc3115e11236c1214b45e220a2" class="m-doc">operator[]</a>(</span><span class="m-doc-wrap">std::size_t) -&gt; TFCSParametrizationBase * <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a9e07992068e67f2b57d1c8c3e05b5be1" class="m-doc">set_daughter</a>(</span><span class="m-doc-wrap">unsigned int,
+              <span class="m-doc-wrap-bumper">void <a href="#aa605d90f138520545148128f04f0c382" class="m-doc">set_daughter</a>(</span><span class="m-doc-wrap">std::size_t,
               <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>*) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
@@ -192,24 +192,24 @@
               const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; int <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd>Call <a href="classTFCSLateralShapeParametrizationHitChain.html#a5e834789b61bafaecb7d772814cfc7e0" class="m-doc">get_<wbr />number_<wbr />of_<wbr />hits()</a> only once, as it could contain a random number.</dd>
-            <dt id="af557f672e8d8dbb5cd1518afe2b15194">
-              <span class="m-doc-wrap-bumper">auto <a href="#af557f672e8d8dbb5cd1518afe2b15194" class="m-doc-self">get_E_hit</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+            <dt id="adeb7a5d472bf427d78709a839b9c3744">
+              <span class="m-doc-wrap-bumper">auto <a href="#adeb7a5d472bf427d78709a839b9c3744" class="m-doc-self">get_E_hit</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
-              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; float <span class="m-label m-flat m-warning">virtual</span></span>
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd>Get hit energy from layer energy and number of hits.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#adcb70b94813e177cd40aa43def2fa5ee" class="m-doc">get_sigma2_fluctuation</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              <span class="m-doc-wrap-bumper">auto <a href="#a78bade1b66241e23bebb6aec6fed015f" class="m-doc">get_sigma2_fluctuation</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
-              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; float <span class="m-label m-flat m-warning">virtual</span></span>
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd></dd>
-            <dt id="aefc5b4639f1200b0dc4f3532269611fb">
-              <span class="m-doc-wrap-bumper">auto <a href="#aefc5b4639f1200b0dc4f3532269611fb" class="m-doc-self">getMinWeight</a>(</span><span class="m-doc-wrap">) const -&gt; float <span class="m-label m-flat m-warning">virtual</span></span>
+            <dt id="a7c0248148e7c984abf8cfa8984308157">
+              <span class="m-doc-wrap-bumper">auto <a href="#a7c0248148e7c984abf8cfa8984308157" class="m-doc-self">getMinWeight</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd>Get minimum and maximum value of weight for hit energy reweighting.</dd>
-            <dt id="a6b83c0c7f33d2e055b1588133ca3b76c">
-              <span class="m-doc-wrap-bumper">auto <a href="#a6b83c0c7f33d2e055b1588133ca3b76c" class="m-doc-self">getMaxWeight</a>(</span><span class="m-doc-wrap">) const -&gt; float <span class="m-label m-flat m-warning">virtual</span></span>
+            <dt id="ad23d7dcaa6468482df787076142020f0">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad23d7dcaa6468482df787076142020f0" class="m-doc-self">getMaxWeight</a>(</span><span class="m-doc-wrap">) const -&gt; double <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="a814f3774819f73f16892f9700e84ad5c">
@@ -246,36 +246,36 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="accfc193e47ca50e02fd2e618f8d6d342"><div>
+          <section class="m-doc-details" id="ac90b51df98b2c2d4f14a2fa68460c9ec"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#accfc193e47ca50e02fd2e618f8d6d342" class="m-doc-self">size</a>(</span><span class="m-doc-wrap">) const -&gt; unsigned int <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac90b51df98b2c2d4f14a2fa68460c9ec" class="m-doc-self">size</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t <span class="m-label m-warning">override</span></span></span>
             </h3>
-<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSLateralShapeParametrizationHitChain.html#accfc193e47ca50e02fd2e618f8d6d342" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
+<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSLateralShapeParametrizationHitChain.html#ac90b51df98b2c2d4f14a2fa68460c9ec" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
           </div></section>
-          <section class="m-doc-details" id="a3bc7ede2795d6f8b0c038222be00c857"><div>
+          <section class="m-doc-details" id="a7447945e7841d03bfde57aea962b354c"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3bc7ede2795d6f8b0c038222be00c857" class="m-doc-self">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) const -&gt; const TFCSParametrizationBase * <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7447945e7841d03bfde57aea962b354c" class="m-doc-self">operator[]</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; const TFCSParametrizationBase * <span class="m-label m-warning">override</span></span></span>
             </h3>
-<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSLateralShapeParametrizationHitChain.html#accfc193e47ca50e02fd2e618f8d6d342" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
+<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSLateralShapeParametrizationHitChain.html#ac90b51df98b2c2d4f14a2fa68460c9ec" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
           </div></section>
-          <section class="m-doc-details" id="a400c05dff81de6f5f37e3e05cd689ef8"><div>
+          <section class="m-doc-details" id="aa675fdfc3115e11236c1214b45e220a2"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a400c05dff81de6f5f37e3e05cd689ef8" class="m-doc-self">operator[]</a>(</span><span class="m-doc-wrap">unsigned int) -&gt; TFCSParametrizationBase * <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa675fdfc3115e11236c1214b45e220a2" class="m-doc-self">operator[]</a>(</span><span class="m-doc-wrap">std::size_t) -&gt; TFCSParametrizationBase * <span class="m-label m-warning">override</span></span></span>
             </h3>
-<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSLateralShapeParametrizationHitChain.html#accfc193e47ca50e02fd2e618f8d6d342" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
+<p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The <a href="classTFCSLateralShapeParametrizationHitChain.html#ac90b51df98b2c2d4f14a2fa68460c9ec" class="m-doc">size()</a> and operator[] methods give general access to these daughters</p>
           </div></section>
-          <section class="m-doc-details" id="a9e07992068e67f2b57d1c8c3e05b5be1"><div>
+          <section class="m-doc-details" id="aa605d90f138520545148128f04f0c382"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a9e07992068e67f2b57d1c8c3e05b5be1" class="m-doc-self">set_daughter</a>(</span><span class="m-doc-wrap">unsigned int,
+              <span class="m-doc-wrap-bumper">void TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa605d90f138520545148128f04f0c382" class="m-doc-self">set_daughter</a>(</span><span class="m-doc-wrap">std::size_t,
               <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>*) <span class="m-label m-warning">override</span></span></span>
             </h3>
 <p>Some derived classes have daughter instances of <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a> objects The set_daughter method allows to change these daughters - expert use only! The original element at this position is not deleted</p>
           </div></section>
-          <section class="m-doc-details" id="adcb70b94813e177cd40aa43def2fa5ee"><div>
+          <section class="m-doc-details" id="a78bade1b66241e23bebb6aec6fed015f"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#adcb70b94813e177cd40aa43def2fa5ee" class="m-doc-self">get_sigma2_fluctuation</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
+              <span class="m-doc-wrap-bumper">auto TFCSLateralShapeParametrizationHitChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a78bade1b66241e23bebb6aec6fed015f" class="m-doc-self">get_sigma2_fluctuation</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
-              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; float <span class="m-label m-warning">virtual</span></span></span>
+              const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; double <span class="m-label m-warning">virtual</span></span></span>
             </h3>
 <p>Give the effective size sigma^2 of the fluctuations that should be generated.</p>
           </div></section>

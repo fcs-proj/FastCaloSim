@@ -80,14 +80,14 @@
         <section id="pub-types">
           <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
-            <dt>
-              union <a href="unionTFCSSimulationState_1_1AuxInfo__t.html" class="m-doc">AuxInfo_t</a>
-            </dt>
-            <dd><span></span></dd>
             <dt id="a63d44b6ac546d8ffd1b4ce2638d6643e">
               using <a href="#a63d44b6ac546d8ffd1b4ce2638d6643e" class="m-doc-self">cellmap</a> = std::unordered_map&lt;unsigned long long, float&gt;
             </dt>
             <dd><span></span></dd>
+            <dt>
+              using <a href="#a917e15b46929bcae4fff4e586935fb4c" class="m-doc">AuxInfo_t</a> = std::variant&lt;bool, char, int, float, double, void*&gt;
+            </dt>
+            <dd></dd>
           </dl>
         </section>
         <section id="pub-static-methods">
@@ -112,7 +112,7 @@
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
             <dt id="a9455b7a1c9062096d28a873d11b35a1a">
-              <span class="m-doc-wrap-bumper"><a href="#a9455b7a1c9062096d28a873d11b35a1a" class="m-doc-self">TFCSSimulationState</a>(</span><span class="m-doc-wrap">CLHEP::HepRandomEngine* randomEngine = nullptr)</span>
+              <span class="m-doc-wrap-bumper"><a href="#a9455b7a1c9062096d28a873d11b35a1a" class="m-doc-self">TFCSSimulationState</a>(</span><span class="m-doc-wrap">CLHEP::HepRandomEngine* randomEngine = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -136,29 +136,29 @@
               <span class="m-doc-wrap-bumper">auto <a href="#af2eb15b3d5327b99faf90bbe0d18ffa1" class="m-doc-self">E</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aa1b9ed2fff00923fd971774e664a9fc1">
-              <span class="m-doc-wrap-bumper">auto <a href="#aa1b9ed2fff00923fd971774e664a9fc1" class="m-doc-self">E</a>(</span><span class="m-doc-wrap">int sample) const -&gt; double</span>
+            <dt id="a9f4dac1aea054a431260ba8193652083">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9f4dac1aea054a431260ba8193652083" class="m-doc-self">E</a>(</span><span class="m-doc-wrap">std::size_t sample) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a09a738a9cfee8bc141e6dd5e7b9f3afe">
-              <span class="m-doc-wrap-bumper">auto <a href="#a09a738a9cfee8bc141e6dd5e7b9f3afe" class="m-doc-self">Efrac</a>(</span><span class="m-doc-wrap">int sample) const -&gt; double</span>
+            <dt id="a6d5c0d7e5bdfaed73fc171404155ca28">
+              <span class="m-doc-wrap-bumper">auto <a href="#a6d5c0d7e5bdfaed73fc171404155ca28" class="m-doc-self">Efrac</a>(</span><span class="m-doc-wrap">std::size_t sample) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a3ab745d3b2104207629a54bef325ef91">
-              <span class="m-doc-wrap-bumper">auto <a href="#a3ab745d3b2104207629a54bef325ef91" class="m-doc-self">Ebin</a>(</span><span class="m-doc-wrap">) const -&gt; int</span>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a71973b0ce292b151582bcaec34579563" class="m-doc">Ebin</a>(</span><span class="m-doc-wrap">) const -&gt; std::optional&lt; std::size_t &gt;</span>
+            </dt>
+            <dd></dd>
+            <dt id="a30ff204cad36e0b97aa489771761a296">
+              <span class="m-doc-wrap-bumper">void <a href="#a30ff204cad36e0b97aa489771761a296" class="m-doc-self">set_Ebin</a>(</span><span class="m-doc-wrap">std::size_t bin)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a6185c3d3a04d26bf772e7ad1a2a80ee9">
-              <span class="m-doc-wrap-bumper">void <a href="#a6185c3d3a04d26bf772e7ad1a2a80ee9" class="m-doc-self">set_Ebin</a>(</span><span class="m-doc-wrap">int bin)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a6513a1b789a2efc0ced1f2875813d507">
-              <span class="m-doc-wrap-bumper">void <a href="#a6513a1b789a2efc0ced1f2875813d507" class="m-doc-self">set_E</a>(</span><span class="m-doc-wrap">int sample,
+            <dt id="accc3ee8e8943900abd906d653808c9fd">
+              <span class="m-doc-wrap-bumper">void <a href="#accc3ee8e8943900abd906d653808c9fd" class="m-doc-self">set_E</a>(</span><span class="m-doc-wrap">std::size_t sample,
               double Esample)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ace8f8c454980c7775a724cbc01c1b54d">
-              <span class="m-doc-wrap-bumper">void <a href="#ace8f8c454980c7775a724cbc01c1b54d" class="m-doc-self">set_Efrac</a>(</span><span class="m-doc-wrap">int sample,
+            <dt id="ab0331f74886e6ae18d7900edc68190fd">
+              <span class="m-doc-wrap-bumper">void <a href="#ab0331f74886e6ae18d7900edc68190fd" class="m-doc-self">set_Efrac</a>(</span><span class="m-doc-wrap">std::size_t sample,
               double Efracsample)</span>
             </dt>
             <dd><span></span></dd>
@@ -166,8 +166,8 @@
               <span class="m-doc-wrap-bumper">void <a href="#a9b04a0911b5af8cec7ef5e7908ee3d2d" class="m-doc-self">set_E</a>(</span><span class="m-doc-wrap">double E)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="accc286a04ba6beb05e87c9da5dc182de">
-              <span class="m-doc-wrap-bumper">void <a href="#accc286a04ba6beb05e87c9da5dc182de" class="m-doc-self">add_E</a>(</span><span class="m-doc-wrap">int sample,
+            <dt id="a10dfa923df92342db44a4cb9bf4942e7">
+              <span class="m-doc-wrap-bumper">void <a href="#a10dfa923df92342db44a4cb9bf4942e7" class="m-doc-self">add_E</a>(</span><span class="m-doc-wrap">std::size_t sample,
               double Esample)</span>
             </dt>
             <dd><span></span></dd>
@@ -179,8 +179,8 @@
               <span class="m-doc-wrap-bumper">auto <a href="#aa9fad130a12f21ccce82c0de8b7f3f69" class="m-doc-self">cells</a>(</span><span class="m-doc-wrap">) const -&gt; const cellmap &amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="aeedd76e11a7de816d79de93025a81202">
-              <span class="m-doc-wrap-bumper">void <a href="#aeedd76e11a7de816d79de93025a81202" class="m-doc-self">deposit</a>(</span><span class="m-doc-wrap">const unsigned long long cell_id,
+            <dt id="ac53850c1ad28dbd289898a1e73e8be6e">
+              <span class="m-doc-wrap-bumper">void <a href="#ac53850c1ad28dbd289898a1e73e8be6e" class="m-doc-self">deposit</a>(</span><span class="m-doc-wrap">unsigned long long cell_id,
               float E)</span>
             </dt>
             <dd><span></span></dd>
@@ -192,8 +192,8 @@
               <span class="m-doc-wrap-bumper">void <a href="#a1c801d62b78370da0cf1e3f2bddb6e3a" class="m-doc-self">set_SF</a>(</span><span class="m-doc-wrap">double mysf)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a407b5912d4dc5cad73465df8686b557c">
-              <span class="m-doc-wrap-bumper">auto <a href="#a407b5912d4dc5cad73465df8686b557c" class="m-doc-self">get_SF</a>(</span><span class="m-doc-wrap">) -&gt; double</span>
+            <dt id="ad5074de32100805acf2d3ab75a6ed344">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad5074de32100805acf2d3ab75a6ed344" class="m-doc-self">get_SF</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a8aa5aa70c554828f47964462b84e0a6e">
@@ -204,9 +204,9 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a4e6fc8121edeaa47a4c81a3cc03560fa" class="m-doc-self">hasAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; bool</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a7fd5ce2b7cca545b3b02eaf55cc00213">
+            <dt id="a28389c5b693307cb8175d1f40df3bf96">
               <div class="m-doc-template">template&lt;class T&gt;</div>
-              <span class="m-doc-wrap-bumper">auto <a href="#a7fd5ce2b7cca545b3b02eaf55cc00213" class="m-doc-self">getAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; const T</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a28389c5b693307cb8175d1f40df3bf96" class="m-doc-self">getAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; T</span>
             </dt>
             <dd><span></span></dd>
             <dt id="ad4846d5fa486bdff046b8ea4a6a4ed30">
@@ -228,6 +228,24 @@
             </dt>
             <dd><span></span></dd>
           </dl>
+        </section>
+        <section>
+          <h2>Typedef documentation</h2>
+          <section class="m-doc-details" id="a917e15b46929bcae4fff4e586935fb4c"><div>
+            <h3>
+              using TFCSSimulationState::<wbr /><a href="#a917e15b46929bcae4fff4e586935fb4c" class="m-doc-self">AuxInfo_t</a> = std::variant&lt;bool, char, int, float, double, void*&gt;
+            </h3>
+<p>The value of an auxiliary information entry: one of these types, the one it was stored with</p>
+          </div></section>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a71973b0ce292b151582bcaec34579563"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto TFCSSimulationState::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a71973b0ce292b151582bcaec34579563" class="m-doc-self">Ebin</a>(</span><span class="m-doc-wrap">) const -&gt; std::optional&lt; std::size_t &gt;</span></span>
+            </h3>
+<p>The energy bin of the PCA energy parametrization, starting at 1; no value before it is chosen</p>
+          </div></section>
         </section>
       </div>
     </div>

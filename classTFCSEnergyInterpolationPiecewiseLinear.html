@@ -91,7 +91,7 @@
           <dl class="m-doc">
             <dt id="afe2a8ad060be934b9923d50af1cafd9b">
               <span class="m-doc-wrap-bumper"><a href="#afe2a8ad060be934b9923d50af1cafd9b" class="m-doc-self">TFCSEnergyInterpolationPiecewiseLinear</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+              const char* title = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -111,24 +111,24 @@
               <span class="m-doc-wrap-bumper">void <a href="#a9c759f40c29fe2caef112373210bb17c" class="m-doc-self">reset_OnlyScaleEnergy</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a812674dfd317e84a200c1f3521f8fcd0">
-              <span class="m-doc-wrap-bumper">auto <a href="#a812674dfd317e84a200c1f3521f8fcd0" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a5685e12ca8367137a536c65bf684f7b9">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5685e12ca8367137a536c65bf684f7b9" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae0d7154a303df0d0172267048944cb97">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae0d7154a303df0d0172267048944cb97" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="aeae81072068cfff53dd41142b9fbefbe">
+              <span class="m-doc-wrap-bumper">auto <a href="#aeae81072068cfff53dd41142b9fbefbe" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="af7c78f051e74a8afc35c77d5744c789f">
-              <span class="m-doc-wrap-bumper">void <a href="#af7c78f051e74a8afc35c77d5744c789f" class="m-doc-self">InitFromArrayInLogEkin</a>(</span><span class="m-doc-wrap">Int_t np,
-              const Double_t logEkin[],
-              const Double_t response[])</span>
+            <dt id="a9cf2c490559686cc52aad0fa3faf6743">
+              <span class="m-doc-wrap-bumper">void <a href="#a9cf2c490559686cc52aad0fa3faf6743" class="m-doc-self">InitFromArrayInLogEkin</a>(</span><span class="m-doc-wrap">Int_t np,
+              const Double_t* logEkin,
+              const Double_t* response)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="afcb54e6ae9e26e782d6b867bca8d6067">
-              <span class="m-doc-wrap-bumper">void <a href="#afcb54e6ae9e26e782d6b867bca8d6067" class="m-doc-self">InitFromArrayInEkin</a>(</span><span class="m-doc-wrap">Int_t np,
-              const Double_t Ekin[],
-              const Double_t response[])</span>
+            <dt id="a58ad0a75045312789d87be1f64df0b06">
+              <span class="m-doc-wrap-bumper">void <a href="#a58ad0a75045312789d87be1f64df0b06" class="m-doc-self">InitFromArrayInEkin</a>(</span><span class="m-doc-wrap">Int_t np,
+              const Double_t* Ekin,
+              const Double_t* response)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="aa865b335d1361b6a45d6c202daebd358">

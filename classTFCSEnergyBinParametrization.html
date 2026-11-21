@@ -80,7 +80,7 @@
           <dl class="m-doc">
             <dt id="a82e62da167a6386c9c80086ac9fddc41">
               <span class="m-doc-wrap-bumper"><a href="#a82e62da167a6386c9c80086ac9fddc41" class="m-doc-self">TFCSEnergyBinParametrization</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+              const char* title = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -104,8 +104,8 @@
               <span class="m-doc-wrap-bumper">void <a href="#a5c90b76ff0668ab5f35996b06f2d6e3c" class="m-doc-self">clear_pdgid</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a798d75e38738f19adf695099809a21c3">
-              <span class="m-doc-wrap-bumper">auto <a href="#a798d75e38738f19adf695099809a21c3" class="m-doc-self">n_bins</a>(</span><span class="m-doc-wrap">) const -&gt; int <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a0a27063b6173fe7d4e516fd4ddc9df9c">
+              <span class="m-doc-wrap-bumper">auto <a href="#a0a27063b6173fe7d4e516fd4ddc9df9c" class="m-doc-self">n_bins</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt>
@@ -129,8 +129,8 @@
               const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; FCSReturnCode <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Method in all derived classes to do some simulation.</dd>
-            <dt id="a8cb7ec78141b90995c2fe70d53929dee">
-              <span class="m-doc-wrap-bumper">auto <a href="#a8cb7ec78141b90995c2fe70d53929dee" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int Ekin_bin) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a55e8934567b617b940ad70a8c3817770">
+              <span class="m-doc-wrap-bumper">auto <a href="#a55e8934567b617b940ad70a8c3817770" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t Ekin_bin) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="aca06220430c6ba118cc11505ee741d2e">

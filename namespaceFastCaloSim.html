@@ -60,6 +60,7 @@
               <ul>
                 <li><a href="#namespaces">Namespaces</a></li>
                 <li><a href="#nested-classes">Classes</a></li>
+                <li><a href="#enum-members">Enums</a></li>
                 <li><a href="#typedef-members">Typedefs</a></li>
                 <li><a href="#func-members">Functions</a></li>
               </ul>
@@ -94,6 +95,17 @@
             <dd><span></span></dd>
           </dl>
         </section>
+        <section id="enum-members">
+          <h2><a href="#enum-members">Enums</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">enum class <a href="#a1d0207721669291bab66ab73a208d10c" class="m-doc">SubPos</a>: std::uint8_t { </span><span class="m-doc-wrap"><a href="#a1d0207721669291bab66ab73a208d10ca18e48bbdf6d326bd88d3ebb99ad7515d" class="m-doc">MID</a> = 0,
+              <a href="#a1d0207721669291bab66ab73a208d10ca8ec34a65cd8ca2aa82e9df913df5ac6e" class="m-doc">ENT</a> = 1,
+              <a href="#a1d0207721669291bab66ab73a208d10caefd472d9664cd3e8c9e924f35e3f6c88" class="m-doc">EXT</a> = 2 }</span>
+            </dt>
+            <dd></dd>
+          </dl>
+        </section>
         <section id="typedef-members">
           <h2><a href="#typedef-members">Typedefs</a></h2>
           <dl class="m-doc">
@@ -107,20 +119,48 @@
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
             <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a4c2594e95e200f747986ae58f66eadd0" class="m-doc">gauss_ziggurat</a>(</span><span class="m-doc-wrap">CLHEP::HepRandomEngine* engine,
+              double mean,
+              double sigma) -&gt; double</span>
+            </dt>
+            <dd></dd>
+            <dt>
               <span class="m-doc-wrap-bumper">auto <a href="#adc6467c6456ba754dbc9bd579f8d2e1b" class="m-doc">set_log_sink</a>(</span><span class="m-doc-wrap">std::shared_ptr&lt;<a href="classFastCaloSim_1_1LogSink.html" class="m-doc">LogSink</a>&gt; sink) -&gt; FASTCALOSIM_EXPORT void</span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#abc72584318f59288a910a73f61e04af3" class="m-doc">dist000</a>(</span><span class="m-doc-wrap">double r,
-              double z) -&gt; float</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#aa425e990ff296194808e02e203dedf78" class="m-doc">dist000</a>(</span><span class="m-doc-wrap">double r,
+              double z) -&gt; double</span>
             </dt>
             <dd></dd>
             <dt>
               <div class="m-doc-template">template&lt;typename T&gt;</div>
-              <span class="m-doc-wrap-bumper">auto <a href="#ad7fb42bd4e64dcae8f8ddd8639a534f6" class="m-doc">eta_jakobi</a>(</span><span class="m-doc-wrap">T eta) -&gt; float</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a4c413f8085fa28b1410e11212f5221f9" class="m-doc">eta_jakobi</a>(</span><span class="m-doc-wrap">T eta) -&gt; double</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;std::floating_point T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#af88a3bd8d448310af4e8d3640367e44b" class="m-doc">exactly_equal</a>(</span><span class="m-doc-wrap">T a,
+              T b) -&gt; bool <span class="m-label m-flat m-primary">constexpr</span></span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <div class="m-doc-template">template&lt;std::ranges::random_access_range Range&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#acf3474653f2a16f5aab55625cf6ba2d2" class="m-doc">index_of</a>(</span><span class="m-doc-wrap">const Range&amp; range,
+              std::ranges::iterator_t&lt;const Range&gt; it) -&gt; std::size_t <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd></dd>
           </dl>
+        </section>
+        <section>
+          <h2>Enum documentation</h2>
+          <section class="m-doc-details" id="a1d0207721669291bab66ab73a208d10c"><div>
+            <h3>
+              enum class FastCaloSim::<wbr /><a href="#a1d0207721669291bab66ab73a208d10c" class="m-doc-self">SubPos</a>: std::uint8_t
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="SubPos_8h.html">&lt;FastCaloSim/Geometry/SubPos.h&gt;</a></div>
+            </h3>
+<p>A position within a calorimeter layer along the particle direction. The values are the indices of the sub-positions, e.g. in the extrapolation.</p>
+          </div></section>
         </section>
         <section>
           <h2>Typedef documentation</h2>
@@ -134,6 +174,15 @@
         </section>
         <section>
           <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a4c2594e95e200f747986ae58f66eadd0"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4c2594e95e200f747986ae58f66eadd0" class="m-doc-self">gauss_ziggurat</a>(</span><span class="m-doc-wrap">CLHEP::HepRandomEngine* engine,
+              double mean,
+              double sigma) -&gt; double</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="GaussZiggurat_8h.html">&lt;FastCaloSim/Core/GaussZiggurat.h&gt;</a></div>
+            </h3>
+<p>Gaussian random number from <a href="namespaceCLHEP.html" class="m-doc">CLHEP</a>&#x27;s fast Ziggurat generator. The generator works in single precision: mean and sigma are converted to float and the result back to double, as the parametrizations have always done.</p>
+          </div></section>
           <section class="m-doc-details" id="adc6467c6456ba754dbc9bd579f8d2e1b"><div>
             <h3>
               <span class="m-doc-wrap-bumper">FASTCALOSIM_EXPORT void FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#adc6467c6456ba754dbc9bd579f8d2e1b" class="m-doc-self">set_log_sink</a>(</span><span class="m-doc-wrap">std::shared_ptr&lt;<a href="classFastCaloSim_1_1LogSink.html" class="m-doc">LogSink</a>&gt; sink)</span></span>
@@ -141,23 +190,45 @@
             </h3>
 <p>Replace the log sink for all threads; nullptr restores the default sink, which writes each message as one decorated line to std::cout.</p>
           </div></section>
-          <section class="m-doc-details" id="abc72584318f59288a910a73f61e04af3"><div>
+          <section class="m-doc-details" id="aa425e990ff296194808e02e203dedf78"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#abc72584318f59288a910a73f61e04af3" class="m-doc-self">dist000</a>(</span><span class="m-doc-wrap">double r,
-              double z) -&gt; float</span></span>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa425e990ff296194808e02e203dedf78" class="m-doc-self">dist000</a>(</span><span class="m-doc-wrap">double r,
+              double z) -&gt; double</span></span>
               <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSLateralShapeParametrizationHitBase_8h.html">&lt;FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h&gt;</a></div>
             </h3>
 <p>Distance from the origin of a point at radius r and position z along the beam</p>
           </div></section>
-          <section class="m-doc-details" id="ad7fb42bd4e64dcae8f8ddd8639a534f6"><div>
+          <section class="m-doc-details" id="a4c413f8085fa28b1410e11212f5221f9"><div>
             <h3>
               <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSLateralShapeParametrizationHitBase_8h.html">&lt;FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h&gt;</a></div>
               <div class="m-doc-template">
                 template&lt;typename T&gt;
               </div>
-              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ad7fb42bd4e64dcae8f8ddd8639a534f6" class="m-doc-self">eta_jakobi</a>(</span><span class="m-doc-wrap">T eta) -&gt; float</span></span>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a4c413f8085fa28b1410e11212f5221f9" class="m-doc-self">eta_jakobi</a>(</span><span class="m-doc-wrap">T eta) -&gt; double</span></span>
             </h3>
 <p>|dtheta/deta| = 1/cosh(eta). Together with dist000 it converts a distance in eta at the given eta into mm: delta_mm = delta_eta * eta_jakobi * dist000. Evaluated in the precision of the argument (float or double).</p>
+          </div></section>
+          <section class="m-doc-details" id="af88a3bd8d448310af4e8d3640367e44b"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="FloatCompare_8h.html">&lt;FastCaloSim/Definitions/FloatCompare.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;std::floating_point T&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#af88a3bd8d448310af4e8d3640367e44b" class="m-doc-self">exactly_equal</a>(</span><span class="m-doc-wrap">T a,
+              T b) -&gt; bool <span class="m-label m-primary">constexpr</span></span></span>
+            </h3>
+<p>Exact comparison of two floating-point numbers, for the cases where exact equality is meant: a value that is exactly zero (e.g. set to zero to mark a special case) or ties between values computed in the same way. -Wfloat-equal is suppressed only here, so that it still reports unintended exact comparisons everywhere else.</p>
+          </div></section>
+          <section class="m-doc-details" id="acf3474653f2a16f5aab55625cf6ba2d2"><div>
+            <h3>
+              <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="Index_8h.html">&lt;FastCaloSim/Definitions/Index.h&gt;</a></div>
+              <div class="m-doc-template">
+                template&lt;std::ranges::random_access_range Range&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#acf3474653f2a16f5aab55625cf6ba2d2" class="m-doc-self">index_of</a>(</span><span class="m-doc-wrap">const Range&amp; range,
+              std::ranges::iterator_t&lt;const Range&gt; it) -&gt; std::size_t <span class="m-label m-primary">constexpr</span></span></span>
+            </h3>
+<p>The index of an iterator into a random access range, e.g. the result of std::upper_bound on a std::vector</p>
           </div></section>
         </section>
       </div>

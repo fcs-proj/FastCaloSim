@@ -80,11 +80,19 @@
           <h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
           <dl class="m-doc">
             <dt id="ad62057349f9158e9913dd9fb394a8d02">
-              <span class="m-doc-wrap-bumper"><a href="#ad62057349f9158e9913dd9fb394a8d02" class="m-doc-self">TFCS2DFunctionHistogram</a>(</span><span class="m-doc-wrap">TH2* hist = nullptr)</span>
+              <span class="m-doc-wrap-bumper"><a href="#ad62057349f9158e9913dd9fb394a8d02" class="m-doc-self">TFCS2DFunctionHistogram</a>(</span><span class="m-doc-wrap">TH2* hist = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
             <dt id="a7f824542dc9f504022628a4f296c696e">
               <span class="m-doc-wrap-bumper"><a href="#a7f824542dc9f504022628a4f296c696e" class="m-doc-self">~TFCS2DFunctionHistogram</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-info">defaulted</span> <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="afea16ae18b8a148860d110cd6837116f">
+              <span class="m-doc-wrap-bumper"><a href="#afea16ae18b8a148860d110cd6837116f" class="m-doc-self">TFCS2DFunctionHistogram</a>(</span><span class="m-doc-wrap">const <a href="classTFCS2DFunctionHistogram.html" class="m-doc">TFCS2DFunctionHistogram</a>&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad89ebd6155dbe03431efa92ec3e6390c">
+              <span class="m-doc-wrap-bumper"><a href="#ad89ebd6155dbe03431efa92ec3e6390c" class="m-doc-self">TFCS2DFunctionHistogram</a>(</span><span class="m-doc-wrap"><a href="classTFCS2DFunctionHistogram.html" class="m-doc">TFCS2DFunctionHistogram</a>&amp;&amp;) <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -92,15 +100,23 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="aaab6f226a4d41b3cd616c9fb2fba750b">
+              <span class="m-doc-wrap-bumper">auto <a href="#aaab6f226a4d41b3cd616c9fb2fba750b" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap">const <a href="classTFCS2DFunctionHistogram.html" class="m-doc">TFCS2DFunctionHistogram</a>&amp;) -&gt; TFCS2DFunctionHistogram &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a75480d2ad20b33e9ffa29c71795e5f22">
+              <span class="m-doc-wrap-bumper">auto <a href="#a75480d2ad20b33e9ffa29c71795e5f22" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCS2DFunctionHistogram.html" class="m-doc">TFCS2DFunctionHistogram</a>&amp;&amp;) -&gt; TFCS2DFunctionHistogram &amp; <span class="m-label m-flat m-info">defaulted</span></span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a6837aafa43fe579e697f989e69c31d80">
               <span class="m-doc-wrap-bumper">void <a href="#a6837aafa43fe579e697f989e69c31d80" class="m-doc-self">Initialize</a>(</span><span class="m-doc-wrap">TH2* hist)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a63550088eef6c95a50a7cd682cd3f30d">
-              <span class="m-doc-wrap-bumper">void <a href="#a63550088eef6c95a50a7cd682cd3f30d" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">float&amp; valuex,
-              float&amp; valuey,
-              float rnd0,
-              float rnd1) const <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a6cfe4182591182ca38502e6c9dc81eb1">
+              <span class="m-doc-wrap-bumper">void <a href="#a6cfe4182591182ca38502e6c9dc81eb1" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">double&amp; valuex,
+              double&amp; valuey,
+              double rnd0,
+              double rnd1) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="a2d40a725017aa085956f1492bd5f64b0">
@@ -127,12 +143,12 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a448e92ba7ac012597f66e2fd94af71f5" class="m-doc-self">get_HistoContents</a>(</span><span class="m-doc-wrap">) -&gt; std::vector&lt; float &gt; &amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ad864a1ce3fc98c833ec107d210cc2b5b">
-              <span class="m-doc-wrap-bumper">void <a href="#ad864a1ce3fc98c833ec107d210cc2b5b" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">pure virtual</span></span>
+            <dt id="a7a8f2a6df5b65efb86cb5858a7f86032">
+              <span class="m-doc-wrap-bumper">void <a href="#a7a8f2a6df5b65efb86cb5858a7f86032" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a935673c92782ab6ba677230da727d2fd">
-              <span class="m-doc-wrap-bumper">void <a href="#a935673c92782ab6ba677230da727d2fd" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a69e6861bbb34e5216afdc1dfc14633db">
+              <span class="m-doc-wrap-bumper">void <a href="#a69e6861bbb34e5216afdc1dfc14633db" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
           </dl>

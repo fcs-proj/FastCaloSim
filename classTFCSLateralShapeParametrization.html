@@ -95,7 +95,7 @@
           <dl class="m-doc">
             <dt id="a5da50186eb677f238da9884fff911b12">
               <span class="m-doc-wrap-bumper"><a href="#a5da50186eb677f238da9884fff911b12" class="m-doc-self">TFCSLateralShapeParametrization</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+              const char* title = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -103,12 +103,12 @@
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
-            <dt id="a8c31b551d93634bc20673043b94f5f41">
-              <span class="m-doc-wrap-bumper">auto <a href="#a8c31b551d93634bc20673043b94f5f41" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int bin) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a874e28eb959e51c7a128a7bfe27bac96">
+              <span class="m-doc-wrap-bumper">auto <a href="#a874e28eb959e51c7a128a7bfe27bac96" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t bin) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a6473a2360429fbb1cb212bf20e21f345">
-              <span class="m-doc-wrap-bumper">auto <a href="#a6473a2360429fbb1cb212bf20e21f345" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">int calosample) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="a1a9b4c55c6de3aa09d44d0afe14f256b">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1a9b4c55c6de3aa09d44d0afe14f256b" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">std::size_t calosample) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt id="a0cfce07a7f42281e6a97ac591f724061">
@@ -119,20 +119,24 @@
               <span class="m-doc-wrap-bumper">auto <a href="#ae0c1da2d92c072ae4bf35a5bf40c76fd" class="m-doc-self">is_match_all_calosample</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ad3142fa8dfd81038139f1073da89f106">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad3142fa8dfd81038139f1073da89f106" class="m-doc-self">Ekin_bin</a>(</span><span class="m-doc-wrap">) const -&gt; int</span>
+            <dt id="a20422773911dc2b43bb4fa77ff0aad8c">
+              <span class="m-doc-wrap-bumper">auto <a href="#a20422773911dc2b43bb4fa77ff0aad8c" class="m-doc-self">Ekin_bin</a>(</span><span class="m-doc-wrap">) const -&gt; std::optional&lt; std::size_t &gt;</span>
+            </dt>
+            <dd>The Ekin bin; no value for all bins.</dd>
+            <dt id="ab6d9991bdfe465bc4d3540dc6945e51e">
+              <span class="m-doc-wrap-bumper">void <a href="#ab6d9991bdfe465bc4d3540dc6945e51e" class="m-doc-self">set_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t bin)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a6f97d6f88bbcc6a22da457781f7b0929">
-              <span class="m-doc-wrap-bumper">void <a href="#a6f97d6f88bbcc6a22da457781f7b0929" class="m-doc-self">set_Ekin_bin</a>(</span><span class="m-doc-wrap">int bin)</span>
+            <dt id="ae6dd2adbd6e1111af47532547fe90454">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae6dd2adbd6e1111af47532547fe90454" class="m-doc-self">calosample</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
+            </dt>
+            <dd>The calorimeter layer; only valid if <a href="classTFCSLateralShapeParametrization.html#aed55d77fef4c168cce23ac446f521473" class="m-doc">has_<wbr />calosample()</a></dd>
+            <dt id="aed55d77fef4c168cce23ac446f521473">
+              <span class="m-doc-wrap-bumper">auto <a href="#aed55d77fef4c168cce23ac446f521473" class="m-doc-self">has_calosample</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ad785e3004f8bbddba3b45dbfc44d97c8">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad785e3004f8bbddba3b45dbfc44d97c8" class="m-doc-self">calosample</a>(</span><span class="m-doc-wrap">) const -&gt; int</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="afe6342e48dc3ac6173c911ce43297104">
-              <span class="m-doc-wrap-bumper">void <a href="#afe6342e48dc3ac6173c911ce43297104" class="m-doc-self">set_calosample</a>(</span><span class="m-doc-wrap">int cs)</span>
+            <dt id="ae50bfe08fea71ec59230a1ada0517b93">
+              <span class="m-doc-wrap-bumper">void <a href="#ae50bfe08fea71ec59230a1ada0517b93" class="m-doc-self">set_calosample</a>(</span><span class="m-doc-wrap">std::size_t cs)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="ab51449c4927a037c52716f1f22dea292">

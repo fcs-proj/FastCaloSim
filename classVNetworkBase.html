@@ -66,6 +66,7 @@
                 <li><a href="#pub-static-methods">Public static functions</a></li>
                 <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pro-static-methods">Protected static functions</a></li>
                 <li><a href="#pro-methods">Protected functions</a></li>
                 <li><a href="#pro-attribs">Protected variables</a></li>
                 <li><a href="#friends">Friends</a></li>
@@ -193,6 +194,19 @@
             <dd>Get rid of any memory objects that aren&#x27;t needed to run the net.</dd>
           </dl>
         </section>
+        <section id="pro-static-methods">
+          <h2><a href="#pro-static-methods">Protected static functions</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">static void <a href="#a1c30c514a6b17e10665b763870ed1de1" class="m-doc">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a>&amp; outputs)</span>
+            </dt>
+            <dd>Remove any common prefix from the outputs.</dd>
+            <dt id="ae89523c4867980cacc79fa8fea8abcf9">
+              <span class="m-doc-wrap-bumper">static void <a href="#ae89523c4867980cacc79fa8fea8abcf9" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap">std::vector&lt;std::string&gt;&amp; output_names)</span>
+            </dt>
+            <dd>Remove any common prefix from the outputs.</dd>
+          </dl>
+        </section>
         <section id="pro-methods">
           <h2><a href="#pro-methods">Protected functions</a></h2>
           <dl class="m-doc">
@@ -212,14 +226,6 @@
               <span class="m-doc-wrap-bumper">auto <a href="#ad4508d9bb69eaf3ac8ff7fdb4b6dc3c0" class="m-doc">isRootFile</a>(</span><span class="m-doc-wrap">std::string const&amp; filename = &quot;&quot;) const -&gt; bool</span>
             </dt>
             <dd>Check if a string is possibly a root file path.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a>&amp; outputs) const</span>
-            </dt>
-            <dd>Remove any common prefix from the outputs.</dd>
-            <dt id="ab32127d45529c3ad65a27a8d1e0f56ae">
-              <span class="m-doc-wrap-bumper">void <a href="#ab32127d45529c3ad65a27a8d1e0f56ae" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap">std::vector&lt;std::string&gt;&amp; output_names) const</span>
-            </dt>
-            <dd>Remove any common prefix from the outputs.</dd>
           </dl>
         </section>
         <section id="pro-attribs">
@@ -502,6 +508,23 @@
             <p>Get rid of any memory objects that aren&#x27;t needed to run the net.</p>
 <p>Minimize memory usage by deleting any inputs that are no longer required to run the compute function. May prevent the net from being saved.</p>
           </div></section>
+          <section class="m-doc-details" id="a1c30c514a6b17e10665b763870ed1de1"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a1c30c514a6b17e10665b763870ed1de1" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a>&amp; outputs) <span class="m-label m-warning">protected</span></span></span>
+            </h3>
+            <p>Remove any common prefix from the outputs.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">outputs</td>
+                  <td>The outputs, changed in place.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
           <section class="m-doc-details" id="afb7126174b1543ab40eb65ded86a4b83"><div>
             <h3>
               <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#afb7126174b1543ab40eb65ded86a4b83" class="m-doc-self">setupPersistedVariables</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">pure virtual</span> <span class="m-label m-warning">protected</span></span></span>
@@ -548,23 +571,6 @@
               </tfoot>
             </table>
 <p>Just checks if the string ends in .root as there are almost no reliable rules for file paths.</p>
-          </div></section>
-          <section class="m-doc-details" id="aae9544aaf496d892863f4be3104c168d"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">void VNetworkBase::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aae9544aaf496d892863f4be3104c168d" class="m-doc-self">removePrefixes</a>(</span><span class="m-doc-wrap"><a href="classVNetworkBase.html#ac67a7a6e0c507d5120d2e49f6db6cdc2" class="m-doc">NetworkOutputs</a>&amp; outputs) const <span class="m-label m-warning">protected</span></span></span>
-            </h3>
-            <p>Remove any common prefix from the outputs.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">outputs</td>
-                  <td>The outputs, changed in place.</td>
-                </tr>
-              </tbody>
-            </table>
           </div></section>
           <section class="m-doc-details" id="aded86e999cdf0e9b249281ae42719d36"><div>
             <h3>

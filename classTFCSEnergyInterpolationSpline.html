@@ -91,7 +91,7 @@
           <dl class="m-doc">
             <dt id="adb4ffcefd528c21a48c6708312930d86">
               <span class="m-doc-wrap-bumper"><a href="#adb4ffcefd528c21a48c6708312930d86" class="m-doc-self">TFCSEnergyInterpolationSpline</a>(</span><span class="m-doc-wrap">const char* name = nullptr,
-              const char* title = nullptr)</span>
+              const char* title = nullptr) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -111,12 +111,12 @@
               <span class="m-doc-wrap-bumper">void <a href="#a54d53b1232dc5ddf00176621abd05218" class="m-doc-self">reset_OnlyScaleEnergy</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="ada40a51e6c13ada53320da42e50bd2b2">
-              <span class="m-doc-wrap-bumper">auto <a href="#ada40a51e6c13ada53320da42e50bd2b2" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="afd4b2cfcfdb2524ab2b1c024339c48e2">
+              <span class="m-doc-wrap-bumper">auto <a href="#afd4b2cfcfdb2524ab2b1c024339c48e2" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="af80df166610ef90081312a144935b563">
-              <span class="m-doc-wrap-bumper">auto <a href="#af80df166610ef90081312a144935b563" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">int) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
+            <dt id="aa3b9442a17c5315478f9af0d9ca72b45">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa3b9442a17c5315478f9af0d9ca72b45" class="m-doc-self">is_match_calosample</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
             <dt>
@@ -124,18 +124,18 @@
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#acbdc1cf0e8b6cfdd5581a277abb90575" class="m-doc">InitFromArrayInLogEkin</a>(</span><span class="m-doc-wrap">Int_t np,
-              Double_t logEkin[],
-              Double_t response[],
+              <span class="m-doc-wrap-bumper">void <a href="#a37a66396e21e9950a431e19717f4de1b" class="m-doc">InitFromArrayInLogEkin</a>(</span><span class="m-doc-wrap">Int_t np,
+              Double_t* logEkin,
+              Double_t* response,
               const char* opt = nullptr,
               Double_t valbeg = 0,
               Double_t valend = 0)</span>
             </dt>
             <dd></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a439263dd5c5a99e8f8242870284aba8f" class="m-doc">InitFromArrayInEkin</a>(</span><span class="m-doc-wrap">Int_t np,
-              Double_t Ekin[],
-              Double_t response[],
+              <span class="m-doc-wrap-bumper">void <a href="#ad6999c93ef2f388acf807075bc614b4c" class="m-doc">InitFromArrayInEkin</a>(</span><span class="m-doc-wrap">Int_t np,
+              Double_t* Ekin,
+              Double_t* response,
               const char* opt = nullptr,
               Double_t valbeg = 0,
               Double_t valend = 0)</span>
@@ -185,22 +185,22 @@
             </h3>
 <p>Initialize interpolation from spline x values should be log(Ekin), y values should &lt;E(reco)/Ekin(true)&gt;</p>
           </div></section>
-          <section class="m-doc-details" id="acbdc1cf0e8b6cfdd5581a277abb90575"><div>
+          <section class="m-doc-details" id="a37a66396e21e9950a431e19717f4de1b"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void TFCSEnergyInterpolationSpline::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#acbdc1cf0e8b6cfdd5581a277abb90575" class="m-doc-self">InitFromArrayInLogEkin</a>(</span><span class="m-doc-wrap">Int_t np,
-              Double_t logEkin[],
-              Double_t response[],
+              <span class="m-doc-wrap-bumper">void TFCSEnergyInterpolationSpline::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a37a66396e21e9950a431e19717f4de1b" class="m-doc-self">InitFromArrayInLogEkin</a>(</span><span class="m-doc-wrap">Int_t np,
+              Double_t* logEkin,
+              Double_t* response,
               const char* opt = nullptr,
               Double_t valbeg = 0,
               Double_t valend = 0)</span></span>
             </h3>
 <p>Initialize spline interpolation from arrays in log(Ekin) and response=&lt;E(reco)/Ekin(true)&gt; opt, valbeg and valend as defined for TSpline3</p>
           </div></section>
-          <section class="m-doc-details" id="a439263dd5c5a99e8f8242870284aba8f"><div>
+          <section class="m-doc-details" id="ad6999c93ef2f388acf807075bc614b4c"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void TFCSEnergyInterpolationSpline::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a439263dd5c5a99e8f8242870284aba8f" class="m-doc-self">InitFromArrayInEkin</a>(</span><span class="m-doc-wrap">Int_t np,
-              Double_t Ekin[],
-              Double_t response[],
+              <span class="m-doc-wrap-bumper">void TFCSEnergyInterpolationSpline::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ad6999c93ef2f388acf807075bc614b4c" class="m-doc-self">InitFromArrayInEkin</a>(</span><span class="m-doc-wrap">Int_t np,
+              Double_t* Ekin,
+              Double_t* response,
               const char* opt = nullptr,
               Double_t valbeg = 0,
               Double_t valend = 0)</span></span>
