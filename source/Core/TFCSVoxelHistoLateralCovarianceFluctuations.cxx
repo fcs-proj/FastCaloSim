@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <format>
+#include <memory>
 #include <numbers>
 
 #include "FastCaloSim/Core/TFCSVoxelHistoLateralCovarianceFluctuations.h"
@@ -66,7 +67,9 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   m_nDim_x = m_voxel_template[0]->GetNbinsX();
   m_nDim_y = m_voxel_template[0]->GetNbinsY();
 
-  while (inputfile->Get(std::format("parMeans_cs{}_pca{}", cs, bin).c_str())) {
+  // TFile::Get returns a new object, owned by the caller, for objects that are
+  // not histograms or trees
+  while (true) {
     TVectorD parMeans;
     TMatrixD EigenVectors;
     TVectorD EigenValues;
@@ -74,25 +77,24 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
 
     std::string label = std::format("_cs{}_pca{}", cs, bin);
 
-    TObject* obj = inputfile->Get(("parMeans" + label).c_str());
-    if (!obj) {
-      FCS_MSG_ERROR("parMeans" + label + " not found");
-      return false;
-    }
+    std::unique_ptr<TObject> obj(inputfile->Get(("parMeans" + label).c_str()));
+    if (!obj)
+      break;
     if (msgLvl(FastCaloSim::MSG::DEBUG)) {
       FCS_MSG_DEBUG("parMeans");
       obj->Print();
     }
     parMeans.ResizeTo(m_nDim_x * m_nDim_y);
-    parMeans = *dynamic_cast<TVectorT<double>*>(obj);
+    parMeans = *dynamic_cast<TVectorT<double>*>(obj.get());
     m_parMeans.push_back(parMeans);
 
-    obj = inputfile->Get(("covMatrix" + label).c_str());
+    obj.reset(inputfile->Get(("covMatrix" + label).c_str()));
     if (!obj) {
       FCS_MSG_ERROR("covMatrix" + label + " not found");
       return false;
     }
-    TMatrixTSym<double> covMatrix = *dynamic_cast<TMatrixTSym<double>*>(obj);
+    TMatrixTSym<double> covMatrix =
+        *dynamic_cast<TMatrixTSym<double>*>(obj.get());
     TMatrixDSymEigen eigenvariances = TMatrixDSymEigen(covMatrix);
     EigenVectors.ResizeTo(eigenvariances.GetEigenVectors());
     EigenVectors = eigenvariances.GetEigenVectors();

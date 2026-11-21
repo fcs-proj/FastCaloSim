@@ -177,10 +177,14 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
     throw std::runtime_error("Failed to open or initialize ROOT file: "
                              + rootFileName);
   }
+  auto* tree = file->Get<TTree>("rootTree");
+  if (!tree)
+    throw std::runtime_error("No rootTree in " + rootFileName);
   for (int layer : m_param.GetRelevantLayers()) {
     std::string branchName = "extrapWeight_" + std::to_string(layer);
-    TH1D* h = new TH1D("h", "h", 100, 0.01, 1);
-    TTree* tree = (TTree*)file->Get("rootTree");
+    // TTree::Draw fills the histogram that it finds by name in the current
+    // directory (the file). Deleting it removes it from there again.
+    auto h = std::make_unique<TH1D>("h", "h", 100, 0.01, 1);
     std::string command = branchName + ">>h";
     tree->Draw(command.c_str());
     m_extrapolatorWeights[layer] = h->GetMean();

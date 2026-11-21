@@ -146,7 +146,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     TVectorD* SigmaValues = m_SigmaValues[pcabin - 1];
     TVectorD* Gauss_means = m_Gauss_means[pcabin - 1];
     TVectorD* Gauss_rms = m_Gauss_rms[pcabin - 1];
-    std::vector<TFCS1DFunction*> cumulative = m_cumulative[pcabin - 1];
+    const std::vector<TFCS1DFunction*>& cumulative = m_cumulative[pcabin - 1];
 
     const std::vector<int>& layerNr = m_RelevantLayers;
 
