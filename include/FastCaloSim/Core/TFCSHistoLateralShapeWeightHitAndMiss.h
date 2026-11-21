@@ -13,13 +13,13 @@ public:
                                                  const char* title = nullptr);
   ~TFCSHistoLateralShapeWeightHitAndMiss() override;
   TFCSHistoLateralShapeWeightHitAndMiss(
-      const TFCSHistoLateralShapeWeightHitAndMiss&) = default;
+      const TFCSHistoLateralShapeWeightHitAndMiss&) = delete;
   TFCSHistoLateralShapeWeightHitAndMiss(
-      TFCSHistoLateralShapeWeightHitAndMiss&&) = default;
+      TFCSHistoLateralShapeWeightHitAndMiss&&) = delete;
   auto operator=(const TFCSHistoLateralShapeWeightHitAndMiss&)
-      -> TFCSHistoLateralShapeWeightHitAndMiss& = default;
+      -> TFCSHistoLateralShapeWeightHitAndMiss& = delete;
   auto operator=(TFCSHistoLateralShapeWeightHitAndMiss&&)
-      -> TFCSHistoLateralShapeWeightHitAndMiss& = default;
+      -> TFCSHistoLateralShapeWeightHitAndMiss& = delete;
 
   /// weight the energy of one hit in order to generate fluctuations. If the hit
   /// energy is 0, discard the hit
