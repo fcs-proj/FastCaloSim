@@ -14,13 +14,13 @@ public:
       const char* name = nullptr, const char* title = nullptr);
   ~TFCSHistoLateralShapeGausLogWeightHitAndMiss() override;
   TFCSHistoLateralShapeGausLogWeightHitAndMiss(
-      const TFCSHistoLateralShapeGausLogWeightHitAndMiss&) = default;
+      const TFCSHistoLateralShapeGausLogWeightHitAndMiss&) = delete;
   TFCSHistoLateralShapeGausLogWeightHitAndMiss(
-      TFCSHistoLateralShapeGausLogWeightHitAndMiss&&) = default;
+      TFCSHistoLateralShapeGausLogWeightHitAndMiss&&) = delete;
   auto operator=(const TFCSHistoLateralShapeGausLogWeightHitAndMiss&)
-      -> TFCSHistoLateralShapeGausLogWeightHitAndMiss& = default;
+      -> TFCSHistoLateralShapeGausLogWeightHitAndMiss& = delete;
   auto operator=(TFCSHistoLateralShapeGausLogWeightHitAndMiss&&)
-      -> TFCSHistoLateralShapeGausLogWeightHitAndMiss& = default;
+      -> TFCSHistoLateralShapeGausLogWeightHitAndMiss& = delete;
 
   /// weight the energy of one hit in order to generate fluctuations. If the hit
   /// energy is 0, discard the hit
