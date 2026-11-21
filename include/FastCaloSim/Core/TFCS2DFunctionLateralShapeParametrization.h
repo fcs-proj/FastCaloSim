@@ -16,13 +16,13 @@ public:
       const char* name = nullptr, const char* title = nullptr);
   ~TFCS2DFunctionLateralShapeParametrization() override;
   TFCS2DFunctionLateralShapeParametrization(
-      const TFCS2DFunctionLateralShapeParametrization&) = default;
+      const TFCS2DFunctionLateralShapeParametrization&) = delete;
   TFCS2DFunctionLateralShapeParametrization(
-      TFCS2DFunctionLateralShapeParametrization&&) = default;
+      TFCS2DFunctionLateralShapeParametrization&&) = delete;
   auto operator=(const TFCS2DFunctionLateralShapeParametrization&)
-      -> TFCS2DFunctionLateralShapeParametrization& = default;
+      -> TFCS2DFunctionLateralShapeParametrization& = delete;
   auto operator=(TFCS2DFunctionLateralShapeParametrization&&)
-      -> TFCS2DFunctionLateralShapeParametrization& = default;
+      -> TFCS2DFunctionLateralShapeParametrization& = delete;
 
   /// Status bit for FCS needs
   enum FCSStatusBits
