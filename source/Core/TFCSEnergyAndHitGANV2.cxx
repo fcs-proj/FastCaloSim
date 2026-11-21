@@ -234,7 +234,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     }
 
     if (get_number_of_bins() > 0) {
-      const auto bin = find_bin(simulstate, truth, extrapol);
+      // Select once: the selection may draw random numbers
+      const auto selected = get_bin(simulstate, truth, extrapol);
+      const auto bin = valid_bin(selected);
       if (bin) {
         const std::size_t ubin = *bin;
         for (unsigned int ichain = m_bin_start[ubin];
@@ -272,8 +274,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
       } else {
         FCS_MSG_WARNING("nothing to init for "
                         << get_variable_text(simulstate, truth, extrapol)
-                        << ": "
-                        << get_bin_text(get_bin(simulstate, truth, extrapol)));
+                        << ": " << get_bin_text(selected));
       }
     }
 
@@ -459,7 +460,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             }
 
             if (get_number_of_bins() > 0) {
-              const auto bin = find_bin(simulstate, truth, extrapol);
+              // Select once: the selection may draw random numbers
+              const auto selected = get_bin(simulstate, truth, extrapol);
+              const auto bin = valid_bin(selected);
               if (bin) {
                 const std::size_t ubin = *bin;
                 for (unsigned int ichain =
@@ -501,7 +504,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                 FCS_MSG_WARNING(
                     "nothing to do for "
                     << get_variable_text(simulstate, truth, extrapol) << ": "
-                    << get_bin_text(get_bin(simulstate, truth, extrapol)));
+                    << get_bin_text(selected));
               }
             } else {
               FCS_MSG_WARNING("no bins defined, is this intended?");

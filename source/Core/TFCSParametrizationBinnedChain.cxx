@@ -56,12 +56,9 @@ auto TFCSParametrizationBinnedChain::get_bin(
   return 0;
 }
 
-auto TFCSParametrizationBinnedChain::find_bin(
-    TFCSSimulationState& simulstate,
-    const TFCSTruthState* truth,
-    const TFCSExtrapolationState* extrapol) const -> std::optional<std::size_t>
+auto TFCSParametrizationBinnedChain::valid_bin(
+    std::optional<std::size_t> bin) const -> std::optional<std::size_t>
 {
-  const auto bin = get_bin(simulstate, truth, extrapol);
   if (bin && *bin < get_number_of_bins()) {
     return bin;
   }
@@ -111,7 +108,9 @@ auto TFCSParametrizationBinnedChain::simulate(
 
         // Parametrizations of the bin of this particle
         if (get_number_of_bins() > 0) {
-          const auto bin = find_bin(simulstate, truth, extrapol);
+          // Select once: the selection may draw random numbers
+          const auto selected = get_bin(simulstate, truth, extrapol);
+          const auto bin = valid_bin(selected);
           if (bin) {
             for (unsigned int ichain = m_bin_start[*bin];
                  ichain < m_bin_start[*bin + 1];
@@ -128,9 +127,9 @@ auto TFCSParametrizationBinnedChain::simulate(
               }
             }
           } else {
-            FCS_MSG_WARNING(
-                "for " << get_variable_text(simulstate, truth, extrapol) << ": "
-                       << get_bin_text(get_bin(simulstate, truth, extrapol)));
+            FCS_MSG_WARNING("for "
+                            << get_variable_text(simulstate, truth, extrapol)
+                            << ": " << get_bin_text(selected));
           }
         } else {
           FCS_MSG_WARNING("no bins defined, is this intended?");

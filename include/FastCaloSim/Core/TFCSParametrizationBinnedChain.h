@@ -59,10 +59,9 @@ public:
   void Print(Option_t* option = "") const override;
 
 protected:
-  /// The bin to simulate if it is one of the bins of this chain
-  auto find_bin(TFCSSimulationState& simulstate,
-                const TFCSTruthState* truth,
-                const TFCSExtrapolationState* extrapol) const
+  /// The selected bin if it is one of the bins of this chain. get_bin() must
+  /// be called only once per selection: it may draw random numbers.
+  auto valid_bin(std::optional<std::size_t> bin) const
       -> std::optional<std::size_t>;
   /// The bin number, or "none"
   static auto bin_label(std::optional<std::size_t> bin) -> std::string;
