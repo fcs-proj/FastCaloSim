@@ -22,14 +22,18 @@ namespace FastCaloSim
 /// distribution c[0..n-1] (non-decreasing) with a uniform random number u.
 ///
 /// upper_bound(c, u) returns exactly what std::ranges::upper_bound returns
-/// (the index of the first element with u < c[i], or n), in O(1) on average
-/// instead of O(log n): the range of u is divided into 2^b equal buckets, at
-/// least as many as there are bins, and the table stores the result for the
+/// (the index of the first element with u < c[i], or n), with a search over
+/// a few elements instead of all of c: the range of u is divided into 2^b
+/// equal buckets, one per 4 to 8 bins, and the table stores the result for the
 /// lower edge of every bucket. The result for a u inside a bucket lies between
 /// the results for the bucket's two edges, so only that part of c is searched,
-/// on average less than one element. The bucket of u and its edges are powers
-/// of two apart and computed without rounding, so the result is the same as
-/// that of the full search for every u.
+/// on average 4 to 8 elements. The bucket of u and its edges are powers of two
+/// apart and computed without rounding, so the result is the same as that of
+/// the full search for every u.
+///
+/// More buckets would make the search a little faster (one bucket per bin:
+/// about 1% of the whole simulation) but cost much more memory: the
+/// production parametrization has 3.8e8 bins in its 2D histograms.
 ///
 /// Two kinds of cumulative distributions are supported:
 ///   - float values in [0, 1], searched with a double u in [0, 1); for any
@@ -72,8 +76,13 @@ public:
       return;
     }
 
-    // At least as many buckets as bins, at most 2^24
-    m_bits = std::min(static_cast<unsigned>(std::bit_width(m_size - 1)), 24U);
+    // 2^s_bins_per_bucket_log2 / 2 to 2^s_bins_per_bucket_log2 bins per
+    // bucket, at most 2^24 buckets
+    const auto bits_for_bins = static_cast<unsigned>(std::bit_width(m_size));
+    m_bits = std::min(bits_for_bins > s_bins_per_bucket_log2
+                          ? bits_for_bins - s_bins_per_bucket_log2
+                          : 0U,
+                      24U);
     const std::size_t nbuckets = std::size_t {1} << m_bits;
     m_nbuckets = static_cast<double>(nbuckets);
     m_first.resize(nbuckets + 1);
@@ -129,17 +138,23 @@ private:
     return index_of(cumulative, it);
   }
 
-  /// The result lies between the results for the two edges of bucket k
+  /// The result lies between the results for the two edges of bucket k:
+  /// binary search in that range, without branches on the comparisons
   auto search(std::span<const T> cumulative, std::size_t k, rnd_type u) const
       -> std::size_t
   {
-    const auto it = std::ranges::upper_bound(
-        cumulative.begin() + m_first[k],
-        cumulative.begin() + m_first[k + 1],
-        u,
-        std::ranges::less {},
-        [](T c) -> rnd_type { return static_cast<rnd_type>(c); });
-    return index_of(cumulative, it);
+    std::size_t first = m_first[k];
+    std::size_t length = m_first[k + 1] - first;
+    if (length == 0) {
+      return first;
+    }
+    // The elements before first are <= u, those from first + length on > u
+    while (length > 1) {
+      const std::size_t half = length / 2;
+      first += u < static_cast<rnd_type>(cumulative[first + half]) ? 0 : half;
+      length -= half;
+    }
+    return first + (u < static_cast<rnd_type>(cumulative[first]) ? 0 : 1);
   }
 
   /// Is the lower edge of bucket k smaller than the value c?
@@ -152,6 +167,9 @@ private:
       return (std::uint64_t {k} << (32U - m_bits)) < std::uint64_t {c};
     }
   }
+
+  /// One table entry per 4 to 8 bins
+  static constexpr unsigned s_bins_per_bucket_log2 = 3;
 
   /// m_first[k]: result of the search for the lower edge of bucket k
   std::vector<std::uint32_t> m_first;
