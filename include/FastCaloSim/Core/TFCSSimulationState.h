@@ -70,10 +70,20 @@ public:
   // maps the cell id to the energy deposited in the cell
   using cellmap = std::unordered_map<unsigned long long, double>;
 
-  auto cells() -> cellmap& { return m_cells; }
+  // The cells are changed only through deposit(), scale_cells() and clear()
   auto cells() const -> const cellmap& { return m_cells; }
 
+  // Add energy to a cell
   void deposit(unsigned long long cell_id, double E);
+
+  // Multiply the energy of each cell by factor(cell_id)
+  template<class Factor>
+  void scale_cells(const Factor& factor)
+  {
+    for (auto& [cell_id, energy] : m_cells) {
+      energy *= factor(cell_id);
+    }
+  }
 
   void Print(Option_t* option = "") const override;
 
@@ -95,6 +105,38 @@ private:
   std::unordered_map<std::size_t, double> m_Efrac;
 
   cellmap m_cells;
+
+  // The cell of the last deposit: consecutive hits often go to the same cell.
+  // It points into m_cells (elements of an unordered_map keep their address
+  // when it rehashes, only erasing invalidates it: reset it then). Copies and
+  // moves reset it on both sides: a copy has its own cells, and a move takes
+  // the cells of the moved-from state along.
+  struct LastCell
+  {
+    unsigned long long id {0};
+    double* energy {nullptr};
+
+    LastCell() = default;
+    LastCell(const LastCell& /*other*/) noexcept {}
+    LastCell(LastCell&& other) noexcept { other.reset(); }
+    auto operator=(const LastCell& other) noexcept -> LastCell&
+    {
+      if (this != &other) {
+        reset();
+      }
+      return *this;
+    }
+    auto operator=(LastCell&& other) noexcept -> LastCell&
+    {
+      reset();
+      other.reset();
+      return *this;
+    }
+    ~LastCell() = default;
+
+    void reset() { energy = nullptr; }
+  };
+  LastCell m_last_cell;  //!
 
 public:
   // Auxiliary information: values that parametrizations store for each other
