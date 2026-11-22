@@ -4,6 +4,7 @@
 
 #include <G4MagneticField.hh>
 
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastSimModel.hh"
 #include "G4Box.hh"
 #include "G4FieldManager.hh"
@@ -110,10 +111,16 @@ void DetectorConstruction::add_cylinder(G4LogicalVolume* world_log,
                                         TestHelpers::Cylinder cyl,
                                         const std::string& name)
 {
+  // A cylinder that starts at z = 0 is placed as one volume over [-zmax, zmax].
+  // Its two halves would touch at z = 0, and a particle starting on the
+  // boundary at z = 0 (eta = 0) would move along their common face without
+  // entering either of them.
+  const bool symmetric = FastCaloSim::exactly_equal(cyl.zmin, 0.0);
+  const double length =
+      symmetric ? 2 * cyl.zmax : std::abs(cyl.zmax - cyl.zmin);
+
   // Compute the cylinder half-length (rounded to float precision)
-  const auto halfLengthF =
-      static_cast<float>(std::abs(cyl.zmax - cyl.zmin) / 2);
-  const auto halfLength = static_cast<double>(halfLengthF);
+  const auto halfLength = static_cast<double>(static_cast<float>(length / 2));
 
   // Create the solid volume
   auto* solid =
@@ -121,24 +128,29 @@ void DetectorConstruction::add_cylinder(G4LogicalVolume* world_log,
   // Create the logical volume
   auto* logic = new G4LogicalVolume(solid, world_log->GetMaterial(), name);
 
-  // Place a cylinder in the positive z half space
-  new G4PVPlacement(nullptr,
-                    G4ThreeVector(0, 0, cyl.zmin + halfLength),
-                    logic,
-                    name + "::POS",
-                    world_log,
-                    false,
-                    0,
-                    true);
-  // Place a cylinder in the negative z half space
-  new G4PVPlacement(nullptr,
-                    G4ThreeVector(0, 0, -(cyl.zmin + halfLength)),
-                    logic,
-                    name + "::NEG",
-                    world_log,
-                    false,
-                    1,
-                    true);
+  if (symmetric) {
+    new G4PVPlacement(
+        nullptr, G4ThreeVector(), logic, name, world_log, false, 0, true);
+  } else {
+    // Place a cylinder in the positive z half space
+    new G4PVPlacement(nullptr,
+                      G4ThreeVector(0, 0, cyl.zmin + halfLength),
+                      logic,
+                      name + "::POS",
+                      world_log,
+                      false,
+                      0,
+                      true);
+    // Place a cylinder in the negative z half space
+    new G4PVPlacement(nullptr,
+                      G4ThreeVector(0, 0, -(cyl.zmin + halfLength)),
+                      logic,
+                      name + "::NEG",
+                      world_log,
+                      false,
+                      1,
+                      true);
+  }
 
   // Add the cylinder to the (fast simulation) region
   region->AddRootLogicalVolume(logic);

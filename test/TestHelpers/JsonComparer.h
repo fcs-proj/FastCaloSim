@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -21,8 +22,8 @@ using json = nlohmann::json;
  *
  * The JsonComparer class provides functionality to compare two JSON files and
  * check for differences between them. It supports comparing objects, arrays,
- * numbers, and other value types. The comparison can be customized by setting
- * a tolerance value (percent) for numeric comparisons.
+ * numbers, and other value types. Numbers agree if they differ by at most
+ * the tolerance times the larger magnitude, or times 1 for magnitudes below 1.
  */
 class JsonComparer
 {
@@ -176,8 +177,12 @@ private:
   {
     double const val1 = json1.get<double>();
     double const val2 = json2.get<double>();
-    double const percent_diff =
-        std::fabs(val1 - val2) / std::max(std::fabs(val1), std::fabs(val2));
+    // Relative difference for values of magnitude 1 and above, absolute
+    // difference below: a relative difference is meaningless near zero (e.g.
+    // a coordinate or angle crossing zero), and the stored units (m, rad,
+    // MeV) make 1 the natural scale
+    double const percent_diff = std::fabs(val1 - val2)
+        / std::max({std::fabs(val1), std::fabs(val2), 1.0});
     if (percent_diff > m_tolerance) {
       print_difference("Value mismatch", val1, val2, path, percent_diff * 100);
       return false;

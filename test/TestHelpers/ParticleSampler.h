@@ -60,27 +60,24 @@ public:
     direction = direction.unit();
 
     // Check for intersection of particle with ID-Calo boundary
-    for (auto& cylinder : m_IDCaloBoundary.getCylinders()) {
+    for (const auto& [name, boundary_cylinder] :
+         m_IDCaloBoundary.getCylinders())
+    {
+      Cylinder cylinder = boundary_cylinder;
       if (direction.eta() < 0) {
-        // IDCaloBoundary cylinders are only defined for positive z
-        // need to flip cylinders if eta < 0
-        cylinder.second.zmin = -cylinder.second.zmax;
-        cylinder.second.zmax = -cylinder.second.zmin;
+        // IDCaloBoundary cylinders are only defined for positive z: mirror
+        // this copy of the cylinder to negative z
+        const double zmin = cylinder.zmin;
+        cylinder.zmin = -cylinder.zmax;
+        cylinder.zmax = -zmin;
       }
 
-      auto result = intersects(cylinder.second, direction);
+      auto result = intersects(cylinder, direction);
       if (result.intersects) {
-        Particle particle = Particle {.pid = pid,
-                                      .ekin = ekin,
-                                      .pos = result.intersection,
-                                      .dir = direction};
-        // Move particle slightly inside the boundary
-        // This is currently a hack as particles do not seem
-        // to be affected by magnetic field otherwise
-        // Interestingly, magnetic field seems to get activated for eta<0 ?
-        // TODO: discuss with Geant4 experts
-        small_move_to_ID(particle, cylinder.second);
-        return particle;
+        return Particle {.pid = pid,
+                         .ekin = ekin,
+                         .pos = result.intersection,
+                         .dir = direction};
       }
     }
 
@@ -183,29 +180,6 @@ private:
     }
 
     return result;
-  }
-
-  static auto small_move_to_ID(Particle& particle,
-                               Cylinder& cylinder,
-                               float epsilon = static_cast<float>(0.01
-                                                                  * CLHEP::mm))
-      -> void
-  {
-    // The shifted coordinate is computed in double and rounded to float
-    const auto eps = static_cast<double>(epsilon);
-    if (cylinder.barrel) {
-      auto const new_r = static_cast<float>(particle.pos.perp() - eps);
-      particle.pos.setPerp(static_cast<double>(new_r));
-
-    } else {
-      if (particle.pos.eta() > 0) {
-        auto const new_z = static_cast<float>(particle.pos.z() - eps);
-        particle.pos.setZ(static_cast<double>(new_z));
-      } else {
-        auto const new_z = static_cast<float>(particle.pos.z() + eps);
-        particle.pos.setZ(static_cast<double>(new_z));
-      }
-    }
   }
 };
 
