@@ -85,7 +85,7 @@
             </dt>
             <dd><span></span></dd>
             <dt>
-              using <a href="#a917e15b46929bcae4fff4e586935fb4c" class="m-doc">AuxInfo_t</a> = std::variant&lt;bool, char, int, float, double, void*&gt;
+              using <a href="#a8644b6df45ac494d22db46bcb61f1235" class="m-doc">AuxInfo_t</a> = std::variant&lt;bool, char, int, float, double&gt;
             </dt>
             <dd></dd>
           </dl>
@@ -224,21 +224,33 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a342287835e00ddbebb0521b0ae743400" class="m-doc-self">auxInfoEntry</a>(</span><span class="m-doc-wrap">std::uint32_t index) -&gt; std::pair&lt; AuxInfo_t &amp;, bool &gt;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a75b8f24f6470f1c4d9c45b16affaa456">
-              <span class="m-doc-wrap-bumper">void <a href="#a75b8f24f6470f1c4d9c45b16affaa456" class="m-doc-self">AddAuxInfoCleanup</a>(</span><span class="m-doc-wrap">const <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>* para)</span>
+            <dt id="a10be95ab8675135ba2eee254ffa1dda1">
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a10be95ab8675135ba2eee254ffa1dda1" class="m-doc-self">setAuxObject</a>(</span><span class="m-doc-wrap">std::uint32_t index,
+              T object) -&gt; T &amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a766224648465f492b22d772f502c1fdb">
-              <span class="m-doc-wrap-bumper">void <a href="#a766224648465f492b22d772f502c1fdb" class="m-doc-self">DoAuxInfoCleanup</a>(</span><span class="m-doc-wrap">)</span>
+            <dt id="a53bd512ee38fb506ce00855d4c3bce34">
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#a53bd512ee38fb506ce00855d4c3bce34" class="m-doc-self">getAuxObject</a>(</span><span class="m-doc-wrap">std::uint32_t index) -&gt; T *</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad2fa481c7a8476740a5f8ee92821c49d">
+              <div class="m-doc-template">template&lt;class T&gt;</div>
+              <span class="m-doc-wrap-bumper">auto <a href="#ad2fa481c7a8476740a5f8ee92821c49d" class="m-doc-self">getAuxObject</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; const T *</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a2d3396c06988260de4f478d186c5315b">
+              <span class="m-doc-wrap-bumper">void <a href="#a2d3396c06988260de4f478d186c5315b" class="m-doc-self">eraseAuxObject</a>(</span><span class="m-doc-wrap">std::uint32_t index)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
         </section>
         <section>
           <h2>Typedef documentation</h2>
-          <section class="m-doc-details" id="a917e15b46929bcae4fff4e586935fb4c"><div>
+          <section class="m-doc-details" id="a8644b6df45ac494d22db46bcb61f1235"><div>
             <h3>
-              using TFCSSimulationState::<wbr /><a href="#a917e15b46929bcae4fff4e586935fb4c" class="m-doc-self">AuxInfo_t</a> = std::variant&lt;bool, char, int, float, double, void*&gt;
+              using TFCSSimulationState::<wbr /><a href="#a8644b6df45ac494d22db46bcb61f1235" class="m-doc-self">AuxInfo_t</a> = std::variant&lt;bool, char, int, float, double&gt;
             </h3>
 <p>The value of an auxiliary information entry: one of these types, the one it was stored with</p>
           </div></section>

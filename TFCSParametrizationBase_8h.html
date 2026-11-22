@@ -59,8 +59,6 @@
               Reference
               <ul>
                 <li><a href="#nested-classes">Classes</a></li>
-                <li><a href="#enum-members">Enums</a></li>
-                <li><a href="#var-members">Variables</a></li>
               </ul>
             </li>
           </ul>
@@ -71,7 +69,7 @@
             <dt>
               class <a href="classTFCSParametrizationBase.html" class="m-doc">TFCSParametrizationBase</a>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt>
               struct <a href="structTFCSParametrizationBase_1_1Duplicate__t.html" class="m-doc">TFCSParametrizationBase::Duplicate_t</a>
             </dt>
@@ -81,35 +79,6 @@
             </dt>
             <dd></dd>
           </dl>
-        </section>
-        <section id="enum-members">
-          <h2><a href="#enum-members">Enums</a></h2>
-          <dl class="m-doc">
-            <dt>
-              <span class="m-doc-wrap-bumper">enum <a href="#a80cd7e243902338a2b5a365595433a1f" class="m-doc">FCSReturnCode</a>: int { </span><span class="m-doc-wrap"><a href="#a80cd7e243902338a2b5a365595433a1fad0abda22e5e136e1273c332aed2030b2" class="m-doc">FCSFatal</a> = 0,
-              <a href="#a80cd7e243902338a2b5a365595433a1fad4da4c5b226d80c8129867a2126a3a3e" class="m-doc">FCSSuccess</a> = 1,
-              <a href="#a80cd7e243902338a2b5a365595433a1fa0da7bb2c2b927e233fa135f20cbf0dbe" class="m-doc">FCSRetry</a> = 2 }</span>
-            </dt>
-            <dd></dd>
-          </dl>
-        </section>
-        <section id="var-members">
-          <h2><a href="#var-members">Variables</a></h2>
-          <dl class="m-doc">
-            <dt id="a7942c4626c9a4b0d1bb0d581912d1a78">
-              int <a href="#a7942c4626c9a4b0d1bb0d581912d1a78" class="m-doc-self">FCS_RETRY_COUNT</a> <span class="m-label m-flat m-primary">constexpr</span>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section>
-          <h2>Enum documentation</h2>
-          <section class="m-doc-details" id="a80cd7e243902338a2b5a365595433a1f"><div>
-            <h3>
-              enum <a href="#a80cd7e243902338a2b5a365595433a1f" class="m-doc-self">FCSReturnCode</a>: int
-            </h3>
-<p>Base class for all <a href="namespaceFastCaloSim.html" class="m-doc">FastCaloSim</a> parametrizations Functionality in derivde classes is provided through the simulate method. The simulate method takes a <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a> and a <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a> object as input and provides output in a <a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>. Parametrizations contain information on the pdgid, range in Ekin and range in eta of particles to which they can be applied. Several basic types of parametrization exists:</p><ul><li>classes derived from <a href="classTFCSEnergyParametrization.html" class="m-doc">TFCSEnergyParametrization</a> simulate energy information which is written into <a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a></li><li>classes derived from <a href="classTFCSLateralShapeParametrization.html" class="m-doc">TFCSLateralShapeParametrization</a> simulate cell level information for specific calorimeter layers and bins &quot;Ebin&quot; in the energy parametrization</li><li>classes derived from <a href="classTFCSParametrizationChain.html" class="m-doc">TFCSParametrizationChain</a> call other parametrization. Depending on the derived class, these other parametrization are only called under special conditions</li><li>a special case of <a href="classTFCSLateralShapeParametrization.html" class="m-doc">TFCSLateralShapeParametrization</a> is <a href="classTFCSLateralShapeParametrizationHitBase.html" class="m-doc">TFCSLateralShapeParametrizationHitBase</a> for hit level shape simulation through the simulate_hit method. Hit level simulation is controlled through the special chain <a href="classTFCSLateralShapeParametrizationHitChain.html" class="m-doc">TFCSLateralShapeParametrizationHitChain</a>. Return codes for the simulate function. FCSRetry + n asks for up to n retries, so the underlying type is fixed to int to make all those values valid return codes.</li></ul>
-          </div></section>
         </section>
       </div>
     </div>

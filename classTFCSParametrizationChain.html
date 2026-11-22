@@ -326,7 +326,7 @@
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
               const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) const -&gt; FCSReturnCode <span class="m-label m-warning">protected</span></span></span>
             </h3>
-<p>Simulate one parametrization of the chain. A parametrization asks to be simulated again by returning FCSRetry + n, which allows up to n retries. With <a href="classTFCSParametrizationChain.html#ac28ca7821ff28c0dec891c981920617c" class="m-doc">RetryChainFromStart()</a>, that request is returned to the caller instead, which then restarts the whole chain (simulate_with_restarts).</p>
+<p>Simulate one parametrization of the chain. A parametrization asks to be simulated again by returning FCSReturnCode::retry(n), which allows up to n retries. With <a href="classTFCSParametrizationChain.html#ac28ca7821ff28c0dec891c981920617c" class="m-doc">RetryChainFromStart()</a>, that request is returned to the caller instead, which then restarts the whole chain (simulate_with_restarts).</p>
           </div></section>
           <section class="m-doc-details" id="a2f6a3bf19ea4d0aa4399570a6ad8dc2a"><div>
             <h3>
@@ -336,7 +336,7 @@
               <span class="m-doc-wrap-bumper">auto TFCSParametrizationChain::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2f6a3bf19ea4d0aa4399570a6ad8dc2a" class="m-doc-self">simulate_with_restarts</a>(</span><span class="m-doc-wrap">const char* name,
               Pass pass) const -&gt; FCSReturnCode <span class="m-label m-warning">protected</span></span></span>
             </h3>
-<p>Run one pass over the chain, pass() -&gt; FCSReturnCode, and repeat it from the start as long as it returns FCSRetry + n, at most n times. <code>name</code> identifies the caller in the log messages.</p>
+<p>Run one pass over the chain, pass() -&gt; <a href="classFCSReturnCode.html" class="m-doc">FCSReturnCode</a>, and repeat it from the start as long as it returns FCSReturnCode::retry(n), at most n times. <code>name</code> identifies the caller in the log messages.</p>
           </div></section>
         </section>
       </div>
