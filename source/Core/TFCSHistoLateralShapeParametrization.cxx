@@ -2,7 +2,8 @@
 
 #include <algorithm>
 #include <cmath>
-#include <optional>
+#include <utility>
+#include <vector>
 
 #include "FastCaloSim/Core/TFCSHistoLateralShapeParametrization.h"
 
@@ -32,44 +33,48 @@ TFCSHistoLateralShapeParametrization::~TFCSHistoLateralShapeParametrization() =
 void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
 {
   TFCSLateralShapeParametrizationHitBase::set_geometry(geo);
-  auto& contents = m_hist.get_HistoContents();
-  if (!contents.empty()) {
-    std::optional<std::size_t> first_fix_bin;
-    for (std::size_t i = contents.size(); i-- > 0;) {
+  if (std::ranges::none_of(m_hist.get_HistoContents(),
+                           [](float c) { return std::isnan(c); }))
+  {
+    return;
+  }
+
+  // Fixed on a copy, which then replaces the contents of the histogram (and
+  // rebuilds its search table)
+  std::vector<float> contents = m_hist.get_HistoContents();
+  std::size_t first_fix_bin = contents.size();
+  for (std::size_t i = contents.size(); i-- > 0;) {
+    if (std::isnan(contents[i])) {
+      FCS_MSG_DEBUG("nan in histo content for " << GetTitle() << ", bin[" << i
+                                                << "]=" << contents[i]
+                                                << " -> 1");
+      contents[i] = 1;
+      first_fix_bin = i;
+    }
+  }
+
+  if (first_fix_bin == 0) {
+    FCS_MSG_WARNING("nan in histo content for "
+                    << GetTitle()
+                    << " for all bins. Fixed to probability 1 causing hits "
+                       "to be deposited in the shower center");
+  } else {
+    std::size_t last_fix_bin = 0;
+    for (std::size_t i = 0; i < contents.size(); ++i) {
       if (std::isnan(contents[i])) {
         FCS_MSG_DEBUG("nan in histo content for " << GetTitle() << ", bin[" << i
                                                   << "]=" << contents[i]
-                                                  << " -> 1");
-        contents[i] = 1;
-        first_fix_bin = i;
+                                                  << " -> 0");
+        contents[i] = 0;
+        last_fix_bin = i;
       }
     }
-    if (!first_fix_bin) {
-      return;
-    }
-
-    if (*first_fix_bin == 0) {
-      FCS_MSG_WARNING("nan in histo content for "
-                      << GetTitle()
-                      << " for all bins. Fixed to probability 1 causing hits "
-                         "to be deposited in the shower center");
-    } else {
-      std::size_t last_fix_bin = 0;
-      for (std::size_t i = 0; i < contents.size(); ++i) {
-        if (std::isnan(contents[i])) {
-          FCS_MSG_DEBUG("nan in histo content for " << GetTitle() << ", bin["
-                                                    << i << "]=" << contents[i]
-                                                    << " -> 0");
-          contents[i] = 0;
-          last_fix_bin = i;
-        }
-      }
-      FCS_MSG_WARNING("nan in histo content for "
-                      << GetTitle() << ". Fixed up to bin " << last_fix_bin
-                      << " with probability 0 and beyond bin " << *first_fix_bin
-                      << " with probability 1.");
-    }
+    FCS_MSG_WARNING("nan in histo content for "
+                    << GetTitle() << ". Fixed up to bin " << last_fix_bin
+                    << " with probability 0 and beyond bin " << first_fix_bin
+                    << " with probability 1.");
   }
+  m_hist.set_HistoContents(std::move(contents));
 }
 
 auto TFCSHistoLateralShapeParametrization::get_sigma2_fluctuation(

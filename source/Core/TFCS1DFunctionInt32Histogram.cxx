@@ -1,13 +1,11 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
 
 #include "FastCaloSim/Core/TFCS1DFunctionInt32Histogram.h"
 
-#include "FastCaloSim/Definitions/Index.h"
 #include "TH1.h"
 
 //=============================================
@@ -50,6 +48,7 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
                                << " integral=" << integral << " is <=0");
     m_HistoBorders.resize(0);
     m_HistoContents.resize(0);
+    m_guide.build(m_HistoContents);
     return;
   }
 
@@ -64,6 +63,7 @@ void TFCS1DFunctionInt32Histogram::Initialize(const TH1* hist)
     m_HistoContents[ibin] = static_cast<HistoContent_t>(
         s_MaxValue * (temp_HistoContents[ibin] / integral));
   }
+  m_guide.build(m_HistoContents);
 }
 
 auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
@@ -72,8 +72,9 @@ auto TFCS1DFunctionInt32Histogram::rnd_to_fct(double rnd) const -> double
     return 0;
   }
   const auto int_rnd = static_cast<HistoContent_t>(s_MaxValue * rnd);
-  auto it = std::ranges::upper_bound(m_HistoContents, int_rnd);
-  auto ibin = FastCaloSim::index_of(m_HistoContents, it);
+  // Same bin as std::ranges::upper_bound(m_HistoContents, int_rnd), but in
+  // O(1) on average
+  auto ibin = m_guide.upper_bound(m_HistoContents, int_rnd);
   if (ibin >= m_HistoContents.size()) {
     ibin = m_HistoContents.size() - 1;
   }

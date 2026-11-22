@@ -89,6 +89,8 @@
 #pragma link C++ class TFCS1DFunction + ;
 #pragma link C++ class TFCS1DFunctionHistogram + ;
 #pragma link C++ class TFCS1DFunctionInt32Histogram + ;
+// Build the transient search table after reading the contents
+#pragma read sourceClass="TFCS1DFunctionInt32Histogram" targetClass="TFCS1DFunctionInt32Histogram" version="[1-]" source="" target="m_guide" code="{ m_guide.build(newObj->get_HistoContents()); }"
 #pragma link C++ class TFCS1DFunctionRegression + ;
 #pragma link C++ class TFCS1DFunctionRegressionTF + ;
 
@@ -132,6 +134,8 @@
 
 #pragma link C++ class TFCS2DFunction + ;
 #pragma link C++ class TFCS2DFunctionHistogram + ;
+// Build the transient search table after reading the contents
+#pragma read sourceClass="TFCS2DFunctionHistogram" targetClass="TFCS2DFunctionHistogram" version="[1-]" source="" target="m_guide" code="{ m_guide.build(newObj->get_HistoContents()); }"
 #pragma link C++ class FastCaloSim::MLogging + ;
 // MLogging was called ISF_FCS::MLogging when the library still lived in
 // Athena. Old parametrization files reference that name in their streamer
