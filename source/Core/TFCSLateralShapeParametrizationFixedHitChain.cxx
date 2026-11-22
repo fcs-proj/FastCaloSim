@@ -1,5 +1,8 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cstddef>
+#include <limits>
+
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFixedHitChain.h"
 
 #include "CLHEP/Random/RandGaussZiggurat.h"
@@ -31,10 +34,13 @@ auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
     bool success,
     double sum_E_hits) const -> bool
 {
-  (void)success;  // unused parameter
-  (void)sum_E_hits;  // unused parameter
   (void)truth;  // unused parameter
   (void)extrapol;  // unused parameter
+
+  if (!success) {
+    // The hit simulation failed => Nothing changed => Still not done
+    return false;
+  }
 
   if (!simulstate.hasAuxInfo("FCSHitChainNHits"_FCShash)) {
     FCS_MSG_ERROR("FCSHitChainNHits aux-info not set - aborting simulation!");
@@ -50,43 +56,20 @@ auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
     return true;
   }
 
-  auto const nhit = static_cast<unsigned int>(nhit_signed);
-
-  long unsigned int const current_hit = hit.idx();
-
-  // Take care of layer energy updating.
-  // Needed for the phi modulation!
-  bool const done = current_hit >= nhit;
-  if (!done) {
-    double sumEhit = 0;
-    if (simulstate.hasAuxInfo("FCSFixedHitChainEnergySum"_FCShash)
-        && hit.idx() > 0)
-    {
-      sumEhit =
-          simulstate.getAuxInfo<double>("FCSFixedHitChainEnergySum"_FCShash);
-    }
-
-    sumEhit += hit.E();
-    simulstate.setAuxInfo<double>("FCSFixedHitChainEnergySum"_FCShash, sumEhit);
-  } else {
-    if (!simulstate.hasAuxInfo("FCSFixedHitChainEnergySum"_FCShash)) {
-      simulstate.setAuxInfo<double>("FCSFixedHitChainEnergySum"_FCShash, 0.);
-    }
-
-    double const old_energy = simulstate.E(calosample());
-    auto const new_energy =
-        simulstate.getAuxInfo<double>("FCSFixedHitChainEnergySum"_FCShash);
-
-    double const energy_difference = new_energy - old_energy;
-
-    simulstate.set_E(simulstate.E() + energy_difference);
-    simulstate.set_E(calosample(), new_energy);
-
-    if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-      simulstate.set_Efrac(calosample(), new_energy / simulstate.E());
-    }
-    simulstate.setAuxInfo<double>("FCSFixedHitChainEnergySum"_FCShash, 0.);
+  if (hit.idx() < static_cast<std::size_t>(nhit_signed)) {
+    return false;
   }
 
-  return done;
+  // All hits are simulated: the layer energy becomes the energy of these hits
+  // (needed for the phi modulation)
+  double const old_energy = simulstate.E(calosample());
+  double const energy_difference = sum_E_hits - old_energy;
+
+  simulstate.set_E(simulstate.E() + energy_difference);
+  simulstate.set_E(calosample(), sum_E_hits);
+
+  if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
+    simulstate.set_Efrac(calosample(), sum_E_hits / simulstate.E());
+  }
+  return true;
 }
