@@ -162,6 +162,25 @@ TEST(RTreeTests, TieFarFromAllCells)
   }
 }
 
+TEST(RTreeTests, ManyNearestCellsTied)
+{
+  // Cells 7, 3, 9 and 5 have the same rectangle, at eta in [0, 1]; the other
+  // cells are at eta >= 200. The position at eta = 60 is equally near to the
+  // four (and so are their centers): the smallest ID
+  std::vector<Cell> cells;
+  for (const uint64_t id : std::array<uint64_t, 4> {7, 3, 9, 5}) {
+    cells.push_back(eta_phi_cell(id, 0.5, 0.0, 1.0, 0.2));
+  }
+  for (uint64_t i = 200; i <= 300; ++i) {
+    cells.push_back(
+        eta_phi_cell(1000 + i, static_cast<double>(i), 0.0, 1.0, 0.2));
+  }
+  const RTree rtree(kEtaPhi, cells);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(60, 0.0)), 3);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(60, 0.05)), 3);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(-60, 1.0)), 3);
+}
+
 TEST(RTreeTests, CellsOfVeryDifferentWidths)
 {
   // The median cell width is far smaller than the extent of the layer
@@ -305,18 +324,24 @@ protected:
       return cell_id == best->cell_id;
     }
 
-    // No rectangle contains (u, v): a cell with a rectangle nearest to it
+    // No rectangle contains (u, v): of the rectangles nearest to it, the
+    // nearest center, then the smaller ID
     double min_distance2 = std::numeric_limits<double>::infinity();
     for (const auto& r : rects) {
       min_distance2 = std::min(min_distance2, r.distance2(u, v));
     }
-    return std::ranges::any_of(rects,
-                               [&](const Rect& r) -> bool
-                               {
-                                 return r.cell_id == cell_id
-                                     && FastCaloSim::exactly_equal(
-                                            r.distance2(u, v), min_distance2);
-                               });
+    for (const auto& r : rects) {
+      if (!FastCaloSim::exactly_equal(r.distance2(u, v), min_distance2)) {
+        continue;
+      }
+      if (best == nullptr
+          || std::pair(r.center_distance2(u, v), r.cell_id)
+              < std::pair(best->center_distance2(u, v), best->cell_id))
+      {
+        best = &r;
+      }
+    }
+    return best != nullptr && cell_id == best->cell_id;
   }
 };
 }  // namespace
@@ -363,6 +388,26 @@ TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
         points.push_back({u_mid, std::nextafter(v, -inf)});
         points.push_back({u_mid, std::nextafter(v, inf)});
       }
+    }
+
+    // Positions anywhere around the layer, many of them in holes of the
+    // layer or beyond its edges, where the R-tree finds the nearest cell
+    double u_lo = std::numeric_limits<double>::infinity();
+    double v_lo = u_lo;
+    double u_hi = -u_lo;
+    double v_hi = -u_lo;
+    for (const auto& r : rects) {
+      u_lo = std::min(u_lo, r.u_min);
+      v_lo = std::min(v_lo, r.v_min);
+      u_hi = std::max(u_hi, r.u_max);
+      v_hi = std::max(v_hi, r.v_max);
+    }
+    std::uniform_real_distribution<double> u_around(u_lo - 0.5 * (u_hi - u_lo),
+                                                    u_hi + 0.5 * (u_hi - u_lo));
+    std::uniform_real_distribution<double> v_around(v_lo - 0.5 * (v_hi - v_lo),
+                                                    v_hi + 0.5 * (v_hi - v_lo));
+    for (int i = 0; i < 1000; ++i) {
+      points.push_back({u_around(rng), v_around(rng)});
     }
 
     for (const auto& [u, v] : points) {
