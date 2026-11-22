@@ -54,8 +54,10 @@ auto TFCSBinnedShowerBase::simulate(
   // select a random event from the library
   // NOTE: This is ATLAS specific
   // layer 2 is EMB2
+  // The event library is made for positive eta; negative eta uses it mirrored
+  // (see simulate_hit), so the reference layer is chosen by |eta|
   std::size_t reference_layer = 2;
-  if (extrapol->eta(reference_layer, FastCaloSim::SubPos::MID) > 1.4)
+  if (std::abs(extrapol->eta(reference_layer, FastCaloSim::SubPos::MID)) > 1.4)
   {  // Endcap becomes more relevant
     // NOTE: This is ATLAS specific
     // layer 6 is EME2
@@ -125,8 +127,9 @@ auto TFCSBinnedShowerBase::simulate_hit(
   hit.set_E(E);
 
   // NOTE: this is ATLAS dependent
-  // layer 21 is FCAL0
-  if (layer_index <= 21) {
+  // layers 0 to 20 are in (eta, phi); the FCAL layers from 21 (FCAL0) on are
+  // in (x, y, z), as in TFCSEnergyAndHitGANV2
+  if (layer_index <= 20) {
     double delta_eta_mm = r * std::cos(alpha);
     double delta_phi_mm = r * std::sin(alpha);
 
