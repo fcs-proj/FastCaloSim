@@ -5,12 +5,16 @@
 ///////////////////////////////////////////////////////////////////
 
 // class header include
+#include <charconv>
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <system_error>
+#include <vector>
 
 #include "FastCaloSim/Core/TFCSGANEtaSlice.h"
 
@@ -206,10 +210,10 @@ void TFCSGANEtaSlice::ExtractExtrapolatorMeansFromInputs()
   }
 }
 
-auto TFCSGANEtaSlice::GetNetworkOutputs(
+auto TFCSGANEtaSlice::GetVoxelEnergyFractions(
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* /*extrapol*/,
-    TFCSSimulationState& simulstate) const -> VNetworkBase::NetworkOutputs
+    TFCSSimulationState& simulstate) const -> std::vector<double>
 {
   double randUniformZ = 0.;
   NetworkInputs inputs;
@@ -276,7 +280,21 @@ auto TFCSGANEtaSlice::GetNetworkOutputs(
   FCS_MSG_DEBUG("Start Network outputs ~~~~~~~~");
   FCS_MSG_DEBUG(VNetworkBase::representNetworkOutputs(outputs, 10000));
   FCS_MSG_DEBUG("End Network outputs ~~~~~~~~");
-  return outputs;
+
+  // The network names its outputs by the voxel number: index them once
+  std::vector<double> fractions(outputs.size());
+  for (const auto& [name, value] : outputs) {
+    std::size_t voxel = 0;
+    const char* const end = name.data() + name.size();
+    const auto [ptr, ec] = std::from_chars(name.data(), end, voxel);
+    if (ec != std::errc {} || ptr != end || voxel >= fractions.size()) {
+      FCS_MSG_ERROR("Network output " << name << " is not a voxel number below "
+                                      << fractions.size());
+      return {};
+    }
+    fractions[voxel] = value;
+  }
+  return fractions;
 }
 
 void TFCSGANEtaSlice::Print() const

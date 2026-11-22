@@ -41,16 +41,18 @@ public:
   using FitResultsPerLayer = std::map<int, std::vector<double>>;
   using ExtrapolatorWeights = std::map<int, double>;
   using NetworkInputs = std::map<std::string, std::map<std::string, double>>;
-  using NetworkOutputs = std::map<std::string, double>;
 
   auto LoadGAN() -> bool;
   void CalculateMeanPointFromDistributionOfR();
   void ExtractExtrapolatorMeansFromInputs();
 
-  auto GetNetworkOutputs(const TFCSTruthState* truth,
-                         const TFCSExtrapolationState* extrapol,
-                         TFCSSimulationState& simulstate) const
-      -> NetworkOutputs;
+  // Runs the network: the energy of each voxel as a fraction of the initial
+  // energy, indexed by the voxel number; empty if the network outputs are not
+  // named by the voxel numbers 0 to n-1
+  auto GetVoxelEnergyFractions(const TFCSTruthState* truth,
+                               const TFCSExtrapolationState* extrapol,
+                               TFCSSimulationState& simulstate) const
+      -> std::vector<double>;
 
   auto IsGanCorrectlyLoaded() const -> bool;
   auto GetFitResults() const -> const FitResultsPerLayer&
