@@ -153,15 +153,6 @@ public:
     m_AuxInfo[index] = val;
   }
 
-  // Auxiliary info to read and update in place with a single lookup: the
-  // stored entry, or a newly stored zero entry, and whether it was stored
-  // before
-  auto auxInfoEntry(std::uint32_t index) -> std::pair<AuxInfo_t&, bool>
-  {
-    auto [it, inserted] = m_AuxInfo.try_emplace(index);
-    return {it->second, !inserted};
-  }
-
   // Auxiliary objects: owned by the simulation state, so that they are
   // destroyed when they are replaced or erased, or with the state
   // Store an object, replacing a stored one, and return it

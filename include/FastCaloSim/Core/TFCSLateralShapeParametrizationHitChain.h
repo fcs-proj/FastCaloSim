@@ -80,12 +80,15 @@ public:
 protected:
   void PropagateMSGLevel(FastCaloSim::MSG::Level level) const;
 
+  // Called after each attempt of the hit loop: success tells whether the hit
+  // was simulated, sum_E_hits is the energy of all hits simulated so far
   virtual auto check_all_hits_simulated(
       TFCSLateralShapeParametrizationHitBase::Hit& hit,
       TFCSSimulationState& simulstate,
       const TFCSTruthState* truth,
       const TFCSExtrapolationState* extrapol,
-      bool success) const -> bool;
+      bool success,
+      double sum_E_hits) const -> bool;
 
   Chain_t m_chain;
 

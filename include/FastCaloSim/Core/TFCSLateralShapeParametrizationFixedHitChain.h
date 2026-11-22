@@ -19,7 +19,8 @@ protected:
       TFCSSimulationState& simulstate,
       const TFCSTruthState* truth,
       const TFCSExtrapolationState* extrapol,
-      bool success) const -> bool override;
+      bool success,
+      double sum_E_hits) const -> bool override;
 
 private:
   ClassDefOverride(TFCSLateralShapeParametrizationFixedHitChain,
