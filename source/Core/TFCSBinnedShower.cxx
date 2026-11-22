@@ -113,9 +113,10 @@ auto TFCSBinnedShower::find_best_match(double eta_center,
        ++event_index)
   {
     // Absolute eta difference. Normalized by the (usual) eta range of 0.05...
+    // The library is made for positive eta and used mirrored for negative eta
     const event_t& event = m_eventlibrary.at(event_index);
     const double eta_diff =
-        (static_cast<double>(event.center_eta) - eta_center) / 0.05;
+        (static_cast<double>(event.center_eta) - std::abs(eta_center)) / 0.05;
 
     // Logarithmic energy difference. Use power of two (distance between usual
     // energy points) as reasonable distance measure.
