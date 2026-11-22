@@ -102,23 +102,10 @@ public:
   auto upper_bound(std::span<const T> cumulative, rnd_type u) const
       -> std::size_t
   {
-    if constexpr (std::same_as<T, float>) {
-      if (m_first.empty() || cumulative.size() != m_size
-          || !(u >= 0.0 && u < 1.0))
-      {
-        return full_search(cumulative, u);
-      }
-      // u * 2^b is exact, the bucket is its integer part
-      const auto k = static_cast<std::size_t>(u * m_nbuckets);
-      return search(cumulative, k, u);
-    } else {
-      if (m_first.empty() || cumulative.size() != m_size) {
-        return full_search(cumulative, u);
-      }
-      const auto k =
-          static_cast<std::size_t>((std::uint64_t {u} << m_bits) >> 32U);
-      return search(cumulative, k, u);
+    if (m_first.empty() || cumulative.size() != m_size || !in_table_range(u)) {
+      return full_search(cumulative, u);
     }
+    return search(cumulative, bucket(u), u);
   }
 
   auto empty() const -> bool { return m_first.empty(); }
@@ -157,15 +144,30 @@ private:
     return first + (u < static_cast<rnd_type>(cumulative[first]) ? 0 : 1);
   }
 
-  /// Is the lower edge of bucket k smaller than the value c?
-  auto before(std::size_t k, T c) const -> bool
+  /// The table covers u in [0, 1) for float contents
+  static auto in_table_range(double u) -> bool { return u >= 0.0 && u < 1.0; }
+  /// and every u for integer contents
+  static auto in_table_range(std::uint32_t /*u*/) -> bool { return true; }
+
+  /// u * 2^b is exact, the bucket is its integer part
+  auto bucket(double u) const -> std::size_t
   {
-    if constexpr (std::same_as<T, float>) {
-      // k / 2^b is exact
-      return static_cast<double>(k) / m_nbuckets < static_cast<double>(c);
-    } else {
-      return (std::uint64_t {k} << (32U - m_bits)) < std::uint64_t {c};
-    }
+    return static_cast<std::size_t>(u * m_nbuckets);
+  }
+  /// The top b bits of u
+  auto bucket(std::uint32_t u) const -> std::size_t
+  {
+    return static_cast<std::size_t>((std::uint64_t {u} << m_bits) >> 32U);
+  }
+
+  /// Is the lower edge of bucket k smaller than the value c? k / 2^b is exact
+  auto before(std::size_t k, float c) const -> bool
+  {
+    return static_cast<double>(k) / m_nbuckets < static_cast<double>(c);
+  }
+  auto before(std::size_t k, std::uint32_t c) const -> bool
+  {
+    return (std::uint64_t {k} << (32U - m_bits)) < std::uint64_t {c};
   }
 
   /// One table entry per 4 to 8 bins
