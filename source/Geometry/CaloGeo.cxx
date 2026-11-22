@@ -14,8 +14,7 @@
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Geometry/CellStoreBuilder.h"
 
-auto CaloGeo::get_cell(std::size_t layer, const Position& pos) const
-    -> const Cell&
+auto CaloGeo::get_cell(std::size_t layer, const Position& pos) const -> Cell
 {
   auto found = m_layer_lookup.find(layer);
   if (found != m_layer_lookup.end()) {
@@ -24,7 +23,7 @@ auto CaloGeo::get_cell(std::size_t layer, const Position& pos) const
     // Check if an alternative geometry handler is set for the layer
     if (lookup.alt_geo_handler != nullptr) {
       // Delegate to alternative geometry handler
-      const Cell& cell = lookup.alt_geo_handler->get_cell(layer, pos);
+      Cell cell = lookup.alt_geo_handler->get_cell(layer, pos);
       // Make sure returned cell is valid
       if (!cell.is_valid()) {
         throw std::runtime_error(
@@ -46,7 +45,7 @@ auto CaloGeo::get_cell(std::size_t layer, const Position& pos) const
 auto CaloGeo::get_cell_id(std::size_t layer, const Position& pos) const
     -> unsigned long long
 {
-  const Cell& cell = get_cell(layer, pos);
+  const Cell cell = get_cell(layer, pos);
   return cell.id();
 }
 
@@ -69,13 +68,12 @@ auto CaloGeo::n_layers() const -> std::size_t
   return m_n_layers;
 }
 
-auto CaloGeo::get_cell(unsigned long long id) const -> const Cell&
+auto CaloGeo::get_cell(unsigned long long id) const -> Cell
 {
   return m_cell_store.get(id);
 }
 
-auto CaloGeo::get_cell_at_idx(std::size_t layer, size_t idx) const
-    -> const Cell&
+auto CaloGeo::get_cell_at_idx(std::size_t layer, size_t idx) const -> Cell
 {
   auto layer_it = m_layer_cell_ids.find(layer);
   if (layer_it == m_layer_cell_ids.end() || idx >= layer_it->second.size()) {
@@ -113,7 +111,7 @@ auto CaloGeo::zpos(std::size_t layer,
                    const Position& pos,
                    FastCaloSim::SubPos subpos) const -> double
 {
-  const Cell& cell = get_cell(layer, pos);
+  const Cell cell = get_cell(layer, pos);
   return cell.z(subpos);
 }
 
@@ -121,7 +119,7 @@ auto CaloGeo::rpos(std::size_t layer,
                    const Position& pos,
                    FastCaloSim::SubPos subpos) const -> double
 {
-  const Cell& cell = get_cell(layer, pos);
+  const Cell cell = get_cell(layer, pos);
   return cell.r(subpos);
 }
 
@@ -321,7 +319,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
 
   // Iterate through all cells to rebuild the layer-to-cell mapping
   for (size_t i = 0; i < m_cell_store.size(); ++i) {
-    const Cell& cell = m_cell_store.get_at_index(i);
+    const Cell cell = m_cell_store.get_at_index(i);
     if (!cell.is_valid()) {
       throw std::runtime_error("Invalid cell found in cell store");
     }

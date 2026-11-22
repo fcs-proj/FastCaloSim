@@ -186,7 +186,7 @@ TEST(RTreeTests, LargeLayerIds)
     {
     }
     auto get_cell(std::size_t /*layer*/, const Position& /*pos*/) const
-        -> const Cell& override
+        -> Cell override
     {
       return m_cell;
     }
