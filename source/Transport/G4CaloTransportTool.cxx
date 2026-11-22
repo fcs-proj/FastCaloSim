@@ -179,8 +179,7 @@ auto G4CaloTransportTool::transport(const G4Track& G4InputTrack)
                                                     &direction);
     if (volume != nullptr) {
       // We stop the track navigation once we have reached the provided volume
-      if (G4StrUtil::contains(volume->GetName(),
-                              std::string_view(m_transportLimitVolume)))
+      if (std::string_view(volume->GetName()).contains(m_transportLimitVolume))
       {
         break;
       }
