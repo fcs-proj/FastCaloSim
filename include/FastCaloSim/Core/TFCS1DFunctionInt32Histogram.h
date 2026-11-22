@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include <cstdint>
+#include <utility>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
+#include "FastCaloSim/Definitions/GuideTable.h"
 
 class TH2;
 
@@ -29,7 +32,7 @@ public:
 
   using TFCS1DFunction::rnd_to_fct;
 
-  using HistoContent_t = uint32_t;
+  using HistoContent_t = std::uint32_t;
   static const HistoContent_t s_MaxValue;
 
   /// Function gets random number rnd in the range [0,1) as argument
@@ -47,14 +50,23 @@ public:
   {
     return m_HistoContents;
   }
-  auto get_HistoContents() -> std::vector<HistoContent_t>&
+  /// Replaces the cumulative contents (and rebuilds the search table)
+  void set_HistoContents(std::vector<HistoContent_t> contents)
   {
-    return m_HistoContents;
+    m_HistoContents = std::move(contents);
+    m_guide.build(m_HistoContents);
+  }
+  /// Search table for m_HistoContents, built from it after reading
+  auto guide_table() const -> const FastCaloSim::GuideTable<HistoContent_t>&
+  {
+    return m_guide;
   }
 
 protected:
   std::vector<float> m_HistoBorders;
   std::vector<HistoContent_t> m_HistoContents;
+  /// Transient, built from m_HistoContents (also by a read rule after reading)
+  FastCaloSim::GuideTable<HistoContent_t> m_guide;  //!
 
 private:
   ClassDefOverride(TFCS1DFunctionInt32Histogram,

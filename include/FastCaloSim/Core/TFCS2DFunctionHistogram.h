@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include <utility>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCS2DFunction.h"
+#include "FastCaloSim/Definitions/GuideTable.h"
 
 class TH2;
 
@@ -47,12 +49,24 @@ public:
   {
     return m_HistoContents;
   }
-  auto get_HistoContents() -> std::vector<float>& { return m_HistoContents; }
+  /// Replaces the cumulative contents (and rebuilds the search table)
+  void set_HistoContents(std::vector<float> contents)
+  {
+    m_HistoContents = std::move(contents);
+    m_guide.build(m_HistoContents);
+  }
+  /// Search table for m_HistoContents, built from it after reading
+  auto guide_table() const -> const FastCaloSim::GuideTable<float>&
+  {
+    return m_guide;
+  }
 
 protected:
   std::vector<float> m_HistoBorders;
   std::vector<float> m_HistoBordersy;
   std::vector<float> m_HistoContents;
+  /// Transient, built from m_HistoContents (also by a read rule after reading)
+  FastCaloSim::GuideTable<float> m_guide;  //!
 
 private:
   ClassDefOverride(TFCS2DFunctionHistogram, 1)  // TFCS2DFunctionHistogram
