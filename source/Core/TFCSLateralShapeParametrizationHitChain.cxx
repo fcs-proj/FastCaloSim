@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <variant>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitChain.h"
 
@@ -370,8 +369,8 @@ auto TFCSLateralShapeParametrizationHitChain::simulate(
               << ifail << "/" << retry << ", total fails=" << itotalfail);
         }
       }
-    } while (
-        !check_all_hits_simulated(hit, simulstate, truth, extrapol, !failed));
+    } while (!check_all_hits_simulated(
+        hit, simulstate, truth, extrapol, !failed, sumEhit));
   }
 
   if (debug) {
@@ -385,8 +384,10 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol,
-    bool success) const -> bool
+    bool success,
+    double sum_E_hits) const -> bool
 {
+  (void)hit;  // unused parameter
   (void)truth;  // unused parameter
   (void)extrapol;  // unused parameter
 
@@ -395,24 +396,12 @@ auto TFCSLateralShapeParametrizationHitChain::check_all_hits_simulated(
     return false;
   }
 
-  // Called for every hit: read and update the sum with a single lookup
-  auto [stored_sum, was_stored] =
-      simulstate.auxInfoEntry("FCSHitChainEnergySum"_FCShash);
-  double sumEhit = 0;
-  if (was_stored && hit.idx() > 1) {
-    sumEhit = std::get<double>(stored_sum);
-  }
-
-  sumEhit += hit.E();
-
-  stored_sum = sumEhit;
-
   const double Elayer = simulstate.E(calosample());
   // N hits of Elayer / N add up to Elayer only up to rounding. Stop within a
   // relative tolerance, so that the number of hits does not depend on the last
   // bit of the sum (which differs between compilers and precisions)
   constexpr double relative_tolerance = 1e-9;
-  return std::abs(sumEhit) >= std::abs(Elayer) * (1 - relative_tolerance);
+  return std::abs(sum_E_hits) >= std::abs(Elayer) * (1 - relative_tolerance);
 }
 
 void TFCSLateralShapeParametrizationHitChain::Print(Option_t* option) const

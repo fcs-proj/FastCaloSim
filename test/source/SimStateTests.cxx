@@ -96,7 +96,6 @@ TEST_F(TFCSSimulationStateTest, LayerAuxIndicesAreDistinct)
                                 "BSNHits"_FCShash,
                                 "EventNr"_FCShash,
                                 "FCSFixedHitChainEnergySum"_FCShash,
-                                "FCSHitChainEnergySum"_FCShash,
                                 "FCSHitChainNHits"_FCShash,
                                 "GANlayer"_FCShash,
                                 "SF"_FCShash};

@@ -28,9 +28,11 @@ auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
     TFCSSimulationState& simulstate,
     const TFCSTruthState* truth,
     const TFCSExtrapolationState* extrapol,
-    bool success) const -> bool
+    bool success,
+    double sum_E_hits) const -> bool
 {
   (void)success;  // unused parameter
+  (void)sum_E_hits;  // unused parameter
   (void)truth;  // unused parameter
   (void)extrapol;  // unused parameter
 
