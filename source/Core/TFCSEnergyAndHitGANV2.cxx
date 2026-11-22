@@ -19,6 +19,7 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
+#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TF1.h"
@@ -26,53 +27,44 @@
 namespace
 {
 // Draws the radius of a hit in the r bin [low, low + width] from the
-// exponential exp(slope * r) fitted to the radial profile of the bin.
-//
-// This has the distribution of the rejection sampling used before: draw
-// r = -log(u) / rate with rate = -slope (an exponential starting at r = 0)
-// until r lies in the bin, at most 100 times, and keep the radius of the grid
-// otherwise. One draw lies in the bin with probability
-// p_in = exp(-rate * low) * (1 - exp(-rate * width)), so the grid radius is
-// kept with probability (1 - p_in)^100, and an accepted radius follows the
-// exponential truncated to the bin. Here both are sampled with one uniform
-// random number, the accepted radius by inverting the distribution function
-// of the truncated exponential. A positive slope gives r < 0, which was never
-// accepted, so it keeps the grid radius.
+// exponential exp(slope * r) fitted to the radial profile of the bin,
+// truncated to the bin, with one uniform random number by inverting its
+// distribution function. With k = |slope| and x the distance from the edge
+// towards which the exponential falls (the lower edge for a negative slope,
+// the upper edge for a positive one), F(x) = (1 - exp(-k x)) /
+// (1 - exp(-k width)), so x = -log1p(v * expm1(-k width)) / k. In this form
+// expm1 and log1p stay accurate for small k * width (where the distribution
+// becomes uniform) and nothing overflows for large ones. A slope of zero (no
+// fit, or GAN version 1) or a non-finite one describes no shape: such bins
+// keep the grid radius.
 class RadialSampler
 {
 public:
   RadialSampler(double slope, double low, double width)
-      : m_low(low)
-      , m_rate(-slope)
+      : m_slope(slope)
+      , m_edge(slope < 0 ? low : low + width)
+      , m_expm1_width(std::expm1(-std::abs(slope) * width))
+      , m_sampled(std::isfinite(slope)
+                  && !FastCaloSim::exactly_equal(slope, 0.0))
   {
-    if (slope < 0) {
-      m_expm1_width = std::expm1(-m_rate * width);
-      const double p_in = -std::exp(-m_rate * low) * m_expm1_width;
-      constexpr double max_draws = 100;
-      m_p_grid = std::exp(max_draws * std::log1p(-p_in));
-    }
   }
 
   // The sampled radius, or nothing to keep the grid radius
   auto sample(CLHEP::HepRandomEngine* engine) const -> std::optional<double>
   {
-    if (m_p_grid >= 1) {
+    if (!m_sampled) {
       return std::nullopt;
     }
-    const double u = CLHEP::RandFlat::shoot(engine);
-    if (u < m_p_grid) {
-      return std::nullopt;
-    }
-    // Uniform in [0, 1) under the condition u >= m_p_grid
-    const double v = (u - m_p_grid) / (1 - m_p_grid);
-    return m_low - (std::log1p(v * m_expm1_width) / m_rate);
+    const double v = CLHEP::RandFlat::shoot(engine);
+    // log1p(...) / m_slope is the signed step from m_edge into the bin
+    return m_edge + (std::log1p(v * m_expm1_width) / m_slope);
   }
 
 private:
-  double m_low;
-  double m_rate;
-  double m_expm1_width {};
-  double m_p_grid = 1;  // probability to keep the grid radius
+  double m_slope;
+  double m_edge;
+  double m_expm1_width;
+  bool m_sampled;
 };
 }  // namespace
 
@@ -419,13 +411,14 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
         }
 
         for (int ir = 0; ir < nHitsR; ++ir) {
-          double r =
-              x->GetBinLowEdge(ix) + x->GetBinWidth(ix) / (nHitsR + 1) * ir;
+          // Interior points k / (nHitsR + 1), k = 1..nHitsR, of the r bin, like
+          // the alpha grid
+          const double r_grid = x->GetBinLowEdge(ix)
+              + x->GetBinWidth(ix) / (nHitsR + 1) * (ir + 1);
 
           for (int ialpha = 1; ialpha <= nHitsAlpha; ++ialpha) {
-            if (const auto sampled = radial.sample(simulstate.randomEngine())) {
-              r = *sampled;
-            }
+            const double r =
+                radial.sample(simulstate.randomEngine()).value_or(r_grid);
 
             const bool random_alpha = binsInAlphaInRBin == 1;
             double alpha = random_alpha
