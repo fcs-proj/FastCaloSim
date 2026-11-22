@@ -22,11 +22,15 @@ TFCSSimulationState::TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine)
 
 void TFCSSimulationState::clear()
 {
-  set_SF(1);
   m_Ebin.reset();
   m_Etot = 0;
   m_E.clear();
   m_Efrac.clear();
+  m_cells.clear();
+  m_AuxInfo.clear();
+  m_AuxObjects.clear();
+  // The scale factor is auxiliary information: set it after clearing that
+  set_SF(1);
 }
 
 void TFCSSimulationState::deposit(const unsigned long long cell_id, double E)
