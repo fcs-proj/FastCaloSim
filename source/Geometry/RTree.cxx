@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <iterator>
@@ -335,6 +336,68 @@ private:
   std::vector<std::size_t> m_bin_begin;
   std::vector<Entry> m_entries;
 };
+
+/**
+ * @brief Append all rectangles of the tree at the minimal distance from the
+ * point (several only on an exact tie, which the caller decides)
+ *
+ * Rarely needed (in holes of a layer and far beyond its edges), so kept out of
+ * line and away from the hot code: inlined, it would enlarge the cell lookup
+ * done for every hit.
+ */
+template<typename Container>
+[[gnu::cold, gnu::noinline]] void nearest_in_tree(const Tree& tree,
+                                                  const Point& point,
+                                                  Container& candidates)
+{
+  // The k nearest rectangles, from a k-nearest query (much faster than the
+  // incremental query below). If the farthest of them is farther than the
+  // nearest, they include all rectangles at the minimal distance: any other
+  // rectangle is at least as far as the farthest of them.
+  constexpr std::size_t k = 3;
+  if (std::isfinite(point.get<0>()) && std::isfinite(point.get<1>())) {
+    boost::container::small_vector<Entry, k> nearest;
+    tree.query(bgi::nearest(point, k), std::back_inserter(nearest));
+    std::array<double, k> distances {};
+    double min_distance = std::numeric_limits<double>::infinity();
+    double max_distance = -std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i < nearest.size(); ++i) {
+      distances[i] = bg::comparable_distance(point, nearest[i].first);
+      min_distance = std::min(min_distance, distances[i]);
+      max_distance = std::max(max_distance, distances[i]);
+    }
+    if (std::isfinite(min_distance)
+        && (nearest.size() < k || max_distance > min_distance))
+    {
+      for (std::size_t i = 0; i < nearest.size(); ++i) {
+        if (FastCaloSim::exactly_equal(distances[i], min_distance)) {
+          candidates.push_back(nearest[i]);
+        }
+      }
+      return;
+    }
+  }
+
+  // At least k rectangles at the minimal distance (or a point that is not
+  // finite): the incremental query yields the rectangles in order of
+  // distance, take all at the minimal distance
+  double min_distance = 0;
+  for (auto it = tree.qbegin(bgi::nearest(point, tree.size()));
+       it != tree.qend();
+       ++it)
+  {
+    const double d = bg::comparable_distance(point, it->first);
+    if (!candidates.empty() && !FastCaloSim::exactly_equal(d, min_distance)) {
+      break;
+    }
+    min_distance = d;
+    candidates.push_back(*it);
+    // A point that is not finite has no meaningful nearest rectangle
+    if (!std::isfinite(d)) {
+      break;
+    }
+  }
+}
 }  // namespace
 
 struct RTree::Impl
@@ -397,25 +460,7 @@ auto RTree::query_point_index(const Position& pos) const -> std::size_t
   // In a gap between cells or outside the layer: the nearest rectangle. The
   // grid finds it unless the point is far from all rectangles.
   if (candidates.empty() && !m_impl->grid.nearest(point, candidates)) {
-    // The R-tree yields the rectangles in order of distance: take all at the
-    // minimal distance, so that the rule below also decides ties here
-    const Tree& tree = m_impl->tree;
-    double min_distance = 0;
-    for (auto it = tree.qbegin(bgi::nearest(point, tree.size()));
-         it != tree.qend();
-         ++it)
-    {
-      const double d = bg::comparable_distance(point, it->first);
-      if (!candidates.empty() && !FastCaloSim::exactly_equal(d, min_distance)) {
-        break;
-      }
-      min_distance = d;
-      candidates.push_back(*it);
-      // A point that is not finite has no meaningful nearest rectangle
-      if (!std::isfinite(d)) {
-        break;
-      }
-    }
+    nearest_in_tree(m_impl->tree, point, candidates);
   }
   if (candidates.empty()) {
     throw std::invalid_argument("No cell found for query point");
