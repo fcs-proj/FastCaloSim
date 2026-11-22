@@ -32,6 +32,6 @@ inline auto interpolate_phi(double phi1, double phi2, double w) -> double
   if (std::abs(phi2 - phi1) <= std::numbers::pi) {
     return (1. - w) * phi1 + w * phi2;
   }
-  return wrap_phi((1. - w) * phi1 + w * (phi1 + delta_phi(phi2, phi1)));
+  return wrap_phi((1. - w) * phi1 + w * (phi1 + wrap_phi(phi2 - phi1)));
 }
 }  // namespace FastCaloSim
