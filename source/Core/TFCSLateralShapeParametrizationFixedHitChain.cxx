@@ -1,7 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#include <cstddef>
 #include <limits>
+#include <utility>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFixedHitChain.h"
 
@@ -56,7 +56,7 @@ auto TFCSLateralShapeParametrizationFixedHitChain::check_all_hits_simulated(
     return true;
   }
 
-  if (hit.idx() < static_cast<std::size_t>(nhit_signed)) {
+  if (std::cmp_less(hit.idx(), nhit_signed)) {
     return false;
   }
 
