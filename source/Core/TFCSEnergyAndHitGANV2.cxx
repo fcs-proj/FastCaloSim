@@ -7,6 +7,7 @@
 #include <iostream>
 #include <limits>
 #include <numbers>
+#include <optional>
 
 #include "FastCaloSim/Core/TFCSEnergyAndHitGANV2.h"
 
@@ -17,10 +18,62 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
-#include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TF1.h"
+
+namespace
+{
+// Draws the radius of a hit in the r bin [low, low + width] from the
+// exponential exp(slope * r) fitted to the radial profile of the bin.
+//
+// This has the distribution of the rejection sampling used before: draw
+// r = -log(u) / rate with rate = -slope (an exponential starting at r = 0)
+// until r lies in the bin, at most 100 times, and keep the radius of the grid
+// otherwise. One draw lies in the bin with probability
+// p_in = exp(-rate * low) * (1 - exp(-rate * width)), so the grid radius is
+// kept with probability (1 - p_in)^100, and an accepted radius follows the
+// exponential truncated to the bin. Here both are sampled with one uniform
+// random number, the accepted radius by inverting the distribution function
+// of the truncated exponential. A positive slope gives r < 0, which was never
+// accepted, so it keeps the grid radius.
+class RadialSampler
+{
+public:
+  RadialSampler(double slope, double low, double width)
+      : m_low(low)
+      , m_rate(-slope)
+  {
+    if (slope < 0) {
+      m_expm1_width = std::expm1(-m_rate * width);
+      const double p_in = -std::exp(-m_rate * low) * m_expm1_width;
+      constexpr double max_draws = 100;
+      m_p_grid = std::exp(max_draws * std::log1p(-p_in));
+    }
+  }
+
+  // The sampled radius, or nothing to keep the grid radius
+  auto sample(CLHEP::HepRandomEngine* engine) const -> std::optional<double>
+  {
+    if (m_p_grid >= 1) {
+      return std::nullopt;
+    }
+    const double u = CLHEP::RandFlat::shoot(engine);
+    if (u < m_p_grid) {
+      return std::nullopt;
+    }
+    // Uniform in [0, 1) under the condition u >= m_p_grid
+    const double v = (u - m_p_grid) / (1 - m_p_grid);
+    return m_low - (std::log1p(v * m_expm1_width) / m_rate);
+  }
+
+private:
+  double m_low;
+  double m_rate;
+  double m_expm1_width {};
+  double m_p_grid = 1;  // probability to keep the grid radius
+};
+}  // namespace
 
 //=============================================
 //======= TFCSEnergyAndHitGANV2 =========
@@ -301,6 +354,11 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     for (int ix = 1; ix <= xBinNum; ++ix) {
       const int binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
       const auto r_bin = static_cast<std::size_t>(ix - 1);
+      // From GAN version 2 on, the radii are sampled within the r bin
+      const RadialSampler radial(
+          ganVersion > 1 ? fitResults.at(layer)[r_bin] : 0.0,
+          x->GetBinLowEdge(ix),
+          x->GetBinWidth(ix));
 
       // Horrible work around for variable # of bins along alpha direction
       const int binsToMerge = yBinNum == 32 ? 32 / binsInAlphaInRBin : 1;
@@ -355,38 +413,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
               x->GetBinLowEdge(ix) + x->GetBinWidth(ix) / (nHitsR + 1) * ir;
 
           for (int ialpha = 1; ialpha <= nHitsAlpha; ++ialpha) {
-            if (ganVersion > 1) {
-              if (!FastCaloSim::exactly_equal(fitResults.at(layer)[r_bin], 0.0))
-              {
-                int tries = 0;
-                double a = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
-                                                  x->GetBinLowEdge(ix),
-                                                  x->GetBinUpEdge(ix));
-                double rand_r =
-                    std::log((a - x->GetBinLowEdge(ix)) / (x->GetBinWidth(ix)))
-                    / fitResults.at(layer)[r_bin];
-                while ((rand_r < x->GetBinLowEdge(ix)
-                        || rand_r > x->GetBinUpEdge(ix))
-                       && tries < 100)
-                {
-                  a = CLHEP::RandFlat::shoot(simulstate.randomEngine(),
-                                             x->GetBinLowEdge(ix),
-                                             x->GetBinUpEdge(ix));
-                  rand_r = std::log((a - x->GetBinLowEdge(ix))
-                                    / (x->GetBinWidth(ix)))
-                      / fitResults.at(layer)[r_bin];
-                  tries++;
-                }
-                if (tries >= 100) {
-                  FCS_MSG_VERBOSE(" Too many tries for bin ["
-                                  << x->GetBinLowEdge(ix) << "-"
-                                  << x->GetBinUpEdge(ix) << "] having slope "
-                                  << fitResults.at(layer)[r_bin]
-                                  << " will use grid (old method)");
-                } else {
-                  r = rand_r;
-                }
-              }
+            if (const auto sampled = radial.sample(simulstate.randomEngine())) {
+              r = *sampled;
             }
 
             const bool random_alpha = binsInAlphaInRBin == 1;
