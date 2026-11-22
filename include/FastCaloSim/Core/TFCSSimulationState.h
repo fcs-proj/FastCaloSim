@@ -65,9 +65,16 @@ public:
   // maps the cell id to the energy deposited in the cell
   using cellmap = std::unordered_map<unsigned long long, double>;
 
-  auto cells() -> cellmap& { return m_cells; }
+  // Changing the cell map through this reference is allowed until the next
+  // deposit(); erase cells only before it
+  auto cells() -> cellmap&
+  {
+    m_last_cell.reset();
+    return m_cells;
+  }
   auto cells() const -> const cellmap& { return m_cells; }
 
+  // Add energy to a cell
   void deposit(unsigned long long cell_id, double E);
 
   void Print(Option_t* option = "") const override;
@@ -106,6 +113,33 @@ private:
   }
 
   cellmap m_cells;
+
+  // The cell of the last deposit: consecutive hits often go to the same cell.
+  // It points into m_cells (elements of an unordered_map keep their address
+  // when it rehashes); a copied or moved state does not take it over.
+  struct LastCell
+  {
+    unsigned long long id {0};
+    double* energy {nullptr};
+
+    LastCell() = default;
+    LastCell(const LastCell& /*other*/) noexcept {}
+    LastCell(LastCell&& /*other*/) noexcept {}
+    auto operator=(const LastCell& /*other*/) noexcept -> LastCell&
+    {
+      reset();
+      return *this;
+    }
+    auto operator=(LastCell&& /*other*/) noexcept -> LastCell&
+    {
+      reset();
+      return *this;
+    }
+    ~LastCell() = default;
+
+    void reset() { energy = nullptr; }
+  };
+  LastCell m_last_cell;  //!
 
 public:
   // Auxiliary information: values that parametrizations store for each other

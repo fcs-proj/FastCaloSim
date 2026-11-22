@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "SimStateTests.h"
@@ -106,6 +107,47 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
   ASSERT_TRUE(cells.contains(cell.id()));
   // Check that the energy deposited in the cell is correct
   EXPECT_DOUBLE_EQ(cells[cell.id()], 10.0);
+}
+
+TEST_F(TFCSSimulationStateTest, DepositSequences)
+{
+  TFCSSimulationState sim_state;
+  // The same cell several times in a row, then another one and back
+  sim_state.deposit(7, 1.0);
+  sim_state.deposit(7, 2.0);
+  sim_state.deposit(8, 4.0);
+  sim_state.deposit(7, 8.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(7), 11.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(8), 4.0);
+
+  // Many new cells (the map rehashes) between deposits into the same cell
+  for (unsigned long long id = 100; id < 1100; ++id) {
+    sim_state.deposit(8, 1.0);
+    sim_state.deposit(id, 1.0);
+  }
+  sim_state.deposit(1099, 1.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(8), 1004.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 2.0);
+  EXPECT_EQ(sim_state.cells().size(), 1002U);
+
+  // A copy has its own cells
+  TFCSSimulationState copy = sim_state;
+  copy.deposit(1099, 1.0);
+  sim_state.deposit(1099, 4.0);
+  EXPECT_DOUBLE_EQ(copy.cells().at(1099), 3.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 6.0);
+
+  // So does a moved state
+  TFCSSimulationState moved = std::move(copy);
+  moved.deposit(1099, 1.0);
+  EXPECT_DOUBLE_EQ(moved.cells().at(1099), 4.0);
+
+  // Cells erased through cells() are created again
+  sim_state.cells().clear();
+  sim_state.deposit(1099, 1.0);
+  sim_state.deposit(1099, 1.0);
+  EXPECT_EQ(sim_state.cells().size(), 1U);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 2.0);
 }
 
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)

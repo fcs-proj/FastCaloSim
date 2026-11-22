@@ -31,7 +31,11 @@ void TFCSSimulationState::clear()
 
 void TFCSSimulationState::deposit(const unsigned long long cell_id, double E)
 {
-  m_cells[cell_id] += E;
+  if (m_last_cell.energy == nullptr || cell_id != m_last_cell.id) {
+    m_last_cell.id = cell_id;
+    m_last_cell.energy = &m_cells[cell_id];
+  }
+  *m_last_cell.energy += E;
 }
 
 void TFCSSimulationState::Print(Option_t* /*option*/) const
