@@ -171,9 +171,9 @@ TEST(RTreeTests, ManyNearestCellsTied)
   for (const uint64_t id : std::array<uint64_t, 4> {7, 3, 9, 5}) {
     cells.push_back(eta_phi_cell(id, 0.5, 0.0, 1.0, 0.2));
   }
-  for (int i = 200; i <= 300; ++i) {
+  for (uint64_t i = 200; i <= 300; ++i) {
     cells.push_back(
-        eta_phi_cell(static_cast<uint64_t>(1000 + i), i, 0.0, 1.0, 0.2));
+        eta_phi_cell(1000 + i, static_cast<double>(i), 0.0, 1.0, 0.2));
   }
   const RTree rtree(kEtaPhi, cells);
   EXPECT_EQ(rtree.query_point(at_eta_phi(60, 0.0)), 3);
