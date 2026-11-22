@@ -70,7 +70,7 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
   // Check that the cell is in the map
   ASSERT_TRUE(cells.contains(cell.id()));
   // Check that the energy deposited in the cell is correct
-  EXPECT_FLOAT_EQ(cells[cell.id()], 10.0);
+  EXPECT_DOUBLE_EQ(cells[cell.id()], 10.0);
 }
 
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)
