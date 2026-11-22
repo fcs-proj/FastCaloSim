@@ -369,6 +369,8 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
       for (int iy = 1; iy <= binsInAlphaInRBin; ++iy) {
         const double energyInVoxel = voxelFractions.at(vox);
         const int lowEdgeIndex = (iy - 1) * binsToMerge + 1;
+        // The voxel spans binsToMerge equal alpha bins (radians)
+        const double alphaWidth = y->GetBinWidth(iy) * binsToMerge;
 
         FCS_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
                                 << " binx " << ix << " biny " << iy);
@@ -394,21 +396,25 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             nHitsAlpha = static_cast<int>(
                 std::ceil(2 * std::numbers::pi * r / binResolution));
           } else {
-            // d = 2*r*sin (a/2r) this distance at the upper r must be 1mm for
-            // layer 1 or 5, 5mm otherwise.
-            const double angle = y->GetBinUpEdge(iy) - y->GetBinLowEdge(iy);
+            // One hit per 1 mm (layers 1 and 5) or 5 mm of the chord
+            // d = 2 r sin(alphaWidth / 2) that the voxel spans at its upper r
             const double r = x->GetBinUpEdge(ix);
-            const double d = 2 * r * std::sin(angle / 2 * r);
+            const double d = 2 * r * std::sin(alphaWidth / 2);
             nHitsAlpha = static_cast<int>(std::ceil(d / binResolution));
           }
+
+          // At least one hit in each direction, so that the energy of the
+          // voxel, which is already part of the layer energy, is deposited
+          nHitsAlpha = std::max(1, nHitsAlpha);
+          nHitsR = std::max(1, nHitsR);
 
           if (layer != 1 && layer != 5) {
             // For layers that are not EMB1 or EMEC1 use a maximum of 10 hits
             // per direction, a higher granularity is needed for the other
             // layers
             const int maxNhits = 10;
-            nHitsAlpha = std::min(maxNhits, std::max(1, nHitsAlpha));
-            nHitsR = std::min(maxNhits, std::max(1, nHitsR));
+            nHitsAlpha = std::min(maxNhits, nHitsAlpha);
+            nHitsR = std::min(maxNhits, nHitsR);
           }
         }
 
@@ -427,8 +433,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
                                          -std::numbers::pi,
                                          std::numbers::pi)
                 : y->GetBinLowEdge(lowEdgeIndex)
-                    + y->GetBinWidth(iy) * binsToMerge / (nHitsAlpha + 1)
-                        * ialpha;
+                    + alphaWidth / (nHitsAlpha + 1) * ialpha;
             if (!random_alpha && m_param.IsSymmetrisedAlpha()) {
               if (CLHEP::RandFlat::shoot(simulstate.randomEngine(),
                                          -std::numbers::pi,
