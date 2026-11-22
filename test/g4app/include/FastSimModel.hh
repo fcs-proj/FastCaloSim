@@ -72,6 +72,9 @@ public:
     fSimulationStates.clear();
   }
 
+  // Reset the random engine of the simulation to its initial seed
+  void ResetRandomEngine() { m_random_engine.setSeed(kRandomSeed); }
+
   // Set the boolean flag whether to do simulation
   void doSimulation(G4bool doSimulation) { fDoSimulation = doSimulation; }
   // Set the extrapolator tool
@@ -104,7 +107,8 @@ private:
   // Boolean flag whether to do the simulation
   G4bool fDoSimulation {true};
 
-  // Random engine
+  // Random engine of the simulation and its seed
+  static constexpr long kRandomSeed = 42;
   CLHEP::RanluxEngine m_random_engine;
   // Boolean flag to enable debug output
   bool m_debug {false};

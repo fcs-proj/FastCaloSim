@@ -7,9 +7,11 @@
 #include "ActionInitialization.hh"
 #include "DetectorConstruction.hh"
 #include "FTFP_BERT.hh"
+#include "FastSimModel.hh"
 #include "G4FastSimulationPhysics.hh"
 #include "G4GDMLParser.hh"
 #include "G4RunManagerFactory.hh"
+#include "Randomize.hh"
 #include "TestConfig/G4RunTestsConfig.h"
 #include "TestHelpers/Event.h"
 
@@ -70,6 +72,17 @@ protected:
 
     // Create action initialization to set up event to simulate
     actionInitialization = new ActionInitialization();
+  }
+
+  // Reset the random engines of Geant4 and of the fast simulation model to
+  // the state of a new process. ctest runs every test in a process of its
+  // own; without the reset, a test run after others in the same process
+  // continues their random-number sequences and gives different results.
+  static void reset_random_engines(FastSimModel& model)
+  {
+    // The default MixMax engine of a new process is the one seeded with 1
+    G4Random::setTheSeed(1);
+    model.ResetRandomEngine();
   }
 
   // Per-test-suite tear-down

@@ -38,6 +38,7 @@ TEST_P(AtlasTransportTests, AtlasTransport)
 
   // Reset the state of the fast simulation model
   model->Reset();
+  G4RunTests::reset_random_engines(*model);
 
   // Deactivate the simulation for this test
   model->doSimulation(/*doSimulation=*/false);

@@ -23,7 +23,7 @@ FastSimModel::FastSimModel(const G4String& aModelName,
     , fTransportTool(transportWorld)
 
 {
-  m_random_engine.setSeed(42);
+  m_random_engine.setSeed(kRandomSeed);
 }
 
 FastSimModel::~FastSimModel() = default;
