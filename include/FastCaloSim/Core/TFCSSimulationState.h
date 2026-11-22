@@ -114,9 +114,11 @@ private:
     LastCell() = default;
     LastCell(const LastCell& /*other*/) noexcept {}
     LastCell(LastCell&& /*other*/) noexcept {}
-    auto operator=(const LastCell& /*other*/) noexcept -> LastCell&
+    auto operator=(const LastCell& other) noexcept -> LastCell&
     {
-      reset();
+      if (this != &other) {
+        reset();
+      }
       return *this;
     }
     auto operator=(LastCell&& /*other*/) noexcept -> LastCell&
