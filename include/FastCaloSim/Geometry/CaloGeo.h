@@ -127,9 +127,6 @@ private:
   /// @brief The total number of cells
   std::size_t m_n_total_cells {};
 
-  /// @brief Maps layer id -> R-tree for the cell lookup
-  std::unordered_map<std::size_t, std::unique_ptr<RTree>> m_layer_rtrees;
-
   /// @brief The memory-mapped cell store
   CellStore m_cell_store;
 
@@ -137,27 +134,43 @@ private:
   std::unordered_map<std::size_t, std::vector<unsigned long long>>
       m_layer_cell_ids;
 
-  /// @brief Alternative geo handlers
-  /// Allows to implement custom geo handling for specific layers
-  /// This is especially useful if the geometry is not well described
-  /// by cuboid cells and you want to implement your own cell lookup
-  std::unordered_map<std::size_t, std::shared_ptr<CaloGeo>> m_alt_geo_handlers;
-
   /// @brief Maps layer id -> layer properties
   std::map<std::size_t, LayerFlags> m_layer_flags;
 
-  // What get_cell(layer, pos) needs for a layer, in a single map, so that the
-  // lookup done for every hit needs one hash lookup for any layer ID
+  /// @brief What get_cell(layer, pos) needs for a layer
   struct LayerLookup
   {
-    // Alternative geometry handler of the layer (owned by m_alt_geo_handlers)
-    const CaloGeo* alt_geo_handler {nullptr};
-    // R-tree of the layer (owned by m_layer_rtrees)
-    const RTree* rtree {nullptr};
+    // Alternative geometry handler of the layer, if one is set. It allows to
+    // implement a custom cell lookup for layers that are not well described
+    // by cuboid cells.
+    std::shared_ptr<CaloGeo> alt_geo_handler;
+    // R-tree of the layer, if the loaded geometry has cells in it
+    std::unique_ptr<RTree> rtree;
     // Cell store index of each cell of the layer, in R-tree order
     std::vector<std::uint32_t> store_index;
   };
-  std::unordered_map<std::size_t, LayerLookup> m_layer_lookup;
+
+  /// @brief Layer IDs below this bound are looked up by index (ATLAS uses
+  /// 0 to 23), larger ones by hash
+  static constexpr std::size_t n_dense_layer_ids = 1024;
+  /// @brief Lookups of the layer IDs below n_dense_layer_ids, indexed by
+  /// layer ID, so that the lookup done for every hit is a vector index
+  std::vector<LayerLookup> m_layer_lookup;
+  /// @brief Lookups of the larger layer IDs
+  std::unordered_map<std::size_t, LayerLookup> m_sparse_layer_lookup;
+
+  /// @brief The lookup of a layer, or nullptr if it has none (inline, as it
+  /// is part of the lookup done for every hit)
+  auto find_layer_lookup(std::size_t layer) const -> const LayerLookup*
+  {
+    if (layer < m_layer_lookup.size()) {
+      return &m_layer_lookup[layer];
+    }
+    const auto found = m_sparse_layer_lookup.find(layer);
+    return found != m_sparse_layer_lookup.end() ? &found->second : nullptr;
+  }
+  /// @brief The lookup of a layer, created empty if it has none
+  auto layer_lookup(std::size_t layer) -> LayerLookup&;
 
   /// @brief Record a cell in the geometry
   void record_cell(std::unique_ptr<Cell> cell);

@@ -14,11 +14,21 @@
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Geometry/CellStoreBuilder.h"
 
+auto CaloGeo::layer_lookup(std::size_t layer) -> LayerLookup&
+{
+  if (layer >= n_dense_layer_ids) {
+    return m_sparse_layer_lookup[layer];
+  }
+  if (layer >= m_layer_lookup.size()) {
+    m_layer_lookup.resize(layer + 1);
+  }
+  return m_layer_lookup[layer];
+}
+
 auto CaloGeo::get_cell(std::size_t layer, const Position& pos) const -> Cell
 {
-  auto found = m_layer_lookup.find(layer);
-  if (found != m_layer_lookup.end()) {
-    const LayerLookup& lookup = found->second;
+  if (const LayerLookup* found = find_layer_lookup(layer)) {
+    const LayerLookup& lookup = *found;
 
     // Check if an alternative geometry handler is set for the layer
     if (lookup.alt_geo_handler != nullptr) {
@@ -136,8 +146,7 @@ auto CaloGeo::max_eta(std::size_t layer, DetectorSide side) const -> double
 void CaloGeo::set_alt_geo_handler(std::size_t layer,
                                   std::shared_ptr<CaloGeo> handler)
 {
-  m_layer_lookup[layer].alt_geo_handler = handler.get();
-  m_alt_geo_handlers[layer] = std::move(handler);
+  layer_lookup(layer).alt_geo_handler = std::move(handler);
 }
 
 void CaloGeo::set_alt_geo_handler(std::size_t first_layer,
@@ -145,8 +154,7 @@ void CaloGeo::set_alt_geo_handler(std::size_t first_layer,
                                   const std::shared_ptr<CaloGeo>& handler)
 {
   for (std::size_t i = first_layer; i <= last_layer; ++i) {
-    m_layer_lookup[i].alt_geo_handler = handler.get();
-    m_alt_geo_handlers[i] = handler;
+    layer_lookup(i).alt_geo_handler = handler;
   }
 }
 
@@ -300,10 +308,11 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   // failed load leaves none that point into the new store
   const auto invalidate = [](LayerLookup& lookup) -> void
   {
-    lookup.rtree = nullptr;
+    lookup.rtree.reset();
     lookup.store_index.clear();
   };
-  for (auto& entry : m_layer_lookup) {
+  std::ranges::for_each(m_layer_lookup, invalidate);
+  for (auto& entry : m_sparse_layer_lookup) {
     invalidate(entry.second);
   }
 
@@ -378,10 +387,8 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     }
 
     auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
-    m_layer_rtrees[layer_id] = std::make_unique<RTree>(coord_sys, cells);
-
-    LayerLookup& lookup = m_layer_lookup[layer_id];
-    lookup.rtree = m_layer_rtrees[layer_id].get();
+    LayerLookup& lookup = layer_lookup(layer_id);
+    lookup.rtree = std::make_unique<RTree>(coord_sys, cells);
     lookup.store_index = store_index;
   }
 

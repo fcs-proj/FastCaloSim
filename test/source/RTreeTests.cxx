@@ -204,6 +204,7 @@ TEST(RTreeTests, LargeLayerIds)
   EXPECT_EQ(geo.get_cell(7, at_eta_phi(0, 0)).id(), 1);
   EXPECT_EQ(geo.get_cell(100000000, at_eta_phi(0, 0)).id(), 2);
   EXPECT_EQ(geo.get_cell(max_layer, at_eta_phi(0, 0)).id(), 3);
+  EXPECT_THROW(geo.get_cell(0, at_eta_phi(0, 0)), std::runtime_error);
   EXPECT_THROW(geo.get_cell(8, at_eta_phi(0, 0)), std::runtime_error);
   EXPECT_THROW(geo.get_cell(100000001, at_eta_phi(0, 0)), std::runtime_error);
 }
