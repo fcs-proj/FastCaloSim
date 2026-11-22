@@ -3,7 +3,7 @@
 #pragma once
 
 #include <filesystem>
-#include <iostream>
+#include <stdexcept>
 #include <string>
 
 #include <dlfcn.h>
@@ -23,7 +23,9 @@ public:
   GeoPluginLoader(GeoPluginLoader&&) = delete;
   auto operator=(GeoPluginLoader&&) -> GeoPluginLoader& = delete;
 
-  // load G4Solid plugin
+  // Load the plugin library pString and create its plugin; throws
+  // std::runtime_error if the library, its create function or the plugin is
+  // missing
   auto load(const std::string& pString) const -> Plugin*;
 };
 
@@ -44,8 +46,8 @@ auto GeoPluginLoader<Plugin>::load(const std::string& pString) const -> Plugin*
   //
   void* handle = dlopen(pString.c_str(), RTLD_NOW);
   if (handle == nullptr) {
-    std::cerr << dlerror() << '\n';
-    return nullptr;
+    throw std::runtime_error("Cannot load plugin library: "
+                             + std::string(dlerror()));
   }
 
   //
@@ -53,8 +55,8 @@ auto GeoPluginLoader<Plugin>::load(const std::string& pString) const -> Plugin*
   //
   void* f = dlsym(handle, createFunctionName.c_str());
   if (f == nullptr) {
-    std::cerr << dlerror() << '\n';
-    return nullptr;
+    throw std::runtime_error("Cannot find " + createFunctionName + " in "
+                             + pString + ": " + std::string(dlerror()));
   }
 
   using CreationMethod = void* (*)();
@@ -64,5 +66,9 @@ auto GeoPluginLoader<Plugin>::load(const std::string& pString) const -> Plugin*
   //
   //
   auto* factory = static_cast<Plugin*>(F());
+  if (factory == nullptr) {
+    throw std::runtime_error(createFunctionName + " in " + pString
+                             + " returned no plugin");
+  }
   return factory;
 }
