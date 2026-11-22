@@ -93,6 +93,9 @@ public:
   void set_SF(double mysf) { setAuxInfo<double>("SF"_FCShash, mysf); }
   auto get_SF() const -> double { return getAuxInfo<double>("SF"_FCShash); }
 
+  /// Reset the state for a new particle: energies, energy bin, deposited
+  /// cells, auxiliary information and objects; the scale factor becomes 1.
+  /// The random engine is kept.
   void clear();
 
 private:
