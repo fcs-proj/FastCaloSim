@@ -27,6 +27,8 @@ void TFCSSimulationState::clear()
   m_E.clear();
   m_Efrac.clear();
   m_cells.clear();
+  // The cached last cell pointed into m_cells
+  m_last_cell.reset();
   m_AuxInfo.clear();
   m_AuxObjects.clear();
   // The scale factor is auxiliary information: set it after clearing that
@@ -35,7 +37,14 @@ void TFCSSimulationState::clear()
 
 void TFCSSimulationState::deposit(const unsigned long long cell_id, double E)
 {
-  m_cells[cell_id] += E;
+  if (m_last_cell.energy == nullptr || cell_id != m_last_cell.id) {
+    // Look up (or create) the cell first: if that throws, the cache is
+    // unchanged
+    double* const energy = &m_cells[cell_id];
+    m_last_cell.id = cell_id;
+    m_last_cell.energy = energy;
+  }
+  *m_last_cell.energy += E;
 }
 
 void TFCSSimulationState::Print(Option_t* /*option*/) const

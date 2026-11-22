@@ -78,11 +78,10 @@ auto TFCSEnergyRenormalization::simulate(
     }
   }
 
-  // Loop over all cells and apply the scalefactor
-  for (auto& cell_iter : simulstate.cells()) {
-    const auto layer = m_geo->get_cell(cell_iter.first).layer();
-    cell_iter.second *= scalefactor[layer];
-  }
+  // Apply the scale factor of its layer to each cell
+  simulstate.scale_cells(
+      [this, &scalefactor](unsigned long long cell_id) -> double
+      { return scalefactor[m_geo->get_cell(cell_id).layer()]; });
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("Apply scale factors : ");

@@ -14,6 +14,7 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "FastCaloSim/Definitions/Index.h"
+#include "FastCaloSim/Definitions/Phi.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "TBuffer.h"
 #include "TClass.h"
@@ -247,8 +248,10 @@ auto TFCSPredictExtrapWeights::simulate_hit(
 
   double eta = (1. - extrapWeight) * extrapol->eta(cs, FastCaloSim::SubPos::ENT)
       + extrapWeight * extrapol->eta(cs, FastCaloSim::SubPos::EXT);
-  double phi = (1. - extrapWeight) * extrapol->phi(cs, FastCaloSim::SubPos::ENT)
-      + extrapWeight * extrapol->phi(cs, FastCaloSim::SubPos::EXT);
+  double phi =
+      FastCaloSim::interpolate_phi(extrapol->phi(cs, FastCaloSim::SubPos::ENT),
+                                   extrapol->phi(cs, FastCaloSim::SubPos::EXT),
+                                   extrapWeight);
   double extrapWeight_for_r_z = extrapWeight;
   if (UseHardcodedWeight()) {
     extrapWeight_for_r_z = 0.5;

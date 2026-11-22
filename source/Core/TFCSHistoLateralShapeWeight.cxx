@@ -10,6 +10,7 @@
 #include "CLHEP/Random/RandGaussZiggurat.h"
 #include "FastCaloSim/Core/GaussZiggurat.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/Phi.h"
 #include "TH1.h"
 #include "TVector2.h"
 
@@ -59,7 +60,7 @@ auto TFCSHistoLateralShapeWeight::simulate_hit(
   const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
 
   const double delta_eta = hit.eta() - center_eta;
-  const double delta_phi = hit.phi() - center_phi;
+  const double delta_phi = FastCaloSim::delta_phi(hit.phi(), center_phi);
   const double delta_eta_mm = delta_eta * eta_jakobi * dist000;
   const double delta_phi_mm = delta_phi * center_r;
   const double delta_r_mm =

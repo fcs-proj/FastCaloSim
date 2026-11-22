@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "SimStateTests.h"
@@ -33,6 +34,35 @@ TEST_F(TFCSSimulationStateTest, EnergyManipulations)
   EXPECT_DOUBLE_EQ(sim_state.E(1), 150.0);
   sim_state.set_Efrac(1, 0.75);
   EXPECT_DOUBLE_EQ(sim_state.Efrac(1), 0.75);
+}
+
+TEST_F(TFCSSimulationStateTest, LayerEnergies)
+{
+  TFCSSimulationState sim_state;
+  // Layers that were not set read as 0, also beyond the highest set layer
+  EXPECT_EQ(sim_state.E(0), 0);
+  EXPECT_EQ(sim_state.Efrac(23), 0);
+  sim_state.set_E(12, 100.0);
+  sim_state.set_Efrac(5, 0.5);
+  EXPECT_DOUBLE_EQ(sim_state.E(12), 100.0);
+  EXPECT_DOUBLE_EQ(sim_state.Efrac(5), 0.5);
+  for (std::size_t layer = 0; layer < 24; ++layer) {
+    if (layer != 12) {
+      EXPECT_EQ(sim_state.E(layer), 0) << "layer " << layer;
+    }
+    if (layer != 5) {
+      EXPECT_EQ(sim_state.Efrac(layer), 0) << "layer " << layer;
+    }
+  }
+  // add_E to a layer that was not set starts from 0 and adds to the total
+  sim_state.set_E(10.0);
+  sim_state.add_E(3, 25.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(3), 25.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(), 35.0);
+  // A lower layer set later keeps the higher ones
+  sim_state.set_E(1, 7.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(1), 7.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(12), 100.0);
 }
 
 TEST_F(TFCSSimulationStateTest, ClearFunction)
@@ -83,12 +113,103 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
   // Deposit 10 MeV in that cell
   sim_state.deposit(cell.id(), 10.0);
   // Retrieve the cell map of the simulation state
-  auto& cells = sim_state.cells();
+  const auto& cells = sim_state.cells();
 
   // Check that the cell is in the map
   ASSERT_TRUE(cells.contains(cell.id()));
   // Check that the energy deposited in the cell is correct
-  EXPECT_DOUBLE_EQ(cells[cell.id()], 10.0);
+  EXPECT_DOUBLE_EQ(cells.at(cell.id()), 10.0);
+}
+
+TEST_F(TFCSSimulationStateTest, DepositSequences)
+{
+  TFCSSimulationState sim_state;
+  // The same cell several times in a row, then another one and back
+  sim_state.deposit(7, 1.0);
+  sim_state.deposit(7, 2.0);
+  sim_state.deposit(8, 4.0);
+  sim_state.deposit(7, 8.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(7), 11.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(8), 4.0);
+
+  // Many new cells (the map rehashes) between deposits into the same cell
+  for (unsigned long long id = 100; id < 1100; ++id) {
+    sim_state.deposit(8, 1.0);
+    sim_state.deposit(id, 1.0);
+  }
+  sim_state.deposit(1099, 1.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(8), 1004.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 2.0);
+  EXPECT_EQ(sim_state.cells().size(), 1002U);
+
+  // A copy has its own cells
+  TFCSSimulationState copy = sim_state;
+  copy.deposit(1099, 1.0);
+  sim_state.deposit(1099, 4.0);
+  EXPECT_DOUBLE_EQ(copy.cells().at(1099), 3.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 6.0);
+
+  // So does a moved state
+  TFCSSimulationState moved = std::move(copy);
+  moved.deposit(1099, 1.0);
+  EXPECT_DOUBLE_EQ(moved.cells().at(1099), 4.0);
+
+  // Scaled cells keep collecting energy
+  sim_state.scale_cells([](unsigned long long id) -> double
+                        { return id == 1099 ? 0.5 : 1.0; });
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 3.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(8), 1004.0);
+  sim_state.deposit(1099, 1.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 4.0);
+
+  // So do cells after clear() (whether or not it erases them)
+  sim_state.clear();
+  const auto energy = [&sim_state](unsigned long long id) -> double
+  {
+    const auto it = sim_state.cells().find(id);
+    return it == sim_state.cells().end() ? 0.0 : it->second;
+  };
+  const double before = energy(1099);
+  sim_state.deposit(1099, 1.0);
+  sim_state.deposit(1099, 1.0);
+  EXPECT_DOUBLE_EQ(energy(1099), before + 2.0);
+}
+
+TEST_F(TFCSSimulationStateTest, DepositAfterMove)
+{
+  // The moved-from state must not write into the cells that the move took
+  // along
+  TFCSSimulationState source;
+  source.deposit(7, 1.0);
+  TFCSSimulationState constructed(std::move(source));
+  // NOLINTNEXTLINE(bugprone-use-after-move,hicpp-invalid-access-moved)
+  source.deposit(7, 2.0);
+  EXPECT_DOUBLE_EQ(constructed.cells().at(7), 1.0);
+  EXPECT_DOUBLE_EQ(source.cells().at(7), 2.0);
+
+  // Move assignment
+  TFCSSimulationState assigned;
+  assigned.deposit(7, 8.0);
+  assigned = std::move(constructed);
+  // NOLINTNEXTLINE(bugprone-use-after-move,hicpp-invalid-access-moved)
+  constructed.deposit(7, 4.0);
+  assigned.deposit(7, 16.0);
+  EXPECT_DOUBLE_EQ(assigned.cells().at(7), 17.0);
+  EXPECT_DOUBLE_EQ(constructed.cells().at(7), 4.0);
+}
+
+TEST_F(TFCSSimulationStateTest, DepositAfterClear)
+{
+  // The cell energy after clear() is the energy deposited after it (clear()
+  // erases the cells) or the sum (it keeps them), never a write through a
+  // pointer to an erased cell
+  TFCSSimulationState sim_state;
+  sim_state.deposit(7, 1.0);
+  sim_state.clear();
+  const bool erased = !sim_state.cells().contains(7);
+  sim_state.deposit(7, 2.0);
+  ASSERT_TRUE(sim_state.cells().contains(7));
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(7), erased ? 2.0 : 3.0);
 }
 
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)
@@ -113,7 +234,6 @@ TEST_F(TFCSSimulationStateTest, LayerAuxIndicesAreDistinct)
                                 "BSEventData"_FCShash,
                                 "BSNHits"_FCShash,
                                 "EventNr"_FCShash,
-                                "FCSFixedHitChainEnergySum"_FCShash,
                                 "FCSHitChainNHits"_FCShash,
                                 "GANlayer"_FCShash,
                                 "SF"_FCShash};

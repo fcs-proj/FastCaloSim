@@ -153,7 +153,18 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
   int const nPars = m_parMeans[ibin].GetNrows();
   genPars.ResizeTo(nPars);
 
-  TVectorD rotParMeans = m_EigenVectors[ibin] * m_parMeans[ibin];
+  // Sample x = mu + V sqrt(Lambda) z for the covariance V Lambda V^T: draw the
+  // components in the eigenbasis around V^T mu, then rotate back with V. The
+  // eigenvectors are the columns of V, so the means are rotated with V^T.
+  const TMatrixD& eigenVectors = m_EigenVectors[ibin];
+  TVectorD rotParMeans(nPars);
+  for (int iPar = 0; iPar < nPars; ++iPar) {
+    double sum = 0;
+    for (int jPar = 0; jPar < nPars; ++jPar) {
+      sum += eigenVectors(jPar, iPar) * m_parMeans[ibin][jPar];
+    }
+    rotParMeans[iPar] = sum;
+  }
   for (int iPar = 0; iPar < nPars; iPar++) {
     double variance = m_EigenValues[ibin][iPar];
     // check for positive-definiteness of covMatrix
@@ -168,7 +179,7 @@ void TFCSVoxelHistoLateralCovarianceFluctuations::MultiGaus(
                              << " rotParMeans[iPar]=" << rotParMeans[iPar]
                              << " sqrt(variance)=" << std::sqrt(variance));
   }
-  genPars = m_EigenVectors[ibin] * genPars;
+  genPars = eigenVectors * genPars;
 }
 
 auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
