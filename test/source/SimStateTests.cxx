@@ -163,6 +163,43 @@ TEST_F(TFCSSimulationStateTest, DepositSequences)
   EXPECT_DOUBLE_EQ(energy(1099), before + 2.0);
 }
 
+TEST_F(TFCSSimulationStateTest, DepositAfterMove)
+{
+  // The moved-from state must not write into the cells that the move took
+  // along
+  TFCSSimulationState source;
+  source.deposit(7, 1.0);
+  TFCSSimulationState constructed(std::move(source));
+  // NOLINTNEXTLINE(bugprone-use-after-move,hicpp-invalid-access-moved)
+  source.deposit(7, 2.0);
+  EXPECT_DOUBLE_EQ(constructed.cells().at(7), 1.0);
+  EXPECT_DOUBLE_EQ(source.cells().at(7), 2.0);
+
+  // Move assignment
+  TFCSSimulationState assigned;
+  assigned.deposit(7, 8.0);
+  assigned = std::move(constructed);
+  // NOLINTNEXTLINE(bugprone-use-after-move,hicpp-invalid-access-moved)
+  constructed.deposit(7, 4.0);
+  assigned.deposit(7, 16.0);
+  EXPECT_DOUBLE_EQ(assigned.cells().at(7), 17.0);
+  EXPECT_DOUBLE_EQ(constructed.cells().at(7), 4.0);
+}
+
+TEST_F(TFCSSimulationStateTest, DepositAfterClear)
+{
+  // The cell energy after clear() is the energy deposited after it (clear()
+  // erases the cells) or the sum (it keeps them), never a write through a
+  // pointer to an erased cell
+  TFCSSimulationState sim_state;
+  sim_state.deposit(7, 1.0);
+  sim_state.clear();
+  const bool erased = !sim_state.cells().contains(7);
+  sim_state.deposit(7, 2.0);
+  ASSERT_TRUE(sim_state.cells().contains(7));
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(7), erased ? 2.0 : 3.0);
+}
+
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)
 {
   TFCSSimulationState sim_state;

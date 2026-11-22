@@ -108,8 +108,9 @@ private:
 
   // The cell of the last deposit: consecutive hits often go to the same cell.
   // It points into m_cells (elements of an unordered_map keep their address
-  // when it rehashes, only erasing invalidates it: reset it then); a copied or
-  // moved state does not take it over.
+  // when it rehashes, only erasing invalidates it: reset it then). Copies and
+  // moves reset it on both sides: a copy has its own cells, and a move takes
+  // the cells of the moved-from state along.
   struct LastCell
   {
     unsigned long long id {0};
@@ -117,7 +118,7 @@ private:
 
     LastCell() = default;
     LastCell(const LastCell& /*other*/) noexcept {}
-    LastCell(LastCell&& /*other*/) noexcept {}
+    LastCell(LastCell&& other) noexcept { other.reset(); }
     auto operator=(const LastCell& other) noexcept -> LastCell&
     {
       if (this != &other) {
@@ -125,9 +126,10 @@ private:
       }
       return *this;
     }
-    auto operator=(LastCell&& /*other*/) noexcept -> LastCell&
+    auto operator=(LastCell&& other) noexcept -> LastCell&
     {
       reset();
+      other.reset();
       return *this;
     }
     ~LastCell() = default;
