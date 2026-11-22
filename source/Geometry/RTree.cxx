@@ -17,6 +17,7 @@
 #include <boost/geometry/index/rtree.hpp>
 
 #include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Phi.h"
 
 namespace bg = boost::geometry;
 namespace bgi = boost::geometry::index;
@@ -448,9 +449,12 @@ auto RTree::query_point(const Position& pos) const -> uint64_t
 
 auto RTree::query_point_index(const Position& pos) const -> std::size_t
 {
+  // The cell rectangles cover phi in [-pi, pi]; a position given with an
+  // azimuth outside (e.g. a hit placed just across the seam as center + offset)
+  // is looked up at the same direction inside that range
   const Point point = m_coordinate_system == RTreeHelpers::CoordinateSystem::XYZ
       ? Point(pos.x(), pos.y())
-      : Point(pos.eta(), pos.phi());
+      : Point(pos.eta(), FastCaloSim::wrap_phi(pos.phi()));
 
   // The cells whose rectangle contains the point: normally exactly one, but
   // the rectangles of neighboring cells can overlap slightly

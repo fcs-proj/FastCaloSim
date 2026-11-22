@@ -20,6 +20,7 @@
 #include <gtest/gtest.h>
 
 #include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Phi.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
 #include "TTree.h"
@@ -128,6 +129,21 @@ TEST(RTreeTests, CellAcrossPhiBoundary)
   EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, M_PI - 0.05)), 1);
   EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, -M_PI + 0.05)), 1);
   EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, 0.05)), 2);
+}
+
+TEST(RTreeTests, AzimuthOutsideMinusPiToPi)
+{
+  // A hit placed as center + offset can have an azimuth just beyond +-pi: it
+  // must be found at the same direction inside [-pi, pi], not in the nearest
+  // cell on the other side of the seam
+  const RTree rtree(kEtaPhi,
+                    {eta_phi_cell(1, 0.5, M_PI - 0.05, 1.0, 0.1),
+                     eta_phi_cell(2, 0.5, -M_PI + 0.05, 1.0, 0.1)});
+
+  EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, M_PI + 0.03)), 2);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, -M_PI - 0.03)), 1);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, M_PI - 0.03)), 1);
+  EXPECT_EQ(rtree.query_point(at_eta_phi(0.5, -M_PI + 0.03)), 2);
 }
 
 TEST(RTreeTests, PositionFarOutsideAllCells)
@@ -508,7 +524,10 @@ TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
                 .m_x = 0, .m_y = 0, .m_z = 0, .m_eta = u, .m_phi = v, .m_r = 0};
       const uint64_t cell_id = geo->get_cell(layer, pos).id();
 
-      ASSERT_TRUE(is_expected_cell(cell_id, rects, u, v))
+      // An azimuth outside [-pi, pi] is the same direction as its wrapped
+      // value, which is where the cell rectangles are
+      const double v_ref = geo->is_xyz(layer) ? v : FastCaloSim::wrap_phi(v);
+      ASSERT_TRUE(is_expected_cell(cell_id, rects, u, v_ref))
           << "layer " << layer << ", position (" << u << ", " << v << "), cell "
           << cell_id;
     }
