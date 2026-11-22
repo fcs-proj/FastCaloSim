@@ -46,8 +46,7 @@ public:
 
   // Retrieve the best matching cell for a given position
   // Alternative geo handlers need to override this method
-  virtual auto get_cell(std::size_t layer, const Position& pos) const
-      -> const Cell&;
+  virtual auto get_cell(std::size_t layer, const Position& pos) const -> Cell;
 
   // Retrieve the id of the best matching cell for a given position
   auto get_cell_id(std::size_t layer, const Position& pos) const
@@ -60,9 +59,9 @@ public:
   auto n_layers() const -> std::size_t;
 
   /// @brief Get a cell by its ID
-  auto get_cell(unsigned long long id) const -> const Cell&;
+  auto get_cell(unsigned long long id) const -> Cell;
   /// @brief Get a cell by its index in a layer
-  auto get_cell_at_idx(std::size_t layer, size_t idx) const -> const Cell&;
+  auto get_cell_at_idx(std::size_t layer, size_t idx) const -> Cell;
 
   /// @brief Check if a layer is a barrel layer
   auto is_barrel(std::size_t layer) const -> bool;

@@ -38,15 +38,13 @@ public:
   auto set_geo(CaloGeo* geo) { m_geo = geo; }
 
   /// @brief Get the cell at a specific position
-  auto get_cell(std::size_t layer, const Position& pos) const
-      -> const Cell& override
+  auto get_cell(std::size_t layer, const Position& pos) const -> Cell override
   {
     unsigned long long const cell_id = this->get_fcal_cell_id(
         static_cast<int>(layer), pos.x(), pos.y(), pos.z());
 
     if (cell_id == std::numeric_limits<unsigned long long>::max()) {
-      static Cell const invalid_cell;
-      return invalid_cell;
+      return Cell {};
     }
     // This will get the cell directly from the cell store
     return m_geo->get_cell(cell_id);

@@ -116,10 +116,7 @@ public:
   }
 
   /// @brief Return the cell with a given ID.
-  /// @note The returned reference aliases a per-thread scratch Cell that is
-  ///       overwritten by the next get()/get_at_index() call on the same
-  ///       thread. Copy the Cell if you need to hold more than one at a time.
-  auto get(uint64_t id) const -> const Cell&
+  auto get(uint64_t id) const -> Cell
   {
     if (m_data == nullptr || m_index_data == nullptr) {
       throw std::runtime_error("CellStore not loaded - call load() first");
@@ -128,10 +125,7 @@ public:
   }
 
   /// @brief Return the cell at a given dense index.
-  /// @note The returned reference aliases a per-thread scratch Cell that is
-  ///       overwritten by the next get()/get_at_index() call on the same
-  ///       thread. Copy the Cell if you need to hold more than one at a time.
-  auto get_at_index(size_t idx) const -> const Cell&
+  auto get_at_index(size_t idx) const -> Cell
   {
     if (m_data == nullptr) {
       throw std::runtime_error("CellStore not loaded - call load() first");
@@ -145,10 +139,9 @@ public:
     const char* cell_bytes =
         static_cast<const char*>(m_data) + idx * sizeof(CellData);
 
-    // Use thread-local Cell to avoid lifetime issues
-    thread_local Cell tmp_cell;
-    std::memcpy(&tmp_cell.raw(), cell_bytes, sizeof(CellData));
-    return tmp_cell;
+    Cell cell;
+    std::memcpy(&cell.raw(), cell_bytes, sizeof(CellData));
+    return cell;
   }
 
   auto size() const -> size_t { return m_n_cells; }
@@ -209,15 +202,14 @@ private:
   }
 
   /// @brief Get a cell at the specified offset in the data file
-  auto getCellAtOffset(uint64_t offset) const -> const Cell&
+  auto getCellAtOffset(uint64_t offset) const -> Cell
   {
     const auto* cell_data = reinterpret_cast<const CellData*>(
         static_cast<const char*>(m_data) + offset);
 
-    // Use thread-local Cell to avoid lifetime issues
-    thread_local Cell tmp_cell;
-    std::memcpy(&tmp_cell.raw(), cell_data, sizeof(CellData));
-    return tmp_cell;
+    Cell cell;
+    std::memcpy(&cell.raw(), cell_data, sizeof(CellData));
+    return cell;
   }
 
   /// @brief Pointer to the memory-mapped data file containing serialized
