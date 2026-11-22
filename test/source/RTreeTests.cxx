@@ -168,7 +168,7 @@ TEST(RTreeTests, ManyNearestCellsTied)
   // cells are at eta >= 200. The position at eta = 60 is equally near to the
   // four (and so are their centers): the smallest ID
   std::vector<Cell> cells;
-  for (const uint64_t id : {7, 3, 9, 5}) {
+  for (const uint64_t id : std::array<uint64_t, 4> {7, 3, 9, 5}) {
     cells.push_back(eta_phi_cell(id, 0.5, 0.0, 1.0, 0.2));
   }
   for (int i = 200; i <= 300; ++i) {
