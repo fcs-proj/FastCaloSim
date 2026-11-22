@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <filesystem>
 #include <limits>
 #include <memory>
 #include <random>
@@ -21,6 +22,7 @@
 #include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
+#include "TTree.h"
 #include "TestConfig/AtlasGeoTestsConfig.h"
 
 namespace
@@ -207,6 +209,59 @@ TEST(RTreeTests, LargeLayerIds)
   EXPECT_THROW(geo.get_cell(0, at_eta_phi(0, 0)), std::runtime_error);
   EXPECT_THROW(geo.get_cell(8, at_eta_phi(0, 0)), std::runtime_error);
   EXPECT_THROW(geo.get_cell(100000001, at_eta_phi(0, 0)), std::runtime_error);
+}
+
+TEST(RTreeTests, CellsInRPhiZAreRejected)
+{
+  // The cell lookup works in (eta, phi) or (x, y); a geometry with cells
+  // described in (r, phi, z) must be rejected instead of being looked up with
+  // an eta extent it does not have
+  unsigned int layer = 3;
+  bool is_barrel = true;
+  unsigned long long id = 42;
+  float x = 1000.F;
+  float y = 0.F;
+  float z = 0.F;
+  float phi = 0.F;
+  float eta = 0.F;
+  float r = 1000.F;
+  float dx = 0.F;
+  float dy = 0.F;
+  float dz = 10.F;
+  float dphi = 0.1F;
+  float deta = 0.F;
+  float dr = 10.F;
+  bool is_xyz = false;
+  bool is_eta_phi_r = false;
+  bool is_eta_phi_z = false;
+  bool is_r_phi_z = true;
+  TTree tree("cells", "cells");
+  tree.SetDirectory(nullptr);
+  tree.Branch("layer", &layer);
+  tree.Branch("isBarrel", &is_barrel);
+  tree.Branch("id", &id);
+  tree.Branch("x", &x);
+  tree.Branch("y", &y);
+  tree.Branch("z", &z);
+  tree.Branch("phi", &phi);
+  tree.Branch("eta", &eta);
+  tree.Branch("r", &r);
+  tree.Branch("dx", &dx);
+  tree.Branch("dy", &dy);
+  tree.Branch("dz", &dz);
+  tree.Branch("dphi", &dphi);
+  tree.Branch("deta", &deta);
+  tree.Branch("dr", &dr);
+  tree.Branch("isXYZ", &is_xyz);
+  tree.Branch("isEtaPhiR", &is_eta_phi_r);
+  tree.Branch("isEtaPhiZ", &is_eta_phi_z);
+  tree.Branch("isRPhiZ", &is_r_phi_z);
+  tree.Fill();
+  ROOT::RDataFrame geo_df(tree);
+  CaloGeo geo;
+  const std::string path =
+      (std::filesystem::temp_directory_path() / "fcs_rphiz_geo").string();
+  EXPECT_THROW(geo.build(geo_df, path), std::runtime_error);
 }
 
 // ---- Comparison with a brute-force search on the ATLAS geometry

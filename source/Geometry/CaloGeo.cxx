@@ -4,8 +4,10 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <format>
 #include <limits>
 #include <optional>
+#include <stdexcept>
 #include <unordered_set>
 #include <vector>
 
@@ -245,7 +247,12 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
       } else if (isEtaPhiZ->at(i)) {
         flags.coordinate_system = RTreeHelpers::CoordinateSystem::EtaPhiZ;
       } else if (isRPhiZ->at(i)) {
-        flags.coordinate_system = RTreeHelpers::CoordinateSystem::RPhiZ;
+        // The cell lookup and the hit-cell distance work in (eta, phi) or
+        // (x, y); cells described in (r, phi, z) have no eta extent
+        throw std::runtime_error(std::format(
+            "Layer {}: cells in (r, phi, z) coordinates (isRPhiZ) are not "
+            "supported by the cell lookup",
+            layer_id));
       } else {
         flags.coordinate_system = RTreeHelpers::CoordinateSystem::Undefined;
       }
@@ -354,8 +361,12 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
         m_layer_flags[layer_id].coordinate_system =
             RTreeHelpers::CoordinateSystem::EtaPhiZ;
       } else if (cell.isRPhiZ()) {
-        m_layer_flags[layer_id].coordinate_system =
-            RTreeHelpers::CoordinateSystem::RPhiZ;
+        // The cell lookup and the hit-cell distance work in (eta, phi) or
+        // (x, y); cells described in (r, phi, z) have no eta extent
+        throw std::runtime_error(std::format(
+            "Layer {}: cells in (r, phi, z) coordinates (isRPhiZ) are not "
+            "supported by the cell lookup",
+            layer_id));
       } else {
         m_layer_flags[layer_id].coordinate_system =
             RTreeHelpers::CoordinateSystem::Undefined;

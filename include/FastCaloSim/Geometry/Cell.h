@@ -206,7 +206,8 @@ public:
       double const dy = std::abs(pos.m_y - y());
       return std::max(dx - m_data.m_dx / 2, dy - m_data.m_dy / 2);
     }
-    if (m_data.m_isEtaPhiR || m_data.m_isEtaPhiZ || m_data.m_isRPhiZ) {
+    // Cells in (r, phi, z) have no eta extent; CaloGeo rejects them
+    if (m_data.m_isEtaPhiR || m_data.m_isEtaPhiZ) {
       double const d_eta = std::abs(pos.m_eta - eta());
       double const d_phi = std::abs(norm_angle(pos.m_phi - phi()));
       return std::max(d_eta / m_data.m_deta, d_phi / m_data.m_dphi) - 0.5;
