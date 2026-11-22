@@ -8,6 +8,7 @@
 #include <limits>
 #include <numbers>
 #include <optional>
+#include <vector>
 
 #include "FastCaloSim/Core/TFCSEnergyAndHitGANV2.h"
 
@@ -195,20 +196,23 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     return false;
   }
 
-  TFCSGANEtaSlice::NetworkOutputs outputs =
-      m_slice->GetNetworkOutputs(truth, extrapol, simulstate);
-  FCS_MSG_VERBOSE("network outputs size: " << outputs.size());
+  const std::vector<double> voxelFractions =
+      m_slice->GetVoxelEnergyFractions(truth, extrapol, simulstate);
+  if (voxelFractions.empty()) {
+    FCS_MSG_ERROR("No voxel energies from the GAN");
+    return false;
+  }
 
   const TFCSGANXMLParameters::Binning& binsInLayers = m_param.GetBinning();
   const auto ganVersion = m_param.GetGANVersion();
   const TFCSGANEtaSlice::FitResultsPerLayer& fitResults =
       m_slice->GetFitResults();  // used only if GAN version > 1
 
-  FCS_MSG_DEBUG("energy voxels size = " << outputs.size());
+  FCS_MSG_DEBUG("energy voxels size = " << voxelFractions.size());
 
   double totalEnergy = 0;
-  for (const auto& output : outputs) {
-    totalEnergy += output.second;
+  for (const double fraction : voxelFractions) {
+    totalEnergy += fraction;
   }
   if (totalEnergy < 0) {
     FCS_MSG_WARNING("Energy from GAN is negative, skipping particle");
@@ -219,7 +223,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
   simulstate.set_E(0);
 
-  int vox = 0;
+  std::size_t vox = 0;
   for (const auto& [layer, h] : binsInLayers) {
     const int xBinNum = h.GetNbinsX();
     const int yBinNum = h.GetNbinsY();
@@ -241,7 +245,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     for (int ix = 1; ix <= xBinNum; ++ix) {
       double const binsInAlphaInRBin = GetAlphaBinsForRBin(x, ix, yBinNum);
       for (int iy = 1; iy <= binsInAlphaInRBin; ++iy) {
-        const double energyInVoxel = outputs.at(std::to_string(vox));
+        const double energyInVoxel = voxelFractions.at(vox);
         FCS_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
                                 << " binx " << ix << " biny " << iy);
 
@@ -363,7 +367,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
       // Horrible work around for variable # of bins along alpha direction
       const int binsToMerge = yBinNum == 32 ? 32 / binsInAlphaInRBin : 1;
       for (int iy = 1; iy <= binsInAlphaInRBin; ++iy) {
-        const double energyInVoxel = outputs.at(std::to_string(vox));
+        const double energyInVoxel = voxelFractions.at(vox);
         const int lowEdgeIndex = (iy - 1) * binsToMerge + 1;
 
         FCS_MSG_VERBOSE(" Vox " << vox << " energy " << energyInVoxel
