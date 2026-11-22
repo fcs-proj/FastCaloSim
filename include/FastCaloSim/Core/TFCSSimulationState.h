@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <utility>
 #include <variant>
-#include <vector>
 
 #include <FastCaloSim/FastCaloSim_export.h>
 #include <TObject.h>
@@ -39,26 +38,32 @@ public:
 
   auto is_valid() const -> bool { return m_Ebin.has_value(); }
   auto E() const -> double { return m_Etot; }
-  // Layers that were not set read as 0
-  auto E(std::size_t sample) const -> double { return get(m_E, sample); }
+  // NOTE: layers without energy are not stored in the maps; as for the
+  // original array-based implementation, such layers read as 0 energy.
+  auto E(std::size_t sample) const -> double
+  {
+    auto it = m_E.find(sample);
+    return it != m_E.end() ? it->second : 0.;
+  }
   auto Efrac(std::size_t sample) const -> double
   {
-    return get(m_Efrac, sample);
+    auto it = m_Efrac.find(sample);
+    return it != m_Efrac.end() ? it->second : 0.;
   }
   /// The energy bin of the PCA energy parametrization, starting at 1; no value
   /// before it is chosen
   auto Ebin() const -> std::optional<std::size_t> { return m_Ebin; }
 
   void set_Ebin(std::size_t bin) { m_Ebin = bin; }
-  void set_E(std::size_t sample, double Esample) { at(m_E, sample) = Esample; }
+  void set_E(std::size_t sample, double Esample) { m_E[sample] = Esample; }
   void set_Efrac(std::size_t sample, double Efracsample)
   {
-    at(m_Efrac, sample) = Efracsample;
+    m_Efrac[sample] = Efracsample;
   }
   void set_E(double E) { m_Etot = E; }
   void add_E(std::size_t sample, double Esample)
   {
-    at(m_E, sample) += Esample;
+    m_E[sample] += Esample;
     m_Etot += Esample;
   }
 
@@ -93,24 +98,8 @@ private:
   std::optional<std::size_t> m_Ebin;  //!
   double m_Etot {0};
   // TO BE CLEANED UP! SHOULD ONLY STORE EITHER E OR EFRAC!!!
-  // Indexed by layer, up to the highest layer that was set
-  std::vector<double> m_E;
-  std::vector<double> m_Efrac;
-
-  // The value of a layer, 0 if it was not set
-  static auto get(const std::vector<double>& values, std::size_t sample)
-      -> double
-  {
-    return sample < values.size() ? values[sample] : 0.;
-  }
-  // The value of a layer to set, growing the vector up to it with zeros
-  static auto at(std::vector<double>& values, std::size_t sample) -> double&
-  {
-    if (sample >= values.size()) {
-      values.resize(sample + 1, 0.);
-    }
-    return values[sample];
-  }
+  std::unordered_map<std::size_t, double> m_E;
+  std::unordered_map<std::size_t, double> m_Efrac;
 
   cellmap m_cells;
 
@@ -229,7 +218,7 @@ private:
   std::unordered_map<std::uint32_t, std::any>
       m_AuxObjects;  //! Do not persistify
 
-  ClassDefOverride(TFCSSimulationState, 6)  // TFCSSimulationState
+  ClassDefOverride(TFCSSimulationState, 5)  // TFCSSimulationState
 };
 
 // Implementation of the compile time text hash operator that can be used for
