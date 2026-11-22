@@ -101,12 +101,12 @@ TEST_F(TFCSSimulationStateTest, DepositEnergy)
   // Deposit 10 MeV in that cell
   sim_state.deposit(cell.id(), 10.0);
   // Retrieve the cell map of the simulation state
-  auto& cells = sim_state.cells();
+  const auto& cells = sim_state.cells();
 
   // Check that the cell is in the map
   ASSERT_TRUE(cells.contains(cell.id()));
   // Check that the energy deposited in the cell is correct
-  EXPECT_DOUBLE_EQ(cells[cell.id()], 10.0);
+  EXPECT_DOUBLE_EQ(cells.at(cell.id()), 10.0);
 }
 
 TEST_F(TFCSSimulationStateTest, DepositSequences)
@@ -142,12 +142,25 @@ TEST_F(TFCSSimulationStateTest, DepositSequences)
   moved.deposit(1099, 1.0);
   EXPECT_DOUBLE_EQ(moved.cells().at(1099), 4.0);
 
-  // Cells erased through cells() are created again
-  sim_state.cells().clear();
+  // Scaled cells keep collecting energy
+  sim_state.scale_cells([](unsigned long long id) -> double
+                        { return id == 1099 ? 0.5 : 1.0; });
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 3.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(8), 1004.0);
+  sim_state.deposit(1099, 1.0);
+  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 4.0);
+
+  // So do cells after clear() (whether or not it erases them)
+  sim_state.clear();
+  const auto energy = [&sim_state](unsigned long long id) -> double
+  {
+    const auto it = sim_state.cells().find(id);
+    return it == sim_state.cells().end() ? 0.0 : it->second;
+  };
+  const double before = energy(1099);
   sim_state.deposit(1099, 1.0);
   sim_state.deposit(1099, 1.0);
-  EXPECT_EQ(sim_state.cells().size(), 1U);
-  EXPECT_DOUBLE_EQ(sim_state.cells().at(1099), 2.0);
+  EXPECT_DOUBLE_EQ(energy(1099), before + 2.0);
 }
 
 TEST_F(TFCSSimulationStateTest, AuxiliaryInfoHandling)

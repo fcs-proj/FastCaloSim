@@ -27,6 +27,7 @@ void TFCSSimulationState::clear()
   m_Etot = 0;
   m_E.clear();
   m_Efrac.clear();
+  m_last_cell.reset();
 }
 
 void TFCSSimulationState::deposit(const unsigned long long cell_id, double E)
