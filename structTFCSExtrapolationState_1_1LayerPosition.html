@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TFCSMLCalorimeterSimulator::layer_t struct | FastCaloSim</title>
+  <title>TFCSExtrapolationState::LayerPosition struct | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,10 +49,9 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <span class="m-breadcrumb"><a href="classTFCSMLCalorimeterSimulator.html">TFCSMLCalorimeterSimulator</a>::<wbr/></span>layer_t <span class="m-thin">struct</span>
-          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSMLCalorimeterSimulator_8h.html">&lt;TFCSMLCalorimeterSimulator.h&gt;</a></div>
+          <span class="m-breadcrumb"><a href="classTFCSExtrapolationState.html">TFCSExtrapolationState</a>::<wbr/></span>LayerPosition <span class="m-thin">struct</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSExtrapolationState_8h.html">&lt;TFCSExtrapolationState.h&gt;</a></div>
         </h1>
-        <p><span></span></p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
@@ -64,15 +63,36 @@
             </li>
           </ul>
         </div>
+<p>Extrapolated position of one sub-position of a layer. The defaults are the values of a sub-position that the extrapolation did not reach.</p>
         <section id="pub-attribs">
           <h2><a href="#pub-attribs">Public variables</a></h2>
           <dl class="m-doc">
-            <dt id="ab84455e0ebbee462426483752bcfd224">
-              std::vector&lt;unsigned int&gt; <a href="#ab84455e0ebbee462426483752bcfd224" class="m-doc-self">bin_index_vector</a>
+            <dt id="a08c43eb7d77cac2b7a336df5461ed0b2">
+              bool <a href="#a08c43eb7d77cac2b7a336df5461ed0b2" class="m-doc-self">ok</a>
             </dt>
             <dd><span></span></dd>
-            <dt id="adaca07f4e1c039dc17b594960aaf7fd1">
-              std::vector&lt;float&gt; <a href="#adaca07f4e1c039dc17b594960aaf7fd1" class="m-doc-self">E_vector</a>
+            <dt id="a0eaf1497bf8eb2f136a16fd531d61bfe">
+              double <a href="#a0eaf1497bf8eb2f136a16fd531d61bfe" class="m-doc-self">eta</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a65698d19a1cc0c96c929e098b5abc6f1">
+              double <a href="#a65698d19a1cc0c96c929e098b5abc6f1" class="m-doc-self">phi</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a7756f3a192b65d45998c622b601717f3">
+              double <a href="#a7756f3a192b65d45998c622b601717f3" class="m-doc-self">r</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a007e197c49965199910aed117f46639c">
+              double <a href="#a007e197c49965199910aed117f46639c" class="m-doc-self">z</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a1cedfca57dbf26557c3c1dc30b3d81a9">
+              double <a href="#a1cedfca57dbf26557c3c1dc30b3d81a9" class="m-doc-self">d</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a85e10617a6677bba7b7a55146b3eae65">
+              double <a href="#a85e10617a6677bba7b7a55146b3eae65" class="m-doc-self">deta_border</a>
             </dt>
             <dd><span></span></dd>
           </dl>

@@ -60,7 +60,6 @@
               Reference
               <ul>
                 <li><a href="#base-classes">Base classes</a></li>
-                <li><a href="#pub-types">Public types</a></li>
                 <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
                 <li><a href="#pro-methods">Protected functions</a></li>
@@ -73,19 +72,6 @@
           <dl class="m-doc">
             <dt>
               class <a href="classTFCSBinnedShowerBase.html" class="m-doc">TFCSBinnedShowerBase</a>
-            </dt>
-            <dd><span></span></dd>
-          </dl>
-        </section>
-        <section id="pub-types">
-          <h2><a href="#pub-types">Public types</a></h2>
-          <dl class="m-doc">
-            <dt>
-              struct <a href="structTFCSBinnedShowerONNX_1_1layer__bins__t.html" class="m-doc">layer_bins_t</a>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a622ae25cbd42db95857dc8dc0227ddcc">
-              using <a href="#a622ae25cbd42db95857dc8dc0227ddcc" class="m-doc-self">event_bins_t</a> = std::vector&lt;<a href="structTFCSBinnedShowerONNX_1_1layer__bins__t.html" class="m-doc">layer_<wbr />bins_<wbr />t</a>&gt;
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -127,14 +113,6 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a75b0f52a28df52b0657ff85b61bfa0cd" class="m-doc-self">is_match_Ekin_bin</a>(</span><span class="m-doc-wrap">std::size_t) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="abe4dcb6e82cccd3094772e29209e67f1">
-              <span class="m-doc-wrap-bumper">void <a href="#abe4dcb6e82cccd3094772e29209e67f1" class="m-doc-self">enable_upscaling</a>(</span><span class="m-doc-wrap">)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a2fe23d4f4d60013f12848c0d571d672a">
-              <span class="m-doc-wrap-bumper">void <a href="#a2fe23d4f4d60013f12848c0d571d672a" class="m-doc-self">disable_upscaling</a>(</span><span class="m-doc-wrap">)</span>
-            </dt>
-            <dd><span></span></dd>
             <dt id="a46c0a0e51f8c2743c900492cd3c7fdd0">
               <span class="m-doc-wrap-bumper">auto <a href="#a46c0a0e51f8c2743c900492cd3c7fdd0" class="m-doc-self">load_simulator</a>(</span><span class="m-doc-wrap">const std::string&amp; filename) -&gt; bool</span>
             </dt>
@@ -142,39 +120,6 @@
             <dt id="ad219d967d68f71fda8a7877413c7269c">
               <span class="m-doc-wrap-bumper">void <a href="#ad219d967d68f71fda8a7877413c7269c" class="m-doc-self">load_meta_data</a>(</span><span class="m-doc-wrap">const std::string&amp; filename,
               std::vector&lt;std::size_t&gt;&amp; layers)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a8e8a8ce6e3eb54a8e96ad1d94a221f7b">
-              <span class="m-doc-wrap-bumper">void <a href="#a8e8a8ce6e3eb54a8e96ad1d94a221f7b" class="m-doc-self">load_sub_bin_distribution</a>(</span><span class="m-doc-wrap">const std::string&amp; filename)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="af12abf5dd1a3ba452b6b4ee6f33ba898">
-              <span class="m-doc-wrap-bumper">void <a href="#af12abf5dd1a3ba452b6b4ee6f33ba898" class="m-doc-self">set_bin_boundaries</a>(</span><span class="m-doc-wrap">std::size_t layer_index,
-              const std::vector&lt;float&gt;&amp; R_lower,
-              const std::vector&lt;float&gt;&amp; R_size,
-              const std::vector&lt;float&gt;&amp; alpha_lower,
-              const std::vector&lt;float&gt;&amp; alpha_size)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a503afce4ceab35675a991f822d53882a">
-              <span class="m-doc-wrap-bumper">auto <a href="#a503afce4ceab35675a991f822d53882a" class="m-doc-self">get_coordinates</a>(</span><span class="m-doc-wrap">) const -&gt; const event_bins_t &amp;</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a542d27dc8ea7caa9ba46aadafc1d795d">
-              <span class="m-doc-wrap-bumper">void <a href="#a542d27dc8ea7caa9ba46aadafc1d795d" class="m-doc-self">set_coordinates</a>(</span><span class="m-doc-wrap">const <a href="classTFCSBinnedShowerONNX.html#a622ae25cbd42db95857dc8dc0227ddcc" class="m-doc">event_<wbr />bins_<wbr />t</a>&amp; coordinates)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a745a1d4c85fe97b140f711f5b026bac9">
-              <span class="m-doc-wrap-bumper">auto <a href="#a745a1d4c85fe97b140f711f5b026bac9" class="m-doc-self">get_sub_bin_distribution</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt; std::vector&lt; std::vector&lt; std::vector&lt; float &gt;&gt;&gt;&gt; &amp;</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="ac5d07303089aed6695a5b84aec01dcf3">
-              <span class="m-doc-wrap-bumper">auto <a href="#ac5d07303089aed6695a5b84aec01dcf3" class="m-doc-self">get_upscaling_energies</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt; float &gt; &amp;</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="ad59f483c3bfed71172647ef95634e3e6">
-              <span class="m-doc-wrap-bumper">void <a href="#ad59f483c3bfed71172647ef95634e3e6" class="m-doc-self">set_sub_bin_distribution_and_energies</a>(</span><span class="m-doc-wrap">const std::vector&lt;std::vector&lt;std::vector&lt;std::vector&lt;float&gt;&gt;&gt;&gt;&amp; sub_bin_distribution,
-              const std::vector&lt;float&gt;&amp; upscaling_energies)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -190,37 +135,7 @@
               std::size_t reference_layer_index) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>do not persistify</dd>
-            <dt id="a9a87e600b3b056bd49180e062923f6f8">
-              <span class="m-doc-wrap-bumper">auto <a href="#a9a87e600b3b056bd49180e062923f6f8" class="m-doc-self">get_n_hits</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
-              std::size_t layer_index) const -&gt; std::size_t <span class="m-label m-flat m-warning">override</span></span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a5956a19dc537d6b10dbfd45e0d2fbb6e">
-              <span class="m-doc-wrap-bumper">void <a href="#a5956a19dc537d6b10dbfd45e0d2fbb6e" class="m-doc-self">compute_n_hits_and_elayer</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate) const <span class="m-label m-flat m-warning">virtual</span></span>
-            </dt>
-            <dd><span></span></dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#aa54f09085a879824651133647d9245e3" class="m-doc">get_layer_energy</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
-              std::size_t layer_index) const -&gt; double <span class="m-label m-flat m-warning">override</span></span>
-            </dt>
-            <dd></dd>
-            <dt id="a92c8c358172e151d2593caab9b64a1ab">
-              <span class="m-doc-wrap-bumper">auto <a href="#a92c8c358172e151d2593caab9b64a1ab" class="m-doc-self">get_hit_position_and_energy</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
-              std::size_t layer_index,
-              std::size_t hit_index) const -&gt; std::tuple&lt; double, double, double &gt; <span class="m-label m-flat m-warning">override</span></span>
-            </dt>
-            <dd><span></span></dd>
           </dl>
-        </section>
-        <section>
-          <h2>Function documentation</h2>
-          <section class="m-doc-details" id="aa54f09085a879824651133647d9245e3"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">auto TFCSBinnedShowerONNX::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa54f09085a879824651133647d9245e3" class="m-doc-self">get_layer_energy</a>(</span><span class="m-doc-wrap"><a href="classTFCSSimulationState.html" class="m-doc">TFCSSimulationState</a>&amp; simulstate,
-              std::size_t layer_index) const -&gt; double <span class="m-label m-warning">override</span> <span class="m-label m-warning">protected</span></span></span>
-            </h3>
-<p>Returns the total deposited energy in the given layer for the current event</p>
-          </div></section>
         </section>
       </div>
     </div>

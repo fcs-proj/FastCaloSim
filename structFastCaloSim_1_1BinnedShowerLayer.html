@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TFCSBinnedShower::layer_bins_t struct | FastCaloSim</title>
+  <title>FastCaloSim::BinnedShowerLayer struct | FastCaloSim</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -49,10 +49,9 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <span class="m-breadcrumb"><a href="classTFCSBinnedShower.html">TFCSBinnedShower</a>::<wbr/></span>layer_bins_t <span class="m-thin">struct</span>
-          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="TFCSBinnedShower_8h.html">&lt;TFCSBinnedShower.h&gt;</a></div>
+          <span class="m-breadcrumb"><a href="namespaceFastCaloSim.html">FastCaloSim</a>::<wbr/></span>BinnedShowerLayer <span class="m-thin">struct</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="BinnedShowerLayer_8h.html">&lt;BinnedShowerLayer.h&gt;</a></div>
         </h1>
-        <p><span></span></p>
         <div class="m-block m-default">
           <h3>Contents</h3>
           <ul>
@@ -64,23 +63,16 @@
             </li>
           </ul>
         </div>
+<p>One calorimeter layer of a binned shower: the indices of the bins with an energy deposit and the fraction of the shower energy in each of them</p>
         <section id="pub-attribs">
           <h2><a href="#pub-attribs">Public variables</a></h2>
           <dl class="m-doc">
-            <dt id="a14f1fc940ab0d9dbfd2c084710664313">
-              std::vector&lt;float&gt; <a href="#a14f1fc940ab0d9dbfd2c084710664313" class="m-doc-self">R_lower</a>
+            <dt id="af7687d13f0174e726b5710a5a11b50d7">
+              std::vector&lt;unsigned int&gt; <a href="#af7687d13f0174e726b5710a5a11b50d7" class="m-doc-self">bin_index_vector</a>
             </dt>
             <dd><span></span></dd>
-            <dt id="ae7dfa40eadaea3765da42203cb232956">
-              std::vector&lt;float&gt; <a href="#ae7dfa40eadaea3765da42203cb232956" class="m-doc-self">R_size</a>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="abe5a92facaeab0a3065c893f512e03c1">
-              std::vector&lt;float&gt; <a href="#abe5a92facaeab0a3065c893f512e03c1" class="m-doc-self">alpha_lower</a>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a9ae6a5485f3f1aa65eaca4d3195ff800">
-              std::vector&lt;float&gt; <a href="#a9ae6a5485f3f1aa65eaca4d3195ff800" class="m-doc-self">alpha_size</a>
+            <dt id="a49ea69c5e1dd194ae626b50722eabb1d">
+              std::vector&lt;float&gt; <a href="#a49ea69c5e1dd194ae626b50722eabb1d" class="m-doc-self">E_vector</a>
             </dt>
             <dd><span></span></dd>
           </dl>
