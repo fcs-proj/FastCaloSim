@@ -335,7 +335,7 @@ void TFCSBinnedShower::set_geometry(CaloGeo* geo)
     return;
   }
   std::vector<std::size_t> layers(geo->n_layers());
-  std::iota(layers.begin(), layers.end(), std::size_t {0});
+  std::ranges::iota(layers, std::size_t {0});
   FCS_MSG_INFO("Loading event library from " << m_hdf5_file);
   load_event_library(m_hdf5_file, layers);
   FCS_MSG_INFO("Size after loading " << m_eventlibrary.size());
