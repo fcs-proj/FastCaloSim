@@ -4,6 +4,7 @@
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/Phi.h"
 #include "FastCaloSim/Geometry/Cell.h"
 
 //=============================================
@@ -32,8 +33,10 @@ auto TFCSCenterPositionCalculation::simulate_hit(
       + weight * extrapol->z(cs, FastCaloSim::SubPos::EXT);
   double eta = (1. - weight) * extrapol->eta(cs, FastCaloSim::SubPos::ENT)
       + weight * extrapol->eta(cs, FastCaloSim::SubPos::EXT);
-  double phi = (1. - weight) * extrapol->phi(cs, FastCaloSim::SubPos::ENT)
-      + weight * extrapol->phi(cs, FastCaloSim::SubPos::EXT);
+  double phi =
+      FastCaloSim::interpolate_phi(extrapol->phi(cs, FastCaloSim::SubPos::ENT),
+                                   extrapol->phi(cs, FastCaloSim::SubPos::EXT),
+                                   weight);
 
   if (!std::isfinite(r) || !std::isfinite(z) || !std::isfinite(eta)
       || !std::isfinite(phi))
