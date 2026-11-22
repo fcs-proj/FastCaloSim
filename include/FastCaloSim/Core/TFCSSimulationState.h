@@ -68,12 +68,12 @@ public:
   }
 
   // maps the cell id to the energy deposited in the cell
-  using cellmap = std::unordered_map<unsigned long long, float>;
+  using cellmap = std::unordered_map<unsigned long long, double>;
 
   auto cells() -> cellmap& { return m_cells; }
   auto cells() const -> const cellmap& { return m_cells; }
 
-  void deposit(unsigned long long cell_id, float E);
+  void deposit(unsigned long long cell_id, double E);
 
   void Print(Option_t* option = "") const override;
 
@@ -193,7 +193,7 @@ private:
   std::unordered_map<std::uint32_t, std::any>
       m_AuxObjects;  //! Do not persistify
 
-  ClassDefOverride(TFCSSimulationState, 4)  // TFCSSimulationState
+  ClassDefOverride(TFCSSimulationState, 5)  // TFCSSimulationState
 };
 
 // Implementation of the compile time text hash operator that can be used for

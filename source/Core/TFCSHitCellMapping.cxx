@@ -54,7 +54,7 @@ auto TFCSHitCellMapping::simulate_hit(
   // energy renormalization step.
   if (proximity < 0.005) {
     // Cell energies are stored in single precision
-    simulstate.deposit(cell.id(), static_cast<float>(hit.E()));
+    simulstate.deposit(cell.id(), hit.E());
   } else {
     hit.setXYZE(hit.x(), hit.y(), hit.z(), 0.0);
   }
