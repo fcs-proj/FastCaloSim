@@ -35,12 +35,47 @@ TEST_F(TFCSSimulationStateTest, EnergyManipulations)
   EXPECT_DOUBLE_EQ(sim_state.Efrac(1), 0.75);
 }
 
+TEST_F(TFCSSimulationStateTest, LayerEnergies)
+{
+  TFCSSimulationState sim_state;
+  // Layers that were not set read as 0, also beyond the highest set layer
+  EXPECT_EQ(sim_state.E(0), 0);
+  EXPECT_EQ(sim_state.Efrac(23), 0);
+  sim_state.set_E(12, 100.0);
+  sim_state.set_Efrac(5, 0.5);
+  EXPECT_DOUBLE_EQ(sim_state.E(12), 100.0);
+  EXPECT_DOUBLE_EQ(sim_state.Efrac(5), 0.5);
+  for (std::size_t layer = 0; layer < 24; ++layer) {
+    if (layer != 12) {
+      EXPECT_EQ(sim_state.E(layer), 0) << "layer " << layer;
+    }
+    if (layer != 5) {
+      EXPECT_EQ(sim_state.Efrac(layer), 0) << "layer " << layer;
+    }
+  }
+  // add_E to a layer that was not set starts from 0 and adds to the total
+  sim_state.set_E(10.0);
+  sim_state.add_E(3, 25.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(3), 25.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(), 35.0);
+  // A lower layer set later keeps the higher ones
+  sim_state.set_E(1, 7.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(1), 7.0);
+  EXPECT_DOUBLE_EQ(sim_state.E(12), 100.0);
+}
+
 TEST_F(TFCSSimulationStateTest, ClearFunction)
 {
   TFCSSimulationState sim_state;
   sim_state.set_Ebin(2);
+  sim_state.set_E(50.0);
   sim_state.set_E(0, 100.0);
+  sim_state.set_Efrac(0, 1.0);
   sim_state.clear();
+  EXPECT_FALSE(sim_state.Ebin().has_value());
+  EXPECT_EQ(sim_state.E(), 0);
+  EXPECT_EQ(sim_state.E(0), 0);
+  EXPECT_EQ(sim_state.Efrac(0), 0);
 }
 
 TEST_F(TFCSSimulationStateTest, DepositEnergy)
