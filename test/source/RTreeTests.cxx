@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <filesystem>
 #include <limits>
 #include <memory>
 #include <random>
@@ -21,6 +22,7 @@
 #include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
+#include "TTree.h"
 #include "TestConfig/AtlasGeoTestsConfig.h"
 
 namespace
@@ -226,6 +228,90 @@ TEST(RTreeTests, LargeLayerIds)
   EXPECT_THROW(geo.get_cell(0, at_eta_phi(0, 0)), std::runtime_error);
   EXPECT_THROW(geo.get_cell(8, at_eta_phi(0, 0)), std::runtime_error);
   EXPECT_THROW(geo.get_cell(100000001, at_eta_phi(0, 0)), std::runtime_error);
+}
+
+namespace
+{
+// Builds a geometry from cells given by id and coordinate system (one of
+// "XYZ", "EtaPhiR", "EtaPhiZ", "RPhiZ"), all in layer 3
+void build_geometry(
+    const std::vector<std::pair<unsigned long long, std::string>>& cells)
+{
+  unsigned int layer = 3;
+  bool is_barrel = true;
+  unsigned long long id = 0;
+  float x = 1000.F;
+  float y = 0.F;
+  float z = 0.F;
+  float phi = 0.F;
+  float eta = 0.F;
+  float r = 1000.F;
+  float dx = 0.F;
+  float dy = 0.F;
+  float dz = 10.F;
+  float dphi = 0.1F;
+  float deta = 0.1F;
+  float dr = 10.F;
+  bool is_xyz = false;
+  bool is_eta_phi_r = false;
+  bool is_eta_phi_z = false;
+  bool is_r_phi_z = false;
+  TTree tree("cells", "cells");
+  tree.SetDirectory(nullptr);
+  tree.Branch("layer", &layer);
+  tree.Branch("isBarrel", &is_barrel);
+  tree.Branch("id", &id);
+  tree.Branch("x", &x);
+  tree.Branch("y", &y);
+  tree.Branch("z", &z);
+  tree.Branch("phi", &phi);
+  tree.Branch("eta", &eta);
+  tree.Branch("r", &r);
+  tree.Branch("dx", &dx);
+  tree.Branch("dy", &dy);
+  tree.Branch("dz", &dz);
+  tree.Branch("dphi", &dphi);
+  tree.Branch("deta", &deta);
+  tree.Branch("dr", &dr);
+  tree.Branch("isXYZ", &is_xyz);
+  tree.Branch("isEtaPhiR", &is_eta_phi_r);
+  tree.Branch("isEtaPhiZ", &is_eta_phi_z);
+  tree.Branch("isRPhiZ", &is_r_phi_z);
+  for (const auto& [cell_id, system] : cells) {
+    id = cell_id;
+    eta = 0.2F * static_cast<float>(cell_id);
+    is_xyz = system == "XYZ";
+    is_eta_phi_r = system == "EtaPhiR";
+    is_eta_phi_z = system == "EtaPhiZ";
+    is_r_phi_z = system == "RPhiZ";
+    tree.Fill();
+  }
+  ROOT::RDataFrame geo_df(tree);
+  // build() writes the cell store into this directory
+  const std::filesystem::path dir =
+      std::filesystem::temp_directory_path() / "fcs_rtree_tests_geo";
+  std::filesystem::create_directories(dir);
+  CaloGeo geo;
+  try {
+    geo.build(geo_df, dir.string());
+  } catch (...) {
+    std::filesystem::remove_all(dir);
+    throw;
+  }
+  std::filesystem::remove_all(dir);
+}
+}  // namespace
+
+TEST(RTreeTests, CellsInRPhiZAreRejected)
+{
+  // The cell lookup works in (eta, phi) or (x, y); a geometry with cells
+  // described in (r, phi, z) must be rejected instead of being looked up with
+  // an eta extent it does not have, also when the cell is not the first of
+  // its layer
+  EXPECT_NO_THROW(build_geometry({{1, "EtaPhiR"}, {2, "EtaPhiR"}}));
+  EXPECT_THROW(build_geometry({{1, "RPhiZ"}}), std::runtime_error);
+  EXPECT_THROW(build_geometry({{1, "EtaPhiR"}, {2, "RPhiZ"}}),
+               std::runtime_error);
 }
 
 // ---- Comparison with a brute-force search on the ATLAS geometry

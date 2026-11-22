@@ -4,8 +4,10 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <format>
 #include <limits>
 #include <optional>
+#include <stdexcept>
 #include <unordered_set>
 #include <vector>
 
@@ -13,6 +15,22 @@
 
 #include "FastCaloSim/Core/MLogging.h"
 #include "FastCaloSim/Geometry/CellStoreBuilder.h"
+
+namespace
+{
+// The cell lookup and the hit-cell distance work in (eta, phi) or (x, y);
+// cells described in (r, phi, z) have no eta extent. Checked for every cell,
+// not only the first of a layer.
+void reject_r_phi_z_cell(bool is_r_phi_z, std::size_t layer_id)
+{
+  if (is_r_phi_z) {
+    throw std::runtime_error(std::format(
+        "Layer {}: cells in (r, phi, z) coordinates (isRPhiZ) are not "
+        "supported by the cell lookup",
+        layer_id));
+  }
+}
+}  // namespace
 
 auto CaloGeo::layer_lookup(std::size_t layer) -> LayerLookup&
 {
@@ -232,6 +250,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   // Process cells in bulk
   for (size_t i = 0; i < m_n_total_cells; ++i) {
     unsigned int layer_id = layer->at(i);
+    reject_r_phi_z_cell(isRPhiZ->at(i), layer_id);
 
     // Only update layer flags once per layer
     if (!processed_layer_flags.contains(layer_id)) {
@@ -244,8 +263,6 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
         flags.coordinate_system = RTreeHelpers::CoordinateSystem::EtaPhiR;
       } else if (isEtaPhiZ->at(i)) {
         flags.coordinate_system = RTreeHelpers::CoordinateSystem::EtaPhiZ;
-      } else if (isRPhiZ->at(i)) {
-        flags.coordinate_system = RTreeHelpers::CoordinateSystem::RPhiZ;
       } else {
         flags.coordinate_system = RTreeHelpers::CoordinateSystem::Undefined;
       }
@@ -333,6 +350,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
       throw std::runtime_error("Invalid cell found in cell store");
     }
     std::size_t const layer_id = cell.layer();
+    reject_r_phi_z_cell(cell.isRPhiZ(), layer_id);
     unique_layers.insert(layer_id);
     m_layer_cell_ids[layer_id].push_back(cell.id());
     layer_store_index[layer_id].push_back(static_cast<std::uint32_t>(i));
@@ -353,9 +371,6 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
       } else if (cell.isEtaPhiZ()) {
         m_layer_flags[layer_id].coordinate_system =
             RTreeHelpers::CoordinateSystem::EtaPhiZ;
-      } else if (cell.isRPhiZ()) {
-        m_layer_flags[layer_id].coordinate_system =
-            RTreeHelpers::CoordinateSystem::RPhiZ;
       } else {
         m_layer_flags[layer_id].coordinate_system =
             RTreeHelpers::CoordinateSystem::Undefined;
