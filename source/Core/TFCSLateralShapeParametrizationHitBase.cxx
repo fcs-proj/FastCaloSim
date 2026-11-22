@@ -4,6 +4,7 @@
 
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/Phi.h"
 #include "FastCaloSim/Geometry/Cell.h"
 
 //=============================================
@@ -64,9 +65,10 @@ auto TFCSLateralShapeParametrizationHitBase::simulate_hit(
   hit.set_eta_x(0.5
                 * (extrapol->eta(cs, FastCaloSim::SubPos::ENT)
                    + extrapol->eta(cs, FastCaloSim::SubPos::EXT)));
-  hit.set_phi_y(0.5
-                * (extrapol->phi(cs, FastCaloSim::SubPos::ENT)
-                   + extrapol->phi(cs, FastCaloSim::SubPos::EXT)));
+  hit.set_phi_y(
+      FastCaloSim::interpolate_phi(extrapol->phi(cs, FastCaloSim::SubPos::ENT),
+                                   extrapol->phi(cs, FastCaloSim::SubPos::EXT),
+                                   0.5));
 
   return FCSSuccess;
 }

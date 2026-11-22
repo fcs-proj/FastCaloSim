@@ -6,6 +6,7 @@
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
+#include "FastCaloSim/Definitions/Phi.h"
 #include "TFile.h"
 #include "TGraph.h"
 
@@ -130,7 +131,7 @@ auto TFCSLateralShapeTuning::simulate_hit(
 
   // compute deltaEta and deltaPhi
   const double deltaEta = hit.eta() - centerEta;
-  const double deltaPhi = hit.phi() - centerPhi;
+  const double deltaPhi = FastCaloSim::delta_phi(hit.phi(), centerPhi);
 
   if (layer == 2 || layer == 6) {
     double etaScaleFactor = m_parameterInterpol["eta_s"]->evaluate(Ekin);
@@ -150,8 +151,10 @@ auto TFCSLateralShapeTuning::simulate_hit(
     double const deltaEtaCorr = etaScaleFactor * deltaEta;
     double const deltaPhiCorr = phiScaleFactor * deltaPhi;
 
-    hit.setEtaPhiZE(
-        centerEta + deltaEtaCorr, centerPhi + deltaPhiCorr, centerZ, hit.E());
+    hit.setEtaPhiZE(centerEta + deltaEtaCorr,
+                    FastCaloSim::wrap_phi(centerPhi + deltaPhiCorr),
+                    centerZ,
+                    hit.E());
 
   }
 
@@ -175,8 +178,10 @@ auto TFCSLateralShapeTuning::simulate_hit(
 
     double const deltaEtaCorr = etaScaleFactor * deltaEta;
 
-    hit.setEtaPhiZE(
-        centerEta + deltaEtaCorr, centerPhi + deltaPhi, centerZ, hit.E());
+    hit.setEtaPhiZE(centerEta + deltaEtaCorr,
+                    FastCaloSim::wrap_phi(centerPhi + deltaPhi),
+                    centerZ,
+                    hit.E());
   }
 
   return FCSSuccess;
