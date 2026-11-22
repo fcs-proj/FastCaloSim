@@ -41,6 +41,7 @@ TEST_P(AtlasSimTests, AtlasSimulation)
 
   // Reset the state of the fast simulation model
   model->Reset();
+  G4RunTests::reset_random_engines(*model);
 
   // Set the extrapolation tool
   BasicExtrapolTests::extrapolator.setLevel(
