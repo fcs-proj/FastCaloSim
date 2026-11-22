@@ -62,7 +62,9 @@ public:
       return;
     }
     if constexpr (std::same_as<T, float>) {
-      if (std::ranges::any_of(cumulative, [](T c) { return std::isnan(c); })) {
+      if (std::ranges::any_of(cumulative,
+                              [](T c) -> bool { return std::isnan(c); }))
+      {
         return;
       }
     }

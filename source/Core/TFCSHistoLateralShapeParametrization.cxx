@@ -34,7 +34,7 @@ void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
 {
   TFCSLateralShapeParametrizationHitBase::set_geometry(geo);
   if (std::ranges::none_of(m_hist.get_HistoContents(),
-                           [](float c) { return std::isnan(c); }))
+                           [](float c) -> bool { return std::isnan(c); }))
   {
     return;
   }

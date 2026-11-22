@@ -10,6 +10,7 @@
 #include <random>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "FastCaloSim/Definitions/GuideTable.h"
@@ -61,7 +62,7 @@ auto random_contents(std::mt19937_64& rng,
   for (auto& content : contents) {
     content = flat(rng) < empty_fraction ? 0 : flat(rng);
   }
-  if (std::ranges::all_of(contents, [](double c) { return c <= 0; })) {
+  if (std::ranges::all_of(contents, [](double c) -> bool { return c <= 0; })) {
     contents[nbins / 2] = 1;
   }
   return contents;
@@ -71,6 +72,7 @@ auto random_contents(std::mt19937_64& rng,
 auto cumulative_float(const std::vector<double>& contents) -> std::vector<float>
 {
   std::vector<float> cumulative;
+  cumulative.reserve(contents.size());
   double integral = 0;
   for (const double content : contents) {
     integral += content;
@@ -87,12 +89,14 @@ auto cumulative_int32(const std::vector<double>& contents)
     -> std::vector<Int32Content>
 {
   std::vector<double> sums;
+  sums.reserve(contents.size());
   double integral = 0;
   for (const double content : contents) {
     integral += content;
     sums.push_back(integral);
   }
   std::vector<Int32Content> cumulative;
+  cumulative.reserve(sums.size());
   for (const double sum : sums) {
     cumulative.push_back(
         static_cast<Int32Content>(max_value * (sum / integral)));
@@ -107,11 +111,12 @@ auto probes(std::mt19937_64& rng,
             std::size_t nbuckets) -> std::vector<double>
 {
   std::vector<double> rnds;
+  rnds.reserve(10000 + (3 * (cumulative.size() + nbuckets + 1)) + 11);
   std::uniform_real_distribution<double> flat(0, 1);
   for (int i = 0; i < 10000; ++i) {
     rnds.push_back(flat(rng));
   }
-  const auto add_with_neighbors = [&rnds](double u)
+  const auto add_with_neighbors = [&rnds](double u) -> void
   {
     rnds.push_back(u);
     rnds.push_back(std::nextafter(u, -1.0));
@@ -145,11 +150,12 @@ auto probes(std::mt19937_64& rng,
             std::size_t nbuckets) -> std::vector<Int32Content>
 {
   std::vector<Int32Content> rnds;
+  rnds.reserve(10000 + (3 * (cumulative.size() + nbuckets + 2)));
   std::uniform_int_distribution<Int32Content> flat;
   for (int i = 0; i < 10000; ++i) {
     rnds.push_back(flat(rng));
   }
-  const auto add_with_neighbors = [&rnds](std::uint64_t u)
+  const auto add_with_neighbors = [&rnds](std::uint64_t u) -> void
   {
     for (const std::uint64_t v : {u - 1, u, u + 1}) {
       if (v <= std::numeric_limits<Int32Content>::max()) {
@@ -165,6 +171,12 @@ auto probes(std::mt19937_64& rng,
   }
   add_with_neighbors(0);
   return rnds;
+}
+
+// Fixed seeds, so that the tests are reproducible
+auto make_rng(std::uint64_t seed) -> std::mt19937_64
+{
+  return std::mt19937_64(seed);
 }
 
 const std::vector<std::size_t> bin_counts = {
@@ -206,11 +218,11 @@ void reference_rnd_to_fct(const TFCS2DFunctionHistogram& hist,
   const auto& contents = hist.get_HistoContents();
   const auto& borders_x = hist.get_HistoBordersx();
   const auto& borders_y = hist.get_HistoBordersy();
-  const auto content = [&](std::size_t bin)
+  const auto content = [&](std::size_t bin) -> double
   { return static_cast<double>(contents[bin]); };
-  const auto border_x = [&](std::size_t bin)
+  const auto border_x = [&](std::size_t bin) -> double
   { return static_cast<double>(borders_x[bin]); };
-  const auto border_y = [&](std::size_t bin)
+  const auto border_y = [&](std::size_t bin) -> double
   { return static_cast<double>(borders_y[bin]); };
   const std::size_t ibin =
       std::min(full_search(contents, rnd0), contents.size() - 1);
@@ -266,7 +278,7 @@ auto count_mismatches(const TFCS2DFunctionHistogram& hist, std::mt19937_64& rng)
   const std::size_t nbuckets =
       hist.guide_table().empty() ? 1 : hist.guide_table().size() - 1;
   for (const double rnd0 : probes(rng, hist.get_HistoContents(), nbuckets)) {
-    if (!(rnd0 >= 0 && rnd0 < 1)) {
+    if (std::isnan(rnd0) || rnd0 < 0 || rnd0 >= 1) {
       continue;
     }
     const double rnd1 = flat(rng);
@@ -290,6 +302,7 @@ auto count_mismatches(const TFCS1DFunctionInt32Histogram& hist,
   std::size_t mismatches = 0;
   std::uniform_real_distribution<double> flat(0, 1);
   std::vector<double> rnds;
+  rnds.reserve(10000 + hist.get_HistoContents().size() + 2);
   for (int i = 0; i < 10000; ++i) {
     rnds.push_back(flat(rng));
   }
@@ -343,7 +356,7 @@ void collect(const TFCSParametrizationBase* param,
 
 TEST(GuideTableTests, FloatSameAsFullSearch)
 {
-  std::mt19937_64 rng(1);
+  auto rng = make_rng(1);
   for (const std::size_t nbins : bin_counts) {
     for (const double empty_fraction : {0.0, 0.5, 0.95}) {
       expect_full_search_results(
@@ -357,7 +370,7 @@ TEST(GuideTableTests, FloatSameAsFullSearch)
 
 TEST(GuideTableTests, FloatEdgeCases)
 {
-  std::mt19937_64 rng(2);
+  auto rng = make_rng(2);
   const float below_one = std::nextafter(1.0F, 0.0F);
   const float above_one = std::nextafter(1.0F, 2.0F);
   const std::vector<std::vector<float>> cases = {
@@ -400,7 +413,7 @@ TEST(GuideTableTests, FloatEdgeCases)
 
 TEST(GuideTableTests, Int32SameAsFullSearch)
 {
-  std::mt19937_64 rng(3);
+  auto rng = make_rng(3);
   for (const std::size_t nbins : bin_counts) {
     for (const double empty_fraction : {0.0, 0.5, 0.95}) {
       expect_full_search_results(
@@ -414,7 +427,7 @@ TEST(GuideTableTests, Int32SameAsFullSearch)
 
 TEST(GuideTableTests, Int32EdgeCases)
 {
-  std::mt19937_64 rng(4);
+  auto rng = make_rng(4);
   constexpr Int32Content max = std::numeric_limits<Int32Content>::max();
   const std::vector<std::vector<Int32Content>> cases = {
       {max},
@@ -435,16 +448,19 @@ TEST(GuideTableTests, Int32EdgeCases)
 
 TEST(GuideTableTests, Histogram2DSameAsBefore)
 {
-  std::mt19937_64 rng(5);
-  for (const std::size_t nbins : std::vector<std::size_t> {1, 7, 400}) {
+  auto rng = make_rng(5);
+  // (bins in x, bins in y)
+  const std::vector<std::pair<std::size_t, std::size_t>> shapes = {
+      {1, 1}, {7, 1}, {20, 20}};
+  for (const auto& [nbinsx, nbinsy] : shapes) {
+    const std::size_t nbins = nbinsx * nbinsy;
     const auto owner =
         make_function<TFCS2DFunctionHistogram>("TFCS2DFunctionHistogram");
     auto& hist = *static_cast<TFCS2DFunctionHistogram*>(owner.get());
-    const std::size_t nbinsx = nbins == 400 ? 20 : nbins;
     for (std::size_t i = 0; i <= nbinsx; ++i) {
       hist.get_HistoBordersx().push_back(static_cast<float>(i) * 0.5F);
     }
-    for (std::size_t i = 0; i <= nbins / nbinsx; ++i) {
+    for (std::size_t i = 0; i <= nbinsy; ++i) {
       hist.get_HistoBordersy().push_back(static_cast<float>(i) * 0.25F);
     }
     hist.set_HistoContents(cumulative_float(random_contents(rng, nbins, 0.3)));
@@ -462,7 +478,7 @@ TEST(GuideTableTests, Histogram2DSameAsBefore)
 
 TEST(GuideTableTests, Histogram1DInt32SameAsBefore)
 {
-  std::mt19937_64 rng(6);
+  auto rng = make_rng(6);
   for (const std::size_t nbins : std::vector<std::size_t> {1, 9, 300}) {
     const auto owner = make_function<TFCS1DFunctionInt32Histogram>(
         "TFCS1DFunctionInt32Histogram");
@@ -501,7 +517,7 @@ TEST(GuideTableTests, LateralShapeNanFixRebuildsTable)
   owner->set_geometry(nullptr);
   EXPECT_EQ(hist.get_HistoContents(), (std::vector<float> {0.25F, 1, 1}));
   EXPECT_FALSE(hist.guide_table().empty());
-  std::mt19937_64 rng(7);
+  auto rng = make_rng(7);
   EXPECT_EQ(count_mismatches(hist, rng), 0);
 }
 
@@ -516,7 +532,7 @@ TEST(GuideTableTests, TablesBuiltWhenReadingParamFile)
   const auto* param = file->Get<TFCSParametrizationBase>("SelPDGID");
   ASSERT_NE(param, nullptr);
 
-  std::mt19937_64 rng(8);
+  auto rng = make_rng(8);
   std::set<const TObject*> visited;
   std::vector<const TFCS2DFunctionHistogram*> hists_2d;
   collect(param, visited, hists_2d, "TFCS2DFunctionHistogram");
