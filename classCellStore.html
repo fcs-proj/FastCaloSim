@@ -101,12 +101,12 @@
               <span class="m-doc-wrap-bumper">void <a href="#ae74b08508e051524ae22bc22b418a91c" class="m-doc">load</a>(</span><span class="m-doc-wrap">const std::string&amp; base_path)</span>
             </dt>
             <dd>Load cell data and index from the specified base path.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a71f2065b4dfe1a48ac4316d8029e1fd7" class="m-doc">get</a>(</span><span class="m-doc-wrap">uint64_t id) const -&gt; const Cell &amp;</span>
+            <dt id="a16a6a195bc73b85ee10da795ce436898">
+              <span class="m-doc-wrap-bumper">auto <a href="#a16a6a195bc73b85ee10da795ce436898" class="m-doc-self">get</a>(</span><span class="m-doc-wrap">uint64_t id) const -&gt; Cell</span>
             </dt>
             <dd>Return the cell with a given ID.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#aad7c94faa5bc067ddde40c851ef6bb60" class="m-doc">get_at_index</a>(</span><span class="m-doc-wrap">size_t idx) const -&gt; const Cell &amp;</span>
+            <dt id="a8418c7ba49b3afeed9a4b1baab910d26">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8418c7ba49b3afeed9a4b1baab910d26" class="m-doc-self">get_at_index</a>(</span><span class="m-doc-wrap">size_t idx) const -&gt; Cell</span>
             </dt>
             <dd>Return the cell at a given dense index.</dd>
             <dt id="aa5e8f380909dcef6034ca4f173a8d3c3">
@@ -133,20 +133,6 @@
                 </tr>
               </tbody>
             </table>
-          </div></section>
-          <section class="m-doc-details" id="a71f2065b4dfe1a48ac4316d8029e1fd7"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">auto CellStore::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a71f2065b4dfe1a48ac4316d8029e1fd7" class="m-doc-self">get</a>(</span><span class="m-doc-wrap">uint64_t id) const -&gt; const Cell &amp;</span></span>
-            </h3>
-            <p>Return the cell with a given ID.</p>
-<aside class="m-note m-info"><h4>Note</h4><p>The returned reference aliases a per-thread scratch <a href="classCell.html" class="m-doc">Cell</a> that is overwritten by the next <a href="classCellStore.html#a71f2065b4dfe1a48ac4316d8029e1fd7" class="m-doc">get()</a>/get_at_index() call on the same thread. Copy the <a href="classCell.html" class="m-doc">Cell</a> if you need to hold more than one at a time.</p></aside>
-          </div></section>
-          <section class="m-doc-details" id="aad7c94faa5bc067ddde40c851ef6bb60"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">auto CellStore::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aad7c94faa5bc067ddde40c851ef6bb60" class="m-doc-self">get_at_index</a>(</span><span class="m-doc-wrap">size_t idx) const -&gt; const Cell &amp;</span></span>
-            </h3>
-            <p>Return the cell at a given dense index.</p>
-<aside class="m-note m-info"><h4>Note</h4><p>The returned reference aliases a per-thread scratch <a href="classCell.html" class="m-doc">Cell</a> that is overwritten by the next <a href="classCellStore.html#a71f2065b4dfe1a48ac4316d8029e1fd7" class="m-doc">get()</a>/get_at_index() call on the same thread. Copy the <a href="classCell.html" class="m-doc">Cell</a> if you need to hold more than one at a time.</p></aside>
           </div></section>
         </section>
       </div>
