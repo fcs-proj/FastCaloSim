@@ -53,9 +53,10 @@ auto TFCSParametrizationFloatSelectChain::push_back_in_bin(
     return std::nullopt;
   }
 
-  if (ilow && iup && *iup == *ilow + 1
-      && FastCaloSim::exactly_equal(m_bin_low_edge[*ilow], low)
-      && FastCaloSim::exactly_equal(m_bin_low_edge[*iup], up))
+  // The upper edge of the last bin is in no bin, so compare the edges of the
+  // bin of low directly
+  if (ilow && FastCaloSim::exactly_equal(m_bin_low_edge[*ilow], low)
+      && FastCaloSim::exactly_equal(m_bin_low_edge[*ilow + 1], up))
   {
     // Case of adding to an existing bin
     push_back_in_bin(param, *ilow);
