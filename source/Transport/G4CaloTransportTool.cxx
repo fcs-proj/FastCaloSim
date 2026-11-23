@@ -80,12 +80,20 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack,
   if (FastCaloSim::exactly_equal(fieldTrack.GetCharge(), 0.0)) {
     /* Neutral particles: transport with navigator */
 
-    // Compute the step length
-    G4double const stepLength =
+    // Compute the step length: the distance to the next boundary, or
+    // kInfinity if that is beyond the proposed step
+    G4double stepLength =
         m_navigator->ComputeStep(fieldTrack.GetPosition(),
                                  fieldTrack.GetMomentumDirection(),
                                  currentMinimumStep,
                                  retSafety);
+    if (stepLength > currentMinimumStep) {
+      // No boundary within the proposed step: take the proposed step
+      stepLength = currentMinimumStep;
+    } else {
+      // The step ends on the boundary: the next location starts from it
+      m_navigator->SetGeometricallyLimitedStep();
+    }
 
     // Update the position of the track from the computed step length
     fieldTrack.SetPosition(fieldTrack.GetPosition()
