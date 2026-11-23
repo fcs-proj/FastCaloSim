@@ -375,7 +375,13 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
     cumulative.reserve(layer.size());
 
     for (auto& l : layer) {
-      file->cd(std::format("{}/bin{}/{}", folder, bin, l).c_str());
+      const std::string path = std::format("{}/bin{}/{}", folder, bin, l);
+      // Without the folder, gDirectory would stay in the previous one
+      if (!file->cd(path.c_str())) {
+        FCS_MSG_ERROR("TFCSPCAEnergyParametrization: folder " << path
+                                                              << " not found");
+        return false;
+      }
 
       auto* fct = static_cast<TFCS1DFunction*>(
           gDirectory->Get("TFCS1DFunctionRegression"));
@@ -386,6 +392,12 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
       if (fct == nullptr) {
         fct = static_cast<TFCS1DFunction*>(
             gDirectory->Get("TFCS1DFunctionHistogram"));
+      }
+      // simulate() samples every PCA bin and layer from its function
+      if (fct == nullptr) {
+        FCS_MSG_ERROR("TFCSPCAEnergyParametrization: no TFCS1DFunction in "
+                      << path);
+        return false;
       }
       cumulative.push_back(fct);
     }
