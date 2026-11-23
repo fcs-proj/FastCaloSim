@@ -37,15 +37,9 @@ void TFCSEnergyBinParametrization::resize()
     FCS_MSG_VERBOSE("PDGid=" << id << " resize to " << n_bins() + 1);
     m_pdgid_Ebin_probability[id].resize(n_bins() + 1);
   }
-  for (auto it = m_pdgid_Ebin_probability.begin();
-       it != m_pdgid_Ebin_probability.end();
-       ++it)
-  {
-    if (!is_match_pdgid(it->first)) {
-      m_pdgid_Ebin_probability.erase(it);
-      it = m_pdgid_Ebin_probability.begin();
-    }
-  }
+  std::erase_if(m_pdgid_Ebin_probability,
+                [this](const auto& entry) -> bool
+                { return !is_match_pdgid(entry.first); });
 }
 
 void TFCSEnergyBinParametrization::set_pdgid(int id)
