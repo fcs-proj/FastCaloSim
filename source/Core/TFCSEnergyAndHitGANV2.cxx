@@ -578,8 +578,11 @@ auto TFCSEnergyAndHitGANV2::simulate(
 
   FCS_MSG_VERBOSE("Fill Energies");
   if (!fillEnergy(simulstate, truth, extrapol)) {
-    FCS_MSG_WARNING("Could not fill energies ");
-    // bail out but do not stop the job
+    // Skip the particle but do not stop the job. fillEnergy() may have
+    // stopped after filling part of the energies and cells: remove them, so
+    // that the particle deposits nothing rather than part of a shower.
+    FCS_MSG_WARNING("Could not fill energies, the particle deposits nothing");
+    simulstate.clear_energies();
     return FCSSuccess;
   }
 
