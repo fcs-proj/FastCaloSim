@@ -391,18 +391,18 @@ TEST(RTreeTests, ReloadForgetsThePreviousGeometry)
   build_geometry(
       geo,
       {{.id = 4, .system = "EtaPhiZ", .layer = 3}},
-      [](const CaloGeo& geo) -> void
+      [](const CaloGeo& loaded) -> void
       {
-        EXPECT_EQ(geo.layer_ids(), (std::vector<std::size_t> {3}));
-        EXPECT_EQ(geo.n_cells(), 1U);
-        EXPECT_EQ(geo.n_cells(3), 1U);
-        EXPECT_EQ(geo.n_cells(5), 0U);
-        EXPECT_TRUE(geo.is_eta_phi_z(3));
-        EXPECT_FALSE(geo.is_eta_phi_r(3));
+        EXPECT_EQ(loaded.layer_ids(), (std::vector<std::size_t> {3}));
+        EXPECT_EQ(loaded.n_cells(), 1U);
+        EXPECT_EQ(loaded.n_cells(3), 1U);
+        EXPECT_EQ(loaded.n_cells(5), 0U);
+        EXPECT_TRUE(loaded.is_eta_phi_z(3));
+        EXPECT_FALSE(loaded.is_eta_phi_r(3));
         // Cell 4 is at eta 0.8 with a width of 0.1
-        EXPECT_NEAR(geo.min_eta(3, CaloGeo::kEtaPositive), 0.75, 1e-6);
-        EXPECT_NEAR(geo.max_eta(3, CaloGeo::kEtaPositive), 0.85, 1e-6);
-        EXPECT_EQ(geo.get_cell(3, at_eta_phi(0.8, 0)).id(), 4U);
+        EXPECT_NEAR(loaded.min_eta(3, CaloGeo::kEtaPositive), 0.75, 1e-6);
+        EXPECT_NEAR(loaded.max_eta(3, CaloGeo::kEtaPositive), 0.85, 1e-6);
+        EXPECT_EQ(loaded.get_cell(3, at_eta_phi(0.8, 0)).id(), 4U);
       });
 }
 
