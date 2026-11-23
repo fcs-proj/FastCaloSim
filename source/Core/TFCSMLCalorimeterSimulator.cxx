@@ -123,9 +123,11 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
   int retry = 0;
   while (has_nan(outputs)) {
     if (retry >= 5) {
-      FCS_MSG_WARNING("Network output still contains NaN after "
-                      << retry << " retries. Giving up.");
-      break;
+      // NaN voxels would be dropped as voxels without energy: return no shower
+      // rather than an incomplete one, as for the other errors
+      FCS_MSG_ERROR("Network output still contains NaN after "
+                    << retry << " retries; returning empty event");
+      return event_t {};
     }
     FCS_MSG_WARNING("Network output contains NaN. Retrying (attempt "
                     << retry + 1 << ").");
