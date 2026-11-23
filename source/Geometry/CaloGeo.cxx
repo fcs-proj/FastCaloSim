@@ -403,8 +403,9 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
       cells.push_back(m_cell_store.get_at_index(index));
     }
 
+    const auto coord_sys = coordinate_system(layer_id);
     LayerLookup& lookup = layer_lookup(layer_id);
-    lookup.rtree = std::make_unique<RTree>(*lookup.coordinate_system, cells);
+    lookup.rtree = std::make_unique<RTree>(coord_sys, cells);
     lookup.store_index = store_index;
   }
 
