@@ -198,6 +198,18 @@
               const std::shared_ptr&lt;<a href="classCaloGeo.html" class="m-doc">CaloGeo</a>&gt;&amp; handler)</span>
             </dt>
             <dd>Set an alternative geometry handler for a range of layers.</dd>
+            <dt id="a793112547a673e97b16a83cf9f0cc4da">
+              <span class="m-doc-wrap-bumper">void <a href="#a793112547a673e97b16a83cf9f0cc4da" class="m-doc-self">set_layer_roles</a>(</span><span class="m-doc-wrap"><a href="structFastCaloSim_1_1LayerRoles.html" class="m-doc">FastCaloSim::<wbr />LayerRoles</a> roles)</span>
+            </dt>
+            <dd>Set the roles of the layers in the parametrizations.</dd>
+            <dt id="a57fbc0fcf638c4e0cc59fe023f128b1e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a57fbc0fcf638c4e0cc59fe023f128b1e" class="m-doc-self">has_layer_roles</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd>Whether the roles of the layers were set.</dd>
+            <dt id="a38b181c07dbab42cef7584655abc32bb">
+              <span class="m-doc-wrap-bumper">auto <a href="#a38b181c07dbab42cef7584655abc32bb" class="m-doc-self">layer_roles</a>(</span><span class="m-doc-wrap">) const -&gt; const FastCaloSim::LayerRoles &amp;</span>
+            </dt>
+            <dd>The roles of the layers; throws if they were not set (inline, as it is part of the phi modulation done for every hit)</dd>
           </dl>
         </section>
       </div>

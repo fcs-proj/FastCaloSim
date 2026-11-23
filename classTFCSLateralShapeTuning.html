@@ -60,6 +60,7 @@
               Reference
               <ul>
                 <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
                 <li><a href="#pub-static-methods">Public static functions</a></li>
                 <li><a href="#typeless-methods">Constructors, destructors, conversion operators</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
@@ -74,6 +75,16 @@
               class <a href="classTFCSLateralShapeParametrizationHitBase.html" class="m-doc">TFCSLateralShapeParametrizationHitBase</a>
             </dt>
             <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              <span class="m-doc-wrap-bumper">enum class <a href="#a987c5bfc74bafed3511a14040a2485d5" class="m-doc">Model</a> { </span><span class="m-doc-wrap"><a href="#a987c5bfc74bafed3511a14040a2485d5a7ac3cddfcf07e63381ade0518567208b" class="m-doc">kSeries</a>,
+              <a href="#a987c5bfc74bafed3511a14040a2485d5ad5f2e05923fbae3bd9594fc7b7b8bb43" class="m-doc">kEtaPhiScaling</a> }</span>
+            </dt>
+            <dd>The tuning models.</dd>
           </dl>
         </section>
         <section id="pub-static-methods">
@@ -129,10 +140,11 @@
               const <a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>* extrapol) -&gt; FCSReturnCode <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd></dd>
-            <dt id="ae8923cd1a73be1c52485287d5e82c7e7">
-              <span class="m-doc-wrap-bumper">auto <a href="#ae8923cd1a73be1c52485287d5e82c7e7" class="m-doc-self">initFromModelFile</a>(</span><span class="m-doc-wrap">const std::string&amp; pathToModelParameters,
+            <dt id="a1d77d1ff550b6fcabe28511a17f3577b">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1d77d1ff550b6fcabe28511a17f3577b" class="m-doc-self">initFromModelFile</a>(</span><span class="m-doc-wrap">const std::string&amp; pathToModelParameters,
               int intMinEta,
-              int intMaxEta) -&gt; FCSReturnCode</span>
+              int intMaxEta,
+              <a href="classTFCSLateralShapeTuning.html#a987c5bfc74bafed3511a14040a2485d5" class="m-doc">Model</a> model) -&gt; FCSReturnCode</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a35681c8effef924d11d0a9612d208e64">
@@ -140,6 +152,32 @@
             </dt>
             <dd><span></span></dd>
           </dl>
+        </section>
+        <section>
+          <h2>Enum documentation</h2>
+          <section class="m-doc-details" id="a987c5bfc74bafed3511a14040a2485d5"><div>
+            <h3>
+              enum class TFCSLateralShapeTuning::<wbr /><a href="#a987c5bfc74bafed3511a14040a2485d5" class="m-doc-self">Model</a>
+            </h3>
+            <p>The tuning models.</p>
+            <table class="m-table m-fullwidth m-flat m-doc">
+              <thead><tr><th style="width: 1%">Enumerators</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="#a987c5bfc74bafed3511a14040a2485d5a7ac3cddfcf07e63381ade0518567208b" class="m-doc-self" id="a987c5bfc74bafed3511a14040a2485d5a7ac3cddfcf07e63381ade0518567208b">kSeries</a></td>
+                  <td>
+<p>Scaling of the distance to the shower center in eta by a series in that distance (parameters a0 to a3), for strip layers</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td><a href="#a987c5bfc74bafed3511a14040a2485d5ad5f2e05923fbae3bd9594fc7b7b8bb43" class="m-doc-self" id="a987c5bfc74bafed3511a14040a2485d5ad5f2e05923fbae3bd9594fc7b7b8bb43">kEtaPhiScaling</a></td>
+                  <td>
+<p>Scaling of the distances to the shower center in eta and phi (eta_s and phi_s), for middle layers</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
         </section>
         <section>
           <h2>Function documentation</h2>

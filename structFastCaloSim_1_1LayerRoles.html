@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FastCaloSim::LayerRoles struct | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          <span class="m-breadcrumb"><a href="namespaceFastCaloSim.html">FastCaloSim</a>::<wbr/></span>LayerRoles <span class="m-thin">struct</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="LayerRoles_8h.html">&lt;LayerRoles.h&gt;</a></div>
+        </h1>
+        <p>The roles that calorimeter layers play in the parametrizations and that the cell geometry does not describe. They depend on the detector, so the host sets them with <a href="classCaloGeo.html#a793112547a673e97b16a83cf9f0cc4da" class="m-doc">CaloGeo::<wbr />set_layer_roles()</a>; a parametrization that needs them throws if they were not set.</p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#pub-attribs">Public variables</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              struct <a href="structFastCaloSim_1_1LayerRoles_1_1PhiModulationPeriod.html" class="m-doc">PhiModulationPeriod</a>
+            </dt>
+            <dd>The azimuthal period of the energy response of a layer up to an |eta|.</dd>
+            <dt>
+              struct <a href="structFastCaloSim_1_1LayerRoles_1_1ShowerCenterLayer.html" class="m-doc">ShowerCenterLayer</a>
+            </dt>
+            <dd>A layer that the binned showers can take the shower center from.</dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="ad230cab810ebd2ba4444323736ffe282">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad230cab810ebd2ba4444323736ffe282" class="m-doc-self">phi_modulation_period</a>(</span><span class="m-doc-wrap">std::size_t layer,
+              double eta) const -&gt; double</span>
+            </dt>
+            <dd>The azimuthal period of the energy response of a layer at an eta.</dd>
+            <dt id="ae0c6039f0e56729f92bf9accf55a3c98">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae0c6039f0e56729f92bf9accf55a3c98" class="m-doc-self">is_strip_layer</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; bool</span>
+            </dt>
+            <dd>Whether a layer is a strip layer.</dd>
+            <dt id="aac00b10a3a87431a653cdd39ae15a3f4">
+              <span class="m-doc-wrap-bumper">auto <a href="#aac00b10a3a87431a653cdd39ae15a3f4" class="m-doc-self">is_linear_upscaling_layer</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; bool</span>
+            </dt>
+            <dd>Whether the binned-shower upscaling samples the radius from a linear distribution in a layer.</dd>
+            <dt id="aed19073595bed63a6f33c8534a6cef2b">
+              <span class="m-doc-wrap-bumper">auto <a href="#aed19073595bed63a6f33c8534a6cef2b" class="m-doc-self">shower_center_layer</a>(</span><span class="m-doc-wrap">const std::function&lt;double(std::size_t)&gt;&amp; abs_eta_at_layer) const -&gt; std::size_t</span>
+            </dt>
+            <dd>The layer of the binned-shower center, given the particle&#x27;s |eta| at a layer (asked for the candidate layers in order, until one is used)</dd>
+          </dl>
+        </section>
+        <section id="pub-attribs">
+          <h2><a href="#pub-attribs">Public variables</a></h2>
+          <dl class="m-doc">
+            <dt id="aadff0036f70c713641e5f7f9d3013bac">
+              std::vector&lt;std::size_t&gt; <a href="#aadff0036f70c713641e5f7f9d3013bac" class="m-doc-self">strip_layers</a>
+            </dt>
+            <dd>Strip layers: the electromagnetic layers finely segmented in eta (ATLAS: EMB1 and EME1). <a href="classTFCSEnergyAndHitGANV2.html" class="m-doc">TFCSEnergyAndHitGANV2</a> places the hits of hadrons 1 mm apart along the azimuth there instead of 5 mm, and does not limit them to 10 per voxel and direction.</dd>
+            <dt id="a10c98a3a3afb1a8f64abb7ca2523f11e">
+              std::vector&lt;<a href="structFastCaloSim_1_1LayerRoles_1_1ShowerCenterLayer.html" class="m-doc">ShowerCenterLayer</a>&gt; <a href="#a10c98a3a3afb1a8f64abb7ca2523f11e" class="m-doc-self">shower_center_layers</a>
+            </dt>
+            <dd>The layers the binned showers take the shower center from, in order: the first one at which the particle&#x27;s |eta| is not above its max_abs_eta, the last one (whose max_abs_eta is not used) if there is none (ATLAS: EMB2 up to |eta| = 1.4, else EME2)</dd>
+            <dt id="aa5ee205af43e0a060fe8e2e6cb2171a2">
+              std::vector&lt;std::size_t&gt; <a href="#aa5ee205af43e0a060fe8e2e6cb2171a2" class="m-doc-self">linear_upscaling_layers</a>
+            </dt>
+            <dd>Layers in which the upscaling of the binned showers samples the radius within a sub-bin from a linear distribution instead of a uniform one (ATLAS: EMB2)</dd>
+            <dt id="a73c7386c68ef1ec3711e6b9c078ceedf">
+              std::vector&lt;double&gt; <a href="#a73c7386c68ef1ec3711e6b9c078ceedf" class="m-doc-self">out_of_calo_report_threshold</a>
+            </dt>
+            <dd>Per layer, the expected energy (MeV) above which <a href="classTFCSEnergyRenormalization.html" class="m-doc">TFCSEnergyRenormalization</a> reports that no cell of the layer received any of it (ATLAS: 8 times the approximate cell noise, 1500 MeV in EME1 to EME3). Layers beyond the end are not reported.</dd>
+            <dt id="a3c5be09f200d9272fc1bea5e9033b5a3">
+              std::vector&lt;std::vector&lt;<a href="structFastCaloSim_1_1LayerRoles_1_1PhiModulationPeriod.html" class="m-doc">PhiModulationPeriod</a>&gt;&gt; <a href="#a3c5be09f200d9272fc1bea5e9033b5a3" class="m-doc-self">phi_modulation_periods</a>
+            </dt>
+            <dd>Per layer, the azimuthal periods of the energy response, in increasing max_abs_eta: the first one whose max_abs_eta is above the particle&#x27;s |eta| applies, the last one if there is none (ATLAS: the accordion absorbers, 2 pi / 1024 in EMB, 2 pi / 768 in the outer and 2 pi / 256 in the inner wheel of the endcap, divided at |eta| = 2.5). <a href="classTFCSPhiModulationCorrection.html" class="m-doc">TFCSPhiModulationCorrection</a> and the binned showers use it for the position of a hit within the period.</dd>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.8.16 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>
