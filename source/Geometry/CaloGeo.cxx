@@ -8,6 +8,7 @@
 #include <limits>
 #include <optional>
 #include <stdexcept>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -29,6 +30,22 @@ void reject_r_phi_z_cell(bool is_r_phi_z, std::size_t layer_id)
         "supported by the cell lookup",
         layer_id));
   }
+}
+
+// How the cells of a layer are described, from the flags of one of its cells
+auto coordinate_system_of(bool is_xyz, bool is_eta_phi_r, bool is_eta_phi_z)
+    -> RTreeHelpers::CoordinateSystem
+{
+  if (is_xyz) {
+    return RTreeHelpers::CoordinateSystem::XYZ;
+  }
+  if (is_eta_phi_r) {
+    return RTreeHelpers::CoordinateSystem::EtaPhiR;
+  }
+  if (is_eta_phi_z) {
+    return RTreeHelpers::CoordinateSystem::EtaPhiZ;
+  }
+  return RTreeHelpers::CoordinateSystem::Undefined;
 }
 }  // namespace
 
@@ -117,22 +134,29 @@ auto CaloGeo::is_barrel(std::size_t layer) const -> bool
   return m_layer_flags.at(layer).is_barrel;
 }
 
+auto CaloGeo::coordinate_system(std::size_t layer) const
+    -> RTreeHelpers::CoordinateSystem
+{
+  const LayerLookup* lookup = find_layer_lookup(layer);
+  if (lookup == nullptr || !lookup->coordinate_system) {
+    throw std::out_of_range("No cells in layer " + std::to_string(layer));
+  }
+  return *lookup->coordinate_system;
+}
+
 auto CaloGeo::is_xyz(std::size_t layer) const -> bool
 {
-  return m_layer_flags.at(layer).coordinate_system
-      == RTreeHelpers::CoordinateSystem::XYZ;
+  return coordinate_system(layer) == RTreeHelpers::CoordinateSystem::XYZ;
 }
 
 auto CaloGeo::is_eta_phi_r(std::size_t layer) const -> bool
 {
-  return m_layer_flags.at(layer).coordinate_system
-      == RTreeHelpers::CoordinateSystem::EtaPhiR;
+  return coordinate_system(layer) == RTreeHelpers::CoordinateSystem::EtaPhiR;
 }
 
 auto CaloGeo::is_eta_phi_z(std::size_t layer) const -> bool
 {
-  return m_layer_flags.at(layer).coordinate_system
-      == RTreeHelpers::CoordinateSystem::EtaPhiZ;
+  return coordinate_system(layer) == RTreeHelpers::CoordinateSystem::EtaPhiZ;
 }
 
 auto CaloGeo::zpos(std::size_t layer,
@@ -254,18 +278,9 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
 
     // Only update layer flags once per layer
     if (!processed_layer_flags.contains(layer_id)) {
-      auto& flags = m_layer_flags[layer_id];
-      flags.is_barrel = isBarrel->at(i);
-      // Set coordinate system based on the boolean flags
-      if (isXYZ->at(i)) {
-        flags.coordinate_system = RTreeHelpers::CoordinateSystem::XYZ;
-      } else if (isEtaPhiR->at(i)) {
-        flags.coordinate_system = RTreeHelpers::CoordinateSystem::EtaPhiR;
-      } else if (isEtaPhiZ->at(i)) {
-        flags.coordinate_system = RTreeHelpers::CoordinateSystem::EtaPhiZ;
-      } else {
-        flags.coordinate_system = RTreeHelpers::CoordinateSystem::Undefined;
-      }
+      m_layer_flags[layer_id].is_barrel = isBarrel->at(i);
+      layer_lookup(layer_id).coordinate_system = coordinate_system_of(
+          isXYZ->at(i), isEtaPhiR->at(i), isEtaPhiZ->at(i));
       processed_layer_flags.insert(layer_id);
     }
 
@@ -360,21 +375,8 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     if (!m_layer_flags.contains(layer_id)) {
       m_layer_flags[layer_id] = LayerFlags {};
       m_layer_flags[layer_id].is_barrel = cell.isBarrel();
-
-      // Set coordinate system based on cell flags
-      if (cell.isXYZ()) {
-        m_layer_flags[layer_id].coordinate_system =
-            RTreeHelpers::CoordinateSystem::XYZ;
-      } else if (cell.isEtaPhiR()) {
-        m_layer_flags[layer_id].coordinate_system =
-            RTreeHelpers::CoordinateSystem::EtaPhiR;
-      } else if (cell.isEtaPhiZ()) {
-        m_layer_flags[layer_id].coordinate_system =
-            RTreeHelpers::CoordinateSystem::EtaPhiZ;
-      } else {
-        m_layer_flags[layer_id].coordinate_system =
-            RTreeHelpers::CoordinateSystem::Undefined;
-      }
+      layer_lookup(layer_id).coordinate_system = coordinate_system_of(
+          cell.isXYZ(), cell.isEtaPhiR(), cell.isEtaPhiZ());
 
       // Initialize eta extensions
       m_layer_flags[layer_id].eta_extensions[kEtaPositive].eta_min =
@@ -401,9 +403,8 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
       cells.push_back(m_cell_store.get_at_index(index));
     }
 
-    auto coord_sys = m_layer_flags.at(layer_id).coordinate_system;
     LayerLookup& lookup = layer_lookup(layer_id);
-    lookup.rtree = std::make_unique<RTree>(coord_sys, cells);
+    lookup.rtree = std::make_unique<RTree>(*lookup.coordinate_system, cells);
     lookup.store_index = store_index;
   }
 

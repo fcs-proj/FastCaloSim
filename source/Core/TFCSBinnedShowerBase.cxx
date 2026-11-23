@@ -126,10 +126,9 @@ auto TFCSBinnedShowerBase::simulate_hit(
   hit.reset();
   hit.set_E(E);
 
-  // NOTE: this is ATLAS dependent
-  // layers 0 to 20 are in (eta, phi); the FCAL layers from 21 (FCAL0) on are
-  // in (x, y, z), as in TFCSEnergyAndHitGANV2
-  if (layer_index <= 20) {
+  // Showers are in (x, y) in layers whose cells are described in (x, y, z)
+  // (the ATLAS FCal), in (eta, phi) in the others, as in TFCSEnergyAndHitGANV2
+  if (!m_geo->is_xyz(layer_index)) {
     double delta_eta_mm = r * std::cos(alpha);
     double delta_phi_mm = r * std::sin(alpha);
 
@@ -157,7 +156,7 @@ auto TFCSBinnedShowerBase::simulate_hit(
     FCS_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                 << " layer " << layer_index);
 
-  } else {  // FCAL is in (x,y,z)
+  } else {
     const double hit_r = r * std::cos(alpha) + center_r;
     double delta_phi = r * std::sin(alpha) / center_r;
     // We derive the shower shapes for electrons and positively charged
