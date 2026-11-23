@@ -18,6 +18,7 @@
 
 // For throwing exceptions
 #include <stdexcept>
+#include <string>
 
 TFCSONNXHandler::TFCSONNXHandler(const std::string& inputFile)
     : VNetworkBase(inputFile)
@@ -406,6 +407,12 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
       if (first_digit < element.first.length()) {
         const auto key_number = static_cast<std::size_t>(
             std::stoi(element.first.substr(first_digit)));
+        if (key_number >= elements_in_node) {
+          throw std::runtime_error(
+              "TFCSONNXHandler: input " + element.first + " of node "
+              + node_name + " is outside the node, which has "
+              + std::to_string(elements_in_node) + " elements");
+        }
         node_elements[key_number] = static_cast<Tin>(element.second);
       }
     }
