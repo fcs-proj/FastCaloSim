@@ -203,6 +203,16 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
   FCS_MSG_DEBUG("energy voxels size = " << voxelFractions.size());
 
+  // A NaN or infinite fraction from the network would pass the checks below
+  // and end up in the layer and cell energies: skip the particle instead
+  if (!std::ranges::all_of(voxelFractions,
+                           [](double fraction) -> bool
+                           { return std::isfinite(fraction); }))
+  {
+    FCS_MSG_WARNING("Energy from GAN is not finite, skipping particle");
+    return false;
+  }
+
   double totalEnergy = 0;
   for (const double fraction : voxelFractions) {
     totalEnergy += fraction;
