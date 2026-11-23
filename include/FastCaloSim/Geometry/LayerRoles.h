@@ -29,24 +29,24 @@ struct LayerRoles
   /// (ATLAS: EMB1 and EME1). TFCSEnergyAndHitGANV2 places the hits of hadrons
   /// 1 mm apart along the azimuth there instead of 5 mm, and does not limit
   /// them to 10 per voxel and direction.
-  std::vector<std::size_t> strip_layers {};
+  std::vector<std::size_t> strip_layers;
 
   /// @brief The layers the binned showers take the shower center from, in
   /// order: the first one at which the particle's |eta| is not above its
   /// max_abs_eta, the last one (whose max_abs_eta is not used) if there is none
   /// (ATLAS: EMB2 up to |eta| = 1.4, else EME2)
-  std::vector<ShowerCenterLayer> shower_center_layers {};
+  std::vector<ShowerCenterLayer> shower_center_layers;
 
   /// @brief Layers in which the upscaling of the binned showers samples the
   /// radius within a sub-bin from a linear distribution instead of a uniform
   /// one (ATLAS: EMB2)
-  std::vector<std::size_t> linear_upscaling_layers {};
+  std::vector<std::size_t> linear_upscaling_layers;
 
   /// @brief Per layer, the expected energy (MeV) above which
   /// TFCSEnergyRenormalization reports that no cell of the layer received any
   /// of it (ATLAS: 8 times the approximate cell noise, 1500 MeV in EME1 to
   /// EME3). Layers beyond the end are not reported.
-  std::vector<double> out_of_calo_report_threshold {};
+  std::vector<double> out_of_calo_report_threshold;
 
   /// @brief Whether a layer is a strip layer
   auto is_strip_layer(std::size_t layer) const -> bool

@@ -16,17 +16,19 @@ namespace
 // Two candidate layers of the shower center, as in ATLAS
 auto two_shower_center_layers() -> FastCaloSim::LayerRoles
 {
-  return {.shower_center_layers = {
-              {.layer = 2, .max_abs_eta = 1.4},
-              {.layer = 6, .max_abs_eta = 0},  // not used: the last one
-          }};
+  FastCaloSim::LayerRoles roles;
+  roles.shower_center_layers = {
+      {.layer = 2, .max_abs_eta = 1.4},
+      {.layer = 6, .max_abs_eta = 0},  // not used: the last one
+  };
+  return roles;
 }
 }  // namespace
 
 // Without roles set by the host, asking for them throws
 TEST(LayerRolesTests, CaloGeoWithoutRoles)
 {
-  CaloGeo geo;
+  const CaloGeo geo;
   EXPECT_FALSE(geo.has_layer_roles());
   EXPECT_THROW((void)geo.layer_roles(), std::runtime_error);
 }
@@ -34,15 +36,18 @@ TEST(LayerRolesTests, CaloGeoWithoutRoles)
 TEST(LayerRolesTests, CaloGeoWithRoles)
 {
   CaloGeo geo;
-  geo.set_layer_roles({.strip_layers = {1, 5}});
+  FastCaloSim::LayerRoles roles;
+  roles.strip_layers = {1, 5};
+  geo.set_layer_roles(roles);
   ASSERT_TRUE(geo.has_layer_roles());
   EXPECT_EQ(geo.layer_roles().strip_layers, (std::vector<std::size_t> {1, 5}));
 }
 
 TEST(LayerRolesTests, StripAndLinearUpscalingLayers)
 {
-  const FastCaloSim::LayerRoles roles {.strip_layers = {1, 5},
-                                       .linear_upscaling_layers = {2}};
+  FastCaloSim::LayerRoles roles;
+  roles.strip_layers = {1, 5};
+  roles.linear_upscaling_layers = {2};
   EXPECT_TRUE(roles.is_strip_layer(1));
   EXPECT_TRUE(roles.is_strip_layer(5));
   EXPECT_FALSE(roles.is_strip_layer(2));

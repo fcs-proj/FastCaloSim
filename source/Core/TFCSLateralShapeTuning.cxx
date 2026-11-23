@@ -48,7 +48,7 @@ auto TFCSLateralShapeTuning::initFromModelFile(
       ? std::vector<std::string> {"a0", "a1", "a2", "a3"}
       : std::vector<std::string> {"eta_s", "phi_s"};
 
-  for (auto& parameterName : parameterModelNames) {
+  for (const auto& parameterName : parameterModelNames) {
     // interpolate the model parameters
     auto* linModelInterpol = new TFCSEnergyInterpolationPiecewiseLinear("", "");
 
