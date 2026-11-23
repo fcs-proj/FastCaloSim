@@ -1,6 +1,9 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <format>
+#include <map>
+#include <memory>
+#include <string>
 
 #include "FastCaloSim/Core/TFCSLateralShapeTuning.h"
 
@@ -39,44 +42,57 @@ auto TFCSLateralShapeTuning::initFromModelFile(
   std::size_t layer = TFCSLateralShapeParametrization::calosample();
 
   // load file containing model parameters
-  std::unique_ptr<TFile> modelParametersFile = std::unique_ptr<TFile>(
+  const std::unique_ptr<TFile> modelParametersFile(
       TFile::Open(pathToModelParameters.c_str(), "READ"));
-  modelParametersFile->cd();
+  if (!modelParametersFile || modelParametersFile->IsZombie()) {
+    FCS_MSG_ERROR(
+        "[TFCSLateralShapeTuning] Could not open model parameter file "
+        << pathToModelParameters);
+    return FCSFatal;
+  }
 
   // set parameter model names depending on the model
   const std::vector<std::string> parameterModelNames = model == Model::kSeries
       ? std::vector<std::string> {"a0", "a1", "a2", "a3"}
       : std::vector<std::string> {"eta_s", "phi_s"};
 
+  // simulate_hit() needs all parameters of the model: they are only used if
+  // all of them are found, otherwise no tuning is applied in this eta range
+  std::map<std::string, std::unique_ptr<TFCSEnergyInterpolationPiecewiseLinear>>
+      parameters;
   for (const auto& parameterName : parameterModelNames) {
-    // interpolate the model parameters
-    auto* linModelInterpol = new TFCSEnergyInterpolationPiecewiseLinear("", "");
-
-    TGraph const* modelParameterGraph = static_cast<TGraph*>(
-        gDirectory->Get(std::format("photons/layer{}/m{}_m{}_{}_{}/{}",
-                                    layer,
-                                    intMaxEta,
-                                    intMinEta,
-                                    intMinEta,
-                                    intMaxEta,
-                                    parameterName)
-                            .c_str()));
-    if (modelParameterGraph != nullptr) {
-      // initialize the model interpolation and save in interpolation map
-      linModelInterpol->InitFromArrayInEkin(modelParameterGraph->GetN(),
-                                            modelParameterGraph->GetX(),
-                                            modelParameterGraph->GetY());
-      m_parameterInterpol.insert(
-          std::make_pair(parameterName, linModelInterpol));
-    } else {
-      FCS_MSG_DEBUG(
-          "[TFCSLateralShapeTuning] Could not find model parameter "
-          "graph for layer="
-          << layer << " minEta=" << intMinEta << " maxEta=" << intMaxEta);
+    // TFile::Get returns a new graph, owned by the caller
+    const std::unique_ptr<TGraph> modelParameterGraph(
+        modelParametersFile->Get<TGraph>(
+            std::format("photons/layer{}/m{}_m{}_{}_{}/{}",
+                        layer,
+                        intMaxEta,
+                        intMinEta,
+                        intMinEta,
+                        intMaxEta,
+                        parameterName)
+                .c_str()));
+    if (!modelParameterGraph) {
+      FCS_MSG_DEBUG("[TFCSLateralShapeTuning] Could not find model parameter "
+                    << parameterName << " for layer=" << layer
+                    << " minEta=" << intMinEta << " maxEta=" << intMaxEta
+                    << ", no tuning applied");
       return FCSSuccess;
     }
+    // interpolate the model parameters
+    auto linModelInterpol =
+        std::make_unique<TFCSEnergyInterpolationPiecewiseLinear>("", "");
+    linModelInterpol->InitFromArrayInEkin(modelParameterGraph->GetN(),
+                                          modelParameterGraph->GetX(),
+                                          modelParameterGraph->GetY());
+    parameters.emplace(parameterName, std::move(linModelInterpol));
   }
-  modelParametersFile->Close();
+
+  // save the complete model in the interpolation map
+  for (auto& [name, interpolation] : parameters) {
+    delete m_parameterInterpol[name];
+    m_parameterInterpol[name] = interpolation.release();
+  }
 
   return FCSSuccess;
 }
