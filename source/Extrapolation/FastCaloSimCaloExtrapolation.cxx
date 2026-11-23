@@ -20,6 +20,7 @@
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "G4FieldTrack.hh"
 
+using FastCaloSim::Extrapolation::crossCylinder;
 using FastCaloSim::Extrapolation::Cylinder;
 using FastCaloSim::Extrapolation::extrapolateToCylinder;
 using FastCaloSim::Extrapolation::TrackPoint;
@@ -35,18 +36,23 @@ auto toCylinder(const BoundaryCylinder& cylinder) -> Cylinder
   return {cylinder.radius, cylinder.half_length};
 }
 
-/// Where the track leaves the ID: of the points where it reaches the boundary
+using CylinderExtrapolator = auto (*)(const std::vector<TrackPoint>&,
+                                      const Cylinder&)
+    -> std::optional<TrackPoint>;
+
+/// Of the points where the extrapolator takes the track onto the boundary
 /// cylinders, the closest to the origin that is on the boundary, i.e. neither
 /// within the z range of the previous cylinder nor the radius of the next one
-auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track,
-                                 const std::vector<BoundaryCylinder>& cylinders)
+auto closestBoundaryPoint(const std::vector<TrackPoint>& track,
+                          const std::vector<BoundaryCylinder>& cylinders,
+                          CylinderExtrapolator extrapolate)
     -> std::optional<TrackPoint>
 {
   constexpr double tolerance = 0.001;  // mm
 
   std::optional<TrackPoint> boundary;
   for (std::size_t i = 0; i < cylinders.size(); ++i) {
-    const auto point = extrapolateToCylinder(track, toCylinder(cylinders[i]));
+    const auto point = extrapolate(track, toCylinder(cylinders[i]));
     if (!point) {
       continue;
     }
@@ -70,6 +76,21 @@ auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track,
     }
   }
   return boundary;
+}
+
+/// Where the track leaves the ID: where it crosses the boundary or, only if it
+/// crosses none of the boundary cylinders there, the point of the boundary
+/// closest to it. The closest point of a cylinder the track does not reach can
+/// be closer to the origin than where it crosses another one, e.g. on the cover
+/// of an inner cylinder just beyond the endcap of the outer one.
+auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track,
+                                 const std::vector<BoundaryCylinder>& cylinders)
+    -> std::optional<TrackPoint>
+{
+  if (auto crossing = closestBoundaryPoint(track, cylinders, crossCylinder)) {
+    return crossing;
+  }
+  return closestBoundaryPoint(track, cylinders, extrapolateToCylinder);
 }
 
 /// The three cylinders of a layer, indexed by FastCaloSim::SubPos

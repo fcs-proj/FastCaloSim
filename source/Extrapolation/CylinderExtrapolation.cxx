@@ -267,13 +267,14 @@ auto selectIntersection(const Vector3D& start,
   return (end - a).mag() > (end - b).mag() ? b : a;
 }
 
+}  // namespace
+
 /// Where the track crosses the surface: the first segment that crosses it or
 /// whose line intersects it on the segment, with a few exceptions for
 /// intersections behind the segment, else the intersection of the line of the
 /// last segment
-auto extrapolateWithIntersection(const std::vector<TrackPoint>& track,
-                                 const Cylinder& cylinder)
-    -> std::optional<TrackPoint>
+auto crossCylinder(const std::vector<TrackPoint>& track,
+                   const Cylinder& cylinder) -> std::optional<TrackPoint>
 {
   // Number of segments whose intersections with the surface were computed
   unsigned int nExtrapolations = 0;
@@ -328,6 +329,9 @@ auto extrapolateWithIntersection(const std::vector<TrackPoint>& track,
   return std::nullopt;
 }
 
+namespace
+{
+
 /// The point of the surface closest to the track, if within 100 m
 auto extrapolateWithClosestApproach(const std::vector<TrackPoint>& track,
                                     const Cylinder& cylinder)
@@ -361,7 +365,7 @@ auto extrapolateToCylinder(const std::vector<TrackPoint>& track,
     return TrackPoint {.position = cylinder.project(track[0].position),
                        .direction = track[0].direction};
   }
-  if (auto crossing = extrapolateWithIntersection(track, cylinder)) {
+  if (auto crossing = crossCylinder(track, cylinder)) {
     return crossing;
   }
   return extrapolateWithClosestApproach(track, cylinder);
