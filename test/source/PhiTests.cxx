@@ -61,3 +61,22 @@ TEST(PhiTests, InterpolationAcrossTheSeam)
               -3.13 - 0.25 * step,
               1e-14);
 }
+
+TEST(PhiTests, PeriodicDistanceIsTheShorterWayAround)
+{
+  // Plain distance when the phases are less than half a period apart
+  EXPECT_NEAR(FastCaloSim::periodic_distance(0.3, 0.1, 1.0), 0.2, 1e-15);
+  EXPECT_NEAR(FastCaloSim::periodic_distance(0.1, 0.3, 1.0), 0.2, 1e-15);
+  // Across the end of the period
+  EXPECT_NEAR(FastCaloSim::periodic_distance(0.99, 0.01, 1.0), 0.02, 1e-15);
+  EXPECT_NEAR(FastCaloSim::periodic_distance(0.01, 0.99, 1.0), 0.02, 1e-15);
+  // Half a period apart, the largest distance
+  EXPECT_NEAR(FastCaloSim::periodic_distance(0.75, 0.25, 1.0), 0.5, 1e-15);
+  // Another period, e.g. the cell size in phi
+  const double period = 2 * pi / 256;
+  EXPECT_NEAR(
+      FastCaloSim::periodic_distance(0.9 * period, 0.1 * period, period),
+      0.2 * period,
+      1e-15);
+  EXPECT_EQ(FastCaloSim::periodic_distance(0.4, 0.4, 1.0), 0.0);
+}
