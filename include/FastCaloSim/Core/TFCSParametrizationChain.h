@@ -4,8 +4,6 @@
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
-// The copy constructor copies only name, title and chain, moves fall back to it
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationChain : public TFCSParametrization
 {
 public:
@@ -14,12 +12,15 @@ public:
       : TFCSParametrization(name, title)
   {
   }
-  // NOLINTNEXTLINE(bugprone-copy-constructor-init): copies only name, title
-  TFCSParametrizationChain(const TFCSParametrizationChain& ref)
-      : TFCSParametrization(ref.GetName(), ref.GetTitle())
-      , m_chain(ref.chain())
-  {
-  }
+  // A copy refers to the same parametrizations as the original, which the
+  // chain does not own
+  TFCSParametrizationChain(const TFCSParametrizationChain& ref) = default;
+  TFCSParametrizationChain(TFCSParametrizationChain&& ref) = default;
+  auto operator=(const TFCSParametrizationChain& ref)
+      -> TFCSParametrizationChain& = default;
+  auto operator=(TFCSParametrizationChain&& ref)
+      -> TFCSParametrizationChain& = default;
+  ~TFCSParametrizationChain() override = default;
 
   /// Status bit for chain persistency
   enum FCSSplitChainObjects

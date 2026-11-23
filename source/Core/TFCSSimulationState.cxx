@@ -20,6 +20,16 @@ TFCSSimulationState::TFCSSimulationState(CLHEP::HepRandomEngine* randomEngine)
   clear();
 }
 
+void TFCSSimulationState::clear_energies()
+{
+  m_Etot = 0;
+  m_E.clear();
+  m_Efrac.clear();
+  m_cells.clear();
+  // The cached last cell pointed into m_cells
+  m_last_cell.reset();
+}
+
 void TFCSSimulationState::clear()
 {
   m_Ebin.reset();

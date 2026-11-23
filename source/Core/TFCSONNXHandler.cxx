@@ -18,6 +18,7 @@
 
 // For throwing exceptions
 #include <stdexcept>
+#include <string>
 
 TFCSONNXHandler::TFCSONNXHandler(const std::string& inputFile)
     : VNetworkBase(inputFile)
@@ -40,16 +41,12 @@ TFCSONNXHandler::TFCSONNXHandler(const std::vector<char>& bytes)
 
 TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
     : VNetworkBase(copy_from)
+    , m_bytes(copy_from.m_bytes)
 {
   FCS_MSG_DEBUG("TFCSONNXHandler copy constructor called");
-  m_bytes = copy_from.m_bytes;
-  // A session cannot be copied, read it again from the bytes
-  readSerializedSession();
-  m_inputNodeNames = copy_from.m_inputNodeNames;
-  m_inputNodeDims = copy_from.m_inputNodeDims;
-  m_outputNodeNames = copy_from.m_outputNodeNames;
-  m_outputNodeDims = copy_from.m_outputNodeDims;
-  m_outputLayers = copy_from.m_outputLayers;
+  // A session cannot be copied: set up the network again from the bytes, so
+  // that the copy owns its node names and has its own compute function
+  TFCSONNXHandler::setupNet();
 }
 
 auto TFCSONNXHandler::compute(TFCSONNXHandler::NetworkInputs const& inputs)
@@ -331,16 +328,28 @@ void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
   FCS_MSG_DEBUG("TFCSONNXHandler written bytes to tree.");
 }
 
+namespace
+{
+// The environment shared by all sessions. Every handler holds a reference, so
+// it is destroyed only after the last session, also at program exit.
+auto shared_onnx_env() -> std::shared_ptr<Ort::Env>
+{
+  static const std::shared_ptr<Ort::Env> env =
+      std::make_shared<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, "FastCaloSim");
+  return env;
+}
+}  // namespace
+
 void TFCSONNXHandler::readSerializedSession()
 {
   FCS_MSG_DEBUG("Transforming bytes to session.");
-  Ort::Env const env(ORT_LOGGING_LEVEL_WARNING, "test");
+  m_env = shared_onnx_env();
   Ort::SessionOptions opts;
   opts.SetInterOpNumThreads(1);
   opts.SetIntraOpNumThreads(1);
   // Prevent ONNX from spawning additional threads
-  m_session =
-      std::make_unique<Ort::Session>(env, m_bytes.data(), m_bytes.size(), opts);
+  m_session = std::make_unique<Ort::Session>(
+      *m_env, m_bytes.data(), m_bytes.size(), opts);
   FCS_MSG_DEBUG("Transformed bytes to session.");
 }
 
@@ -398,6 +407,12 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
       if (first_digit < element.first.length()) {
         const auto key_number = static_cast<std::size_t>(
             std::stoi(element.first.substr(first_digit)));
+        if (key_number >= elements_in_node) {
+          throw std::runtime_error(
+              "TFCSONNXHandler: input " + element.first + " of node "
+              + node_name + " is outside the node, which has "
+              + std::to_string(elements_in_node) + " elements");
+        }
         node_elements[key_number] = static_cast<Tin>(element.second);
       }
     }

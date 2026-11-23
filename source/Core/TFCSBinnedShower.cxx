@@ -9,6 +9,7 @@
 #include "FastCaloSim/Core/TFCSBinnedShowerBase.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Definitions/FloatCompare.h"
+#include "FastCaloSim/Definitions/Phi.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/LayerRoles.h"
 #include "TBuffer.h"
@@ -125,8 +126,12 @@ auto TFCSBinnedShower::find_best_match(double eta_center,
     double dist2 = eta_diff * eta_diff + e_diff * e_diff;
 
     if (phi_mod_matching) {
-      const auto phi_mod = static_cast<double>(event.phi_mod);
-      const double phi_diff = (phi_mod - phi_within_cell) / phi_cell_size;
+      // The phases are periodic in phi_cell_size
+      const double phi_diff =
+          FastCaloSim::periodic_distance(static_cast<double>(event.phi_mod),
+                                         phi_within_cell,
+                                         phi_cell_size)
+          / phi_cell_size;
       dist2 = dist2 + phi_diff * phi_diff;
     }
     const double distance = std::sqrt(dist2);

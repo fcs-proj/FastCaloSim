@@ -392,8 +392,9 @@ auto TFCSPCAEnergyParametrization::loadInputs(TFile* file,
 
     m_cumulative.emplace_back(std::move(cumulative));
   }
-  m_totalE_probability_ratio.resize(
-      static_cast<std::size_t>(m_numberpcabins - 1), nullptr);
+  // One acceptance correction per PCA bin, bins 1 to m_numberpcabins
+  m_totalE_probability_ratio.resize(static_cast<std::size_t>(m_numberpcabins),
+                                    nullptr);
 
   return true;
 }
@@ -425,9 +426,14 @@ void TFCSPCAEnergyParametrization::Streamer(TBuffer& buffer)
         set_Ekin_nominal(Ekin_max() / std::numbers::sqrt2);
       }
     }
-    if (version <= 2) {
+    // Files written before version 3 have no acceptance corrections, and
+    // files written with an earlier library had none for the last PCA bin:
+    // give every PCA bin an entry
+    if (m_totalE_probability_ratio.size()
+        < static_cast<std::size_t>(m_numberpcabins))
+    {
       m_totalE_probability_ratio.resize(
-          static_cast<std::size_t>(m_numberpcabins - 1), nullptr);
+          static_cast<std::size_t>(m_numberpcabins), nullptr);
     }
   } else {
     buffer.WriteClassBuffer(TFCSPCAEnergyParametrization::Class(), this);
