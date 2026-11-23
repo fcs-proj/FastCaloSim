@@ -5,8 +5,6 @@
 #include "FastCaloSim/Core/TFCSParametrizationFloatSelectChain.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
-// Custom copy constructor, moves fall back to it
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationEkinSelectChain
     : public TFCSParametrizationFloatSelectChain
 {
@@ -18,11 +16,14 @@ public:
     reset_DoRandomInterpolation();
   }
   TFCSParametrizationEkinSelectChain(
-      const TFCSParametrizationEkinSelectChain& ref)
-      : TFCSParametrizationFloatSelectChain(ref)
-  {
-    reset_DoRandomInterpolation();
-  }
+      const TFCSParametrizationEkinSelectChain& ref) = default;
+  TFCSParametrizationEkinSelectChain(TFCSParametrizationEkinSelectChain&& ref) =
+      default;
+  auto operator=(const TFCSParametrizationEkinSelectChain& ref)
+      -> TFCSParametrizationEkinSelectChain& = default;
+  auto operator=(TFCSParametrizationEkinSelectChain&& ref)
+      -> TFCSParametrizationEkinSelectChain& = default;
+  ~TFCSParametrizationEkinSelectChain() override = default;
 
   /// Status bit for Ekin Selection
   enum FCSEkinStatusBits
