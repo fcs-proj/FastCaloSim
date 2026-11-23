@@ -40,16 +40,12 @@ TFCSONNXHandler::TFCSONNXHandler(const std::vector<char>& bytes)
 
 TFCSONNXHandler::TFCSONNXHandler(const TFCSONNXHandler& copy_from)
     : VNetworkBase(copy_from)
+    , m_bytes(copy_from.m_bytes)
 {
   FCS_MSG_DEBUG("TFCSONNXHandler copy constructor called");
-  m_bytes = copy_from.m_bytes;
-  // A session cannot be copied, read it again from the bytes
-  readSerializedSession();
-  m_inputNodeNames = copy_from.m_inputNodeNames;
-  m_inputNodeDims = copy_from.m_inputNodeDims;
-  m_outputNodeNames = copy_from.m_outputNodeNames;
-  m_outputNodeDims = copy_from.m_outputNodeDims;
-  m_outputLayers = copy_from.m_outputLayers;
+  // A session cannot be copied: set up the network again from the bytes, so
+  // that the copy owns its node names and has its own compute function
+  TFCSONNXHandler::setupNet();
 }
 
 auto TFCSONNXHandler::compute(TFCSONNXHandler::NetworkInputs const& inputs)
