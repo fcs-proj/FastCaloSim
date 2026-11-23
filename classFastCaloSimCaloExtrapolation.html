@@ -60,12 +60,13 @@
               Reference
               <ul>
                 <li><a href="#base-classes">Base classes</a></li>
+                <li><a href="#pub-types">Public types</a></li>
                 <li><a href="#pub-methods">Public functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
-<p>Each of these surfaces is approximated by a cylinder around the beam axis. The particle is extrapolated to it along the straight lines between its transport steps.</p>
+<p>Each of these surfaces is approximated by a cylinder around the beam axis. The particle is extrapolated to it along the straight lines between its transport steps.</p><p>The ID-calo boundary and how the barrel layers end depend on the detector: the host sets them with <a href="classFastCaloSimCaloExtrapolation.html#a353682b47eb332ad6d5f3e514d7691df" class="m-doc">set_<wbr />settings()</a> before the first extrapolation.</p>
         <section id="base-classes">
           <h2><a href="#base-classes">Base classes</a></h2>
           <dl class="m-doc">
@@ -75,19 +76,40 @@
             <dd><span></span></dd>
           </dl>
         </section>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt>
+              struct <a href="structFastCaloSimCaloExtrapolation_1_1BoundaryCylinder.html" class="m-doc">BoundaryCylinder</a>
+            </dt>
+            <dd>A closed cylinder around the beam axis, centered at the origin. The dimensions (mm) are used in single precision.</dd>
+            <dt>
+              struct <a href="structFastCaloSimCaloExtrapolation_1_1Settings.html" class="m-doc">Settings</a>
+            </dt>
+            <dd>The detector-specific part of the extrapolation.</dd>
+          </dl>
+        </section>
         <section id="pub-methods">
           <h2><a href="#pub-methods">Public functions</a></h2>
           <dl class="m-doc">
+            <dt id="a353682b47eb332ad6d5f3e514d7691df">
+              <span class="m-doc-wrap-bumper">void <a href="#a353682b47eb332ad6d5f3e514d7691df" class="m-doc-self">set_settings</a>(</span><span class="m-doc-wrap"><a href="structFastCaloSimCaloExtrapolation_1_1Settings.html" class="m-doc">Settings</a> settings)</span>
+            </dt>
+            <dd>Set the detector-specific part of the extrapolation. Throws std::invalid_argument if the settings are inconsistent, also with the geometry if it is already set.</dd>
+            <dt id="ad4ca4907dc10ee1eef9c68f76147c323">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad4ca4907dc10ee1eef9c68f76147c323" class="m-doc-self">settings</a>(</span><span class="m-doc-wrap">) const -&gt; const Settings &amp;</span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a811548400fbec2992b772ddf810d7129">
               <span class="m-doc-wrap-bumper">void <a href="#a811548400fbec2992b772ddf810d7129" class="m-doc-self">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo)</span>
             </dt>
-            <dd>Set the geometry of the calorimeter layers.</dd>
+            <dd>Set the geometry of the calorimeter layers. Throws std::invalid_argument if it does not fit the settings, if they are already set.</dd>
             <dt id="a6be5f5574b47585b3247626abcbf2a37">
               <span class="m-doc-wrap-bumper">void <a href="#a6be5f5574b47585b3247626abcbf2a37" class="m-doc-self">extrapolate</a>(</span><span class="m-doc-wrap"><a href="classTFCSExtrapolationState.html" class="m-doc">TFCSExtrapolationState</a>&amp; result,
               const <a href="classTFCSTruthState.html" class="m-doc">TFCSTruthState</a>* truth,
               const std::vector&lt;G4FieldTrack&gt;&amp; caloSteps) const</span>
             </dt>
-            <dd>Fill result with the positions of the particle on the ID-calo boundary and in the calorimeter layers. The layers are left empty if the particle does not reach the calorimeter.</dd>
+            <dd>Fill result with the positions of the particle on the ID-calo boundary and in the calorimeter layers. The layers are left empty if the particle does not reach the calorimeter. Throws std::logic_error if the settings or the geometry are not set.</dd>
           </dl>
         </section>
       </div>
