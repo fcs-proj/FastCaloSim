@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <stdexcept>
 #include <vector>
 
 #include "BasicExtrapolTests.h"
@@ -141,4 +142,61 @@ TEST_F(BasicExtrapolTests, ExtrapolationFromBeamPipe)
     EXPECT_NEAR(extrapol_state.IDCaloBoundary_r(), 35.4696, 1e-3);
     EXPECT_NEAR(extrapol_state.IDCaloBoundary_phi(), 1.23288, 1e-4);
   }
+}
+
+// The extrapolation has no detector of its own: the host must set it up
+TEST_F(BasicExtrapolTests, ExtrapolationNeedsSettings)
+{
+  TFCSExtrapolationState extrapol_state;
+  TFCSTruthState truth_state;
+  truth_state.SetPtEtaPhiM(65536, 0.225, 1.8, 0);
+  const std::vector<G4FieldTrack> calo_steps;
+
+  FastCaloSimCaloExtrapolation without_settings;
+  without_settings.set_geometry(AtlasGeoTests::geo);
+  EXPECT_THROW(
+      without_settings.extrapolate(extrapol_state, &truth_state, calo_steps),
+      std::logic_error);
+
+  FastCaloSimCaloExtrapolation without_geometry;
+  without_geometry.set_settings(atlasSettings());
+  EXPECT_THROW(
+      without_geometry.extrapolate(extrapol_state, &truth_state, calo_steps),
+      std::logic_error);
+}
+
+TEST_F(BasicExtrapolTests, InconsistentSettings)
+{
+  FastCaloSimCaloExtrapolation tool;
+
+  auto settings = atlasSettings();
+  settings.id_calo_boundary.clear();
+  EXPECT_THROW(tool.set_settings(settings), std::invalid_argument);
+
+  // Each cylinder must be closer to the beam axis than the previous one
+  settings = atlasSettings();
+  settings.id_calo_boundary[1].radius = 1148.0;
+  EXPECT_THROW(tool.set_settings(settings), std::invalid_argument);
+
+  // ... and reach at least as far in |z|
+  settings = atlasSettings();
+  settings.id_calo_boundary[1].half_length = 3000.0;
+  EXPECT_THROW(tool.set_settings(settings), std::invalid_argument);
+
+  // Only barrel layers can end at another layer, and only at one the geometry
+  // has, checked whichever of settings and geometry is set last
+  tool.set_geometry(AtlasGeoTests::geo);
+  settings = atlasSettings();
+  settings.barrel_layer_ends_at_layer[5] = 6;  // EME1 is not a barrel layer
+  EXPECT_THROW(tool.set_settings(settings), std::invalid_argument);
+  settings = atlasSettings();
+  settings.barrel_layer_ends_at_layer[0] = 1000;
+  EXPECT_THROW(tool.set_settings(settings), std::invalid_argument);
+
+  FastCaloSimCaloExtrapolation geometry_last;
+  geometry_last.set_settings(settings);
+  EXPECT_THROW(geometry_last.set_geometry(AtlasGeoTests::geo),
+               std::invalid_argument);
+
+  EXPECT_NO_THROW(tool.set_settings(atlasSettings()));
 }
