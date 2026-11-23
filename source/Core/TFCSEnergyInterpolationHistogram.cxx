@@ -27,16 +27,18 @@ auto TFCSEnergyInterpolationHistogram::simulate(
 {
   const double Ekin = truth->Ekin();
   const double Einit = OnlyScaleEnergy() ? simulstate.E() : Ekin;
-  // Outside of the histogram range, the first or last bin is used
+  // The response is looked up at the true kinetic energy, also when it only
+  // scales the energy of the state, as in the other energy interpolations.
+  // Outside of the histogram range, the first or last bin is used.
   const int bin = [&] -> int
   {
-    if (Einit < m_hist.GetXaxis()->GetBinLowEdge(1)) {
+    if (Ekin < m_hist.GetXaxis()->GetBinLowEdge(1)) {
       return 1;
     }
-    if (Einit > m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX())) {
+    if (Ekin > m_hist.GetXaxis()->GetBinUpEdge(m_hist.GetNbinsX())) {
       return m_hist.GetNbinsX();
     }
-    return m_hist.GetXaxis()->FindBin(Einit);
+    return m_hist.GetXaxis()->FindBin(Ekin);
   }();
   const double Emean = m_hist.GetBinContent(bin) * Einit;
 
