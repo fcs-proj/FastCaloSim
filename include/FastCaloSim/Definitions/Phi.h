@@ -34,4 +34,12 @@ inline auto interpolate_phi(double phi1, double phi2, double w) -> double
   }
   return wrap_phi((1. - w) * phi1 + w * (phi1 + wrap_phi(phi2 - phi1)));
 }
+
+/// The distance between two phases a and b of a quantity with the given
+/// period, in [0, period / 2]: the shorter way around, e.g. 0.02 for phases
+/// 0.99 and 0.01 of a period of 1
+inline auto periodic_distance(double a, double b, double period) -> double
+{
+  return std::abs(std::remainder(a - b, period));
+}
 }  // namespace FastCaloSim
