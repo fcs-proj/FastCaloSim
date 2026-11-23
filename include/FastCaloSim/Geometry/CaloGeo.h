@@ -57,8 +57,25 @@ public:
   auto n_cells(std::size_t layer) const -> std::size_t;
   /// @brief Get the total number of cells
   auto n_cells() const -> std::size_t;
-  /// @brief Get the number of layers
+  /// @brief Get the number of layers with cells
   auto n_layers() const -> std::size_t;
+  /// @brief The IDs of the layers with cells, in increasing order. The IDs
+  /// need not be contiguous or start at 0: loop over these, not from 0 to
+  /// n_layers().
+  auto layer_ids() const -> const std::vector<std::size_t>&;
+  /// @brief The position of a layer in layer_ids(), to index a vector with
+  /// one entry per layer (inline: a vector lookup, also used per cell).
+  /// Throws std::out_of_range for a layer without cells.
+  auto layer_index(std::size_t layer) const -> std::size_t
+  {
+    const LayerLookup* lookup = find_layer_lookup(layer);
+    if (lookup == nullptr || !lookup->index) {
+      throw_no_layer(layer);
+    }
+    return *lookup->index;
+  }
+  /// @brief Check if the geometry has cells in a layer
+  auto has_layer(std::size_t layer) const -> bool;
 
   /// @brief Get a cell by its ID
   auto get_cell(unsigned long long id) const -> Cell;
@@ -136,8 +153,12 @@ private:
     }
   };
 
-  /// @brief The number of layers
-  std::size_t m_n_layers {};
+  /// @brief The IDs of the layers with cells, in increasing order
+  std::vector<std::size_t> m_layer_ids;
+  /// @brief Sets m_layer_ids and the index of each layer lookup
+  void set_layer_ids(std::vector<std::size_t> layer_ids);
+  /// @brief Throws the error of layer_index() for a layer without cells
+  [[noreturn]] static void throw_no_layer(std::size_t layer);
   /// @brief The total number of cells
   std::size_t m_n_total_cells {};
 
@@ -171,6 +192,8 @@ private:
     std::unique_ptr<RTree> rtree;
     // Cell store index of each cell of the layer, in R-tree order
     std::vector<std::uint32_t> store_index;
+    // Position of the layer in m_layer_ids, if the geometry has cells in it
+    std::optional<std::size_t> index;
   };
 
   /// @brief Layer IDs below this bound are looked up by index (ATLAS uses

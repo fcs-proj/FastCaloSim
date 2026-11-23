@@ -230,17 +230,16 @@ auto describe(const TFCSTruthState& truth) -> std::string
 void checkLayers(const CaloGeo& geo,
                  const FastCaloSimCaloExtrapolation::Settings& settings)
 {
-  const std::size_t n_layers = geo.n_layers();
   for (const auto& [barrelLayer, frontLayer] :
        settings.barrel_layer_ends_at_layer)
   {
-    if (barrelLayer >= n_layers || !geo.is_barrel(barrelLayer)) {
+    if (!geo.has_layer(barrelLayer) || !geo.is_barrel(barrelLayer)) {
       throw std::invalid_argument(std::format(
           "FastCaloSimCaloExtrapolation: layer {} is set to end at another "
           "layer, but is not a barrel layer of the geometry",
           barrelLayer));
     }
-    if (frontLayer >= n_layers) {
+    if (!geo.has_layer(frontLayer)) {
       throw std::invalid_argument(std::format(
           "FastCaloSimCaloExtrapolation: barrel layer {} is set to end at "
           "layer {}, which the geometry does not have",
@@ -366,7 +365,7 @@ void FastCaloSimCaloExtrapolation::extrapolate(
   // Calorimeter layers
   LayerCylinders layerCylinders(
       *m_geo, m_settings.barrel_layer_ends_at_layer, position);
-  for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
+  for (const std::size_t layer : m_geo->layer_ids()) {
     const bool isBarrel = m_geo->is_barrel(layer);
     const std::array<Cylinder, 3> cylinders = layerCylinders.of(layer);
     for (const auto subpos : {FastCaloSim::SubPos::MID,

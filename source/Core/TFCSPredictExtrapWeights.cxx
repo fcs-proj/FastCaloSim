@@ -164,7 +164,7 @@ auto TFCSPredictExtrapWeights::prepareInputs(TFCSSimulationState& simulstate,
   };
 
   std::map<std::string, double> inputVariables;
-  for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+  for (const std::size_t ilayer : m_geo->layer_ids()) {
     if (std::ranges::contains(*m_relevantLayers, ilayer)) {
       const std::string layer = std::to_string(ilayer);
       // Find index
@@ -204,7 +204,7 @@ auto TFCSPredictExtrapWeights::simulate(
 
   // Get predicted extrapolation weights
   auto outputs = m_nn->compute(inputVariables);
-  for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+  for (const std::size_t ilayer : m_geo->layer_ids()) {
     if (std::ranges::contains(*m_relevantLayers, ilayer)) {
       FCS_MSG_DEBUG("TFCSPredictExtrapWeights::simulate: layer: "
                     << ilayer << " weight: "

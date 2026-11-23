@@ -198,7 +198,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::simulate(
 
   const auto Ebin = simulstate.Ebin();
 
-  for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+  for (const std::size_t ilayer : m_geo->layer_ids()) {
     simulstate.eraseAuxObject(layer_hash(ilayer));
   }
 

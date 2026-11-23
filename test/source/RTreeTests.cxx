@@ -7,6 +7,7 @@
 #include <array>
 #include <cmath>
 #include <filesystem>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <random>
@@ -19,10 +20,13 @@
 
 #include <gtest/gtest.h>
 
+#include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/Phi.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
+#include "TClass.h"
 #include "TTree.h"
 #include "TestConfig/AtlasGeoTestsConfig.h"
 
@@ -248,12 +252,20 @@ TEST(RTreeTests, LargeLayerIds)
 
 namespace
 {
-// Builds a geometry from cells given by id and coordinate system (one of
-// "XYZ", "EtaPhiR", "EtaPhiZ", "RPhiZ"), all in layer 3
-void build_geometry(
-    const std::vector<std::pair<unsigned long long, std::string>>& cells)
+// A cell of a test geometry: id, coordinate system (one of "XYZ", "EtaPhiR",
+// "EtaPhiZ", "RPhiZ") and layer
+struct TestCell
 {
-  unsigned int layer = 3;
+  unsigned long long id;
+  std::string system;
+  unsigned int layer;
+};
+
+// Builds a geometry from the cells, then loads it and runs check on it
+void build_geometry(const std::vector<TestCell>& cells,
+                    const std::function<void(CaloGeo&)>& check = {})
+{
+  unsigned int layer = 0;
   bool is_barrel = true;
   unsigned long long id = 0;
   float x = 1000.F;
@@ -293,8 +305,9 @@ void build_geometry(
   tree.Branch("isEtaPhiR", &is_eta_phi_r);
   tree.Branch("isEtaPhiZ", &is_eta_phi_z);
   tree.Branch("isRPhiZ", &is_r_phi_z);
-  for (const auto& [cell_id, system] : cells) {
+  for (const auto& [cell_id, system, cell_layer] : cells) {
     id = cell_id;
+    layer = cell_layer;
     eta = 0.2F * static_cast<float>(cell_id);
     is_xyz = system == "XYZ";
     is_eta_phi_r = system == "EtaPhiR";
@@ -303,13 +316,20 @@ void build_geometry(
     tree.Fill();
   }
   ROOT::RDataFrame geo_df(tree);
-  // build() writes the cell store into this directory
-  const std::filesystem::path dir =
-      std::filesystem::temp_directory_path() / "fcs_rtree_tests_geo";
+  // build() writes the cell store into this directory, one per test, as ctest
+  // runs the tests in parallel
+  const std::filesystem::path dir = std::filesystem::temp_directory_path()
+      / (std::string("fcs_rtree_tests_geo_")
+         + ::testing::UnitTest::GetInstance()->current_test_info()->name());
   std::filesystem::create_directories(dir);
   CaloGeo geo;
   try {
     geo.build(geo_df, dir.string());
+    if (check) {
+      // The R-trees for the cell lookup are built when loading
+      geo.load(dir.string());
+      check(geo);
+    }
   } catch (...) {
     std::filesystem::remove_all(dir);
     throw;
@@ -324,10 +344,64 @@ TEST(RTreeTests, CellsInRPhiZAreRejected)
   // described in (r, phi, z) must be rejected instead of being looked up with
   // an eta extent it does not have, also when the cell is not the first of
   // its layer
-  EXPECT_NO_THROW(build_geometry({{1, "EtaPhiR"}, {2, "EtaPhiR"}}));
-  EXPECT_THROW(build_geometry({{1, "RPhiZ"}}), std::runtime_error);
-  EXPECT_THROW(build_geometry({{1, "EtaPhiR"}, {2, "RPhiZ"}}),
+  EXPECT_NO_THROW(build_geometry({{1, "EtaPhiR", 3}, {2, "EtaPhiR", 3}}));
+  EXPECT_THROW(build_geometry({{1, "RPhiZ", 3}}), std::runtime_error);
+  EXPECT_THROW(build_geometry({{1, "EtaPhiR", 3}, {2, "RPhiZ", 3}}),
                std::runtime_error);
+}
+
+TEST(RTreeTests, SparseLayerIds)
+{
+  // Layer IDs need not start at 0 or be contiguous: the geometry lists the
+  // IDs of its layers, which the simulation loops over
+  build_geometry(
+      {{.id = 1, .system = "EtaPhiR", .layer = 3},
+       {.id = 2, .system = "EtaPhiR", .layer = 3},
+       {.id = 3, .system = "EtaPhiR", .layer = 7}},
+      [](CaloGeo& geo) -> void
+      {
+        EXPECT_EQ(geo.n_layers(), 2U);
+        EXPECT_EQ(geo.layer_ids(), (std::vector<std::size_t> {3, 7}));
+        EXPECT_EQ(geo.layer_index(3), 0U);
+        EXPECT_EQ(geo.layer_index(7), 1U);
+        EXPECT_THROW(static_cast<void>(geo.layer_index(5)), std::out_of_range);
+        EXPECT_TRUE(geo.has_layer(3));
+        EXPECT_TRUE(geo.has_layer(7));
+        EXPECT_FALSE(geo.has_layer(0));
+        EXPECT_FALSE(geo.has_layer(5));
+        EXPECT_FALSE(geo.has_layer(8));
+        EXPECT_EQ(geo.get_cell(7, at_eta_phi(0.6, 0)).id(), 3U);
+      });
+}
+
+TEST(RTreeTests, EnergyRenormalizationWithDistantLayerIds)
+{
+  // Per-layer data has one entry per layer, also for layer IDs far apart
+  constexpr std::size_t far_layer = 100000000;
+  build_geometry(
+      {{.id = 1, .system = "EtaPhiR", .layer = 3},
+       {.id = 2, .system = "EtaPhiR", .layer = far_layer}},
+      [](CaloGeo& geo) -> void
+      {
+        EXPECT_EQ(geo.layer_ids(), (std::vector<std::size_t> {3, far_layer}));
+        EXPECT_EQ(geo.layer_index(far_layer), 1U);
+        // The class is not exported: create it through ROOT and own it
+        // through the exported base class
+        const std::unique_ptr<TFCSParametrizationBase> renormalization(
+            static_cast<TFCSParametrizationBase*>(
+                TClass::GetClass("TFCSEnergyRenormalization")->New()));
+        renormalization->set_geometry(&geo);
+        TFCSSimulationState state;
+        state.set_E(3, 10.);
+        state.set_E(far_layer, 20.);
+        state.deposit(1, 5.);
+        state.deposit(2, 40.);
+        EXPECT_EQ(renormalization->simulate(state, nullptr, nullptr),
+                  FCSSuccess);
+        // The cells are scaled to the energies of their layers
+        EXPECT_DOUBLE_EQ(state.cells().at(1), 10.);
+        EXPECT_DOUBLE_EQ(state.cells().at(2), 20.);
+      });
 }
 
 // ---- Comparison with a brute-force search on the ATLAS geometry
@@ -457,7 +531,7 @@ TEST_F(AtlasRTreeTests, SameCellAsBruteForceSearch)
   std::normal_distribution<double> gauss(0., 1.);
   const double inf = std::numeric_limits<double>::infinity();
 
-  for (std::size_t layer = 0; layer < geo->n_layers(); ++layer) {
+  for (const std::size_t layer : geo->layer_ids()) {
     const auto rects = cell_rects(layer);
 
     // Positions around 300 random cells: scattered inside and around the

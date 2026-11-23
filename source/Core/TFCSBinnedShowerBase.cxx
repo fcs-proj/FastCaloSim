@@ -73,9 +73,7 @@ auto TFCSBinnedShowerBase::simulate(
 
   get_event(simulstate, eta_center, phi_center, Einit, reference_layer);
 
-  for (std::size_t layer_index = 0; layer_index < m_geo->n_layers();
-       ++layer_index)
-  {
+  for (const std::size_t layer_index : m_geo->layer_ids()) {
     const double layer_energy = get_layer_energy(simulstate, layer_index);
 
     // Reset and set the layer energy
@@ -84,7 +82,7 @@ auto TFCSBinnedShowerBase::simulate(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+    for (const std::size_t ilayer : m_geo->layer_ids()) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }
