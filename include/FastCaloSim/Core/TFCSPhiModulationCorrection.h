@@ -83,18 +83,6 @@ public:
                           double eta,
                           std::size_t layer_index) const -> double;
 
-  // Removes the phi-modulation in the energy from the given hit
-  auto remove_phi_modulation(Hit& hit) const -> double;
-
-  // Removes the phi-modulation in the energy from the given hit
-  auto remove_phi_modulation(Hit& hit, std::size_t layer_index) const -> double;
-
-  // Removes the phi-modulation in the energy from the given hit
-  auto remove_phi_modulation(double energy,
-                             double phi,
-                             double eta,
-                             std::size_t layer_index) const -> double;
-
   // Returns the correct eta and phi index for the position of the hit.
   // Used to extract the correct modulation factor from the stored modulation
   // curves.
