@@ -90,9 +90,6 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack,
     if (stepLength > currentMinimumStep) {
       // No boundary within the proposed step: take the proposed step
       stepLength = currentMinimumStep;
-    } else {
-      // The step ends on the boundary: the next location starts from it
-      m_navigator->SetGeometricallyLimitedStep();
     }
 
     // Update the position of the track from the computed step length
