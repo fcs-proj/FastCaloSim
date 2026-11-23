@@ -6,8 +6,6 @@
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
 // External includes
-#include <cmath>
-#include <numbers>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -72,17 +70,6 @@ public:
   }
 
   auto get_phi_modulation_scale() const -> float { return m_modulation_scale; }
-
-  static auto get_phi_cell_size(std::size_t layer, double eta) -> double
-  {
-    if (layer <= 3) {
-      return 2 * std::numbers::pi / 1024;
-    }
-    if (std::abs(eta) < 2.5) {
-      return 2 * std::numbers::pi / 768;
-    }
-    return 2 * std::numbers::pi / 256;
-  }
 
   // Adds adds the phi-modulation in the energy to the given hit
   auto add_phi_modulation(Hit& hit) const -> double;

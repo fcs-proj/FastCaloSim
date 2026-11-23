@@ -13,6 +13,7 @@
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
+#include "FastCaloSim/Geometry/LayerRoles.h"
 
 // TFCSBinnedShower::simulate() first removes the data of the previous event
 // from the simulation state. On a new state there is none, which used to throw
@@ -25,6 +26,9 @@ TEST(BinnedShowerTests, SimulateOnNewState)
           TClass::GetClass("TFCSBinnedShower")->New()));
   ASSERT_NE(param, nullptr);
   CaloGeo geo;  // no layers
+  FastCaloSim::LayerRoles roles;
+  roles.shower_center_layers = {{.layer = 0, .max_abs_eta = 0}};
+  geo.set_layer_roles(roles);
   param->set_geometry(&geo);
 
   TFCSSimulationState simulstate;

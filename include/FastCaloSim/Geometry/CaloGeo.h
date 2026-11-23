@@ -16,6 +16,7 @@
 
 #include "FastCaloSim/Geometry/Cell.h"
 #include "FastCaloSim/Geometry/CellStore.h"
+#include "FastCaloSim/Geometry/LayerRoles.h"
 #include "FastCaloSim/Geometry/RTree.h"
 
 class FASTCALOSIM_EXPORT CaloGeo
@@ -96,6 +97,20 @@ public:
                            std::size_t last_layer,
                            const std::shared_ptr<CaloGeo>& handler);
 
+  /// @brief Set the roles of the layers in the parametrizations
+  void set_layer_roles(FastCaloSim::LayerRoles roles);
+  /// @brief Whether the roles of the layers were set
+  auto has_layer_roles() const -> bool;
+  /// @brief The roles of the layers; throws if they were not set (inline, as
+  /// it is part of the phi modulation done for every hit)
+  auto layer_roles() const -> const FastCaloSim::LayerRoles&
+  {
+    if (!m_layer_roles) {
+      throw_no_layer_roles();
+    }
+    return *m_layer_roles;
+  }
+
 private:
   /// @brief The eta extent of a layer on a given detector side
   struct EtaExtremes
@@ -135,6 +150,11 @@ private:
 
   /// @brief Maps layer id -> layer properties
   std::map<std::size_t, LayerFlags> m_layer_flags;
+
+  /// @brief The roles of the layers in the parametrizations, set by the host
+  std::optional<FastCaloSim::LayerRoles> m_layer_roles;
+  /// @brief Throws the error of layer_roles() without roles
+  [[noreturn]] static void throw_no_layer_roles();
 
   /// @brief What get_cell(layer, pos) needs for a layer
   struct LayerLookup

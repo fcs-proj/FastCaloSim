@@ -27,16 +27,28 @@ public:
   auto operator=(const TFCSLateralShapeTuning&)
       -> TFCSLateralShapeTuning& = delete;
   auto operator=(TFCSLateralShapeTuning&&) -> TFCSLateralShapeTuning& = delete;
-  // Simulation call
+  // Simulation call: applies the model whose parameters were loaded
   auto simulate_hit(Hit& hit,
                     TFCSSimulationState& simulstate,
                     const TFCSTruthState* truth,
                     const TFCSExtrapolationState* extrapol)
       -> FCSReturnCode override;
-  // Initialization from model parameter file
+  /// The tuning models
+  enum class Model
+  {
+    /// Scaling of the distance to the shower center in eta by a series in
+    /// that distance (parameters a0 to a3), for strip layers
+    kSeries,
+    /// Scaling of the distances to the shower center in eta and phi (eta_s
+    /// and phi_s), for middle layers
+    kEtaPhiScaling
+  };
+  // Initialization from model parameter file: the parameters of the given
+  // model for the layer of this object
   auto initFromModelFile(const std::string& pathToModelParameters,
                          int intMinEta,
-                         int intMaxEta) -> FCSReturnCode;
+                         int intMaxEta,
+                         Model model) -> FCSReturnCode;
   // Initialization from interpolation map
   auto initFromMap(const interpolationMap& /*parameters*/) -> FCSReturnCode;
   // Helper function for strip layer model

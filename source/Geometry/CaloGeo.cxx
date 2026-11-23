@@ -200,6 +200,23 @@ void CaloGeo::set_alt_geo_handler(std::size_t first_layer,
   }
 }
 
+void CaloGeo::set_layer_roles(FastCaloSim::LayerRoles roles)
+{
+  m_layer_roles = std::move(roles);
+}
+
+auto CaloGeo::has_layer_roles() const -> bool
+{
+  return m_layer_roles.has_value();
+}
+
+void CaloGeo::throw_no_layer_roles()
+{
+  throw std::runtime_error(
+      "CaloGeo: the roles of the layers are not set; the host must set them "
+      "with CaloGeo::set_layer_roles()");
+}
+
 void CaloGeo::update_eta_extremes(std::size_t layer, const Cell& cell)
 {
   DetectorSide const side = cell.eta() > 0 ? kEtaPositive : kEtaNegative;

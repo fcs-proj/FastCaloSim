@@ -8,10 +8,10 @@
 
 #include "CLHEP/Random/RandFlat.h"
 #include "FastCaloSim/Core/TFCSBinnedShowerBase.h"
-#include "FastCaloSim/Core/TFCSPhiModulationCorrection.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
+#include "FastCaloSim/Geometry/LayerRoles.h"
 #include "TBuffer.h"
 #include "TClass.h"
 
@@ -55,7 +55,7 @@ void TFCSBinnedShower::set_shower_center_information(
     double phi_center)
 {
   // Compute phi_mod
-  const double phi_cell_size = TFCSPhiModulationCorrection::get_phi_cell_size(
+  const double phi_cell_size = m_geo->layer_roles().phi_modulation_period(
       reference_layer_index, eta_center);
   Position pos {};
   pos.m_eta = eta_center;
@@ -93,7 +93,7 @@ auto TFCSBinnedShower::find_best_match(double eta_center,
     pos.m_eta = eta_center;
     pos.m_phi = phi_center;
     const auto& cell = m_geo->get_cell(reference_layer_index, pos);
-    phi_cell_size = TFCSPhiModulationCorrection::get_phi_cell_size(
+    phi_cell_size = m_geo->layer_roles().phi_modulation_period(
         reference_layer_index, eta_center);
 
     const double phi_cell = cell.phi();

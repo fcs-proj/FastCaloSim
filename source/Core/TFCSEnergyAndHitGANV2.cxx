@@ -22,6 +22,7 @@
 #include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
+#include "FastCaloSim/Geometry/LayerRoles.h"
 #include "TF1.h"
 
 namespace
@@ -262,6 +263,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
     }
   }
 
+  const FastCaloSim::LayerRoles& layerRoles = m_geo->layer_roles();
   vox = 0;
   for (const auto& [layer, h] : binsInLayers) {
     const int xBinNum = h.GetNbinsX();
@@ -327,10 +329,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
       }
     }
 
-    int binResolution = 5;
-    if (layer == 1 || layer == 5) {
-      binResolution = 1;
-    }
+    const bool stripLayer =
+        layerRoles.is_strip_layer(static_cast<std::size_t>(layer));
+    const int binResolution = stripLayer ? 1 : 5;
 
     const double center_eta = hit.center_eta();
     const double center_phi = hit.center_phi();
@@ -391,7 +392,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             nHitsAlpha = static_cast<int>(
                 std::ceil(2 * std::numbers::pi * r / binResolution));
           } else {
-            // One hit per 1 mm (layers 1 and 5) or 5 mm of the chord
+            // One hit per 1 mm (strip layers) or 5 mm of the chord
             // d = 2 r sin(alphaWidth / 2) that the voxel spans at its upper r
             const double r = x->GetBinUpEdge(ix);
             const double d = 2 * r * std::sin(alphaWidth / 2);
@@ -403,10 +404,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
           nHitsAlpha = std::max(1, nHitsAlpha);
           nHitsR = std::max(1, nHitsR);
 
-          if (layer != 1 && layer != 5) {
-            // For layers that are not EMB1 or EMEC1 use a maximum of 10 hits
-            // per direction, a higher granularity is needed for the other
-            // layers
+          if (!stripLayer) {
+            // Outside the strip layers use a maximum of 10 hits per direction;
+            // the strip layers need a higher granularity
             const int maxNhits = 10;
             nHitsAlpha = std::min(maxNhits, nHitsAlpha);
             nHitsR = std::min(maxNhits, nHitsR);
