@@ -202,15 +202,12 @@ auto TFCS1DFunctionHistogram::get_inverse(double rnd) const -> double
     if (index >= m_HistoContents.size()) {
       --index;
     }
-    double const y = content(index);
+    // Interpolate within the bin of rnd, between its edges and the
+    // cumulative probabilities at them
     double const x1 = border(index);
-    double x2 = border(index + 1);
+    double const x2 = border(index + 1);
     double const y1 = content(index - 1);
-    double y2 = y;
-    if ((index + 1) == (m_HistoContents.size() - 1)) {
-      x2 = border(m_HistoBorders.size() - 1);
-      y2 = content(m_HistoContents.size() - 1);
-    }
+    double const y2 = content(index);
     double const x = non_linear(y1, y2, x1, x2, rnd);
     value = x;
   }
