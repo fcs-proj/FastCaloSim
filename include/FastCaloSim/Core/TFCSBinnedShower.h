@@ -98,7 +98,8 @@ public:
 
   // Allows to set the shower center for the given event manually.
   // The layer is needed as reference for the phi modulation calculation.
-  // For eta > 1.4 it should be layer 6, otherwise layer 2.
+  // It should be the layer the simulation takes the shower center from (see
+  // FastCaloSim::LayerRoles::shower_center_layers).
   void set_shower_center_information(std::size_t event_index,
                                      std::size_t reference_layer_index,
                                      double eta_center,

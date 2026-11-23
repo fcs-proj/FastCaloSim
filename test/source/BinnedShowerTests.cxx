@@ -25,6 +25,8 @@ TEST(BinnedShowerTests, SimulateOnNewState)
           TClass::GetClass("TFCSBinnedShower")->New()));
   ASSERT_NE(param, nullptr);
   CaloGeo geo;  // no layers
+  geo.set_layer_roles(
+      {.shower_center_layers = {{.layer = 0, .max_abs_eta = 0}}});
   param->set_geometry(&geo);
 
   TFCSSimulationState simulstate;

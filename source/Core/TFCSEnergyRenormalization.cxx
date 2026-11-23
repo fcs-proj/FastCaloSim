@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
-#include <array>
+#include <cstddef>
+#include <vector>
 
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
 
@@ -8,6 +9,7 @@
 #include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/Cell.h"
+#include "FastCaloSim/Geometry/LayerRoles.h"
 
 //=============================================
 //======= TFCSEnergyRenormalization =========
@@ -41,37 +43,25 @@ auto TFCSEnergyRenormalization::simulate(
 
   std::vector<double> scalefactor(m_geo->n_layers(), 1);
 
-  // Approximate noise per calorimeter layer in MeV
-  static constexpr std::array<float, 24> approxLayerNoise {
-      150.0, 40.0,  80.0,  40.0,  150.0, 40.0,  80.0,  50.0,
-      400.0, 400.0, 400.0, 400.0, 300.0, 150.0, 40.0,  150.0,
-      40.0,  400.0, 300.0, 150.0, 40.0,  400.0, 400.0, 400.0};
+  // Expected layer energies above these thresholds that no cell received are
+  // reported (none if the host set no layer roles)
+  const std::vector<double>* report_threshold = m_geo->has_layer_roles()
+      ? &m_geo->layer_roles().out_of_calo_report_threshold
+      : nullptr;
 
   for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
     if (FastCaloSim::exactly_equal(energies[layer], 0.0)
-        && !FastCaloSim::exactly_equal(simulstate.E(layer), 0.0))
+        && !FastCaloSim::exactly_equal(simulstate.E(layer), 0.0)
+        && report_threshold != nullptr && layer < report_threshold->size()
+        && simulstate.E(layer) > (*report_threshold)[layer])
     {
-      if (simulstate.E(layer)
-              > 8.0 * static_cast<double>(approxLayerNoise.at(layer))
-          && layer != 5 && layer != 6 && layer != 7)
-      {
-        FCS_MSG_INFO(
-            "TFCSEnergyRenormalization::simulate(): energy not simulated "
-            "(out-of-calo) in layer "
-            << layer << " expected: " << simulstate.E(layer)
-            << " simulated: " << energies[layer]);
-      }
-      if (simulstate.E(layer) > 1500.0
-          && (layer == 5 || layer == 6 || layer == 7))
-      {
-        FCS_MSG_INFO(
-            "TFCSEnergyRenormalization::simulate(): energy not simulated "
-            "(out-of-calo) in layer "
-            << layer << " expected: " << simulstate.E(layer)
-            << " simulated: " << energies[layer]);
-      }
+      FCS_MSG_INFO(
+          "TFCSEnergyRenormalization::simulate(): energy not simulated "
+          "(out-of-calo) in layer "
+          << layer << " expected: " << simulstate.E(layer)
+          << " simulated: " << energies[layer]);
     }
     if (!FastCaloSim::exactly_equal(energies[layer], 0.0)) {
       scalefactor[layer] = simulstate.E(layer) / energies[layer];

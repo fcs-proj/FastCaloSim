@@ -30,8 +30,10 @@ TFCSLateralShapeTuning::~TFCSLateralShapeTuning()
 }
 
 auto TFCSLateralShapeTuning::initFromModelFile(
-    const std::string& pathToModelParameters, int intMinEta, int intMaxEta)
-    -> FCSReturnCode
+    const std::string& pathToModelParameters,
+    int intMinEta,
+    int intMaxEta,
+    Model model) -> FCSReturnCode
 {
   // get current calo layer
   std::size_t layer = TFCSLateralShapeParametrization::calosample();
@@ -41,13 +43,10 @@ auto TFCSLateralShapeTuning::initFromModelFile(
       TFile::Open(pathToModelParameters.c_str(), "READ"));
   modelParametersFile->cd();
 
-  // set parameter model names depending on layer
-  std::vector<std::string> parameterModelNames;
-  if (layer == 1 || layer == 5) {
-    parameterModelNames = {"a0", "a1", "a2", "a3"};
-  } else if (layer == 2 || layer == 6) {
-    parameterModelNames = {"eta_s", "phi_s"};
-  }
+  // set parameter model names depending on the model
+  const std::vector<std::string> parameterModelNames = model == Model::kSeries
+      ? std::vector<std::string> {"a0", "a1", "a2", "a3"}
+      : std::vector<std::string> {"eta_s", "phi_s"};
 
   for (auto& parameterName : parameterModelNames) {
     // interpolate the model parameters
@@ -133,9 +132,11 @@ auto TFCSLateralShapeTuning::simulate_hit(
   const double deltaEta = hit.eta() - centerEta;
   const double deltaPhi = FastCaloSim::delta_phi(hit.phi(), centerPhi);
 
-  if (layer == 2 || layer == 6) {
-    double etaScaleFactor = m_parameterInterpol["eta_s"]->evaluate(Ekin);
-    double phiScaleFactor = m_parameterInterpol["phi_s"]->evaluate(Ekin);
+  // Apply the model whose parameters were loaded
+  const auto etaScale = m_parameterInterpol.find("eta_s");
+  if (etaScale != m_parameterInterpol.end()) {
+    double etaScaleFactor = etaScale->second->evaluate(Ekin);
+    double phiScaleFactor = m_parameterInterpol.at("phi_s")->evaluate(Ekin);
 
     // add a maximum scaling threshold to prevent unreasonable scalings
     etaScaleFactor =
@@ -156,15 +157,12 @@ auto TFCSLateralShapeTuning::simulate_hit(
                     centerZ,
                     hit.E());
 
-  }
-
-  else if (layer == 1 || layer == 5)
-  {
+  } else {
     double etaScaleFactor =
-        getSeriesScalingFactor(m_parameterInterpol["a0"]->evaluate(Ekin),
-                               m_parameterInterpol["a1"]->evaluate(Ekin),
-                               m_parameterInterpol["a2"]->evaluate(Ekin),
-                               m_parameterInterpol["a3"]->evaluate(Ekin),
+        getSeriesScalingFactor(m_parameterInterpol.at("a0")->evaluate(Ekin),
+                               m_parameterInterpol.at("a1")->evaluate(Ekin),
+                               m_parameterInterpol.at("a2")->evaluate(Ekin),
+                               m_parameterInterpol.at("a3")->evaluate(Ekin),
                                std::abs(deltaEta));
 
     // add a maximum scaling threshold to prevent unreasonable scalings

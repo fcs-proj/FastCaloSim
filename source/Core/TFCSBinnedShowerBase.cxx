@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
 #include <cstdlib>
 #include <limits>
 #include <memory>
@@ -23,6 +24,7 @@
 #include "FastCaloSim/Definitions/Index.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
+#include "FastCaloSim/Geometry/LayerRoles.h"
 
 //=============================================
 //======= TFCSBinnedShowerBase =========
@@ -52,18 +54,11 @@ auto TFCSBinnedShowerBase::simulate(
   delete_event(simulstate);
 
   // select a random event from the library
-  // NOTE: This is ATLAS specific
-  // layer 2 is EMB2
   // The event library is made for positive eta; negative eta uses it mirrored
   // (see simulate_hit), so the reference layer is chosen by |eta|
-  std::size_t reference_layer = 2;
-  if (std::abs(extrapol->eta(reference_layer, FastCaloSim::SubPos::MID)) > 1.4)
-  {  // Endcap becomes more relevant
-    // NOTE: This is ATLAS specific
-    // layer 6 is EME2
-    reference_layer = 6;
-  }
-  // TODO: What about the endcap?
+  const std::size_t reference_layer = m_geo->layer_roles().shower_center_layer(
+      [extrapol](std::size_t layer) -> double
+      { return std::abs(extrapol->eta(layer, FastCaloSim::SubPos::MID)); });
   const double eta_center =
       extrapol->eta(reference_layer, FastCaloSim::SubPos::MID);
   const double phi_center =
@@ -485,7 +480,7 @@ void TFCSBinnedShowerBase::upscale(TFCSSimulationState& simulstate,
       : (probabilities[1] - probabilities[0]) / (1 - p_alpha_low);
 
   p = CLHEP::RandFlat::shoot(simulstate.randomEngine(), 0, 1);
-  if (layer_index != 2) {
+  if (!m_geo->layer_roles().is_linear_upscaling_layer(layer_index)) {
     if (p > p_r) {
       R_min = (R_min + R_max) / 2.;
       return;
@@ -494,8 +489,8 @@ void TFCSBinnedShowerBase::upscale(TFCSSimulationState& simulstate,
     return;
   }
 
-  // Use linear interpolation for layer 2
-  // It works better than uniform sampling for the second layer...
+  // Use linear interpolation in the linear upscaling layers, where it works
+  // better than uniform sampling
   if (p_r < 0.25) {
     p_r = 0.25;  // Values below 0.25 are not allowed for linear pdf
   } else if (p_r > 0.75) {

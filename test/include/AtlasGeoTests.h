@@ -16,6 +16,7 @@
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
 #include "TestConfig/AtlasGeoTestsConfig.h"
+#include "TestHelpers/AtlasLayerRoles.h"
 #include "TestHelpers/Event.h"
 
 // Test suite for GeoTests
@@ -59,6 +60,9 @@ protected:
     fcal_geo->set_geo(geo);
     // Set the alternative geometry handler for the FCal layers (21 - 23)
     geo->set_alt_geo_handler(21, 23, fcal_geo);
+
+    // Set the roles of the ATLAS layers in the parametrizations
+    geo->set_layer_roles(TestHelpers::atlas_layer_roles());
   }
 
   // Tears down the test suite
