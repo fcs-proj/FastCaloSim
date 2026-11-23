@@ -81,8 +81,8 @@
         <section id="pub-types">
           <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
-            <dt id="a87fd6007544f0d0f1dbd7a3666029e4b">
-              using <a href="#a87fd6007544f0d0f1dbd7a3666029e4b" class="m-doc-self">HistoContent_t</a> = uint32_t
+            <dt id="ab93b7aba6faf5580a347edda24f6828f">
+              using <a href="#ab93b7aba6faf5580a347edda24f6828f" class="m-doc-self">HistoContent_t</a> = std::uint32_t
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -91,7 +91,7 @@
           <h2><a href="#pub-static-attribs">Public static variables</a></h2>
           <dl class="m-doc">
             <dt id="a50c6d6d0b948f3475e1ad48dceab1c10">
-              static const <a href="classTFCS1DFunctionInt32Histogram.html#a87fd6007544f0d0f1dbd7a3666029e4b" class="m-doc">HistoContent_<wbr />t</a> <a href="#a50c6d6d0b948f3475e1ad48dceab1c10" class="m-doc-self">s_MaxValue</a>
+              static const <a href="classTFCS1DFunctionInt32Histogram.html#ab93b7aba6faf5580a347edda24f6828f" class="m-doc">HistoContent_<wbr />t</a> <a href="#a50c6d6d0b948f3475e1ad48dceab1c10" class="m-doc-self">s_MaxValue</a>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -152,10 +152,14 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a716c0bbb33e894e5d411fa3304bb6548" class="m-doc-self">get_HistoContents</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt; HistoContent_t &gt; &amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a828117906dd9297e7ce1195fe387da50">
-              <span class="m-doc-wrap-bumper">auto <a href="#a828117906dd9297e7ce1195fe387da50" class="m-doc-self">get_HistoContents</a>(</span><span class="m-doc-wrap">) -&gt; std::vector&lt; HistoContent_t &gt; &amp;</span>
+            <dt id="a1154c4cf7535f277bbfe55653c09df1d">
+              <span class="m-doc-wrap-bumper">void <a href="#a1154c4cf7535f277bbfe55653c09df1d" class="m-doc-self">set_HistoContents</a>(</span><span class="m-doc-wrap">std::vector&lt;<a href="classTFCS1DFunctionInt32Histogram.html#ab93b7aba6faf5580a347edda24f6828f" class="m-doc">HistoContent_<wbr />t</a>&gt; contents)</span>
             </dt>
-            <dd><span></span></dd>
+            <dd>Replaces the cumulative contents (and rebuilds the search table)</dd>
+            <dt id="a8818f17a3dd4b22cf291b80e00f35092">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8818f17a3dd4b22cf291b80e00f35092" class="m-doc-self">guide_table</a>(</span><span class="m-doc-wrap">) const -&gt; const FastCaloSim::GuideTable&lt; HistoContent_t &gt; &amp;</span>
+            </dt>
+            <dd>Search table for m_HistoContents, built from it after reading.</dd>
             <dt>
               <span class="m-doc-wrap-bumper">void <a href="#a3fe236205fd6fd911be0ceac105caeb7" class="m-doc">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">override</span></span>
             </dt>
@@ -174,9 +178,13 @@
             </dt>
             <dd><span></span></dd>
             <dt id="a67db237caeebfeb2ffd6a091cd53d16c">
-              std::vector&lt;<a href="classTFCS1DFunctionInt32Histogram.html#a87fd6007544f0d0f1dbd7a3666029e4b" class="m-doc">HistoContent_<wbr />t</a>&gt; <a href="#a67db237caeebfeb2ffd6a091cd53d16c" class="m-doc-self">m_HistoContents</a>
+              std::vector&lt;<a href="classTFCS1DFunctionInt32Histogram.html#ab93b7aba6faf5580a347edda24f6828f" class="m-doc">HistoContent_<wbr />t</a>&gt; <a href="#a67db237caeebfeb2ffd6a091cd53d16c" class="m-doc-self">m_HistoContents</a>
             </dt>
             <dd><span></span></dd>
+            <dt id="a02c2b63649fc46c06eebe373582ae460">
+              <a href="classFastCaloSim_1_1GuideTable.html" class="m-doc">FastCaloSim::<wbr />GuideTable</a>&lt;<a href="classTFCS1DFunctionInt32Histogram.html#ab93b7aba6faf5580a347edda24f6828f" class="m-doc">HistoContent_<wbr />t</a>&gt; <a href="#a02c2b63649fc46c06eebe373582ae460" class="m-doc-self">m_guide</a>
+            </dt>
+            <dd>Transient, built from m_HistoContents (also by a read rule after reading)</dd>
           </dl>
         </section>
         <section>

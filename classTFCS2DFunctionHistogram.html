@@ -139,10 +139,14 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a0d5d3eec80f7e310195fc43051f924bb" class="m-doc-self">get_HistoContents</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt; float &gt; &amp;</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a448e92ba7ac012597f66e2fd94af71f5">
-              <span class="m-doc-wrap-bumper">auto <a href="#a448e92ba7ac012597f66e2fd94af71f5" class="m-doc-self">get_HistoContents</a>(</span><span class="m-doc-wrap">) -&gt; std::vector&lt; float &gt; &amp;</span>
+            <dt id="afdcd26bda8d42d5261ae673e09bdc70f">
+              <span class="m-doc-wrap-bumper">void <a href="#afdcd26bda8d42d5261ae673e09bdc70f" class="m-doc-self">set_HistoContents</a>(</span><span class="m-doc-wrap">std::vector&lt;float&gt; contents)</span>
             </dt>
-            <dd><span></span></dd>
+            <dd>Replaces the cumulative contents (and rebuilds the search table)</dd>
+            <dt id="af5f287d2eb83ce115adc20bb00454092">
+              <span class="m-doc-wrap-bumper">auto <a href="#af5f287d2eb83ce115adc20bb00454092" class="m-doc-self">guide_table</a>(</span><span class="m-doc-wrap">) const -&gt; const FastCaloSim::GuideTable&lt; float &gt; &amp;</span>
+            </dt>
+            <dd>Search table for m_HistoContents, built from it after reading.</dd>
             <dt id="a7a8f2a6df5b65efb86cb5858a7f86032">
               <span class="m-doc-wrap-bumper">void <a href="#a7a8f2a6df5b65efb86cb5858a7f86032" class="m-doc-self">rnd_to_fct</a>(</span><span class="m-doc-wrap">) const <span class="m-label m-flat m-warning">pure virtual</span></span>
             </dt>
@@ -168,6 +172,10 @@
               std::vector&lt;float&gt; <a href="#aa737cab4542c0a86ed7b4c9b8ba7c775" class="m-doc-self">m_HistoContents</a>
             </dt>
             <dd><span></span></dd>
+            <dt id="ad9339fce39f80c32dd02f97476662d73">
+              <a href="classFastCaloSim_1_1GuideTable.html" class="m-doc">FastCaloSim::<wbr />GuideTable</a>&lt;float&gt; <a href="#ad9339fce39f80c32dd02f97476662d73" class="m-doc-self">m_guide</a>
+            </dt>
+            <dd>Transient, built from m_HistoContents (also by a read rule after reading)</dd>
           </dl>
         </section>
       </div>

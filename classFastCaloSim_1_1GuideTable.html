@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FastCaloSim::GuideTable class | FastCaloSim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
+  <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
+  <link rel="icon" href="favicon-dark.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#22272e" />
+</head>
+<body>
+<header><nav id="navigation">
+  <div class="m-container">
+    <div class="m-row">
+      <a href="index.html" id="m-navbar-brand" class="m-col-t-8 m-col-m-none m-left-m">FastCaloSim</a>
+      <div class="m-col-t-4 m-hide-m m-text-right m-nopadr">
+        <a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+          <path id="m-doc-search-icon-path" d="m6 0c-3.31 0-6 2.69-6 6 0 3.31 2.69 6 6 6 1.49 0 2.85-0.541 3.89-1.44-0.0164 0.338 0.147 0.759 0.5 1.15l3.22 3.79c0.552 0.614 1.45 0.665 2 0.115 0.55-0.55 0.499-1.45-0.115-2l-3.79-3.22c-0.392-0.353-0.812-0.515-1.15-0.5 0.895-1.05 1.44-2.41 1.44-3.89 0-3.31-2.69-6-6-6zm0 1.56a4.44 4.44 0 0 1 4.44 4.44 4.44 4.44 0 0 1-4.44 4.44 4.44 4.44 0 0 1-4.44-4.44 4.44 4.44 0 0 1 4.44-4.44z"/>
+        </svg></a>
+        <a id="m-navbar-show" href="#navigation" title="Show navigation"></a>
+        <a id="m-navbar-hide" href="#" title="Hide navigation"></a>
+      </div>
+      <div id="m-navbar-collapse" class="m-col-t-12 m-show-m m-col-m-none m-right-m">
+        <div class="m-row">
+          <ol class="m-col-t-6 m-col-m-none">
+            <li>
+              <a href="pages.html">Pages</a>
+              <ol>
+                <li><a href="about.html">About</a></li>
+              </ol>
+            </li>
+            <li><a href="namespaces.html">Namespaces</a></li>
+          </ol>
+          <ol class="m-col-t-6 m-col-m-none" start="3">
+            <li><a href="annotated.html">Classes</a></li>
+            <li><a href="files.html">Files</a></li>
+            <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
+              <use href="#m-doc-search-icon-path" />
+            </svg></a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav></header>
+<main><article>
+  <div class="m-container m-container-inflatable">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <h1>
+          <div class="m-doc-include m-code m-inverted m-right-m m-text-right"><span class="cp">#include</span> <a class="cpf" href="GuideTable_8h.html">&lt;GuideTable.h&gt;</a></div>
+          <div class="m-doc-template">template&lt;typename T&gt;</div>
+          <span class="m-breadcrumb"><a href="namespaceFastCaloSim.html">FastCaloSim</a>::<wbr/></span>GuideTable <span class="m-thin">class</span>
+        </h1>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#pub-types">Public types</a></li>
+                <li><a href="#pub-methods">Public functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+<p>Guide table (Chen and Asau, 1974) for sampling from a cumulative distribution c[0..n-1] (non-decreasing) with a uniform random number u.</p><p>upper_bound(c, u) returns exactly what std::ranges::upper_bound returns (the index of the first element with u &lt; c[i], or n), with a search over a few elements instead of all of c: the range of u is divided into 2^b equal buckets, one per 4 to 8 bins, and the table stores the result for the lower edge of every bucket. The result for a u inside a bucket lies between the results for the bucket&#x27;s two edges, so only that part of c is searched, on average 4 to 8 elements. The bucket of u and its edges are powers of two apart and computed without rounding, so the result is the same as that of the full search for every u.</p><p>More buckets would make the search a little faster (one bucket per bin: about 1% of the whole simulation) but cost much more memory: the production parametrization has 3.8e8 bins in its 2D histograms.</p><p>Two kinds of cumulative distributions are supported:</p><ul><li>float values in [0, 1], searched with a double u in [0, 1); for any other u (negative, &gt;= 1, NaN) the full search is used</li><li>32-bit unsigned integers, searched with an unsigned 32-bit u The table is built only for sorted c without NaN; otherwise, and when <a href="classFastCaloSim_1_1GuideTable.html#a9746ea81892bd407a508b2ed649df932" class="m-doc">upper_<wbr />bound()</a> gets a c of another size than the table was built for, the full search is used, so the result is always that of the full search.</li></ul><p><a href="classFastCaloSim_1_1GuideTable.html#ae3bf08189755e680d759193741420b5e" class="m-doc">build()</a> must be called whenever c changes; <a href="classFastCaloSim_1_1GuideTable.html#a9746ea81892bd407a508b2ed649df932" class="m-doc">upper_<wbr />bound()</a> only reads the table and can be called from several threads.</p>
+        <section id="pub-types">
+          <h2><a href="#pub-types">Public types</a></h2>
+          <dl class="m-doc">
+            <dt id="a040c421705cc1848442eed8ca3217d27">
+              using <a href="#a040c421705cc1848442eed8ca3217d27" class="m-doc-self">rnd_type</a> = std::conditional_t&lt;std::same_as&lt;T, float&gt;, double, T&gt;
+            </dt>
+            <dd>The type of the random number: floats are compared in double precision.</dd>
+          </dl>
+        </section>
+        <section id="pub-methods">
+          <h2><a href="#pub-methods">Public functions</a></h2>
+          <dl class="m-doc">
+            <dt id="ae3bf08189755e680d759193741420b5e">
+              <span class="m-doc-wrap-bumper">void <a href="#ae3bf08189755e680d759193741420b5e" class="m-doc-self">build</a>(</span><span class="m-doc-wrap">std::span&lt;const T&gt; cumulative)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a9746ea81892bd407a508b2ed649df932" class="m-doc">upper_bound</a>(</span><span class="m-doc-wrap">std::span&lt;const T&gt; cumulative,
+              <a href="classFastCaloSim_1_1GuideTable.html#a040c421705cc1848442eed8ca3217d27" class="m-doc">rnd_<wbr />type</a> u) const -&gt; std::size_t</span>
+            </dt>
+            <dd></dd>
+            <dt id="a5dc2ee9048e0f8b69d5228d65a309b5f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5dc2ee9048e0f8b69d5228d65a309b5f" class="m-doc-self">empty</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="abcf6e7f17df5f62cacfc114de810df5d">
+              <span class="m-doc-wrap-bumper">auto <a href="#abcf6e7f17df5f62cacfc114de810df5d" class="m-doc-self">size</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
+            </dt>
+            <dd>Number of table entries (buckets + 1)</dd>
+          </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a9746ea81892bd407a508b2ed649df932"><div>
+            <h3>
+              <div class="m-doc-template">
+                template&lt;typename T&gt;
+              </div>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr />GuideTable&lt;T&gt;::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a9746ea81892bd407a508b2ed649df932" class="m-doc-self">upper_bound</a>(</span><span class="m-doc-wrap">std::span&lt;const T&gt; cumulative,
+              <a href="classFastCaloSim_1_1GuideTable.html#a040c421705cc1848442eed8ca3217d27" class="m-doc">rnd_<wbr />type</a> u) const -&gt; std::size_t</span></span>
+            </h3>
+<p>Same result as std::ranges::upper_bound(cumulative, u) (floats compared in double precision), given the cumulative distribution the table was built for</p>
+          </div></section>
+        </section>
+      </div>
+    </div>
+  </div>
+</article></main>
+<div class="m-doc-search" id="search">
+  <a href="#!" onclick="return hideSearch()"></a>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-m-8 m-push-m-2">
+        <div class="m-doc-search-header m-text m-small">
+          <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+          <div id="search-symbolcount">&hellip;</div>
+        </div>
+        <div class="m-doc-search-content">
+          <form>
+            <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+          </form>
+          <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+          <div id="search-help" class="m-text m-dim m-text-center">
+            <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+          </div>
+          <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+          <ul id="search-results"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="search-v1.js"></script>
+<script src="searchdata-v1.js" async="async"></script>
+<footer><nav>
+  <div class="m-container">
+    <div class="m-row">
+      <div class="m-col-l-10 m-push-l-1">
+        <p>FastCaloSim. Created with <a href="https://doxygen.org/">Doxygen</a> 1.8.16 and <a href="https://mcss.mosra.cz/">m.css</a>.</p>
+      </div>
+    </div>
+  </div>
+</nav></footer>
+</body>
+</html>
