@@ -84,3 +84,24 @@ TEST(LayerRolesTests, NoShowerCenterLayers)
       (void)roles.shower_center_layer([](std::size_t) -> double { return 0; }),
       std::runtime_error);
 }
+
+// The first period whose |eta| limit is above the particle's |eta|, else the
+// last one; a layer without periods throws
+TEST(LayerRolesTests, PhiModulationPeriod)
+{
+  FastCaloSim::LayerRoles roles;
+  roles.phi_modulation_periods = {
+      {{.max_abs_eta = 1, .period = 0.1}},
+      {{.max_abs_eta = 2.5, .period = 0.2}, {.max_abs_eta = 4, .period = 0.3}},
+      {}};
+  EXPECT_DOUBLE_EQ(roles.phi_modulation_period(0, 0.5), 0.1);
+  EXPECT_DOUBLE_EQ(roles.phi_modulation_period(0, 3.0), 0.1);
+  EXPECT_DOUBLE_EQ(roles.phi_modulation_period(1, -2.4), 0.2);
+  EXPECT_DOUBLE_EQ(roles.phi_modulation_period(1, 2.5), 0.3);
+  EXPECT_DOUBLE_EQ(roles.phi_modulation_period(1, -5.0), 0.3);
+  EXPECT_DOUBLE_EQ(
+      roles.phi_modulation_period(1, std::numeric_limits<double>::quiet_NaN()),
+      0.3);
+  EXPECT_THROW((void)roles.phi_modulation_period(2, 0.0), std::runtime_error);
+  EXPECT_THROW((void)roles.phi_modulation_period(3, 0.0), std::runtime_error);
+}

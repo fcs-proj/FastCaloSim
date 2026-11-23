@@ -186,14 +186,11 @@ auto CaloGeo::has_layer_roles() const -> bool
   return m_layer_roles.has_value();
 }
 
-auto CaloGeo::layer_roles() const -> const FastCaloSim::LayerRoles&
+void CaloGeo::throw_no_layer_roles()
 {
-  if (!m_layer_roles) {
-    throw std::runtime_error(
-        "CaloGeo: the roles of the layers are not set; the host must set them "
-        "with CaloGeo::set_layer_roles()");
-  }
-  return *m_layer_roles;
+  throw std::runtime_error(
+      "CaloGeo: the roles of the layers are not set; the host must set them "
+      "with CaloGeo::set_layer_roles()");
 }
 
 void CaloGeo::update_eta_extremes(std::size_t layer, const Cell& cell)

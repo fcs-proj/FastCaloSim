@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <initializer_list>
 #include <limits>
+#include <numbers>
+#include <vector>
 
 #include "FastCaloSim/Geometry/LayerRoles.h"
 
@@ -64,6 +66,19 @@ inline auto atlas_layer_roles() -> FastCaloSim::LayerRoles
   }
   for (const std::size_t layer : {EME1, EME2, EME3}) {
     roles.out_of_calo_report_threshold[layer] = 1500;
+  }
+  // The accordion absorbers: 1024 in phi in the barrel, 768 in the outer and
+  // 256 in the inner wheel of the endcap
+  using Period = FastCaloSim::LayerRoles::PhiModulationPeriod;
+  constexpr double inf = std::numeric_limits<double>::infinity();
+  const std::vector<Period> barrel {
+      {.max_abs_eta = inf, .period = 2 * std::numbers::pi / 1024}};
+  const std::vector<Period> endcap {
+      {.max_abs_eta = 2.5, .period = 2 * std::numbers::pi / 768},
+      {.max_abs_eta = inf, .period = 2 * std::numbers::pi / 256}};
+  roles.phi_modulation_periods.resize(nLayers);
+  for (std::size_t layer = 0; layer < nLayers; ++layer) {
+    roles.phi_modulation_periods[layer] = layer <= EMB3 ? barrel : endcap;
   }
   return roles;
 }

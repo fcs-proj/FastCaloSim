@@ -3,9 +3,11 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <functional>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace FastCaloSim
@@ -23,6 +25,16 @@ struct LayerRoles
     std::size_t layer;
     /// @brief Up to which |eta| of the particle at the layer it is used
     double max_abs_eta;
+  };
+
+  /// @brief The azimuthal period of the energy response of a layer up to an
+  /// |eta|
+  struct PhiModulationPeriod
+  {
+    /// @brief Below which |eta| the period applies
+    double max_abs_eta;
+    /// @brief The period (rad)
+    double period;
   };
 
   /// @brief Strip layers: the electromagnetic layers finely segmented in eta
@@ -47,6 +59,36 @@ struct LayerRoles
   /// of it (ATLAS: 8 times the approximate cell noise, 1500 MeV in EME1 to
   /// EME3). Layers beyond the end are not reported.
   std::vector<double> out_of_calo_report_threshold;
+
+  /// @brief Per layer, the azimuthal periods of the energy response, in
+  /// increasing max_abs_eta: the first one whose max_abs_eta is above the
+  /// particle's |eta| applies, the last one if there is none (ATLAS: the
+  /// accordion absorbers, 2 pi / 1024 in EMB, 2 pi / 768 in the outer and
+  /// 2 pi / 256 in the inner wheel of the endcap, divided at |eta| = 2.5).
+  /// TFCSPhiModulationCorrection and the binned showers use it for the
+  /// position of a hit within the period.
+  std::vector<std::vector<PhiModulationPeriod>> phi_modulation_periods;
+
+  /// @brief The azimuthal period of the energy response of a layer at an eta
+  auto phi_modulation_period(std::size_t layer, double eta) const -> double
+  {
+    if (layer >= phi_modulation_periods.size()
+        || phi_modulation_periods[layer].empty())
+    {
+      throw std::runtime_error(
+          "FastCaloSim::LayerRoles: no phi modulation period set for layer "
+          + std::to_string(layer));
+    }
+    const std::vector<PhiModulationPeriod>& periods =
+        phi_modulation_periods[layer];
+    const double abs_eta = std::abs(eta);
+    for (const PhiModulationPeriod& candidate : periods) {
+      if (abs_eta < candidate.max_abs_eta) {
+        return candidate.period;
+      }
+    }
+    return periods.back().period;
+  }
 
   /// @brief Whether a layer is a strip layer
   auto is_strip_layer(std::size_t layer) const -> bool

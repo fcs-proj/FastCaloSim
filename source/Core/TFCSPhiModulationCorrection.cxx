@@ -8,6 +8,7 @@
 #include "FastCaloSim/Core/TFCSTruthState.h"
 #include "FastCaloSim/Definitions/Index.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
+#include "FastCaloSim/Geometry/LayerRoles.h"
 
 // External includes
 #include <algorithm>
@@ -207,7 +208,8 @@ auto TFCSPhiModulationCorrection::get_eta_and_phi_index(
 
   double phi_within_cell = phi - cell_phi;
 
-  const double phi_cell_size = get_phi_cell_size(layer_index, eta);
+  const double phi_cell_size =
+      m_geo->layer_roles().phi_modulation_period(layer_index, eta);
 
   phi_within_cell = std::fmod(phi_within_cell, phi_cell_size);
 
