@@ -206,6 +206,10 @@
               <span class="m-doc-wrap-bumper">void <a href="#a8aa5aa70c554828f47964462b84e0a6e" class="m-doc">clear</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a49868a30fc762c852d4232a6b16cd0bb" class="m-doc">clear_energies</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd></dd>
             <dt id="a4e6fc8121edeaa47a4c81a3cc03560fa">
               <span class="m-doc-wrap-bumper">auto <a href="#a4e6fc8121edeaa47a4c81a3cc03560fa" class="m-doc-self">hasAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; bool</span>
             </dt>
@@ -265,6 +269,12 @@
               <span class="m-doc-wrap-bumper">void TFCSSimulationState::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8aa5aa70c554828f47964462b84e0a6e" class="m-doc-self">clear</a>(</span><span class="m-doc-wrap">)</span></span>
             </h3>
 <p>Reset the state for a new particle: energies, energy bin, deposited cells, auxiliary information and objects; the scale factor becomes 1. The random engine is kept.</p>
+          </div></section>
+          <section class="m-doc-details" id="a49868a30fc762c852d4232a6b16cd0bb"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSSimulationState::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a49868a30fc762c852d4232a6b16cd0bb" class="m-doc-self">clear_energies</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+<p>Remove the energies (total, per layer and fractions) and the deposited cells, so that the particle deposits nothing. The energy bin, the auxiliary information and objects and the random engine are kept.</p>
           </div></section>
         </section>
       </div>
