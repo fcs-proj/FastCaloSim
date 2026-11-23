@@ -144,6 +144,41 @@ TEST_F(BasicExtrapolTests, ExtrapolationFromBeamPipe)
   }
 }
 
+// A track that starts just beyond the endcap of the outer boundary cylinder
+// leaves the ID where it crosses that endcap, not at the point of the inner
+// cylinder closest to the track, which it never reaches but is closer to the
+// origin
+TEST_F(BasicExtrapolTests, ExtrapolationJustBeyondEndcap)
+{
+  for (const double side : {1.0, -1.0}) {
+    TFCSExtrapolationState extrapol_state;
+    TFCSTruthState truth_state;
+    truth_state.SetPtEtaPhiM(10000, side * 2.6, 0.38, 0);
+    truth_state.set_pdgid(22);
+
+    const G4ThreeVector direction = G4ThreeVector(1, 0, side).unit();
+    const G4ThreeVector start(500, 200, side * 3555);
+    std::vector<G4FieldTrack> calo_steps;
+    for (const double distance : {0.0, 100.0, 200.0}) {
+      calo_steps.emplace_back(start + distance * direction,
+                              0,
+                              direction,
+                              0,
+                              0.0,
+                              0.0,
+                              G4ThreeVector());
+    }
+
+    extrapolator.extrapolate(extrapol_state, &truth_state, calo_steps);
+
+    ASSERT_NE(extrapol_state.IDCaloBoundary_eta(), -999.);
+    // Straight back along the track to |z| = 3550 mm, at x = 495 mm
+    EXPECT_NEAR(extrapol_state.IDCaloBoundary_z(), side * 3550, 1e-3);
+    EXPECT_NEAR(extrapol_state.IDCaloBoundary_x(), 495, 1e-3);
+    EXPECT_NEAR(extrapol_state.IDCaloBoundary_y(), 200, 1e-3);
+  }
+}
+
 // The extrapolation has no detector of its own: the host must set it up
 TEST_F(BasicExtrapolTests, ExtrapolationNeedsSettings)
 {
