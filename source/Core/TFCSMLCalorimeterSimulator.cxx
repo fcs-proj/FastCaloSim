@@ -113,22 +113,26 @@ auto TFCSMLCalorimeterSimulator::getEvent(TFCSSimulationState& simulstate,
     return event_t {};
   }
 
-  // Check if any output contains NaN; retry up to 5 times if so
-  auto has_nan = [](const VNetworkBase::NetworkOutputs& out) -> bool
+  // Check if any output is NaN or infinite; retry up to 5 times if so
+  auto has_non_finite = [](const VNetworkBase::NetworkOutputs& out) -> bool
   {
     return std::ranges::any_of(
-        out, [](const auto& kv) -> bool { return std::isnan(kv.second); });
+        out, [](const auto& kv) -> bool { return !std::isfinite(kv.second); });
   };
 
   int retry = 0;
-  while (has_nan(outputs)) {
+  while (has_non_finite(outputs)) {
     if (retry >= 5) {
-      FCS_MSG_WARNING("Network output still contains NaN after "
-                      << retry << " retries. Giving up.");
-      break;
+      // NaN voxels would be dropped as voxels without energy and infinite
+      // ones kept as infinite energy fractions: return no shower rather than
+      // a broken one, as for the other errors
+      FCS_MSG_ERROR("Network output still contains NaN or infinity after "
+                    << retry << " retries; returning empty event");
+      return event_t {};
     }
-    FCS_MSG_WARNING("Network output contains NaN. Retrying (attempt "
-                    << retry + 1 << ").");
+    FCS_MSG_WARNING(
+        "Network output contains NaN or infinity. Retrying (attempt "
+        << retry + 1 << ").");
     outputs = predictVoxels(simulstate, eta, energy);
     if (outputs.empty()) {
       FCS_MSG_ERROR("predictVoxels returned empty outputs on retry; giving up");
