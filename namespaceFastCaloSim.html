@@ -159,6 +159,21 @@
               std::ranges::iterator_t&lt;const Range&gt; it) -&gt; std::size_t <span class="m-label m-flat m-primary">constexpr</span></span>
             </dt>
             <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#afac7274f6cce28bab097bcba3e30e339" class="m-doc">wrap_phi</a>(</span><span class="m-doc-wrap">double phi) -&gt; double</span>
+            </dt>
+            <dd>The azimuth phi in [-pi, pi]; unchanged if it is already in that range.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a869da37234e36c004592d3d6aee42f8e" class="m-doc">delta_phi</a>(</span><span class="m-doc-wrap">double phi1,
+              double phi2) -&gt; double</span>
+            </dt>
+            <dd></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#aada4ba9e961b2dd0ec32777069618a00" class="m-doc">interpolate_phi</a>(</span><span class="m-doc-wrap">double phi1,
+              double phi2,
+              double w) -&gt; double</span>
+            </dt>
+            <dd></dd>
           </dl>
         </section>
         <section>
@@ -238,6 +253,30 @@
               std::ranges::iterator_t&lt;const Range&gt; it) -&gt; std::size_t <span class="m-label m-primary">constexpr</span></span></span>
             </h3>
 <p>The index of an iterator into a random access range, e.g. the result of std::upper_bound on a std::vector</p>
+          </div></section>
+          <section class="m-doc-details" id="afac7274f6cce28bab097bcba3e30e339"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#afac7274f6cce28bab097bcba3e30e339" class="m-doc-self">wrap_phi</a>(</span><span class="m-doc-wrap">double phi) -&gt; double</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="Phi_8h.html">&lt;FastCaloSim/Definitions/Phi.h&gt;</a></div>
+            </h3>
+            <p>The azimuth phi in [-pi, pi]; unchanged if it is already in that range.</p>
+          </div></section>
+          <section class="m-doc-details" id="a869da37234e36c004592d3d6aee42f8e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a869da37234e36c004592d3d6aee42f8e" class="m-doc-self">delta_phi</a>(</span><span class="m-doc-wrap">double phi1,
+              double phi2) -&gt; double</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="Phi_8h.html">&lt;FastCaloSim/Definitions/Phi.h&gt;</a></div>
+            </h3>
+<p>The azimuthal difference phi1 - phi2 in [-pi, pi]: the plain difference unless the two angles lie more than pi apart, i.e. on different sides of the +-pi seam</p>
+          </div></section>
+          <section class="m-doc-details" id="aada4ba9e961b2dd0ec32777069618a00"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">auto FastCaloSim::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aada4ba9e961b2dd0ec32777069618a00" class="m-doc-self">interpolate_phi</a>(</span><span class="m-doc-wrap">double phi1,
+              double phi2,
+              double w) -&gt; double</span></span>
+              <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="Phi_8h.html">&lt;FastCaloSim/Definitions/Phi.h&gt;</a></div>
+            </h3>
+<p>The azimuth (1 - w) * phi1 + w * phi2 along the shorter arc between phi1 and phi2, in [-pi, pi]: the plain interpolation unless the two angles lie on different sides of the +-pi seam</p>
           </div></section>
         </section>
       </div>
