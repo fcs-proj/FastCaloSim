@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <format>
@@ -47,9 +48,15 @@ auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track)
       continue;
     }
     const Vector3D& position = point->position;
+    // Up to the end of the previous cylinder, including the edge where the
+    // two meet, which the previous cylinder's endcap already covers. A
+    // cylinder that ends at the same |z| as the previous one closes the
+    // previous one's endcap towards the beam axis: its own endcap is on the
+    // boundary (a particle in the beam pipe reaches it there).
     const bool withinPrevious = i > 0
         && std::abs(position.z())
-            < kIDCaloBoundary[i - 1].half_length() + tolerance;
+            < std::min(kIDCaloBoundary[i - 1].half_length() + tolerance,
+                       kIDCaloBoundary[i].half_length() - tolerance);
     const bool withinNext = i + 1 < kIDCaloBoundary.size()
         && position.perp() < kIDCaloBoundary[i + 1].r() + tolerance;
     if (withinPrevious || withinNext) {

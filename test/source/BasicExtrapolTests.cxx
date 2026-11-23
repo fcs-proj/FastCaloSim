@@ -1,5 +1,8 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <cmath>
+#include <vector>
+
 #include "BasicExtrapolTests.h"
 
 #include <gtest/gtest.h>
@@ -96,4 +99,46 @@ TEST_F(BasicExtrapolTests, BasicExtrapolation)
   // // Check the angles
   ASSERT_NEAR(extrapol_state.IDCaloBoundary_AngleEta(), -0.30994, 1e-1);
   ASSERT_NEAR(extrapol_state.IDCaloBoundary_Angle3D(), 0.872097, 1e-1);
+}
+
+// A particle that enters the calorimeter from the beam pipe, through the FCal
+// bore beyond the end of the ID-calo boundary (here a pion of a ttbar event
+// in Athena): it reaches the boundary on the endcap of the innermost cylinder,
+// which is at the same |z| as the end of the previous one
+TEST_F(BasicExtrapolTests, ExtrapolationFromBeamPipe)
+{
+  constexpr double eta = 3.5396146600687683;
+  constexpr double phi = 1.0748289639304982;
+  for (const double side : {1.0, -1.0}) {
+    TFCSExtrapolationState extrapol_state;
+    TFCSTruthState truth_state;
+    truth_state.SetPtEtaPhiM(800.9999963160438, side * eta, phi, 139.57);
+    truth_state.set_pdgid(211);
+    truth_state.set_vertex(
+        14.419529402308543, 38.380687484931265, side * 4683.227376579961);
+
+    G4ThreeVector direction;
+    direction.setRThetaPhi(1, 2 * std::atan(std::exp(-side * eta)), phi);
+    G4ThreeVector const start(truth_state.vertex().X(),
+                              truth_state.vertex().Y(),
+                              truth_state.vertex().Z());
+    std::vector<G4FieldTrack> calo_steps;
+    for (const double distance : {0.0, 100.0, 200.0}) {
+      calo_steps.emplace_back(start + distance * direction,
+                              0,
+                              direction,
+                              0,
+                              0.0,
+                              0.0,
+                              G4ThreeVector());
+    }
+
+    extrapolator.extrapolate(extrapol_state, &truth_state, calo_steps);
+
+    ASSERT_NE(extrapol_state.IDCaloBoundary_eta(), -999.);
+    EXPECT_NEAR(extrapol_state.IDCaloBoundary_z(), side * 4587, 1e-3);
+    // Straight back along the track to |z| = 4587 mm
+    EXPECT_NEAR(extrapol_state.IDCaloBoundary_r(), 35.4696, 1e-3);
+    EXPECT_NEAR(extrapol_state.IDCaloBoundary_phi(), 1.23288, 1e-4);
+  }
 }
