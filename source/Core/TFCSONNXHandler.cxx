@@ -331,16 +331,28 @@ void TFCSONNXHandler::writeBytesToTTree(TTree& tree,
   FCS_MSG_DEBUG("TFCSONNXHandler written bytes to tree.");
 }
 
+namespace
+{
+// The environment shared by all sessions. Every handler holds a reference, so
+// it is destroyed only after the last session, also at program exit.
+auto shared_onnx_env() -> std::shared_ptr<Ort::Env>
+{
+  static const std::shared_ptr<Ort::Env> env =
+      std::make_shared<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, "FastCaloSim");
+  return env;
+}
+}  // namespace
+
 void TFCSONNXHandler::readSerializedSession()
 {
   FCS_MSG_DEBUG("Transforming bytes to session.");
-  Ort::Env const env(ORT_LOGGING_LEVEL_WARNING, "test");
+  m_env = shared_onnx_env();
   Ort::SessionOptions opts;
   opts.SetInterOpNumThreads(1);
   opts.SetIntraOpNumThreads(1);
   // Prevent ONNX from spawning additional threads
-  m_session =
-      std::make_unique<Ort::Session>(env, m_bytes.data(), m_bytes.size(), opts);
+  m_session = std::make_unique<Ort::Session>(
+      *m_env, m_bytes.data(), m_bytes.size(), opts);
   FCS_MSG_DEBUG("Transformed bytes to session.");
 }
 
