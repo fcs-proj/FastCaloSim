@@ -4,8 +4,6 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationBinnedChain.h"
 
-// Custom copy constructor, moves fall back to it
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationFloatSelectChain
     : public TFCSParametrizationBinnedChain
 {
@@ -17,11 +15,14 @@ public:
   {
   }
   TFCSParametrizationFloatSelectChain(
-      const TFCSParametrizationFloatSelectChain& ref)
-      : TFCSParametrizationBinnedChain(ref)
-      , m_bin_low_edge(1, 0)
-  {
-  }
+      const TFCSParametrizationFloatSelectChain& ref) = default;
+  TFCSParametrizationFloatSelectChain(
+      TFCSParametrizationFloatSelectChain&& ref) = default;
+  auto operator=(const TFCSParametrizationFloatSelectChain& ref)
+      -> TFCSParametrizationFloatSelectChain& = default;
+  auto operator=(TFCSParametrizationFloatSelectChain&& ref)
+      -> TFCSParametrizationFloatSelectChain& = default;
+  ~TFCSParametrizationFloatSelectChain() override = default;
 
   virtual auto push_back_in_bin(TFCSParametrizationBase* param,
                                 float low,

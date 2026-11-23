@@ -4,8 +4,6 @@
 
 #include "FastCaloSim/Core/TFCSParametrizationChain.h"
 
-// Custom copy constructor, moves fall back to it
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
 class TFCSParametrizationPDGIDSelectChain : public TFCSParametrizationChain
 {
 public:
@@ -16,11 +14,14 @@ public:
     reset_SimulateOnlyOnePDGID();
   }
   TFCSParametrizationPDGIDSelectChain(
-      const TFCSParametrizationPDGIDSelectChain& ref)
-      : TFCSParametrizationChain(ref)
-  {
-    reset_SimulateOnlyOnePDGID();
-  }
+      const TFCSParametrizationPDGIDSelectChain& ref) = default;
+  TFCSParametrizationPDGIDSelectChain(
+      TFCSParametrizationPDGIDSelectChain&& ref) = default;
+  auto operator=(const TFCSParametrizationPDGIDSelectChain& ref)
+      -> TFCSParametrizationPDGIDSelectChain& = default;
+  auto operator=(TFCSParametrizationPDGIDSelectChain&& ref)
+      -> TFCSParametrizationPDGIDSelectChain& = default;
+  ~TFCSParametrizationPDGIDSelectChain() override = default;
 
   /// Status bit for PDGID Selection
   enum FCSPDGIDStatusBits
