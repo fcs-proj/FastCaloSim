@@ -176,10 +176,6 @@
               double Esample)</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a8d89fd77f711b6f26514c584826bd493">
-              <span class="m-doc-wrap-bumper">auto <a href="#a8d89fd77f711b6f26514c584826bd493" class="m-doc-self">cells</a>(</span><span class="m-doc-wrap">) -&gt; cellmap &amp;</span>
-            </dt>
-            <dd><span></span></dd>
             <dt id="aa9fad130a12f21ccce82c0de8b7f3f69">
               <span class="m-doc-wrap-bumper">auto <a href="#aa9fad130a12f21ccce82c0de8b7f3f69" class="m-doc-self">cells</a>(</span><span class="m-doc-wrap">) const -&gt; const cellmap &amp;</span>
             </dt>
@@ -187,6 +183,11 @@
             <dt id="a39af2a48b78dfa969b6fdb932488d9ee">
               <span class="m-doc-wrap-bumper">void <a href="#a39af2a48b78dfa969b6fdb932488d9ee" class="m-doc-self">deposit</a>(</span><span class="m-doc-wrap">unsigned long long cell_id,
               double E)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="abe7558f83f9199eec17ff772a99b4126">
+              <div class="m-doc-template">template&lt;class Factor&gt;</div>
+              <span class="m-doc-wrap-bumper">void <a href="#abe7558f83f9199eec17ff772a99b4126" class="m-doc-self">scale_cells</a>(</span><span class="m-doc-wrap">const Factor&amp; factor)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a8226738ef15c90c7b9caba1fb0a5426d">
@@ -201,10 +202,10 @@
               <span class="m-doc-wrap-bumper">auto <a href="#ad5074de32100805acf2d3ab75a6ed344" class="m-doc-self">get_SF</a>(</span><span class="m-doc-wrap">) const -&gt; double</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a8aa5aa70c554828f47964462b84e0a6e">
-              <span class="m-doc-wrap-bumper">void <a href="#a8aa5aa70c554828f47964462b84e0a6e" class="m-doc-self">clear</a>(</span><span class="m-doc-wrap">)</span>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a8aa5aa70c554828f47964462b84e0a6e" class="m-doc">clear</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt id="a4e6fc8121edeaa47a4c81a3cc03560fa">
               <span class="m-doc-wrap-bumper">auto <a href="#a4e6fc8121edeaa47a4c81a3cc03560fa" class="m-doc-self">hasAuxInfo</a>(</span><span class="m-doc-wrap">std::uint32_t index) const -&gt; bool</span>
             </dt>
@@ -258,6 +259,12 @@
               <span class="m-doc-wrap-bumper">auto TFCSSimulationState::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a71973b0ce292b151582bcaec34579563" class="m-doc-self">Ebin</a>(</span><span class="m-doc-wrap">) const -&gt; std::optional&lt; std::size_t &gt;</span></span>
             </h3>
 <p>The energy bin of the PCA energy parametrization, starting at 1; no value before it is chosen</p>
+          </div></section>
+          <section class="m-doc-details" id="a8aa5aa70c554828f47964462b84e0a6e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void TFCSSimulationState::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8aa5aa70c554828f47964462b84e0a6e" class="m-doc-self">clear</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+<p>Reset the state for a new particle: energies, energy bin, deposited cells, auxiliary information and objects; the scale factor becomes 1. The random engine is kept.</p>
           </div></section>
         </section>
       </div>
