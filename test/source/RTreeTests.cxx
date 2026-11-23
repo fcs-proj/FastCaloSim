@@ -261,9 +261,11 @@ struct TestCell
   unsigned int layer;
 };
 
-// Builds a geometry from the cells, then loads it and runs check on it
-void build_geometry(const std::vector<TestCell>& cells,
-                    const std::function<void(CaloGeo&)>& check = {})
+// Builds a geometry from the cells into geo, then loads it and runs check on
+// it
+void build_geometry(CaloGeo& geo,
+                    const std::vector<TestCell>& cells,
+                    const std::function<void(CaloGeo&)>& check)
 {
   unsigned int layer = 0;
   bool is_barrel = true;
@@ -322,7 +324,6 @@ void build_geometry(const std::vector<TestCell>& cells,
       / (std::string("fcs_rtree_tests_geo_")
          + ::testing::UnitTest::GetInstance()->current_test_info()->name());
   std::filesystem::create_directories(dir);
-  CaloGeo geo;
   try {
     geo.build(geo_df, dir.string());
     if (check) {
@@ -335,6 +336,14 @@ void build_geometry(const std::vector<TestCell>& cells,
     throw;
   }
   std::filesystem::remove_all(dir);
+}
+
+// Builds a new geometry from the cells, then loads it and runs check on it
+void build_geometry(const std::vector<TestCell>& cells,
+                    const std::function<void(CaloGeo&)>& check = {})
+{
+  CaloGeo geo;
+  build_geometry(geo, cells, check);
 }
 }  // namespace
 
@@ -401,6 +410,34 @@ TEST(RTreeTests, EnergyRenormalizationWithDistantLayerIds)
         // The cells are scaled to the energies of their layers
         EXPECT_DOUBLE_EQ(state.cells().at(1), 10.);
         EXPECT_DOUBLE_EQ(state.cells().at(2), 20.);
+      });
+}
+
+TEST(RTreeTests, ReloadForgetsThePreviousGeometry)
+{
+  // A second geometry built and loaded into the same object replaces the
+  // first one: its layers, cells, coordinate systems and eta ranges
+  CaloGeo geo;
+  build_geometry(geo,
+                 {{.id = 1, .system = "EtaPhiR", .layer = 3},
+                  {.id = 2, .system = "EtaPhiR", .layer = 3},
+                  {.id = 3, .system = "EtaPhiR", .layer = 5}},
+                 [](const CaloGeo& /*geo*/) -> void {});
+  build_geometry(
+      geo,
+      {{.id = 4, .system = "EtaPhiZ", .layer = 3}},
+      [](const CaloGeo& loaded) -> void
+      {
+        EXPECT_EQ(loaded.layer_ids(), (std::vector<std::size_t> {3}));
+        EXPECT_EQ(loaded.n_cells(), 1U);
+        EXPECT_EQ(loaded.n_cells(3), 1U);
+        EXPECT_EQ(loaded.n_cells(5), 0U);
+        EXPECT_TRUE(loaded.is_eta_phi_z(3));
+        EXPECT_FALSE(loaded.is_eta_phi_r(3));
+        // Cell 4 is at eta 0.8 with a width of 0.1
+        EXPECT_NEAR(loaded.min_eta(3, CaloGeo::kEtaPositive), 0.75, 1e-6);
+        EXPECT_NEAR(loaded.max_eta(3, CaloGeo::kEtaPositive), 0.85, 1e-6);
+        EXPECT_EQ(loaded.get_cell(3, at_eta_phi(0.8, 0)).id(), 4U);
       });
 }
 
