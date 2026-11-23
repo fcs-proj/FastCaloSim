@@ -261,7 +261,9 @@ void FastCaloSimCaloExtrapolation::set_settings(Settings settings)
   }
   for (std::size_t i = 0; i < cylinders.size(); ++i) {
     const BoundaryCylinder& cylinder = cylinders[i];
-    if (!(cylinder.radius > 0 && cylinder.half_length > 0)) {
+    // Written so that NaN dimensions are rejected as well
+    const bool positive = cylinder.radius > 0 && cylinder.half_length > 0;
+    if (!positive) {
       throw std::invalid_argument(std::format(
           "FastCaloSimCaloExtrapolation: ID-calo boundary cylinder {} has "
           "radius {} and half length {}, both must be positive",
@@ -269,10 +271,10 @@ void FastCaloSimCaloExtrapolation::set_settings(Settings settings)
           cylinder.radius,
           cylinder.half_length));
     }
-    if (i > 0
-        && !(cylinder.radius < cylinders[i - 1].radius
-             && cylinder.half_length >= cylinders[i - 1].half_length))
-    {
+    const bool nested = i == 0
+        || (cylinder.radius < cylinders[i - 1].radius
+            && cylinder.half_length >= cylinders[i - 1].half_length);
+    if (!nested) {
       throw std::invalid_argument(std::format(
           "FastCaloSimCaloExtrapolation: ID-calo boundary cylinder {} must be "
           "closer to the beam axis than the previous one and reach at least "
