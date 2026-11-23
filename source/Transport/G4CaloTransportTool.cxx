@@ -1,5 +1,6 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <string_view>
 
 #include "FastCaloSim/Transport/G4CaloTransportTool.h"
@@ -81,16 +82,14 @@ void G4CaloTransportTool::doStep(G4FieldTrack& fieldTrack,
     /* Neutral particles: transport with navigator */
 
     // Compute the step length: the distance to the next boundary, or
-    // kInfinity if that is beyond the proposed step
-    G4double stepLength =
-        m_navigator->ComputeStep(fieldTrack.GetPosition(),
-                                 fieldTrack.GetMomentumDirection(),
-                                 currentMinimumStep,
-                                 retSafety);
-    if (stepLength > currentMinimumStep) {
-      // No boundary within the proposed step: take the proposed step
-      stepLength = currentMinimumStep;
-    }
+    // kInfinity if that is beyond the proposed step, in which case the
+    // proposed step is taken
+    G4double const stepLength =
+        std::min(m_navigator->ComputeStep(fieldTrack.GetPosition(),
+                                          fieldTrack.GetMomentumDirection(),
+                                          currentMinimumStep,
+                                          retSafety),
+                 currentMinimumStep);
 
     // Update the position of the track from the computed step length
     fieldTrack.SetPosition(fieldTrack.GetPosition()
