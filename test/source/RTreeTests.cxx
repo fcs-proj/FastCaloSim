@@ -20,10 +20,13 @@
 
 #include <gtest/gtest.h>
 
+#include "FastCaloSim/Core/TFCSParametrizationBase.h"
+#include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Definitions/FloatCompare.h"
 #include "FastCaloSim/Definitions/Phi.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "ROOT/RDataFrame.hxx"
+#include "TClass.h"
 #include "TTree.h"
 #include "TestConfig/AtlasGeoTestsConfig.h"
 
@@ -262,7 +265,7 @@ struct TestCell
 // it
 void build_geometry(CaloGeo& geo,
                     const std::vector<TestCell>& cells,
-                    const std::function<void(const CaloGeo&)>& check)
+                    const std::function<void(CaloGeo&)>& check)
 {
   unsigned int layer = 0;
   bool is_barrel = true;
@@ -337,7 +340,7 @@ void build_geometry(CaloGeo& geo,
 
 // Builds a new geometry from the cells, then loads it and runs check on it
 void build_geometry(const std::vector<TestCell>& cells,
-                    const std::function<void(const CaloGeo&)>& check = {})
+                    const std::function<void(CaloGeo&)>& check = {})
 {
   CaloGeo geo;
   build_geometry(geo, cells, check);
@@ -360,22 +363,54 @@ TEST(RTreeTests, SparseLayerIds)
 {
   // Layer IDs need not start at 0 or be contiguous: the geometry lists the
   // IDs of its layers, which the simulation loops over
-  build_geometry({{.id = 1, .system = "EtaPhiR", .layer = 3},
-                  {.id = 2, .system = "EtaPhiR", .layer = 3},
-                  {.id = 3, .system = "EtaPhiR", .layer = 7}},
-                 [](const CaloGeo& geo) -> void
-                 {
-                   EXPECT_EQ(geo.n_layers(), 2U);
-                   EXPECT_EQ(geo.layer_ids(),
-                             (std::vector<std::size_t> {3, 7}));
-                   EXPECT_EQ(geo.layer_id_bound(), 8U);
-                   EXPECT_TRUE(geo.has_layer(3));
-                   EXPECT_TRUE(geo.has_layer(7));
-                   EXPECT_FALSE(geo.has_layer(0));
-                   EXPECT_FALSE(geo.has_layer(5));
-                   EXPECT_FALSE(geo.has_layer(8));
-                   EXPECT_EQ(geo.get_cell(7, at_eta_phi(0.6, 0)).id(), 3U);
-                 });
+  build_geometry(
+      {{.id = 1, .system = "EtaPhiR", .layer = 3},
+       {.id = 2, .system = "EtaPhiR", .layer = 3},
+       {.id = 3, .system = "EtaPhiR", .layer = 7}},
+      [](CaloGeo& geo) -> void
+      {
+        EXPECT_EQ(geo.n_layers(), 2U);
+        EXPECT_EQ(geo.layer_ids(), (std::vector<std::size_t> {3, 7}));
+        EXPECT_EQ(geo.layer_index(3), 0U);
+        EXPECT_EQ(geo.layer_index(7), 1U);
+        EXPECT_THROW(static_cast<void>(geo.layer_index(5)), std::out_of_range);
+        EXPECT_TRUE(geo.has_layer(3));
+        EXPECT_TRUE(geo.has_layer(7));
+        EXPECT_FALSE(geo.has_layer(0));
+        EXPECT_FALSE(geo.has_layer(5));
+        EXPECT_FALSE(geo.has_layer(8));
+        EXPECT_EQ(geo.get_cell(7, at_eta_phi(0.6, 0)).id(), 3U);
+      });
+}
+
+TEST(RTreeTests, EnergyRenormalizationWithDistantLayerIds)
+{
+  // Per-layer data has one entry per layer, also for layer IDs far apart
+  constexpr std::size_t far_layer = 100000000;
+  build_geometry(
+      {{.id = 1, .system = "EtaPhiR", .layer = 3},
+       {.id = 2, .system = "EtaPhiR", .layer = far_layer}},
+      [](CaloGeo& geo) -> void
+      {
+        EXPECT_EQ(geo.layer_ids(), (std::vector<std::size_t> {3, far_layer}));
+        EXPECT_EQ(geo.layer_index(far_layer), 1U);
+        // The class is not exported: create it through ROOT and own it
+        // through the exported base class
+        const std::unique_ptr<TFCSParametrizationBase> renormalization(
+            static_cast<TFCSParametrizationBase*>(
+                TClass::GetClass("TFCSEnergyRenormalization")->New()));
+        renormalization->set_geometry(&geo);
+        TFCSSimulationState state;
+        state.set_E(3, 10.);
+        state.set_E(far_layer, 20.);
+        state.deposit(1, 5.);
+        state.deposit(2, 40.);
+        EXPECT_EQ(renormalization->simulate(state, nullptr, nullptr),
+                  FCSSuccess);
+        // The cells are scaled to the energies of their layers
+        EXPECT_DOUBLE_EQ(state.cells().at(1), 10.);
+        EXPECT_DOUBLE_EQ(state.cells().at(2), 20.);
+      });
 }
 
 TEST(RTreeTests, ReloadForgetsThePreviousGeometry)
