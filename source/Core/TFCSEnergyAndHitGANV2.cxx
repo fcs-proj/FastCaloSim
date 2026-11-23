@@ -342,6 +342,9 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
     const double dist000 = FastCaloSim::dist000(center_r, center_z);
     const double eta_jakobi = FastCaloSim::eta_jakobi(center_eta);
+    // Showers are in (x, y) in layers whose cells are described in (x, y, z)
+    // (the ATLAS FCal), in (eta, phi) in the others
+    const bool xyz_layer = m_geo->is_xyz(static_cast<std::size_t>(layer));
 
     int nHitsAlpha {};
     int nHitsR {};
@@ -440,7 +443,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
             hit.reset();
             hit.set_E(Einit * energyInVoxel / (nHitsAlpha * nHitsR));
 
-            if (layer <= 20) {
+            if (!xyz_layer) {
               double delta_eta_mm = r * std::cos(alpha);
               double delta_phi_mm = r * std::sin(alpha);
 
@@ -470,7 +473,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
 
               FCS_MSG_VERBOSE(" Hit eta " << hit.eta() << " phi " << hit.phi()
                                           << " layer " << layer);
-            } else {  // FCAL is in (x,y,z)
+            } else {
               const double hit_r = r * std::cos(alpha) + center_r;
               double delta_phi = r * std::sin(alpha) / center_r;
               // We derive the shower shapes for electrons and positively

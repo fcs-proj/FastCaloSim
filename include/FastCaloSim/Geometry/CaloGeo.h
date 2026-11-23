@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -66,6 +67,7 @@ public:
   /// @brief Check if a layer is a barrel layer
   auto is_barrel(std::size_t layer) const -> bool;
   /// @brief Check if cuboid cells in a layer are described by (x, y, z)
+  /// (a vector lookup, cheap enough to be called for every hit)
   auto is_xyz(std::size_t layer) const -> bool;
   /// @brief Check if cuboid cells in a layer are described by (eta, phi, r)
   auto is_eta_phi_r(std::size_t layer) const -> bool;
@@ -106,9 +108,6 @@ private:
   {
     // Is the layer a barrel layer?
     bool is_barrel {false};
-    // How are the cells in the layer described?
-    RTreeHelpers::CoordinateSystem coordinate_system {
-        RTreeHelpers::CoordinateSystem::Undefined};
     // For each detector side, what are the eta_min and eta_max values?
     std::map<DetectorSide, EtaExtremes> eta_extensions;
 
@@ -140,6 +139,10 @@ private:
   /// @brief What get_cell(layer, pos) needs for a layer
   struct LayerLookup
   {
+    // How the cells of the layer are described, once the geometry has cells
+    // in it. Kept here rather than in LayerFlags, so that it is a vector
+    // lookup for the layer IDs below n_dense_layer_ids.
+    std::optional<RTreeHelpers::CoordinateSystem> coordinate_system;
     // Alternative geometry handler of the layer, if one is set. It allows to
     // implement a custom cell lookup for layers that are not well described
     // by cuboid cells.
@@ -171,6 +174,11 @@ private:
   }
   /// @brief The lookup of a layer, created empty if it has none
   auto layer_lookup(std::size_t layer) -> LayerLookup&;
+
+  /// @brief How the cells of a layer are described; throws std::out_of_range
+  /// if the geometry has no cells in the layer
+  auto coordinate_system(std::size_t layer) const
+      -> RTreeHelpers::CoordinateSystem;
 
   /// @brief Record a cell in the geometry
   void record_cell(std::unique_ptr<Cell> cell);
