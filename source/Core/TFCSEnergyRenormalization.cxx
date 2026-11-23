@@ -30,7 +30,8 @@ auto TFCSEnergyRenormalization::simulate(
     const TFCSTruthState* /*truth*/,
     const TFCSExtrapolationState* /*extrapol*/) const -> FCSReturnCode
 {
-  std::vector<double> energies(m_geo->n_layers(), 0);
+  // Indexed by layer ID
+  std::vector<double> energies(m_geo->layer_id_bound(), 0);
 
   // Loop over all cells containing energy and sum up energies
   for (const auto& cell_iter : simulstate.cells()) {
@@ -41,7 +42,7 @@ auto TFCSEnergyRenormalization::simulate(
     energies[layer] += cell_energy;
   }
 
-  std::vector<double> scalefactor(m_geo->n_layers(), 1);
+  std::vector<double> scalefactor(m_geo->layer_id_bound(), 1);
 
   // Expected layer energies above these thresholds that no cell received are
   // reported (none if the host set no layer roles)
@@ -49,7 +50,7 @@ auto TFCSEnergyRenormalization::simulate(
       ? &m_geo->layer_roles().out_of_calo_report_threshold
       : nullptr;
 
-  for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
+  for (const std::size_t layer : m_geo->layer_ids()) {
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
     if (FastCaloSim::exactly_equal(energies[layer], 0.0)
@@ -75,7 +76,7 @@ auto TFCSEnergyRenormalization::simulate(
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("Apply scale factors : ");
-    for (std::size_t layer = 0; layer < m_geo->n_layers(); ++layer) {
+    for (const std::size_t layer : m_geo->layer_ids()) {
       FCS_MSG_DEBUG("  " << layer << " *= " << scalefactor[layer] << " : "
                          << energies[layer] << " -> " << simulstate.E(layer));
     }

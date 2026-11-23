@@ -47,6 +47,14 @@ auto coordinate_system_of(bool is_xyz, bool is_eta_phi_r, bool is_eta_phi_z)
   }
   return RTreeHelpers::CoordinateSystem::Undefined;
 }
+// The layer IDs of a geometry, in increasing order
+auto sorted_layer_ids(const std::unordered_set<std::size_t>& layer_ids)
+    -> std::vector<std::size_t>
+{
+  std::vector<std::size_t> sorted(layer_ids.begin(), layer_ids.end());
+  std::ranges::sort(sorted);
+  return sorted;
+}
 }  // namespace
 
 auto CaloGeo::layer_lookup(std::size_t layer) -> LayerLookup&
@@ -110,7 +118,22 @@ auto CaloGeo::n_cells(std::size_t layer) const -> std::size_t
 
 auto CaloGeo::n_layers() const -> std::size_t
 {
-  return m_n_layers;
+  return m_layer_ids.size();
+}
+
+auto CaloGeo::layer_ids() const -> const std::vector<std::size_t>&
+{
+  return m_layer_ids;
+}
+
+auto CaloGeo::layer_id_bound() const -> std::size_t
+{
+  return m_layer_ids.empty() ? 0 : m_layer_ids.back() + 1;
+}
+
+auto CaloGeo::has_layer(std::size_t layer) const -> bool
+{
+  return std::ranges::binary_search(m_layer_ids, layer);
 }
 
 auto CaloGeo::get_cell(unsigned long long id) const -> Cell
@@ -266,7 +289,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   for (const auto& layer_id : *layer) {
     unique_layers.insert(layer_id);
   }
-  m_n_layers = unique_layers.size();
+  m_layer_ids = sorted_layer_ids(unique_layers);
 
   // Pre-allocate layer flags with proper initialization for actual layer IDs
   for (const auto& layer_id : unique_layers) {
@@ -344,7 +367,7 @@ void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
   FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::INFO,
                     "Done building calo geometry. Took "
                         << elapsed.count() << " s (" << m_n_total_cells
-                        << " cells in " << m_n_layers << " layers)");
+                        << " cells in " << n_layers() << " layers)");
 }
 
 // Method to load geometry
@@ -410,7 +433,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     update_eta_extremes(layer_id, cell);
   }
 
-  m_n_layers = unique_layers.size();
+  m_layer_ids = sorted_layer_ids(unique_layers);
 
   // Build the RTree of each layer from its cells
   for (const auto& [layer_id, store_index] : layer_store_index) {
@@ -434,5 +457,5 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   FCS_MSG_LVL_NOCHK(::FastCaloSim::MSG::INFO,
                     "Done loading calo geometry. Took "
                         << elapsed.count() << " s (" << m_n_total_cells
-                        << " cells in " << m_n_layers << " layers)");
+                        << " cells in " << n_layers() << " layers)");
 }

@@ -57,8 +57,17 @@ public:
   auto n_cells(std::size_t layer) const -> std::size_t;
   /// @brief Get the total number of cells
   auto n_cells() const -> std::size_t;
-  /// @brief Get the number of layers
+  /// @brief Get the number of layers with cells
   auto n_layers() const -> std::size_t;
+  /// @brief The IDs of the layers with cells, in increasing order. The IDs
+  /// need not be contiguous or start at 0: loop over these, not from 0 to
+  /// n_layers().
+  auto layer_ids() const -> const std::vector<std::size_t>&;
+  /// @brief One more than the largest layer ID, 0 without layers: the size of
+  /// a vector indexed by layer ID
+  auto layer_id_bound() const -> std::size_t;
+  /// @brief Check if the geometry has cells in a layer
+  auto has_layer(std::size_t layer) const -> bool;
 
   /// @brief Get a cell by its ID
   auto get_cell(unsigned long long id) const -> Cell;
@@ -136,8 +145,8 @@ private:
     }
   };
 
-  /// @brief The number of layers
-  std::size_t m_n_layers {};
+  /// @brief The IDs of the layers with cells, in increasing order
+  std::vector<std::size_t> m_layer_ids;
   /// @brief The total number of cells
   std::size_t m_n_total_cells {};
 

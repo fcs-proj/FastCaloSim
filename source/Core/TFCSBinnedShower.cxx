@@ -1,6 +1,5 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 #include <cmath>
-#include <numeric>
 
 #include "FastCaloSim/Core/TFCSBinnedShower.h"
 
@@ -335,8 +334,7 @@ void TFCSBinnedShower::set_geometry(CaloGeo* geo)
   if (geo == nullptr || m_hdf5_file.empty() || !m_eventlibrary.empty()) {
     return;
   }
-  std::vector<std::size_t> layers(geo->n_layers());
-  std::ranges::iota(layers, std::size_t {0});
+  std::vector<std::size_t> layers = geo->layer_ids();
   FCS_MSG_INFO("Loading event library from " << m_hdf5_file);
   load_event_library(m_hdf5_file, layers);
   FCS_MSG_INFO("Size after loading " << m_eventlibrary.size());

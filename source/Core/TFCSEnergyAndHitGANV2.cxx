@@ -553,7 +553,7 @@ auto TFCSEnergyAndHitGANV2::fillEnergy(
   }
 
   if (simulstate.E() > std::numeric_limits<double>::epsilon()) {
-    for (std::size_t ilayer = 0; ilayer < m_geo->n_layers(); ++ilayer) {
+    for (const std::size_t ilayer : m_geo->layer_ids()) {
       simulstate.set_Efrac(ilayer, simulstate.E(ilayer) / simulstate.E());
     }
   }

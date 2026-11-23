@@ -145,7 +145,7 @@ auto TFCSPCAEnergyParametrization::simulate(
 
   if (*pcabin == 0) {
     simulstate.set_E(0);
-    for (std::size_t s = 0; s < m_geo->n_layers(); ++s) {
+    for (const std::size_t s : m_geo->layer_ids()) {
       simulstate.set_E(s, 0.0);
       simulstate.set_Efrac(s, 0.0);
     }
@@ -234,7 +234,7 @@ auto TFCSPCAEnergyParametrization::simulate(
     simulstate.set_E(total_energy);
     FCS_MSG_DEBUG("set E to total_energy=" << total_energy);
 
-    for (std::size_t s = 0; s < m_geo->n_layers(); ++s) {
+    for (const std::size_t s : m_geo->layer_ids()) {
       double energyfrac = 0.0;
       for (std::size_t l = 0; l < layerNr.size(); ++l) {
         if (std::cmp_equal(layerNr[l], s)) {
