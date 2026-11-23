@@ -91,6 +91,41 @@ TEST_F(TFCSSimulationStateTest, ClearFunction)
   EXPECT_EQ(sim_state.randomEngine(), &engine);
 }
 
+TEST_F(TFCSSimulationStateTest, ClearEnergiesFunction)
+{
+  CLHEP::RanluxEngine engine(1);
+  TFCSSimulationState sim_state(&engine);
+  sim_state.set_Ebin(2);
+  sim_state.set_E(100.0);
+  sim_state.set_E(0, 100.0);
+  sim_state.set_Efrac(0, 1.0);
+  sim_state.deposit(7, 50.0);
+  sim_state.set_SF(2.0);
+  sim_state.setAuxInfo<int>("EventNr"_FCShash, 3);
+  sim_state.setAuxObject<int>("BSEventData"_FCShash, 4);
+
+  sim_state.clear_energies();
+
+  // The energies and cells are removed
+  EXPECT_EQ(sim_state.E(), 0);
+  EXPECT_EQ(sim_state.E(0), 0);
+  EXPECT_EQ(sim_state.Efrac(0), 0);
+  EXPECT_TRUE(sim_state.cells().empty());
+  // The rest is kept
+  EXPECT_EQ(sim_state.Ebin().value_or(0), 2U);
+  EXPECT_EQ(sim_state.get_SF(), 2);
+  EXPECT_EQ(sim_state.getAuxInfo<int>("EventNr"_FCShash), 3);
+  const int* aux = sim_state.getAuxObject<int>("BSEventData"_FCShash);
+  ASSERT_NE(aux, nullptr);
+  EXPECT_EQ(*aux, 4);
+  EXPECT_EQ(sim_state.randomEngine(), &engine);
+
+  // A deposit after clearing does not use the removed cell
+  sim_state.deposit(7, 1.0);
+  ASSERT_EQ(sim_state.cells().size(), 1U);
+  EXPECT_EQ(sim_state.cells().at(7), 1.0);
+}
+
 TEST_F(TFCSSimulationStateTest, DepositEnergy)
 {
   TFCSSimulationState sim_state;

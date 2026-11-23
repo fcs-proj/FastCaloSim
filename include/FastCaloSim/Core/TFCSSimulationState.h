@@ -70,7 +70,8 @@ public:
   // maps the cell id to the energy deposited in the cell
   using cellmap = std::unordered_map<unsigned long long, double>;
 
-  // The cells are changed only through deposit(), scale_cells() and clear()
+  // The cells are changed only through deposit(), scale_cells(),
+  // clear_energies() and clear()
   auto cells() const -> const cellmap& { return m_cells; }
 
   // Add energy to a cell
@@ -97,6 +98,11 @@ public:
   /// cells, auxiliary information and objects; the scale factor becomes 1.
   /// The random engine is kept.
   void clear();
+
+  /// Remove the energies (total, per layer and fractions) and the deposited
+  /// cells, so that the particle deposits nothing. The energy bin, the
+  /// auxiliary information and objects and the random engine are kept.
+  void clear_energies();
 
 private:
   CLHEP::HepRandomEngine* m_randomEngine;
