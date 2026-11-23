@@ -139,7 +139,19 @@
             <dt id="aecbf9b7dc28de10ffaea3f542fee45ef">
               <span class="m-doc-wrap-bumper">auto <a href="#aecbf9b7dc28de10ffaea3f542fee45ef" class="m-doc-self">n_layers</a>(</span><span class="m-doc-wrap">) const -&gt; std::size_t</span>
             </dt>
-            <dd>Get the number of layers.</dd>
+            <dd>Get the number of layers with cells.</dd>
+            <dt id="ab878f923ae97ba70531e2f8c57f6ce49">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab878f923ae97ba70531e2f8c57f6ce49" class="m-doc-self">layer_ids</a>(</span><span class="m-doc-wrap">) const -&gt; const std::vector&lt; std::size_t &gt; &amp;</span>
+            </dt>
+            <dd>The IDs of the layers with cells, in increasing order. The IDs need not be contiguous or start at 0: loop over these, not from 0 to <a href="classCaloGeo.html#aecbf9b7dc28de10ffaea3f542fee45ef" class="m-doc">n_<wbr />layers()</a>.</dd>
+            <dt id="a9a2de85a60d90466d0f23428b12f8f4f">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9a2de85a60d90466d0f23428b12f8f4f" class="m-doc-self">layer_index</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; std::size_t</span>
+            </dt>
+            <dd>The position of a layer in <a href="classCaloGeo.html#ab878f923ae97ba70531e2f8c57f6ce49" class="m-doc">layer_<wbr />ids()</a>, to index a vector with one entry per layer (inline: a vector lookup, also used per cell). Throws std::out_of_range for a layer without cells.</dd>
+            <dt id="af63edc46be198b8c5263690dbcb59557">
+              <span class="m-doc-wrap-bumper">auto <a href="#af63edc46be198b8c5263690dbcb59557" class="m-doc-self">has_layer</a>(</span><span class="m-doc-wrap">std::size_t layer) const -&gt; bool</span>
+            </dt>
+            <dd>Check if the geometry has cells in a layer.</dd>
             <dt id="ad31905ac811319f5ec64565038146f59">
               <span class="m-doc-wrap-bumper">auto <a href="#ad31905ac811319f5ec64565038146f59" class="m-doc-self">get_cell</a>(</span><span class="m-doc-wrap">unsigned long long id) const -&gt; Cell</span>
             </dt>
