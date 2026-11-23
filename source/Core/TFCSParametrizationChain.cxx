@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -81,34 +82,60 @@ void set_eta_range(TFCSParametrization& param, const Range& range)
   param.set_eta_max(range.max);
 }
 
-// Intersection or union of the particle IDs of all parametrizations in a chain
+// Intersection or union of the particle IDs of all parametrizations in a
+// chain; no value if the chain is valid for all particles. A parametrization
+// valid for all particles has no particle IDs of its own: it does not restrict
+// an intersection, and makes a union valid for all particles.
 auto combined_pdgids(const TFCSParametrizationChain::Chain_t& chain,
-                     bool intersect) -> std::set<int>
+                     bool intersect) -> std::optional<std::set<int>>
 {
-  std::set<int> pdgids = chain[0]->pdgid();
+  std::optional<std::set<int>> pdgids;
   for (const auto* param : chain) {
+    if (param->is_match_all_pdgid()) {
+      if (intersect) {
+        continue;
+      }
+      return std::nullopt;
+    }
+    if (!pdgids) {
+      pdgids = param->pdgid();
+      continue;
+    }
     std::set<int> combined;
     if (intersect) {
       std::ranges::set_intersection(
-          pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
+          *pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
     } else {
       std::ranges::set_union(
-          pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
+          *pdgids, param->pdgid(), std::inserter(combined, combined.begin()));
     }
     pdgids = std::move(combined);
   }
   return pdgids;
 }
+
+// Sets the particle IDs of a chain, or makes it valid for all particles
+void set_pdgids(TFCSParametrization& param,
+                const std::optional<std::set<int>>& pdgids)
+{
+  if (pdgids) {
+    param.reset_match_all_pdgid();
+    param.set_pdgid(*pdgids);
+  } else {
+    param.set_match_all_pdgid();
+    param.set_pdgid(std::set<int> {});
+  }
+}
 }  // namespace
 
 void TFCSParametrizationChain::recalc_pdgid_intersect()
 {
-  set_pdgid(combined_pdgids(m_chain, /*intersect=*/true));
+  set_pdgids(*this, combined_pdgids(m_chain, /*intersect=*/true));
 }
 
 void TFCSParametrizationChain::recalc_pdgid_union()
 {
-  set_pdgid(combined_pdgids(m_chain, /*intersect=*/false));
+  set_pdgids(*this, combined_pdgids(m_chain, /*intersect=*/false));
 }
 
 void TFCSParametrizationChain::recalc_Ekin_intersect()
