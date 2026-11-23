@@ -38,6 +38,11 @@ constexpr double kWarningPtLimit = 500;
 auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track)
     -> std::optional<TrackPoint>
 {
+  // A point counts as within the previous cylinder or the next one only if it
+  // is more than this inside it: a point on the shared surface is on the
+  // boundary. The last two cylinders end at the same |z|, so a point on the
+  // endcap of the last one (a particle in the beam pipe) is always at the end
+  // of the previous one.
   constexpr double tolerance = 0.001;  // mm
 
   std::optional<TrackPoint> boundary;
@@ -49,9 +54,9 @@ auto extrapolateToIDCaloBoundary(const std::vector<TrackPoint>& track)
     const Vector3D& position = point->position;
     const bool withinPrevious = i > 0
         && std::abs(position.z())
-            < kIDCaloBoundary[i - 1].half_length() + tolerance;
+            < kIDCaloBoundary[i - 1].half_length() - tolerance;
     const bool withinNext = i + 1 < kIDCaloBoundary.size()
-        && position.perp() < kIDCaloBoundary[i + 1].r() + tolerance;
+        && position.perp() < kIDCaloBoundary[i + 1].r() - tolerance;
     if (withinPrevious || withinNext) {
       continue;
     }
