@@ -214,4 +214,9 @@ private:
 
   /// @brief Update the eta extremes of a layer
   void update_eta_extremes(std::size_t layer, const Cell& cell);
+  /// @brief Forget everything derived from the cells of a previous geometry
+  /// (layers, cell IDs, layer flags, coordinate systems, R-trees), so that
+  /// build() and load() start from scratch. The alternative geometry handlers
+  /// and the layer roles, which the host sets, are kept.
+  void reset_geometry_state();
 };

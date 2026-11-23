@@ -252,10 +252,31 @@ void CaloGeo::update_eta_extremes(std::size_t layer, const Cell& cell)
 }
 
 // Method to build geometry
+void CaloGeo::reset_geometry_state()
+{
+  m_layer_ids.clear();
+  m_n_total_cells = 0;
+  m_layer_cell_ids.clear();
+  m_layer_flags.clear();
+  const auto reset = [](LayerLookup& lookup) -> void
+  {
+    lookup.coordinate_system.reset();
+    lookup.rtree.reset();
+    lookup.store_index.clear();
+  };
+  std::ranges::for_each(m_layer_lookup, reset);
+  for (auto& entry : m_sparse_layer_lookup) {
+    reset(entry.second);
+  }
+}
+
 void CaloGeo::build(ROOT::RDataFrame& geo, const std::string& base_path)
 {
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
+
+  // The cells of a previously built or loaded geometry are not part of this one
+  reset_geometry_state();
 
   // Pre-load the geometry data into memory
   auto df = geo.Cache(geo.GetColumnNames());
@@ -376,24 +397,15 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
   // Start timing
   auto start_time = std::chrono::high_resolution_clock::now();
 
-  // Invalidate the layer lookups before the cell store is replaced, so that a
-  // failed load leaves none that point into the new store
-  const auto invalidate = [](LayerLookup& lookup) -> void
-  {
-    lookup.rtree.reset();
-    lookup.store_index.clear();
-  };
-  std::ranges::for_each(m_layer_lookup, invalidate);
-  for (auto& entry : m_sparse_layer_lookup) {
-    invalidate(entry.second);
-  }
+  // Forget the previous geometry before the cell store is replaced, so that a
+  // failed load leaves no layer lookups that point into the new store and no
+  // layer flags of the previous geometry
+  reset_geometry_state();
 
   // Load the cell store
   m_cell_store.load(base_path + "/cellstore");
 
   // Rebuild the layer cell ID map
-  m_layer_cell_ids.clear();
-  m_n_total_cells = 0;
   std::unordered_set<std::size_t> unique_layers;
   // Cell store index of each cell of a layer, in the order of m_layer_cell_ids
   std::map<std::size_t, std::vector<std::uint32_t>> layer_store_index;
@@ -411,7 +423,7 @@ void CaloGeo::load(const std::string& base_path, size_t /*rtree_cache_size*/)
     layer_store_index[layer_id].push_back(static_cast<std::uint32_t>(i));
     m_n_total_cells++;
 
-    // Rebuild layer flags if not already done
+    // Set the layer flags at the first cell of the layer
     if (!m_layer_flags.contains(layer_id)) {
       m_layer_flags[layer_id] = LayerFlags {};
       m_layer_flags[layer_id].is_barrel = cell.isBarrel();
