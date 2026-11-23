@@ -14,6 +14,7 @@
 #include "FastCaloSim/Core/TFCS1DFunctionTemplateHistogram.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
+#include "TDirectory.h"
 #include "TFile.h"
 #include "TH2.h"
 #include "TMatrixDSym.h"
@@ -51,17 +52,29 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
   // m_transform[i][j]=new TFCS1DFunctionInt16Int16Histogram(hist)
   // where hist is the 1D histogram from which a CDF was calculated
 
-  inputfile->cd(folder.c_str());
+  // The inputs are in the given folder of the file (TFile::Get would search
+  // the top directory of the file, whatever the current directory is)
+  TDirectory* const dir =
+      folder.empty() ? inputfile : inputfile->GetDirectory(folder.c_str());
+  if (dir == nullptr) {
+    FCS_MSG_ERROR("Folder " << folder << " not found in "
+                            << inputfile->GetName());
+    return false;
+  }
   std::size_t cs = calosample();
   int bin = 1;
 
   // NOLINTNEXTLINE(misc-const-correctness): stored as non-const pointer
-  TH2* temp = dynamic_cast<TH2*>(inputfile->Get(
-      std::format("voxel_template_cs{}_pca{}", cs, bin).c_str()));
+  TH2* temp = dynamic_cast<TH2*>(
+      dir->Get(std::format("voxel_template_cs{}_pca{}", cs, bin).c_str()));
   if (temp == nullptr) {
     FCS_MSG_ERROR("Template hist not found for cs " + std::to_string(cs));
     return false;
   }
+  // A histogram read from a file belongs to the file, which deletes it when it
+  // is closed: the template is kept after that, as when it is read with this
+  // parametrization from a parametrization file
+  temp->SetDirectory(nullptr);
   m_voxel_template.push_back(temp);
   m_nDim_x = m_voxel_template[0]->GetNbinsX();
   m_nDim_y = m_voxel_template[0]->GetNbinsY();
@@ -76,7 +89,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
 
     std::string label = std::format("_cs{}_pca{}", cs, bin);
 
-    std::unique_ptr<TObject> obj(inputfile->Get(("parMeans" + label).c_str()));
+    std::unique_ptr<TObject> obj(dir->Get(("parMeans" + label).c_str()));
     if (!obj) {
       break;
     }
@@ -88,7 +101,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
     parMeans = *dynamic_cast<TVectorT<double>*>(obj.get());
     m_parMeans.push_back(parMeans);
 
-    obj.reset(inputfile->Get(("covMatrix" + label).c_str()));
+    obj.reset(dir->Get(("covMatrix" + label).c_str()));
     if (!obj) {
       FCS_MSG_ERROR("covMatrix" + label + " not found");
       return false;
@@ -124,7 +137,7 @@ auto TFCSVoxelHistoLateralCovarianceFluctuations::initialize(
       for (std::size_t y = 0; y < n_y; ++y) {
         // Naming of hists is hist_xy where x, y are indices of cells
         std::string const histname = std::format("hist_{}_{}{}", x, y, label);
-        TH1 const* hist = static_cast<TH1*>(inputfile->Get(histname.c_str()));
+        TH1 const* hist = static_cast<TH1*>(dir->Get(histname.c_str()));
         if (hist == nullptr) {
           FCS_MSG_ERROR("Histogram " << histname << " not found");
           return false;
