@@ -31,6 +31,7 @@
 
 // For storing the lambda function
 #include <functional>
+#include <memory>
 
 /**
  * @brief A handler specific for an ONNX network
@@ -197,6 +198,16 @@ private:
    *
    **/
   void writeBytesToTTree(TTree& tree, const std::vector<char>& bytes);
+
+  /**
+   * @brief The ONNX Runtime environment of the session
+   *
+   * ONNX Runtime requires the environment to outlive every session created
+   * with it. All handlers share one environment, and each keeps it alive
+   * while it exists. Declared before m_session, so that it is destroyed
+   * after it.
+   **/
+  std::shared_ptr<Ort::Env> m_env;  //! Do not persistify
 
   // unique ptr deletes the object when it goes out of scope
   /**
