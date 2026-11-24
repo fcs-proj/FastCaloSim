@@ -41,11 +41,11 @@ public:
 
   auto operator==(const TFCS1DFunction& ref) const -> bool override;
 
-  auto get_HistoBordersx() const -> const std::vector<float>&
+  /// Const or not as the object
+  auto get_HistoBordersx(this auto&& self) -> auto&&
   {
-    return m_HistoBorders;
+    return std::forward_like<decltype(self)>(self.m_HistoBorders);
   }
-  auto get_HistoBordersx() -> std::vector<float>& { return m_HistoBorders; }
   auto get_HistoContents() const -> const std::vector<HistoContent_t>&
   {
     return m_HistoContents;

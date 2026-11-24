@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <ranges>
 
 #include "FastCaloSim/Core/TFCSHitCellMappingWiggle.h"
 
@@ -100,18 +101,17 @@ void TFCSHitCellMappingWiggle::initialize(
     return;
   }
   std::vector<const TFCS1DFunction*> functions(histograms.size());
-  for (std::size_t i = 0; i < histograms.size(); ++i) {
-    if (histograms[i] != nullptr) {
-      auto* func = new TFCS1DFunctionInt32Histogram(histograms[i]);
-      if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
-        for (auto& ele : func->get_HistoBordersx()) {
-          ele *= xscale;
-        }
-      }
-      functions[i] = func;
-    } else {
-      functions[i] = nullptr;
+  for (auto&& [histogram, function] : std::views::zip(histograms, functions)) {
+    if (histogram == nullptr) {
+      continue;
     }
+    auto* func = new TFCS1DFunctionInt32Histogram(histogram);
+    if (!FastCaloSim::exactly_equal(xscale, 1.0F)) {
+      for (auto& ele : func->get_HistoBordersx()) {
+        ele *= xscale;
+      }
+    }
+    function = func;
   }
 
   initialize(functions, bin_low_edges);

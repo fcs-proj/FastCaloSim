@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cstddef>
+#include <ranges>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCSEnergyRenormalization.h"
@@ -35,9 +36,7 @@ auto TFCSEnergyRenormalization::simulate(
   std::vector<double> energies(layers.size(), 0);
 
   // Loop over all cells containing energy and sum up energies
-  for (const auto& cell_iter : simulstate.cells()) {
-    unsigned long long const cell_id = cell_iter.first;
-    const double cell_energy = cell_iter.second;
+  for (const auto& [cell_id, cell_energy] : simulstate.cells()) {
     // Add the energy to the layer of the cell
     energies[m_geo->layer_index(m_geo->get_cell(cell_id).layer())] +=
         cell_energy;
@@ -51,11 +50,12 @@ auto TFCSEnergyRenormalization::simulate(
       ? &m_geo->layer_roles().out_of_calo_report_threshold
       : nullptr;
 
-  for (std::size_t index = 0; index < layers.size(); ++index) {
-    const std::size_t layer = layers[index];
+  for (auto&& [layer, energy, factor] :
+       std::views::zip(layers, energies, scalefactor))
+  {
     // catch large amounts of energy not simulated as shower is outside the
     // calorimeter
-    if (FastCaloSim::exactly_equal(energies[index], 0.0)
+    if (FastCaloSim::exactly_equal(energy, 0.0)
         && !FastCaloSim::exactly_equal(simulstate.E(layer), 0.0)
         && report_threshold != nullptr && layer < report_threshold->size()
         && simulstate.E(layer) > (*report_threshold)[layer])
@@ -64,10 +64,10 @@ auto TFCSEnergyRenormalization::simulate(
           "TFCSEnergyRenormalization::simulate(): energy not simulated "
           "(out-of-calo) in layer "
           << layer << " expected: " << simulstate.E(layer)
-          << " simulated: " << energies[index]);
+          << " simulated: " << energy);
     }
-    if (!FastCaloSim::exactly_equal(energies[index], 0.0)) {
-      scalefactor[index] = simulstate.E(layer) / energies[index];
+    if (!FastCaloSim::exactly_equal(energy, 0.0)) {
+      factor = simulstate.E(layer) / energy;
     }
   }
 
@@ -81,10 +81,11 @@ auto TFCSEnergyRenormalization::simulate(
 
   if (msgLvl(FastCaloSim::MSG::DEBUG)) {
     FCS_MSG_DEBUG("Apply scale factors : ");
-    for (std::size_t index = 0; index < layers.size(); ++index) {
-      FCS_MSG_DEBUG("  " << layers[index] << " *= " << scalefactor[index]
-                         << " : " << energies[index] << " -> "
-                         << simulstate.E(layers[index]));
+    for (const auto& [layer, energy, factor] :
+         std::views::zip(layers, energies, scalefactor))
+    {
+      FCS_MSG_DEBUG("  " << layer << " *= " << factor << " : " << energy
+                         << " -> " << simulstate.E(layer));
     }
   }
 

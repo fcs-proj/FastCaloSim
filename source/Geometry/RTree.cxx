@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <iterator>
 #include <limits>
+#include <ranges>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -362,17 +363,18 @@ template<typename Container>
     std::array<double, k> distances {};
     double min_distance = std::numeric_limits<double>::infinity();
     double max_distance = -std::numeric_limits<double>::infinity();
-    for (std::size_t i = 0; i < nearest.size(); ++i) {
-      distances[i] = bg::comparable_distance(point, nearest[i].first);
-      min_distance = std::min(min_distance, distances[i]);
-      max_distance = std::max(max_distance, distances[i]);
+    for (auto&& [entry, distance] : std::views::zip(nearest, distances)) {
+      distance = bg::comparable_distance(point, entry.first);
+      min_distance = std::min(min_distance, distance);
+      max_distance = std::max(max_distance, distance);
     }
     if (std::isfinite(min_distance)
         && (nearest.size() < k || max_distance > min_distance))
     {
-      for (std::size_t i = 0; i < nearest.size(); ++i) {
-        if (FastCaloSim::exactly_equal(distances[i], min_distance)) {
-          candidates.push_back(nearest[i]);
+      for (const auto& [entry, distance] : std::views::zip(nearest, distances))
+      {
+        if (FastCaloSim::exactly_equal(distance, min_distance)) {
+          candidates.push_back(entry);
         }
       }
       return;

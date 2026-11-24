@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "FastCaloSim/Core/TFCSLateralShapeParametrization.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 
@@ -34,8 +36,11 @@ public:
       -> const TFCSParametrizationBase* override;
   auto operator[](std::size_t ind) -> TFCSParametrizationBase* override;
   void set_daughter(std::size_t ind, TFCSParametrizationBase* param) override;
-  auto chain() const -> const Chain_t& { return m_chain; }
-  auto chain() -> Chain_t& { return m_chain; }
+  /// Const or not as the object
+  auto chain(this auto&& self) -> auto&&
+  {
+    return std::forward_like<decltype(self)>(self.m_chain);
+  }
   void push_back(const Chain_t::value_type& value) { m_chain.push_back(value); }
   void push_back_init(const Chain_t::value_type& value);
 

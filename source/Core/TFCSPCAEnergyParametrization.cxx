@@ -6,6 +6,7 @@
 #include <format>
 #include <memory>
 #include <numbers>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -203,8 +204,9 @@ auto TFCSPCAEnergyParametrization::simulate(
       scalefactor = 1.0;
     }
 
-    for (std::size_t l = 0; l < layerNr.size(); l++) {
-      simdata[l] *= scalefactor;
+    // The layer fractions, without the total energy after them
+    for (double& fraction : simdata | std::views::take(layerNr.size())) {
+      fraction *= scalefactor;
     }
 
     // Apply hit-and-miss reweighting of total energy response
@@ -236,9 +238,9 @@ auto TFCSPCAEnergyParametrization::simulate(
 
     for (const std::size_t s : m_geo->layer_ids()) {
       double energyfrac = 0.0;
-      for (std::size_t l = 0; l < layerNr.size(); ++l) {
-        if (std::cmp_equal(layerNr[l], s)) {
-          energyfrac = simdata[l];
+      for (const auto& [layer, fraction] : std::views::zip(layerNr, simdata)) {
+        if (std::cmp_equal(layer, s)) {
+          energyfrac = fraction;
         }
       }
       simulstate.set_Efrac(s, energyfrac);

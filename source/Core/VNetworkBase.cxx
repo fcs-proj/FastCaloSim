@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <format>
 #include <iostream>
 
 #include "FastCaloSim/Core/VNetworkBase.h"
@@ -49,7 +50,7 @@ auto VNetworkBase::representNetworkInputs(
   for (const auto& outer : inputs) {
     representation += "\n key->" + outer.first + "; ";
     for (const auto& inner : outer.second) {
-      representation += inner.first + "=" + std::to_string(inner.second) + ", ";
+      representation += std::format("{}={:f}, ", inner.first, inner.second);
       ++valuesIncluded;
       if (valuesIncluded > maxValues) {
         break;
@@ -70,7 +71,7 @@ auto VNetworkBase::representNetworkOutputs(
       "NetworkOutputs, size " + std::to_string(outputs.size()) + "; \n";
   int valuesIncluded = 0;
   for (const auto& item : outputs) {
-    representation += item.first + "=" + std::to_string(item.second) + ", ";
+    representation += std::format("{}={:f}, ", item.first, item.second);
     ++valuesIncluded;
     if (valuesIncluded > maxValues) {
       break;
