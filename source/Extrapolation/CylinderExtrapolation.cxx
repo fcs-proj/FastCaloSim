@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <ranges>
 
 #include "CylinderExtrapolation.h"
 
@@ -278,9 +279,7 @@ auto crossCylinder(const std::vector<TrackPoint>& track,
 {
   // Number of segments whose intersections with the surface were computed
   unsigned int nExtrapolations = 0;
-  for (std::size_t i = 1; i < track.size(); ++i) {
-    const TrackPoint& start = track[i - 1];
-    const TrackPoint& end = track[i];
+  for (const auto& [start, end] : track | std::views::pairwise) {
     const Vector3D& p1 = start.position;
     const Vector3D& p2 = end.position;
 
@@ -318,7 +317,7 @@ auto crossCylinder(const std::vector<TrackPoint>& track,
 
     const bool bothOutside =
         location1 == Location::Outside && location2 == Location::Outside;
-    const bool isLast = i == track.size() - 1;
+    const bool isLast = &end == &track.back();
     if (crossesSurface || isOnSegment(intersection, p1, p2)
         || (bothOutside && !isForward && nExtrapolations == 1) || isLast)
     {
@@ -339,9 +338,7 @@ auto extrapolateWithClosestApproach(const std::vector<TrackPoint>& track,
 {
   std::optional<TrackPoint> result;
   double minDistance = 100000;  // mm
-  for (std::size_t i = 1; i < track.size(); ++i) {
-    const TrackPoint& start = track[i - 1];
-    const TrackPoint& end = track[i];
+  for (const auto& [start, end] : track | std::views::pairwise) {
     const Vector3D closest =
         closestPointToSurface(cylinder, start.position, end.position);
     const Vector3D onSurface = cylinder.project(closest);

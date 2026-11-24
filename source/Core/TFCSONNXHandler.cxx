@@ -6,6 +6,7 @@
 // For reading the binary onnx files
 #include <fstream>
 #include <iterator>
+#include <ranges>
 #include <vector>
 
 // ONNX Runtime include(s).
@@ -83,17 +84,21 @@ void TFCSONNXHandler::print(std::ostream& strm) const
     strm << m_inputFile;
   };
   strm << "\nHas input nodes (name:dimensions);\n";
-  for (size_t inp_n = 0; inp_n < m_inputNodeNames.size(); inp_n++) {
-    strm << "\t" << m_inputNodeNames[inp_n] << ":[";
-    for (const int64_t dim : m_inputNodeDims[inp_n]) {
+  for (const auto& [name, dims] :
+       std::views::zip(m_inputNodeNames, m_inputNodeDims))
+  {
+    strm << "\t" << name << ":[";
+    for (const int64_t dim : dims) {
       strm << " " << dim << ",";
     };
     strm << "]\n";
   };
   strm << "\nHas output nodes (name:dimensions);\n";
-  for (size_t out_n = 0; out_n < m_outputNodeNames.size(); out_n++) {
-    strm << "\t" << m_outputNodeNames[out_n] << ":[";
-    for (const int64_t dim : m_outputNodeDims[out_n]) {
+  for (const auto& [name, dims] :
+       std::views::zip(m_outputNodeNames, m_outputNodeDims))
+  {
+    strm << "\t" << name << ":[";
+    for (const int64_t dim : dims) {
       strm << " " << dim << ",";
     };
     strm << "]\n";
@@ -371,23 +376,21 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
   //  Going to keep the data in each node flat, because that's easier
   std::vector<std::vector<Tin>> input_values(num_input_nodes);
   std::vector<Ort::Value> node_values;
-  // Non const values that will be needed at each step.
-  std::string node_name;
-  // Move along the list of node names gathered in the constructor
-  // we need both the node name, and the dimension
-  // so we cannot iterate directly on the vector.
+  // The input nodes gathered in the constructor, each with its shape and the
+  // storage of its values
   FCS_MSG_DEBUG("Looping over " << num_input_nodes
                                 << " input nodes of ONNX network.");
-  for (size_t node_n = 0; node_n < m_inputNodeNames.size(); node_n++) {
-    FCS_MSG_DEBUG("Node n = " << node_n);
-    node_name = m_inputNodeNames[node_n];
+  for (auto&& [name, dims, values] :
+       std::views::zip(m_inputNodeNames, m_inputNodeDims, input_values))
+  {
+    const std::string node_name = name;
     FCS_MSG_DEBUG("Node name " << node_name);
     // Get the shape of this node
-    const std::size_t n_dimensions = m_inputNodeDims[node_n].size();
+    const std::size_t n_dimensions = dims.size();
     FCS_MSG_DEBUG("Node dimensions " << n_dimensions);
     // The dimensions are all at least 1, see the constructor
     std::size_t elements_in_node = 1;
-    for (const int64_t dimension_len : m_inputNodeDims[node_n]) {
+    for (const int64_t dimension_len : dims) {
       elements_in_node *= static_cast<std::size_t>(dimension_len);
     };
     FCS_MSG_DEBUG("Elements in node " << elements_in_node);
@@ -416,18 +419,17 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
         node_elements[key_number] = static_cast<Tin>(element.second);
       }
     }
-    input_values[node_n] = std::move(node_elements);
+    values = std::move(node_elements);
 
     FCS_MSG_DEBUG("Creating ort tensor n_dimensions = "
                   << n_dimensions
                   << ", elements_in_node = " << elements_in_node);
     // Doesn't copy data internally, so vector arguments need to stay alive
-    Ort::Value node =
-        Ort::Value::CreateTensor<Tin>(m_memoryInfo,
-                                      input_values[node_n].data(),
-                                      elements_in_node,
-                                      m_inputNodeDims[node_n].data(),
-                                      n_dimensions);
+    Ort::Value node = Ort::Value::CreateTensor<Tin>(m_memoryInfo,
+                                                    values.data(),
+                                                    elements_in_node,
+                                                    dims.data(),
+                                                    n_dimensions);
 
     node_values.push_back(std::move(node));
   }
@@ -447,13 +449,13 @@ auto TFCSONNXHandler::computeTemplate(VNetworkBase::NetworkInputs const& inputs)
   // as the output format is just a string to double map
   // the outputs will be keyed like "<node_name>_<part_n>"
   std::string output_name;
-  for (size_t node_n = 0; node_n < m_outputNodeNames.size(); node_n++) {
+  for (auto&& [tensor, elements_in_node, name] :
+       std::views::zip(output_tensors, m_outputNodeSize, m_outputNodeNames))
+  {
     // get a pointer to the data
-    const Tout* const output_node =
-        output_tensors[node_n].GetTensorMutableData<Tout>();
+    const Tout* const output_node = tensor.GetTensorMutableData<Tout>();
     FCS_MSG_VERBOSE("output node " << output_node);
-    const int64_t elements_in_node = m_outputNodeSize[node_n];
-    node_name = m_outputNodeNames[node_n];
+    const std::string node_name = name;
     // Does the GetTensorMutableData really always return a
     // flat array?
     // Likely yes, see use of memcopy on line 301 of
