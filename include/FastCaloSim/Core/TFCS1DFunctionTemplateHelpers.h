@@ -31,6 +31,11 @@ public:
 
   static auto MaxCeilOnlyForInt(const Tfloat value) -> T
   {
+    // MaxValueFloat rounds up for 32 bit (to 2^32 for float): a value of 1
+    // would convert out of the range of T
+    if (value >= 1) {
+      return MaxValue;
+    }
     return static_cast<T>(std::ceil(MaxValueFloat * value));
   }
   static auto ExpandToMaxRange(const Tfloat value) -> T
