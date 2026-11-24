@@ -127,8 +127,10 @@ auto TFCSHitCellMappingWiggle::simulate_hit(
     return FCSFatal;
   }
 
+  // Without wiggle bins (not initialized, or cleared), and outside them, the
+  // hit is mapped without a wiggle
   const double eta = std::fabs(hit.eta());
-  if (eta < get_bin_low_edge(0)
+  if (get_number_of_bins() == 0 || eta < get_bin_low_edge(0)
       || eta >= get_bin_up_edge(get_number_of_bins() - 1))
   {
     return TFCSHitCellMapping::simulate_hit(hit, simulstate, truth, extrapol);
