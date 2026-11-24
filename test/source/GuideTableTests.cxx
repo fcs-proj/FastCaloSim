@@ -521,6 +521,33 @@ TEST(GuideTableTests, LateralShapeNanFixRebuildsTable)
   EXPECT_EQ(count_mismatches(hist, rng), 0);
 }
 
+// The NaN fix keeps the cumulative distribution non-decreasing: probability 0
+// before the first valid bin, 1 after the last, and none added in between
+TEST(GuideTableTests, LateralShapeNanFixKeepsDistributionNonDecreasing)
+{
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  const std::vector<std::pair<std::vector<float>, std::vector<float>>> cases {
+      {{nan, 0.2F, 0.8F, nan}, {0, 0.2F, 0.8F, 1}},
+      {{nan, nan, 0.5F, 1}, {0, 0, 0.5F, 1}},
+      {{0.2F, nan, 0.6F, nan}, {0.2F, 0.2F, 0.6F, 1}},
+      {{nan, nan, nan, nan}, {1, 1, 1, 1}},
+  };
+  for (const auto& [input, expected] : cases) {
+    const std::unique_ptr<TFCSParametrizationBase> owner(
+        static_cast<TFCSHistoLateralShapeParametrization*>(
+            TClass::GetClass("TFCSHistoLateralShapeParametrization")->New()));
+    auto& hist = static_cast<TFCSHistoLateralShapeParametrization*>(owner.get())
+                     ->histogram();
+    hist.get_HistoBordersx() = {0, 1, 2, 3, 4};
+    hist.get_HistoBordersy() = {0, 1};
+    hist.set_HistoContents(input);
+
+    owner->set_geometry(nullptr);
+    EXPECT_EQ(hist.get_HistoContents(), expected);
+    EXPECT_TRUE(std::ranges::is_sorted(hist.get_HistoContents()));
+  }
+}
+
 // Every histogram read from a parametrization file has its table
 TEST(GuideTableTests, TablesBuiltWhenReadingParamFile)
 {

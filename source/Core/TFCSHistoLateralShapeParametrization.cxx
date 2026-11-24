@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -11,6 +13,7 @@
 #include "CLHEP/Random/RandPoisson.h"
 #include "FastCaloSim/Core/TFCSExtrapolationState.h"
 #include "FastCaloSim/Core/TFCSSimulationState.h"
+#include "FastCaloSim/Definitions/Index.h"
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "TFile.h"
 #include "TH2.h"
@@ -33,46 +36,45 @@ TFCSHistoLateralShapeParametrization::~TFCSHistoLateralShapeParametrization() =
 void TFCSHistoLateralShapeParametrization::set_geometry(CaloGeo* geo)
 {
   TFCSLateralShapeParametrizationHitBase::set_geometry(geo);
-  if (std::ranges::none_of(m_hist.get_HistoContents(),
-                           [](float c) -> bool { return std::isnan(c); }))
-  {
+  const auto is_nan = [](float c) -> bool { return std::isnan(c); };
+  if (std::ranges::none_of(m_hist.get_HistoContents(), is_nan)) {
     return;
   }
 
-  // Fixed on a copy, which then replaces the contents of the histogram (and
-  // rebuilds its search table)
+  // The contents are a cumulative distribution, which the sampling searches
+  // with upper_bound: the repair keeps it non-decreasing. Fixed on a copy,
+  // which then replaces the contents of the histogram (and rebuilds its search
+  // table).
   std::vector<float> contents = m_hist.get_HistoContents();
-  std::size_t first_fix_bin = contents.size();
-  for (std::size_t i = contents.size(); i-- > 0;) {
-    if (std::isnan(contents[i])) {
-      FCS_MSG_DEBUG("nan in histo content for " << GetTitle() << ", bin[" << i
-                                                << "]=" << contents[i]
-                                                << " -> 1");
-      contents[i] = 1;
-      first_fix_bin = i;
-    }
-  }
-
-  if (first_fix_bin == 0) {
+  const auto first_valid = std::ranges::find_if_not(contents, is_nan);
+  if (first_valid == contents.end()) {
+    std::ranges::fill(contents, 1.0F);
     FCS_MSG_WARNING("nan in histo content for "
                     << GetTitle()
                     << " for all bins. Fixed to probability 1 causing hits "
                        "to be deposited in the shower center");
   } else {
-    std::size_t last_fix_bin = 0;
-    for (std::size_t i = 0; i < contents.size(); ++i) {
-      if (std::isnan(contents[i])) {
-        FCS_MSG_DEBUG("nan in histo content for " << GetTitle() << ", bin[" << i
-                                                  << "]=" << contents[i]
-                                                  << " -> 0");
-        contents[i] = 0;
-        last_fix_bin = i;
+    const auto last_valid =
+        std::ranges::find_if_not(contents | std::views::reverse, is_nan).base();
+    // Before the first valid bin no probability, after the last valid bin all
+    // of it, and a bin in between adds none to the bin before it
+    std::fill(contents.begin(), first_valid, 0.0F);
+    std::fill(last_valid, contents.end(), 1.0F);
+    std::size_t n_inner = 0;
+    for (auto it = first_valid; it != last_valid; ++it) {
+      if (is_nan(*it)) {
+        *it = *(it - 1);
+        ++n_inner;
       }
     }
     FCS_MSG_WARNING("nan in histo content for "
-                    << GetTitle() << ". Fixed up to bin " << last_fix_bin
-                    << " with probability 0 and beyond bin " << first_fix_bin
-                    << " with probability 1.");
+                    << GetTitle() << ". Fixed "
+                    << FastCaloSim::index_of(contents, first_valid)
+                    << " bins at the start with probability 0, "
+                    << static_cast<std::size_t>(contents.end() - last_valid)
+                    << " bins at the end with probability 1 and " << n_inner
+                    << " bins in between with the probability of the bin "
+                       "before.");
   }
   m_hist.set_HistoContents(std::move(contents));
 }
