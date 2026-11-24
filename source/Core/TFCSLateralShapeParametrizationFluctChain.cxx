@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationFluctChain.h"
 
@@ -89,6 +90,13 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
   // the same energy
   const double Eavghit = get_E_hit(simulstate, truth, extrapol);
   const double absEavghit_tenth = std::abs(Eavghit / 10);
+  // The number of hits expected with that energy. As in
+  // TFCSLateralShapeParametrizationHitChain, the loop is aborted after 1000
+  // times as many: hits that are all rejected (deposit no energy) would
+  // otherwise never reach the precision
+  const double nhit_expected =
+      std::max(std::round(std::abs(Elayer / Eavghit)), 1.0);
+  const double max_hits = std::max(1000 * nhit_expected, 1000.0);
   double sumEhit = 0;
   double error2_sumEhit = 0;
   double error2 = 2 * s_max_sigma2_fluctuation;
@@ -100,7 +108,7 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
   }
 
   auto hitloopstart = m_chain.begin() + get_nr_of_init();
-  int ihit = 0;
+  std::size_t ihit = 0;
   int ifail = 0;
   int itotalfail = 0;
   int retry_warning = 1;
@@ -152,6 +160,15 @@ auto TFCSLateralShapeParametrizationFluctChain::simulate(
       error2_sumEhit += Ehit * Ehit;
       if (sumEhit2 > 0) {
         error2 = error2_sumEhit / sumEhit2;
+      }
+      if (static_cast<double>(ihit) >= max_hits && error2 > sigma2) {
+        FCS_MSG_WARNING(
+            "TFCSLateralShapeParametrizationFluctChain::simulate(): Aborting "
+            "hit chain, iterated "
+            << ihit << " times, expected " << nhit_expected
+            << " times. Deposited E(" << calosample() << ")=" << sumEhit
+            << " expected E=" << Elayer);
+        break;
       }
     } else {
       if (ifail >= retry) {
