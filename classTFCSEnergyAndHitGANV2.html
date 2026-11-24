@@ -82,11 +82,6 @@
           <h2><a href="#pub-types">Public types</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">enum <a href="#adc84050a87a4ad517858f700e4093ff7" class="m-doc">FCSGANfreemem</a> { </span><span class="m-doc-wrap"><a href="#adc84050a87a4ad517858f700e4093ff7ada14c54cae8607850cffb1e8d1e4ef0f" class="m-doc">kGANfreemem</a> =
-        BIT(17) }</span>
-            </dt>
-            <dd>Status bit for chain persistency.</dd>
-            <dt>
               <span class="m-doc-wrap-bumper">enum <a href="#ab8abde38abae5053d54c482af969aa25" class="m-doc">FCSEnergyInitializationStatusBits</a> { </span><span class="m-doc-wrap"><a href="#ab8abde38abae5053d54c482af969aa25aaf40543f51a576501942f5b64d311558" class="m-doc">kOnlyScaleEnergy</a> =
         BIT(18) }</span>
             </dt>
@@ -129,18 +124,6 @@
             <dd><span></span></dd>
             <dt id="af77e412e7a80da23a06f6c7017509c68">
               <span class="m-doc-wrap-bumper">auto <a href="#af77e412e7a80da23a06f6c7017509c68" class="m-doc-self">is_match_all_calosample</a>(</span><span class="m-doc-wrap">) const -&gt; bool <span class="m-label m-flat m-warning">override</span></span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a780f50a876f6689b7f160f684f9f78f5">
-              <span class="m-doc-wrap-bumper">auto <a href="#a780f50a876f6689b7f160f684f9f78f5" class="m-doc-self">GANfreemem</a>(</span><span class="m-doc-wrap">) const -&gt; bool</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a5bc331923d3b942a17afd1b71c3ab107">
-              <span class="m-doc-wrap-bumper">void <a href="#a5bc331923d3b942a17afd1b71c3ab107" class="m-doc-self">set_GANfreemem</a>(</span><span class="m-doc-wrap">)</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a7898bf39d3346008883854f98e200903">
-              <span class="m-doc-wrap-bumper">void <a href="#a7898bf39d3346008883854f98e200903" class="m-doc-self">reset_GANfreemem</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="aacc3662693f25f6a53ab470ed334f55b">
@@ -230,23 +213,6 @@
         </section>
         <section>
           <h2>Enum documentation</h2>
-          <section class="m-doc-details" id="adc84050a87a4ad517858f700e4093ff7"><div>
-            <h3>
-              enum TFCSEnergyAndHitGANV2::<wbr /><a href="#adc84050a87a4ad517858f700e4093ff7" class="m-doc-self">FCSGANfreemem</a>
-            </h3>
-            <p>Status bit for chain persistency.</p>
-            <table class="m-table m-fullwidth m-flat m-doc">
-              <thead><tr><th style="width: 1%">Enumerators</th><th></th></tr></thead>
-              <tbody>
-                <tr>
-                  <td><a href="#adc84050a87a4ad517858f700e4093ff7ada14c54cae8607850cffb1e8d1e4ef0f" class="m-doc-self" id="adc84050a87a4ad517858f700e4093ff7ada14c54cae8607850cffb1e8d1e4ef0f">kGANfreemem</a></td>
-                  <td>
-<p>Set this bit in the TObject bit if the memory for m_input should be freed after reading in athena</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div></section>
           <section class="m-doc-details" id="ab8abde38abae5053d54c482af969aa25"><div>
             <h3>
               enum TFCSEnergyAndHitGANV2::<wbr /><a href="#ab8abde38abae5053d54c482af969aa25" class="m-doc-self">FCSEnergyInitializationStatusBits</a>
