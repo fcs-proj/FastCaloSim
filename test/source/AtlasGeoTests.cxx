@@ -83,3 +83,34 @@ TEST_F(AtlasGeoTests, LayerCoordinateSystems)
   EXPECT_THROW(static_cast<void>(AtlasGeoTests::geo->is_xyz(n_layers)),
                std::out_of_range);
 }
+
+TEST_F(AtlasGeoTests, FCalPositionWithoutCell)
+{
+  constexpr std::size_t layer = 21;
+
+  // A position in an FCal cell is found by both lookups
+  const Cell cell = AtlasGeoTests::geo->get_cell_at_idx(layer, 0);
+  const Position in_cell {.m_x = cell.x(),
+                          .m_y = cell.y(),
+                          .m_z = cell.z(),
+                          .m_eta = 0,
+                          .m_phi = 0,
+                          .m_r = 0};
+  EXPECT_EQ(AtlasGeoTests::geo->find_cell(layer, in_cell).id(), cell.id());
+  EXPECT_EQ(AtlasGeoTests::geo->get_cell(layer, in_cell).id(), cell.id());
+
+  // For a position outside the tiles the FCal handler gives the closest cell,
+  // and no cell where that search fails: here at a radius that is 0 in single
+  // precision (x * x + y * y underflows), though not exactly on the axis.
+  // find_cell gives an invalid cell, so that TFCSHitCellMappingFCal can
+  // simulate the hit again, and get_cell throws.
+  const Position near_axis {.m_x = 1e-30,
+                            .m_y = 1e-30,
+                            .m_z = cell.z(),
+                            .m_eta = 0,
+                            .m_phi = 0,
+                            .m_r = 0};
+  EXPECT_FALSE(AtlasGeoTests::geo->find_cell(layer, near_axis).is_valid());
+  EXPECT_THROW(AtlasGeoTests::geo->get_cell(layer, near_axis),
+               std::runtime_error);
+}
