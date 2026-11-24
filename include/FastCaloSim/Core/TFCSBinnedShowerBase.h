@@ -153,12 +153,14 @@ protected:
   CaloGeo* m_geo = nullptr;  //! do not persistify
 
   // Called at the beginning of the simulation to select or generate the
-  // shower of the current event; stores it with store_event()
-  virtual void get_event(TFCSSimulationState& simulstate,
+  // shower of the current event; stores it with store_event(). FCSFatal if
+  // there is no shower to take it from (no event library or model loaded).
+  virtual auto get_event(TFCSSimulationState& simulstate,
                          double eta_center,
                          double phi_center,
                          double e_init,
-                         std::size_t reference_layer_index) const = 0;
+                         std::size_t reference_layer_index) const
+      -> FCSReturnCode = 0;
 
   // Stores the layers of the current event and its initial energy in
   // simulstate and computes the number of hits and the energy per layer

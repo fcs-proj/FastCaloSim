@@ -26,14 +26,22 @@ TFCSBinnedShowerONNX::~TFCSBinnedShowerONNX()
   }
 }
 
-void TFCSBinnedShowerONNX::get_event(TFCSSimulationState& simulstate,
+auto TFCSBinnedShowerONNX::get_event(TFCSSimulationState& simulstate,
                                      double eta_center,
                                      double phi_center,
                                      double e_init,
                                      std::size_t reference_layer_index) const
+    -> FCSReturnCode
 {
   (void)reference_layer_index;  // Unused parameter
   (void)phi_center;  // Unused parameter
+
+  if (m_ai_simulator == nullptr) {
+    FCS_MSG_ERROR(
+        "No simulator loaded. Please load a model with load_simulator for "
+        "TFCSBinnedShowerONNX::get_event.");
+    return FCSFatal;
+  }
 
   TFCSMLCalorimeterSimulator::event_t event =
       // The network takes its inputs in single precision
@@ -42,6 +50,7 @@ void TFCSBinnedShowerONNX::get_event(TFCSSimulationState& simulstate,
                                static_cast<float>(e_init));
 
   store_event(simulstate, std::move(event.event_data), e_init);
+  return FCSSuccess;
 }
 
 void TFCSBinnedShowerONNX::load_meta_data(const std::string& filename,

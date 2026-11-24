@@ -154,17 +154,18 @@ auto TFCSBinnedShower::find_best_match(double eta_center,
   return best_match;
 }
 
-void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
+auto TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
                                  double eta_center,
                                  double phi_center,
                                  double e_init,
                                  std::size_t reference_layer_index) const
+    -> FCSReturnCode
 {
   if (m_eventlibrary.empty()) {
     FCS_MSG_ERROR(
         "No event library loaded. Please load an event library for "
         "TFCSBinnedShower::get_event.");
-    return;
+    return FCSFatal;
   }
 
   // Uniformly distributed index into the event library
@@ -212,6 +213,7 @@ void TFCSBinnedShower::get_event(TFCSSimulationState& simulstate,
 
   // Store a copy of the layers of the event
   store_event(simulstate, m_eventlibrary.at(event_index).event_data, e_init);
+  return FCSSuccess;
 }
 
 void TFCSBinnedShower::load_event_library(const std::string& filename,
