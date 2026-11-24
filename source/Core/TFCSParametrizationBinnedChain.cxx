@@ -94,6 +94,7 @@ auto TFCSParametrizationBinnedChain::simulate(
 {
   return simulate_with_restarts(
       "TFCSParametrizationBinnedChain::simulate()",
+      simulstate,
       [&] -> FCSReturnCode
       {
         // Parametrizations before the bins, run for all bins

@@ -209,6 +209,7 @@ auto TFCSParametrizationChain::simulate(
     const TFCSExtrapolationState* extrapol) const -> FCSReturnCode
 {
   return simulate_with_restarts("TFCSParametrizationChain::simulate()",
+                                simulstate,
                                 [&] -> FCSReturnCode
                                 {
                                   for (const auto& param : m_chain) {
