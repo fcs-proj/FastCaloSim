@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <utility>
-
 #include "FastCaloSim/Core/TFCS2DFunctionHistogram.h"
 #include "FastCaloSim/Core/TFCSLateralShapeParametrizationHitBase.h"
 #include "FastCaloSim/Core/TFCSTruthState.h"
@@ -82,10 +80,7 @@ public:
   auto Initialize(const char* filepath, const char* histname) -> bool;
 
   /// Const or not as the object
-  auto histogram(this auto&& self) -> auto&&
-  {
-    return std::forward_like<decltype(self)>(self.m_hist);
-  }
+  auto histogram(this auto&& self) -> auto& { return self.m_hist; }
 
   void Print(Option_t* option = "") const override;
 

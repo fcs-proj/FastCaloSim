@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <utility>
-
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
 class TFCSParametrizationChain : public TFCSParametrization
@@ -65,10 +63,7 @@ public:
     m_chain.at(ind) = param;
   }
   /// Const or not as the object
-  auto chain(this auto&& self) -> auto&&
-  {
-    return std::forward_like<decltype(self)>(self.m_chain);
-  }
+  auto chain(this auto&& self) -> auto& { return self.m_chain; }
   void push_back(const Chain_t::value_type& param)
   {
     m_chain.push_back(param);

@@ -42,9 +42,9 @@ public:
   auto operator==(const TFCS1DFunction& ref) const -> bool override;
 
   /// Const or not as the object
-  auto get_HistoBordersx(this auto&& self) -> auto&&
+  auto get_HistoBordersx(this auto&& self) -> auto&
   {
-    return std::forward_like<decltype(self)>(self.m_HistoBorders);
+    return self.m_HistoBorders;
   }
   auto get_HistoContents() const -> const std::vector<HistoContent_t>&
   {

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <utility>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCS1DFunction.h"
@@ -146,15 +145,15 @@ public:
   }
 
   /// Const or not as the object
-  auto get_HistoBordersx(this auto&& self) -> auto&&
+  auto get_HistoBordersx(this auto&& self) -> auto&
   {
-    return std::forward_like<decltype(self)>(self.m_HistoBorders);
+    return self.m_HistoBorders;
   }
 
   /// Const or not as the object
-  auto get_HistoContents(this auto&& self) -> auto&&
+  auto get_HistoContents(this auto&& self) -> auto&
   {
-    return std::forward_like<decltype(self)>(self.m_HistoContents);
+    return self.m_HistoContents;
   }
 
 protected:

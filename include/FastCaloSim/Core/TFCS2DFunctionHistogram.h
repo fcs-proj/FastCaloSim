@@ -36,14 +36,14 @@ public:
                   double rnd1) const override;
 
   /// Const or not as the object
-  auto get_HistoBordersx(this auto&& self) -> auto&&
+  auto get_HistoBordersx(this auto&& self) -> auto&
   {
-    return std::forward_like<decltype(self)>(self.m_HistoBorders);
+    return self.m_HistoBorders;
   }
   /// Const or not as the object
-  auto get_HistoBordersy(this auto&& self) -> auto&&
+  auto get_HistoBordersy(this auto&& self) -> auto&
   {
-    return std::forward_like<decltype(self)>(self.m_HistoBordersy);
+    return self.m_HistoBordersy;
   }
   auto get_HistoContents() const -> const std::vector<float>&
   {
