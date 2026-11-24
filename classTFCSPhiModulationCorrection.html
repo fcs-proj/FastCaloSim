@@ -109,14 +109,14 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a46e311466507e26555ce3d3ca7efae9f" class="m-doc-self">operator=</a>(</span><span class="m-doc-wrap"><a href="classTFCSPhiModulationCorrection.html" class="m-doc">TFCSPhiModulationCorrection</a>&amp;&amp; ref) -&gt; TFCSPhiModulationCorrection &amp; <span class="m-label m-flat m-info">defaulted</span></span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a9f5db764046f9944691f4d514a4360d4">
-              <span class="m-doc-wrap-bumper">void <a href="#a9f5db764046f9944691f4d514a4360d4" class="m-doc-self">load_phi_modulation</a>(</span><span class="m-doc-wrap">const std::string&amp; filename,
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a52e5c592870794324eb6ad58fcddd1af" class="m-doc">load_phi_modulation</a>(</span><span class="m-doc-wrap">const std::string&amp; filename,
               std::size_t layer_index,
               float eta_min,
               float eta_max,
-              float energy_shift = 1.0)</span>
+              float energy_shift = 1.0) -&gt; FASTCALOSIM_EXPORT void</span>
             </dt>
-            <dd><span></span></dd>
+            <dd></dd>
             <dt id="a2033fbba65421f6d6e98db90ee1bb4c5">
               <span class="m-doc-wrap-bumper">void <a href="#a2033fbba65421f6d6e98db90ee1bb4c5" class="m-doc-self">clear</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
@@ -195,6 +195,16 @@
         </section>
         <section>
           <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a52e5c592870794324eb6ad58fcddd1af"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">FASTCALOSIM_EXPORT void TFCSPhiModulationCorrection::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a52e5c592870794324eb6ad58fcddd1af" class="m-doc-self">load_phi_modulation</a>(</span><span class="m-doc-wrap">const std::string&amp; filename,
+              std::size_t layer_index,
+              float eta_min,
+              float eta_max,
+              float energy_shift = 1.0)</span></span>
+            </h3>
+<p>Adds the weights of histogram hWt_Layer0 (one per phi bin within a cell) in the given file for the given layer and eta range. Exported for the code creating parametrizations, which calls it from outside the library.</p>
+          </div></section>
           <section class="m-doc-details" id="adae56ee10cc4df26957ec6e55e8a0de3"><div>
             <h3>
               <span class="m-doc-wrap-bumper">void TFCSPhiModulationCorrection::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#adae56ee10cc4df26957ec6e55e8a0de3" class="m-doc-self">set_geometry</a>(</span><span class="m-doc-wrap"><a href="classCaloGeo.html" class="m-doc">CaloGeo</a>* geo) <span class="m-label m-warning">override</span></span></span>
