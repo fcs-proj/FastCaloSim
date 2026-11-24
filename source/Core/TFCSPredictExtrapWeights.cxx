@@ -87,7 +87,12 @@ auto TFCSPredictExtrapWeights::operator==(
     return false;
   }
 
-  return (*m_input == *ref_typed.m_input);
+  // Without the network configuration (never loaded, or freed after reading
+  // with freemem()) it is unknown whether the networks are the same
+  if (m_input == nullptr || ref_typed.m_input == nullptr) {
+    return false;
+  }
+  return *m_input == *ref_typed.m_input;
 }
 
 // getNormInputs()
