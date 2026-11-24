@@ -62,8 +62,8 @@ public:
   {
     m_chain.at(ind) = param;
   }
-  auto chain() const -> const Chain_t& { return m_chain; }
-  auto chain() -> Chain_t& { return m_chain; }
+  /// Const or not as the object
+  auto chain(this auto&& self) -> auto& { return self.m_chain; }
   void push_back(const Chain_t::value_type& param)
   {
     m_chain.push_back(param);

@@ -121,8 +121,8 @@ public:
   auto is_valid() const -> bool { return m_data.m_is_valid; }
   void invalidate() { m_data.m_is_valid = false; }
   // Raw access to the cell data
-  auto raw() const -> const CellData& { return m_data; }
-  auto raw() -> CellData& { return m_data; }
+  /// Const or not as the object
+  auto raw(this auto&& self) -> auto& { return self.m_data; }
 
   auto rent() const -> double
   {

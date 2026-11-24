@@ -35,16 +35,16 @@ public:
                   double rnd0,
                   double rnd1) const override;
 
-  auto get_HistoBordersx() const -> const std::vector<float>&
+  /// Const or not as the object
+  auto get_HistoBordersx(this auto&& self) -> auto&
   {
-    return m_HistoBorders;
+    return self.m_HistoBorders;
   }
-  auto get_HistoBordersx() -> std::vector<float>& { return m_HistoBorders; }
-  auto get_HistoBordersy() const -> const std::vector<float>&
+  /// Const or not as the object
+  auto get_HistoBordersy(this auto&& self) -> auto&
   {
-    return m_HistoBordersy;
+    return self.m_HistoBordersy;
   }
-  auto get_HistoBordersy() -> std::vector<float>& { return m_HistoBordersy; }
   auto get_HistoContents() const -> const std::vector<float>&
   {
     return m_HistoContents;

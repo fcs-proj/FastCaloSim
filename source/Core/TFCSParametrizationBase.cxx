@@ -1,5 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <ranges>
+
 #include "FastCaloSim/Core/TFCSParametrizationBase.h"
 
 #include "FastCaloSim/Geometry/CaloGeo.h"
@@ -174,15 +176,14 @@ void TFCSParametrizationBase::RemoveDuplicates()
   std::set<TFCSParametrizationBase*> dellist;
   for (auto& dupiter : dupclasses) {
     FindDuplicates_t& dup = dupiter.second;
-    for (auto onedup : dup) {
-      if (onedup.second.mother.empty()) {
+    for (const auto& [ref, duplicate] : dup) {
+      if (duplicate.mother.empty()) {
         continue;
       }
-      TFCSParametrizationBase* ref = onedup.first;
       FCS_MSG_DEBUG("Main object " << ref << "=" << ref->GetName());
-      for (std::size_t i = 0; i < onedup.second.mother.size(); ++i) {
-        const std::size_t index = onedup.second.index[i];
-        TFCSParametrizationBase* mother = onedup.second.mother[i];
+      for (const auto& [mother, index] :
+           std::views::zip(duplicate.mother, duplicate.index))
+      {
         // NOLINTNEXTLINE(misc-const-correctness): key of a map of non-const
         TFCSParametrizationBase* delparam = mother->operator[](index);
         const std::size_t delcount = dup[delparam].mother.size();

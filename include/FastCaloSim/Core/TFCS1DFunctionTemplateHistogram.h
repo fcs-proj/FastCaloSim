@@ -144,17 +144,16 @@ public:
     return static_cast<double>(m_HistoBorders.position(ibin, residual_rnd));
   }
 
-  auto get_HistoBordersx() const -> const Txvec& { return m_HistoBorders; }
-  auto get_HistoBordersx() -> Txvec& { return m_HistoBorders; }
-
-  auto get_HistoContents() const
-      -> const TFCS1DFunction_HistogramContent<Ty, Trandom>&
+  /// Const or not as the object
+  auto get_HistoBordersx(this auto&& self) -> auto&
   {
-    return m_HistoContents;
+    return self.m_HistoBorders;
   }
-  auto get_HistoContents() -> TFCS1DFunction_HistogramContent<Ty, Trandom>&
+
+  /// Const or not as the object
+  auto get_HistoContents(this auto&& self) -> auto&
   {
-    return m_HistoContents;
+    return self.m_HistoContents;
   }
 
 protected:

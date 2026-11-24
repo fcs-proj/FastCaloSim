@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <cstddef>
+#include <ranges>
+#include <span>
 
 #include "FastCaloSim/Core/TFCSEnergyInterpolationPiecewiseLinear.h"
 
@@ -43,10 +45,10 @@ void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInLogEkin(
 void TFCSEnergyInterpolationPiecewiseLinear::InitFromArrayInEkin(
     Int_t np, const Double_t* Ekin, const Double_t* response)
 {
-  std::vector<Double_t> logEkin(static_cast<std::size_t>(np));
-  for (std::size_t i = 0; i < logEkin.size(); ++i) {
-    logEkin[i] = std::log(Ekin[i]);
-  }
+  std::vector<Double_t> logEkin = std::span(Ekin, static_cast<std::size_t>(np))
+      | std::views::transform([](Double_t energy) -> Double_t
+                              { return std::log(energy); })
+      | std::ranges::to<std::vector>();
   InitFromArrayInLogEkin(np, logEkin.data(), response);
 }
 

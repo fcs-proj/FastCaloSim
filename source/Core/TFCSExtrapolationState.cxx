@@ -21,7 +21,7 @@ void TFCSExtrapolationState::Print(Option_t* /*option*/) const
     const LayerPosition& pos = m_positions[i];
     if (pos.ok) {
       FCS_MSG_INFO("  layer " << i / NumSubPos << " subpos " << i % NumSubPos
-                              << " MID eta=" << pos.eta << " phi=" << pos.phi
+                              << " eta=" << pos.eta << " phi=" << pos.phi
                               << " r=" << pos.r << " z=" << pos.z);
     }
   }

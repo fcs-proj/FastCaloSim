@@ -79,8 +79,8 @@ public:
   auto Initialize(TH2* hist) -> bool;
   auto Initialize(const char* filepath, const char* histname) -> bool;
 
-  auto histogram() -> TFCS2DFunctionHistogram& { return m_hist; }
-  auto histogram() const -> const TFCS2DFunctionHistogram& { return m_hist; }
+  /// Const or not as the object
+  auto histogram(this auto&& self) -> auto& { return self.m_hist; }
 
   void Print(Option_t* option = "") const override;
 

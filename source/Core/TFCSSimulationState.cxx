@@ -1,9 +1,12 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
+#include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <ranges>
 #include <type_traits>
 #include <variant>
+#include <vector>
 
 #include "FastCaloSim/Core/TFCSSimulationState.h"
 
@@ -61,9 +64,13 @@ void TFCSSimulationState::Print(Option_t* /*option*/) const
 {
   FCS_MSG_INFO("Ebin=" << (m_Ebin ? std::to_string(*m_Ebin) : "none")
                        << " E=" << E() << " #cells=" << m_cells.size());
-  for (std::size_t i = 0; i < m_E.size(); ++i) {
-    if (!FastCaloSim::exactly_equal(E(i), 0.0)) {
-      FCS_MSG_INFO("  E" << i << E(i) << " E" << i << "/E=" << Efrac(i));
+  // The layer energies are stored by layer ID (not necessarily 0 to n-1)
+  auto layers = m_E | std::views::keys | std::ranges::to<std::vector>();
+  std::ranges::sort(layers);
+  for (const std::size_t layer : layers) {
+    if (!FastCaloSim::exactly_equal(E(layer), 0.0)) {
+      FCS_MSG_INFO("  E" << layer << "=" << E(layer) << " E" << layer
+                         << "/E=" << Efrac(layer));
     }
   }
   if (!m_AuxInfo.empty()) {

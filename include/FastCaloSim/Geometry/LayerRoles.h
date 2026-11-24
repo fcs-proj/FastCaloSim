@@ -93,7 +93,7 @@ struct LayerRoles
   /// @brief Whether a layer is a strip layer
   auto is_strip_layer(std::size_t layer) const -> bool
   {
-    return std::ranges::find(strip_layers, layer) != strip_layers.end();
+    return std::ranges::contains(strip_layers, layer);
   }
 
   /// @brief Whether the binned-shower upscaling samples the radius from a

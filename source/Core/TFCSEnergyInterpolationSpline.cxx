@@ -3,6 +3,8 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include <ranges>
+#include <span>
 #include <vector>
 
 #include "FastCaloSim/Core/TFCSEnergyInterpolationSpline.h"
@@ -47,10 +49,10 @@ void TFCSEnergyInterpolationSpline::InitFromArrayInEkin(Int_t np,
                                                         Double_t valbeg,
                                                         Double_t valend)
 {
-  std::vector<Double_t> logEkin(static_cast<std::size_t>(np));
-  for (std::size_t i = 0; i < logEkin.size(); ++i) {
-    logEkin[i] = std::log(Ekin[i]);
-  }
+  std::vector<Double_t> logEkin = std::span(Ekin, static_cast<std::size_t>(np))
+      | std::views::transform([](Double_t energy) -> Double_t
+                              { return std::log(energy); })
+      | std::ranges::to<std::vector>();
   InitFromArrayInLogEkin(np, logEkin.data(), response, opt, valbeg, valend);
 }
 
