@@ -43,18 +43,6 @@ public:
   auto is_match_all_Ekin_bin() const -> bool override { return true; }
   auto is_match_all_calosample() const -> bool override { return false; }
 
-  /// Status bit for chain persistency
-  enum FCSGANfreemem
-  {
-    kGANfreemem =
-        BIT(17)  ///< Set this bit in the TObject bit if the memory for
-                 ///< m_input should be freed after reading in athena
-  };
-
-  auto GANfreemem() const -> bool { return TestBit(kGANfreemem); }
-  void set_GANfreemem() { SetBit(kGANfreemem); }
-  void reset_GANfreemem() { ResetBit(kGANfreemem); }
-
   /// Status bit for energy initialization
   enum FCSEnergyInitializationStatusBits
   {
@@ -123,11 +111,6 @@ private:
   auto GetAlphaBinsForRBin(const TAxis* x, int ix, int yBinNum) const -> int;
 
   std::vector<int> m_bin_ninit;
-
-  // Persistify configuration in string m_input. A custom Streamer(...) builds
-  // m_graph on the fly when reading from file. Inside Athena, if GANfreemem()
-  // is true, the content of m_input is deleted after reading in order to free
-  // memory
 
   TFCSGANEtaSlice* m_slice = nullptr;
   TFCSGANXMLParameters m_param;
