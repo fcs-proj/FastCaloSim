@@ -174,7 +174,7 @@
 #pragma link C++ class TFCSGANXMLParameters + ;
 #pragma link C++ class TFCSGANLWTNNHandler - ;
 #pragma link C++ class TFCSGANEtaSlice + ;
-#pragma link C++ class TFCSEnergyAndHitGANV2 + ;
+#pragma link C++ class TFCSEnergyAndHitGANV2 - ;
 #pragma link C++ class TFCSPredictExtrapWeights - ;
 
 #pragma link C++ class VNetworkBase + ;

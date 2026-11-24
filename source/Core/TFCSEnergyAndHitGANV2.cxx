@@ -23,6 +23,7 @@
 #include "FastCaloSim/Definitions/ParticleData.h"
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/LayerRoles.h"
+#include "TBuffer.h"
 #include "TF1.h"
 
 namespace
@@ -79,7 +80,6 @@ TFCSEnergyAndHitGANV2::TFCSEnergyAndHitGANV2(const char* name,
     : TFCSParametrizationBinnedChain(name, title)
     , m_geo(geo)
 {
-  set_GANfreemem();
 }
 
 TFCSEnergyAndHitGANV2::~TFCSEnergyAndHitGANV2()
@@ -643,5 +643,19 @@ void TFCSEnergyAndHitGANV2::fixHists()
   // histograms, so it needs the same treatment. See ATLASSIM-7031.
   if (m_slice != nullptr) {
     m_slice->fixHists();
+  }
+}
+
+void TFCSEnergyAndHitGANV2::Streamer(TBuffer& buffer)
+{
+  if (buffer.IsReading()) {
+    buffer.ReadClassBuffer(TFCSEnergyAndHitGANV2::Class(), this);
+    // Older files have BIT(17) set for a flag "GANfreemem" that was never
+    // used. It is the bit of RetryChainFromStart() of the chain, which would
+    // turn retry requests of the parametrizations before and after the bins
+    // into failures (this class does not restart its chain).
+    reset_RetryChainFromStart();
+  } else {
+    buffer.WriteClassBuffer(TFCSEnergyAndHitGANV2::Class(), this);
   }
 }
