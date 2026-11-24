@@ -58,11 +58,12 @@ public:
 
 protected:
   // Returns the event to be used
-  void get_event(TFCSSimulationState& simulstate,
+  auto get_event(TFCSSimulationState& simulstate,
                  double eta_center,
                  double phi_center,
                  double e_init,
-                 std::size_t reference_layer_index) const override;
+                 std::size_t reference_layer_index) const
+      -> FCSReturnCode override;
 
 private:
   // Store a reference to the class that handles the actual ONNX call.

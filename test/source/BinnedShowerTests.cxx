@@ -15,16 +15,18 @@
 #include "FastCaloSim/Geometry/CaloGeo.h"
 #include "FastCaloSim/Geometry/LayerRoles.h"
 
-// TFCSBinnedShower::simulate() first removes the data of the previous event
-// from the simulation state. On a new state there is none, which used to throw
-// std::out_of_range.
-TEST(BinnedShowerTests, SimulateOnNewState)
+namespace
+{
+// Simulates with a binned shower of the given class that has no shower to take
+// an event from (no event library, or no model, loaded)
+auto simulate_without_showers(const char* class_name, double& energy)
+    -> FCSReturnCode
 {
   // Created through the dictionary and owned through the exported base class
   const std::unique_ptr<TFCSParametrizationBase> param(
       static_cast<TFCSParametrizationBase*>(
-          TClass::GetClass("TFCSBinnedShower")->New()));
-  ASSERT_NE(param, nullptr);
+          TClass::GetClass(class_name)->New()));
+  EXPECT_NE(param, nullptr);
   CaloGeo geo;  // no layers
   FastCaloSim::LayerRoles roles;
   roles.shower_center_layers = {{.layer = 0, .max_abs_eta = 0}};
@@ -34,10 +36,30 @@ TEST(BinnedShowerTests, SimulateOnNewState)
   TFCSSimulationState simulstate;
   const TFCSTruthState truth;
   const TFCSExtrapolationState extrapol;
-  // The event library is empty: the simulation reports an error and deposits
-  // nothing
-  EXPECT_NO_THROW(param->simulate(simulstate, &truth, &extrapol));
-  EXPECT_DOUBLE_EQ(simulstate.E(), 0.0);
+  const FCSReturnCode status = param->simulate(simulstate, &truth, &extrapol);
+  energy = simulstate.E();
+  return status;
+}
+}  // namespace
+
+// TFCSBinnedShower::simulate() first removes the data of the previous event
+// from the simulation state. On a new state there is none, which used to throw
+// std::out_of_range. The event library is empty: the simulation fails and
+// deposits nothing.
+TEST(BinnedShowerTests, SimulateOnNewState)
+{
+  double energy = -1;
+  EXPECT_EQ(simulate_without_showers("TFCSBinnedShower", energy), FCSFatal);
+  EXPECT_DOUBLE_EQ(energy, 0.0);
+}
+
+// Without a loaded model, TFCSBinnedShowerONNX fails instead of dereferencing
+// the missing simulator
+TEST(BinnedShowerTests, SimulateWithoutModel)
+{
+  double energy = -1;
+  EXPECT_EQ(simulate_without_showers("TFCSBinnedShowerONNX", energy), FCSFatal);
+  EXPECT_DOUBLE_EQ(energy, 0.0);
 }
 
 // With an HDF5 file path, the event library is not written to the file but

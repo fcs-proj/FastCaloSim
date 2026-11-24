@@ -117,11 +117,12 @@ public:
 
 protected:
   // Returns the event to be used
-  void get_event(TFCSSimulationState& simulstate,
+  auto get_event(TFCSSimulationState& simulstate,
                  double eta_center,
                  double phi_center,
                  double e_init,
-                 std::size_t reference_layer_index) const override;
+                 std::size_t reference_layer_index) const
+      -> FCSReturnCode override;
 
 private:
   // Enables to load the event library from an HDF5 file on the fly.

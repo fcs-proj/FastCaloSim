@@ -71,7 +71,11 @@ auto TFCSBinnedShowerBase::simulate(
   // Reset the total energy
   simulstate.set_E(0);
 
-  get_event(simulstate, eta_center, phi_center, Einit, reference_layer);
+  if (get_event(simulstate, eta_center, phi_center, Einit, reference_layer)
+      != FCSSuccess)
+  {
+    return FCSFatal;
+  }
 
   for (const std::size_t layer_index : m_geo->layer_ids()) {
     const double layer_energy = get_layer_energy(simulstate, layer_index);
