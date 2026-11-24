@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 
+#include <FastCaloSim/FastCaloSim_export.h>
 #include <RtypesCore.h>
 
 class CaloGeo;
@@ -29,11 +30,14 @@ public:
   auto operator=(TFCSPhiModulationCorrection&& ref)
       -> TFCSPhiModulationCorrection& = default;
 
-  void load_phi_modulation(const std::string& filename,
-                           std::size_t layer_index,
-                           float eta_min,
-                           float eta_max,
-                           float energy_shift = 1.0);
+  /// Adds the weights of histogram hWt_Layer0 (one per phi bin within a cell)
+  /// in the given file for the given layer and eta range. Exported for the
+  /// code creating parametrizations, which calls it from outside the library.
+  FASTCALOSIM_EXPORT void load_phi_modulation(const std::string& filename,
+                                              std::size_t layer_index,
+                                              float eta_min,
+                                              float eta_max,
+                                              float energy_shift = 1.0);
 
   // Clears only the modulation tables, unlike TFCSParametrization::clear()
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design

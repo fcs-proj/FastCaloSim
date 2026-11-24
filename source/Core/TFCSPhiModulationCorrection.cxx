@@ -14,10 +14,11 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <memory>
 
 #include <RtypesCore.h>
 #include <TFile.h>
-#include <TH2F.h>
+#include <TH1.h>
 #include <TParameter.h>
 
 //=============================================
@@ -39,6 +40,23 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
     float eta_max,
     float energy_shift)
 {
+  FCS_MSG_DEBUG("Loading phi modulation correction from " << filename);
+
+  // Read the file before changing the tables, so that a file that cannot be
+  // used leaves them as they were
+  std::unique_ptr<TFile> muon_corr(TFile::Open(filename.c_str()));
+  if (!muon_corr || muon_corr->IsZombie()) {
+    FCS_MSG_ERROR("Failed to open phi modulation file: " << filename);
+    return;
+  }
+
+  // One weight per phi bin within the cell: the inputs are TH1F histograms
+  auto* const muon_corr_hist = dynamic_cast<TH1*>(muon_corr->Get("hWt_Layer0"));
+  if (muon_corr_hist == nullptr || muon_corr_hist->GetDimension() != 1) {
+    FCS_MSG_ERROR("No one-dimensional histogram hWt_Layer0 in " << filename);
+    return;
+  }
+
   if (m_min_eta.size() <= layer_index) {
     m_min_eta.resize(layer_index + 1);
   }
@@ -113,20 +131,6 @@ void TFCSPhiModulationCorrection::load_phi_modulation(
   }
 
   energy_shifts.at(eta_index) = energy_shift;
-
-  FCS_MSG_DEBUG("Loading phi modulation correction from " << filename);
-
-  std::unique_ptr<TFile> muon_corr(TFile::Open(filename.c_str()));
-  if (!muon_corr || muon_corr->IsZombie()) {
-    FCS_MSG_ERROR("Failed to open phi modulation file: " << filename);
-    return;
-  }
-
-  TH2F* muon_corr_hist = dynamic_cast<TH2F*>(muon_corr->Get("hWt_Layer0"));
-  if (muon_corr_hist == nullptr) {
-    FCS_MSG_ERROR("Failed to load hWt_Layer0 histogram from " << filename);
-    return;
-  }
 
   int const n_bins = muon_corr_hist->GetNbinsX();
 
