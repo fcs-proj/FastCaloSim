@@ -50,7 +50,8 @@ void write_th1(const std::string& path)
   TH1F hist("hWt_Layer0", "", 4, 0.0, 0.1);
   hist.SetDirectory(nullptr);
   for (std::size_t i = 0; i < weights.size(); ++i) {
-    hist.SetBinContent(static_cast<int>(i) + 1, weights[i]);
+    hist.SetBinContent(static_cast<int>(i) + 1,
+                       static_cast<double>(weights[i]));
   }
   hist.Write();
   TParameter<double> shift("energy_shift", 0.5);
