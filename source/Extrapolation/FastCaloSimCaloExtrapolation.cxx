@@ -327,6 +327,10 @@ void FastCaloSimCaloExtrapolation::extrapolate(
         "called before the first extrapolation");
   }
 
+  // Positions that are not reached in this extrapolation must not keep values
+  // of an earlier one with the same state
+  result.clear();
+
   const auto reportFailure = [&](const std::string& what) -> void
   {
     const std::string message = what + " for " + describe(*truth);
@@ -348,14 +352,6 @@ void FastCaloSimCaloExtrapolation::extrapolate(
   const std::optional<TrackPoint> boundary =
       extrapolateToIDCaloBoundary(track, m_settings.id_calo_boundary);
   if (!boundary) {
-    result.set_IDCaloBoundary_eta(-999.);
-    result.set_IDCaloBoundary_phi(-999.);
-    result.set_IDCaloBoundary_r(0);
-    result.set_IDCaloBoundary_x(0);
-    result.set_IDCaloBoundary_y(0);
-    result.set_IDCaloBoundary_z(0);
-    result.set_IDCaloBoundary_AngleEta(-999.);
-    result.set_IDCaloBoundary_Angle3D(-999.);
     reportFailure("Failed extrapolation to the ID-calo boundary");
     return;
   }

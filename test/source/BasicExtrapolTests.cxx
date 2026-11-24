@@ -1,6 +1,7 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <cmath>
+#include <cstddef>
 #include <stdexcept>
 #include <vector>
 
@@ -176,6 +177,42 @@ TEST_F(BasicExtrapolTests, ExtrapolationJustBeyondEndcap)
     EXPECT_NEAR(extrapol_state.IDCaloBoundary_z(), side * 3550, 1e-3);
     EXPECT_NEAR(extrapol_state.IDCaloBoundary_x(), 495, 1e-3);
     EXPECT_NEAR(extrapol_state.IDCaloBoundary_y(), 200, 1e-3);
+  }
+}
+
+// An extrapolation into a state used before keeps nothing of the earlier
+// result: here the second particle does not reach the calorimeter
+TEST_F(BasicExtrapolTests, ExtrapolationReplacesPreviousResult)
+{
+  const auto straight_track = [](double eta) -> std::vector<G4FieldTrack>
+  {
+    G4ThreeVector direction;
+    direction.setRThetaPhi(1, 2 * std::atan(std::exp(-eta)), 0.5);
+    std::vector<G4FieldTrack> steps;
+    for (int i = 0; i <= 12; ++i) {
+      steps.emplace_back(
+          500.0 * i * direction, 0, direction, 0, 0.0, 0.0, G4ThreeVector());
+    }
+    return steps;
+  };
+  constexpr std::size_t layer = 2;  // EMB2
+
+  TFCSExtrapolationState extrapol_state;
+  TFCSTruthState truth_state;
+  truth_state.SetPtEtaPhiM(10000, 0.3, 0.5, 0);
+  truth_state.set_pdgid(22);
+  extrapolator.extrapolate(extrapol_state, &truth_state, straight_track(0.3));
+  ASSERT_TRUE(extrapol_state.OK(layer, FastCaloSim::SubPos::MID));
+
+  // Along the beam pipe, beyond the calorimeter acceptance
+  truth_state.SetPtEtaPhiM(10000, 8.0, 0.5, 0);
+  extrapolator.extrapolate(extrapol_state, &truth_state, straight_track(8.0));
+  EXPECT_GT(extrapol_state.IDCaloBoundary_eta(), 5);
+  for (const auto subpos : {FastCaloSim::SubPos::MID,
+                            FastCaloSim::SubPos::ENT,
+                            FastCaloSim::SubPos::EXT})
+  {
+    EXPECT_FALSE(extrapol_state.OK(layer, subpos));
   }
 }
 
