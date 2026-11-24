@@ -46,7 +46,7 @@ const std::vector<float> weights {1.07F, 1.05F, 0.96F, 0.92F};
 // The weights over phi within the cell, as in the phi modulation inputs
 void write_th1(const std::string& path)
 {
-  TFile file(path.c_str(), "RECREATE");
+  const TFile file(path.c_str(), "RECREATE");
   TH1F hist("hWt_Layer0", "", 4, 0.0, 0.1);
   hist.SetDirectory(nullptr);
   for (std::size_t i = 0; i < weights.size(); ++i) {
@@ -91,7 +91,7 @@ TEST(PhiModulationTest, RejectsOtherHistograms)
 {
   const std::string path = file_path("PhiModulationTest_TH2");
   {
-    TFile file(path.c_str(), "RECREATE");
+    const TFile file(path.c_str(), "RECREATE");
     TH2F hist("hWt_Layer0", "", 4, 0.0, 0.1, 1, 0.0, 1.0);
     hist.SetDirectory(nullptr);
     hist.Write();
