@@ -32,6 +32,7 @@ auto TFCSParametrizationPDGIDSelectChain::simulate(
 {
   return simulate_with_restarts(
       "TFCSParametrizationPDGIDSelectChain::simulate()",
+      simulstate,
       [&] -> FCSReturnCode
       {
         FCS_MSG_DEBUG("Running for pdgid=" << truth->pdgid());

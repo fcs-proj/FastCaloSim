@@ -44,6 +44,26 @@ private:
   mutable std::size_t m_calls = 0;
 };
 
+// Deposits energy into a cell and counts its calls in the auxiliary info: a
+// parametrization with results that must not be added twice
+class DepositingParametrization : public TFCSParametrizationBase
+{
+public:
+  auto simulate(TFCSSimulationState& simulstate,
+                const TFCSTruthState* /*truth*/,
+                const TFCSExtrapolationState* /*extrapol*/) const
+      -> FCSReturnCode override
+  {
+    simulstate.deposit(1, 10.0);
+    simulstate.add_E(0, 10.0);
+    const int calls = simulstate.hasAuxInfo("TestCalls"_FCShash)
+        ? simulstate.getAuxInfo<int>("TestCalls"_FCShash)
+        : 0;
+    simulstate.setAuxInfo<int>("TestCalls"_FCShash, calls + 1);
+    return FCSSuccess;
+  }
+};
+
 // A chain created through ROOT, as when it is read from a parametrization
 // file. Like any client of the library, the test owns it through the
 // exported base class: the chain classes themselves are not exported, so
@@ -128,6 +148,32 @@ TEST(ChainRetryTest, RestartFromStart)
   EXPECT_EQ(first.calls(), 2U);
   EXPECT_EQ(second.calls(), 2U);
   EXPECT_EQ(third.calls(), 1U);
+}
+
+// A restart starts from the simulation state before the first pass: the
+// results of the parametrizations before the one asking for the retry are not
+// added again
+TEST(ChainRetryTest, RestartStartsFromTheInitialState)
+{
+  auto chain = make_chain<TFCSParametrizationChain>("TFCSParametrizationChain");
+  chain->set_RetryChainFromStart();
+  DepositingParametrization deposit;
+  ScriptedParametrization retry_once({retry(2)});
+  chain->push_back(&deposit);
+  chain->push_back(&retry_once);
+
+  TFCSSimulationState simulstate;
+  simulstate.setAuxInfo<int>("Before"_FCShash, 7);
+  TFCSTruthState truth;
+  truth.set_pdgid(211);
+  EXPECT_EQ(chain->simulate(simulstate, &truth, nullptr), FCSSuccess);
+  EXPECT_EQ(retry_once.calls(), 2U);
+
+  ASSERT_EQ(simulstate.cells().size(), 1U);
+  EXPECT_DOUBLE_EQ(simulstate.cells().at(1), 10.0);
+  EXPECT_DOUBLE_EQ(simulstate.E(0), 10.0);
+  EXPECT_EQ(simulstate.getAuxInfo<int>("TestCalls"_FCShash), 1);
+  EXPECT_EQ(simulstate.getAuxInfo<int>("Before"_FCShash), 7);
 }
 
 // Binned chain without parametrizations before the bins: the restart must run

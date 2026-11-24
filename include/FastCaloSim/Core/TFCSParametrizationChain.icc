@@ -1,8 +1,10 @@
 // Copyright (c) 2026 CERN for the benefit of the FastCaloSim project
 
 #include <algorithm>
+#include <optional>
 
 #include "FastCaloSim/Core/TFCSParametrization.h"
+#include "FastCaloSim/Core/TFCSSimulationState.h"
 
 inline auto TFCSParametrizationChain::first_warned_retry(int max_retries) -> int
 {
@@ -43,15 +45,24 @@ inline auto TFCSParametrizationChain::simulate_and_retry(
 }
 
 template<typename Pass>
-auto TFCSParametrizationChain::simulate_with_restarts(const char* name,
-                                                      Pass pass) const
+auto TFCSParametrizationChain::simulate_with_restarts(
+    const char* name, TFCSSimulationState& simulstate, Pass pass) const
     -> FCSReturnCode
 {
+  // The state before the first pass, to start each repeated pass from it
+  std::optional<TFCSSimulationState> start;
+  if (RetryChainFromStart()) {
+    start.emplace(simulstate);
+  }
+
   int max_retries = 0;
   for (int attempt = 0; attempt <= max_retries; ++attempt) {
     if (attempt >= first_warned_retry(max_retries)) {
       FCS_MSG_WARNING(name << ": Retry simulate call " << attempt << "/"
                            << max_retries);
+    }
+    if (attempt > 0 && start) {
+      simulstate = *start;
     }
 
     const FCSReturnCode status = pass();

@@ -112,10 +112,14 @@ protected:
 
   /// Run one pass over the chain, pass() -> FCSReturnCode, and repeat it from
   /// the start as long as it returns FCSReturnCode::retry(n), at most n times.
+  /// With RetryChainFromStart(), simulstate is restored before a repeated pass
+  /// to what it was before the first one, so that the parametrizations before
+  /// the one asking for the retry do not add their results again.
   /// `name` identifies the caller in the log messages.
   template<typename Pass>
-  auto simulate_with_restarts(const char* name, Pass pass) const
-      -> FCSReturnCode;
+  auto simulate_with_restarts(const char* name,
+                              TFCSSimulationState& simulstate,
+                              Pass pass) const -> FCSReturnCode;
 
   /// Retries from this one on are reported with a warning
   static auto first_warned_retry(int max_retries) -> int;
