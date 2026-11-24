@@ -83,3 +83,28 @@ TEST_F(AtlasGeoTests, LayerCoordinateSystems)
   EXPECT_THROW(static_cast<void>(AtlasGeoTests::geo->is_xyz(n_layers)),
                std::out_of_range);
 }
+
+TEST_F(AtlasGeoTests, FCalPositionWithoutCell)
+{
+  constexpr std::size_t layer = 21;
+
+  // A position in an FCal cell is found by both lookups
+  const Cell cell = AtlasGeoTests::geo->get_cell_at_idx(layer, 0);
+  const Position in_cell {.m_x = cell.x(),
+                          .m_y = cell.y(),
+                          .m_z = cell.z(),
+                          .m_eta = 0,
+                          .m_phi = 0,
+                          .m_r = 0};
+  EXPECT_EQ(AtlasGeoTests::geo->find_cell(layer, in_cell).id(), cell.id());
+  EXPECT_EQ(AtlasGeoTests::geo->get_cell(layer, in_cell).id(), cell.id());
+
+  // In the beam hole there is no FCal cell: find_cell gives an invalid cell,
+  // so that TFCSHitCellMappingFCal can simulate the hit again, and get_cell
+  // throws
+  const Position in_beam_hole {
+      .m_x = 1, .m_y = 1, .m_z = cell.z(), .m_eta = 0, .m_phi = 0, .m_r = 0};
+  EXPECT_FALSE(AtlasGeoTests::geo->find_cell(layer, in_beam_hole).is_valid());
+  EXPECT_THROW(AtlasGeoTests::geo->get_cell(layer, in_beam_hole),
+               std::runtime_error);
+}

@@ -63,19 +63,23 @@ auto CaloGeo::layer_lookup(std::size_t layer) -> LayerLookup&
 
 auto CaloGeo::get_cell(std::size_t layer, const Position& pos) const -> Cell
 {
+  Cell cell = find_cell(layer, pos);
+  if (!cell.is_valid()) {
+    throw std::runtime_error(
+        "Invalid cell ID from alternative geometry handler");
+  }
+  return cell;
+}
+
+auto CaloGeo::find_cell(std::size_t layer, const Position& pos) const -> Cell
+{
   if (const LayerLookup* found = find_layer_lookup(layer)) {
     const LayerLookup& lookup = *found;
 
-    // Check if an alternative geometry handler is set for the layer
+    // Delegate to the alternative geometry handler of the layer, which may
+    // find no cell
     if (lookup.alt_geo_handler != nullptr) {
-      // Delegate to alternative geometry handler
-      Cell cell = lookup.alt_geo_handler->get_cell(layer, pos);
-      // Make sure returned cell is valid
-      if (!cell.is_valid()) {
-        throw std::runtime_error(
-            "Invalid cell ID from alternative geometry handler");
-      }
-      return cell;
+      return lookup.alt_geo_handler->get_cell(layer, pos);
     }
 
     // Default path: R-tree lookup, which gives the cell's index in the store

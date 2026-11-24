@@ -50,6 +50,11 @@ public:
   // Alternative geo handlers need to override this method
   virtual auto get_cell(std::size_t layer, const Position& pos) const -> Cell;
 
+  // As get_cell(layer, pos), but an invalid cell instead of an exception when
+  // the alternative geometry handler of the layer finds no cell at pos (e.g.
+  // a position between or beyond the FCal tiles)
+  auto find_cell(std::size_t layer, const Position& pos) const -> Cell;
+
   // Retrieve the id of the best matching cell for a given position
   auto get_cell_id(std::size_t layer, const Position& pos) const
       -> unsigned long long;
