@@ -41,9 +41,9 @@ public:
 };
 }  // namespace
 
-// Without wiggle bins (not initialized, as here, or cleared), a hit is mapped
-// to its cell without a wiggle, instead of reading bins that do not exist
-TEST(WiggleTest, MapsHitsWithoutBins)
+// After clear() there are no wiggle bins: a hit is mapped to its cell without
+// a wiggle, instead of reading bins that do not exist
+TEST(WiggleTest, MapsHitsAfterClear)
 {
   // Created through ROOT, as when read from a parametrization file. The class
   // is not exported, so the test owns it through the exported base class.
@@ -51,6 +51,9 @@ TEST(WiggleTest, MapsHitsWithoutBins)
       static_cast<TFCSParametrizationBase*>(
           TClass::GetClass("TFCSHitCellMappingWiggle")->New()));
   auto& wiggle = *static_cast<TFCSHitCellMappingWiggle*>(owner.get());
+  // A new mapping has one bin without a function
+  ASSERT_EQ(wiggle.get_number_of_bins(), 1U);
+  wiggle.clear();
   ASSERT_EQ(wiggle.get_number_of_bins(), 0U);
   OneCellGeo geo;
   owner->set_geometry(&geo);

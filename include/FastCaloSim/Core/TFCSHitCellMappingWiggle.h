@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include "FastCaloSim/Core/TFCSHitCellMapping.h"
 
 class TFCS1DFunction;
@@ -30,9 +32,10 @@ public:
                   const std::vector<float>& bin_low_edges,
                   float xscale = 1);
 
-  // Deletes only the wiggle functions and bins
+  // Deletes only the wiggle functions and bins. Exported for the code
+  // creating parametrizations, which calls it from outside the library.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method): by design
-  void clear();
+  FASTCALOSIM_EXPORT void clear();
 
   auto get_number_of_bins() const -> std::size_t { return m_functions.size(); }
 
