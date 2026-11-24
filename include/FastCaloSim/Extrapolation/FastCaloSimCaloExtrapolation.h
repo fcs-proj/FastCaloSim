@@ -79,9 +79,9 @@ public:
   void set_geometry(CaloGeo* geo);
 
   /// @brief Fill result with the positions of the particle on the ID-calo
-  /// boundary and in the calorimeter layers. The layers are left empty if the
-  /// particle does not reach the calorimeter. Throws std::logic_error if the
-  /// settings or the geometry are not set.
+  /// boundary and in the calorimeter layers, replacing its previous content.
+  /// The layers are left empty if the particle does not reach the calorimeter.
+  /// Throws std::logic_error if the settings or the geometry are not set.
   void extrapolate(TFCSExtrapolationState& result,
                    const TFCSTruthState* truth,
                    const std::vector<G4FieldTrack>& caloSteps) const;
