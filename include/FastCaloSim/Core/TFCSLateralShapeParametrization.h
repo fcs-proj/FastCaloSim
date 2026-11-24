@@ -6,6 +6,8 @@
 #include <optional>
 #include <utility>
 
+#include <FastCaloSim/FastCaloSim_export.h>
+
 #include "FastCaloSim/Core/TFCSParametrization.h"
 
 class TFCSLateralShapeParametrization : public TFCSParametrization
@@ -43,7 +45,9 @@ public:
     return static_cast<std::size_t>(m_calosample);
   }
   auto has_calosample() const -> bool { return m_calosample >= 0; }
-  void set_calosample(std::size_t cs);
+  /// Exported for the code creating parametrizations, which calls it from
+  /// outside the library
+  FASTCALOSIM_EXPORT void set_calosample(std::size_t cs);
 
   virtual void set_pdgid_Ekin_eta_Ekin_bin_calosample(
       const TFCSLateralShapeParametrization& ref);
